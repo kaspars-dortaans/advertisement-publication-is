@@ -1,6 +1,6 @@
 using api.Entities;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,12 +11,13 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-builder.Services.AddDbContext<Context>(options =>
+builder.Services.AddDbContext<Context>(options => 
+    options.UseNpgsql(connectionString)
+);
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
-builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
-    .AddEntityFrameworkStores<ApplicationDbContext>();
-builder.Services.AddRazorPages();
+builder.Services.AddIdentity<User, Role>()
+    .AddEntityFrameworkStores<Context>();
 
 builder.Services.Configure<IdentityOptions>(options =>
 {
