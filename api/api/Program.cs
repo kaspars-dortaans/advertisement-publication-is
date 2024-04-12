@@ -1,6 +1,7 @@
 using api.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
+using api.Helpers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -58,6 +59,9 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+    var scope = app.Services.CreateScope();
+    var dbSeeder = scope.ServiceProvider.GetService<DbSeeder>();
+    dbSeeder?.Seed();
 }
 app.UseHttpsRedirection();
 
