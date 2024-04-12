@@ -1,6 +1,7 @@
 using api.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
+using api.Services;
 using System.Reflection;
 using api.Helpers;
 
@@ -52,6 +53,12 @@ builder.Services.ConfigureApplicationCookie(options =>
     options.AccessDeniedPath = "/Identity/Account/AccessDenied";
     options.SlidingExpiration = true;
 });
+
+//Register services here
+builder.Services.AddScoped(typeof(IBaseService<>), typeof(BaseService<>));
+
+//Db seeding
+builder.Services.AddScoped<DbSeeder>();
 
 //Automapper
 builder.Services.AddAutoMapper(Assembly.GetExecutingAssembly());

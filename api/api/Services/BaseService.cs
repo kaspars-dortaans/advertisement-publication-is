@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using api.Entities;
+using Microsoft.EntityFrameworkCore;
 
 namespace api.Services
 {
@@ -6,8 +7,8 @@ namespace api.Services
     {
         protected DbSet<Entity> DbSet { get; set; }
 
-        public BaseService(DbSet<Entity> set) {
-            DbSet = set;
+        public BaseService(Context context) {
+            DbSet = context.Set<Entity>();
         }
 
         public IEnumerable<Entity> GetAll()
