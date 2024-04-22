@@ -1,7 +1,7 @@
-﻿namespace api.Services
+﻿namespace api.Services;
+
+public interface IBaseService<Entity> where Entity : class
 {
-    public interface IBaseService<Entity> where Entity : class
-    {
-        public IEnumerable<Entity> GetAll();
-    }
+    public IEnumerable<Entity> GetAllList();
+    public IQueryable<Entity> GetAll();
 }
