@@ -5,6 +5,7 @@ using api.Entities;
 using api.Helpers;
 using api.Services;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 
@@ -22,6 +23,7 @@ namespace api.Controllers
             _mapper = mapper;
         }
 
+        [Authorize]
         [HttpPost]
         public DataTableQueryResponse<UserListItem> GetUserList(DataTableQuery query) {
             var users = _userService.GetAll();
