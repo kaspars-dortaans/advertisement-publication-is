@@ -1,5 +1,6 @@
 ﻿using api.Entities;
 using Microsoft.AspNetCore.Identity;
+using System.Linq.Expressions;
 
 namespace api.Helpers;
 
@@ -14,37 +15,71 @@ public class DbSeeder
 
     public void Seed()
     {
+        //Add permissions
+        var permissions = ((IEnumerable<Authorization.Permission>)Enum.GetValues(typeof(Authorization.Permission)))
+            .Select(p => new Permission
+            {
+                Id = (int)p,
+                Name = Enum.GetName(p)!
+            });
+
+        foreach (var permission in permissions)
+        {
+            AddIfNotExists(permission, p => p.Name == permission.Name);
+        }
+
         //Seed Admin role
-        if (!_context.Roles.Any(r => r.Name == "Admin")){
-            _context.Roles.Add(new Role()
+        AddIfNotExists(
+            new Role()
             {
                 Name = "Admin",
                 NormalizedName = "admin",
-            });
-            _context.SaveChanges();
+            },
+            r => r.Name == "Admin");
+
+        //Add all permissions to admin role
+        var adminRole = _context.Roles.First(r => r.Name == "Admin");
+        var rolePermissionIds = _context.Permisssions.Select(p => p.Id).ToList();
+        foreach (var permissionId in rolePermissionIds)
+        {
+            AddIfNotExists(
+                new RolePermission()
+                {
+                    PermissionId = permissionId,
+                    RoleId = adminRole.Id
+                },
+                rp => rp.RoleId == adminRole.Id && rp.PermissionId == permissionId);
         }
 
         //Seed admin user
-        if(!_context.Users.Any(u => u.NormalizedUserName == "admin")){
-            _context.Users.Add(new User()
+        AddIfNotExists(
+            new User()
             {
                 FirstName = "Admin",
                 LastName = "Admin",
-                NormalizedUserName = "admin",
+                Email = "admin@test.org",
+                NormalizedEmail = "ADMIN@TEST.ORG",
+                PasswordHash = "AQAAAAIAAYagAAAAEPbIfbEpyzBC101sGTPOS6fZvLQCfK85dLDZFWuCf5ngCFkILo8KI9GB3dWY4mHhNg=="//123
 
-            });
-            _context.SaveChanges();
-        }
+            },
+            u => u.Email == "admin@test.org");
 
         //Seed admin role for admin user
-        var adminUser = _context.Users.First(u => u.NormalizedUserName == "admin");
-        var adminRole = _context.Roles.First(r => r.Name == "Admin");
-        if(!_context.UserRoles.Any(ur => ur.UserId == adminUser.Id && ur.RoleId == adminRole.Id)){
-            _context.Add(new IdentityUserRole<int>()
+        var adminUser = _context.Users.First(u => u.Email == "admin@test.org");
+        AddIfNotExists(
+            new IdentityUserRole<int>()
             {
                 RoleId = adminRole.Id,
                 UserId = adminUser.Id
-            });
+            },
+            ur => ur.UserId == adminUser.Id && ur.RoleId == adminRole.Id);
+    }
+
+    private void AddIfNotExists<T>(T entity, Expression<Func<T, bool>> predicate) where T : class
+    {
+        if (!_context.Set<T>().Any(predicate))
+        {
+            _context.Add(entity);
             _context.SaveChanges();
         }
     }

@@ -1,4 +1,5 @@
-﻿using api.Dto.Common;
+﻿using api.Authorization;
+using api.Dto.Common;
 using api.Dto.DataTableQuery;
 using api.Dto.User;
 using api.Entities;
@@ -13,6 +14,7 @@ namespace api.Controllers
 {
 
     [ApiController]
+    [Authorize]
     [Route("[controller]")]
     public class UserController : ControllerBase
     {
@@ -23,7 +25,7 @@ namespace api.Controllers
             _mapper = mapper;
         }
 
-        [Authorize]
+        [HasPermission(Authorization.Permission.ViewUsers)]
         [HttpPost]
         public DataTableQueryResponse<UserListItem> GetUserList(DataTableQuery query) {
             var users = _userService.GetAll();
