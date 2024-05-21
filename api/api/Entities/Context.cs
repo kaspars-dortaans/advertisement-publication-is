@@ -28,5 +28,12 @@ public class Context : IdentityDbContext<User, Role, int>
             .HasOne(advertisement => advertisement.ThumbnailImage)
             .WithOne(image => image.Advertisement)
             .HasForeignKey<Image>(image => image.Advertisementid);
+
+        modelBuilder.Entity<Role>()
+            .HasMany(r => r.IdentityUserRoles)
+            .WithOne()
+            .HasForeignKey(ur => ur.RoleId)
+            .IsRequired();
+
     }
 }
