@@ -11,8 +11,7 @@ export class AuthService {
     }
     
     loadStorage () {
-        const storage = new Storage()
-        this.updateToken(storage.getItem(this.tokenStorageKey))
+        this.updateToken(localStorage.getItem(this.tokenStorageKey))
     }
 
     updateToken(token: string | null) {
@@ -22,12 +21,11 @@ export class AuthService {
     }
     
     updateStorage() {
-        const storage = new Storage()
-        storage.getItem(this.tokenStorageKey)
+        localStorage.getItem(this.tokenStorageKey)
         if(this.jwtToken){
-            storage.setItem(this.tokenStorageKey, this.jwtToken)
+            localStorage.setItem(this.tokenStorageKey, this.jwtToken)
         } else {
-            storage.removeItem(this.tokenStorageKey)
+            localStorage.removeItem(this.tokenStorageKey)
         }
     }
     
