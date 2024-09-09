@@ -10,6 +10,9 @@ export function initPrimeVue(app: App<Element>) {
     unstyled: true,
     pt: AuraPreset
   })
+  
+  const localeService = new LocaleService(app.config.globalProperties.$primevue)
+  localeService.loadLocale("en")
 
   //components
   app.component('MenuBar', MenuBar)
