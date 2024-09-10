@@ -1,4 +1,11 @@
 {
     "login": "Login",
-    "register": "Register"    
+    "register": "Register",
+    "dontHaveAnAccountQuestion": "Don't have an account?",
+    "email": "E-mail",
+    "password": "Password",
+
+    "errors": {
+        "invalidLoginCredentials": "Your e-mail or password is not correct"
+    }
 }

@@ -1,40 +1,62 @@
 <template>
-  <BForm @submit="onSubmit" @reset="onReset" v-if="show">
-    <BFormGroup
-      id="input-group-1"
-      label="Email address:"
-      label-for="input-1"
-      description="We'll never share your email with anyone else."
-    >
-      <BFormInput id="input-1" v-model="email" type="email" placeholder="Enter email" required />
-    </BFormGroup>
+  <div class="flex items-center justify-center flex-1 bg-primary">
+    <Panel>
+      <template #header>
+        <span class="text-2xl">{{ ls.l('login') }}</span>
+      </template>
+      <form class="flex-none flex flex-col items-center gap-2 min-w-80 bg-white">
+        <Message v-if="formError" severity="error">{{ ls.l(formError) }}</Message>
+        <InputGroup>
+          <InputGroupAddon>
+            <i class="pi pi-at"></i>
+          </InputGroupAddon>
+          <InputText v-model="email" :placeholder="ls.l('email')" :invalid="!!formError" />
+        </InputGroup>
 
-    <BFormGroup
-      id="password-input-group"
-      label="Password:"
-      label-for="password-input"
-      description="Please enter your password"
-    >
-      <BFormInput id="password-input" v-model="password" type="password" required />
-    </BFormGroup>
+        <InputGroup>
+          <InputGroupAddon>
+            <i class="pi pi-key"></i>
+          </InputGroupAddon>
+          <Password v-model="password" :placeholder="ls.l('password')" :feedback="false" :invalid="!!formError" />
+        </InputGroup>
 
-    <BButton type="submit" variant="primary">Submit</BButton>
-    <BButton type="reset" variant="danger">Reset</BButton>
-  </BForm>
+        <Button class="mt-1" :label="ls.l('login')" @click="tryLogin" />
+        <p>
+          {{ ls.l('dontHaveAnAccountQuestion') }}<RouterLink class="ml-1 link" :to="'register'">{{ ls.l('register') }}
+          </RouterLink>
+        </p>
+      </form>
+    </Panel>
+  </div>
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue'
+import { AuthService } from '@/services/auth-service';
+import { LoginDto } from '@/services/api-client';
+import { LocaleService } from '@/services/locale-service';
+import { useRouter } from 'vue-router';
 
-const show = ref(true)
+const authService = new AuthService()
+const ls = new LocaleService()
+const router = useRouter()
+
 const email = ref('')
 const password = ref('')
+const formError = ref('')
 
-function onSubmit() {
-  console.log('submit', email.value, password.value)
-}
+async function tryLogin() {
+  const loginDto = new LoginDto({
+    email: email.value,
+    password: password.value
+  })
+  try {
+    await authService.login(loginDto)
+    router.push({ name: 'home' })
 
-function onReset() {
-  console.log('reset')
+  } catch (error: any) {
+    //TODO: Add middlware to handle returned errors
+    formError.value = error?.response?.messageCode
+  }
 }
 </script>

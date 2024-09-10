@@ -6,33 +6,26 @@ using api.Entities;
 using api.Helpers;
 using api.Services;
 using AutoMapper;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
+namespace api.Controllers;
 
-namespace api.Controllers
+public class UserController : BaseController
 {
-
-    [ApiController]
-    [Authorize]
-    [Route("[controller]")]
-    public class UserController : ControllerBase
+    private readonly IBaseService<User> _userService;
+    public UserController(IBaseService<User> userService, IMapper mapper) : base(mapper)
     {
-        private readonly IBaseService<User> _userService;
-        private readonly IMapper _mapper;
-        public UserController(IBaseService<User> userService, IMapper mapper) {
-            _userService = userService;
-            _mapper = mapper;
-        }
+        _userService = userService;
+    }
 
-        [HasPermission(Authorization.Permission.ViewUsers)]
-        [HttpPost]
-        public DataTableQueryResponse<UserListItem> GetUserList(DataTableQuery query) {
-            var users = _userService.GetAll();
-            var queryResult = users.ResolveDataTableQuery(query, null);
-            var listItems = _mapper.MapDataTableResult<User, UserListItem>(queryResult);
+    [HasPermission(Authorization.Permission.ViewUsers)]
+    [HttpPost]
+    public DataTableQueryResponse<UserListItem> GetUserList(DataTableQuery query)
+    {
+        var users = _userService.GetAll();
+        var queryResult = users.ResolveDataTableQuery(query, null);
+        var listItems = _mapper.MapDataTableResult<User, UserListItem>(queryResult);
 
-            return listItems;
-        }
+        return listItems;
     }
 }

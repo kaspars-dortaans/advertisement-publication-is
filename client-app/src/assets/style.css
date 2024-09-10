@@ -36,6 +36,7 @@
   --primary-highlight-inverse: var(--primary-700);
   --primary-highlight-hover-opacity: 0.2;
 }
+
 .dark {
   --primary: var(--primary-400);
   --primary-inverse: var(--surface-900);
@@ -48,7 +49,8 @@
 }
 
 html {
-  font-size: 14px;
+  font-size: 16px;
+  @apply h-full
 }
 
 body {
@@ -61,6 +63,16 @@ body {
   color: var(--body-text-color);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+
+  @apply h-full
+}
+
+#app {
+  @apply h-full flex flex-col
+}
+
+a.link {
+  @apply underline text-blue-600 hover:text-blue-800 visited:text-purple-600
 }
 
 @keyframes fadein {
