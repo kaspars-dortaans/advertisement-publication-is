@@ -22,8 +22,8 @@
 
         <Button class="mt-1" :label="ls.l('login')" @click="tryLogin" />
         <p>
-          {{ ls.l('dontHaveAnAccountQuestion') }}<RouterLink class="ml-1 link" :to="'register'">{{ ls.l('register') }}
-          </RouterLink>
+          <span>{{ ls.l('dontHaveAnAccountQuestion') }}</span>
+          <RouterLink class="ml-1 link" :to="{ name: 'home' }">{{ ls.l('register') }}</RouterLink>
         </p>
       </form>
     </Panel>
@@ -33,7 +33,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { AuthService } from '@/services/auth-service';
-import { LoginDto } from '@/services/api-client';
+import { ApiException, LoginDto } from '@/services/api-client';
 import { LocaleService } from '@/services/locale-service';
 import { useRouter } from 'vue-router';
 
@@ -53,10 +53,12 @@ async function tryLogin() {
   try {
     await authService.login(loginDto)
     router.push({ name: 'home' })
-
-  } catch (error: any) {
-    //TODO: Add middlware to handle returned errors
-    formError.value = error?.response?.messageCode
+  } catch (error) {
+    if (ApiException.isApiException(error)) {
+      formError.value = error?.response ?? error?.message
+    } else {
+      throw error
+    }
   }
 }
 </script>

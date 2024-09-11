@@ -1,4 +1,4 @@
-import axios from "axios";
+import { axiosInstance } from "@/init/axios";
 import { usePrimeVue } from "primevue/config";
 
 export class LocaleService {
@@ -22,14 +22,20 @@ export class LocaleService {
 
     async fetchLocale(name: string){
         const localePath = `src/locales/${name}.json`
-        return await axios.get(localePath, { baseURL: import.meta.env.BASE_URL })
+        return await axiosInstance.get(localePath, { baseURL: import.meta.env.BASE_URL })
     }
 
-    l(key: string){
+    l(keyString: string){
         const locale = this.primevue.config.locale as object
-        if(key in locale)
-            return locale[key as keyof object]
+        const keys = keyString.split('.')
+        let object = locale
 
-        return key
+        for(const key of keys){
+            if(key in object)
+                object = object[key as keyof object]
+            else 
+                return keyString
+        }
+        return "" + object
     }
 }

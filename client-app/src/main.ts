@@ -12,6 +12,6 @@ const app = createApp(App)
 app.use(router)
 
 initPrimeVue(app)
-initAxios()
+initAxios(app)
 
 app.mount('#app')

@@ -1,8 +1,9 @@
-import axios from "axios"
-import { Client, type LoginDto } from "./api-client"
+import { axiosInstance } from "@/init/axios"
+import { getCLient } from "@/utils/client-builder"
+import { type LoginDto } from "./api-client"
 
 export class AuthService {
-    readonly client = new Client()
+    readonly client = getCLient()
     readonly tokenStorageKey = 'AuthToken'
     jwtToken: string | null = null
 
@@ -30,7 +31,7 @@ export class AuthService {
     }
     
     updateAuthorizationHeader() {
-        axios.defaults.headers.patch.Authorization = this.jwtToken ? 'Bearer ' + this.jwtToken : undefined
+        axiosInstance.defaults.headers.patch.Authorization = this.jwtToken ? 'Bearer ' + this.jwtToken : undefined
     }
     
     async login(loginDto: LoginDto) {
