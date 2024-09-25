@@ -4,26 +4,31 @@
       <template #header>
         <span class="text-2xl">{{ ls.l('login') }}</span>
       </template>
-      <form class="flex-none flex flex-col items-center gap-2 min-w-80 bg-white">
-        <Message v-if="formError" severity="error">{{ ls.l(formError) }}</Message>
+      <form class="flex-none flex flex-col items-center gap-2 min-w-80 bg-white" @submit="tryLogin">
+        <Message v-if="fieldHelper.formErrors.value" severity="error">{{ fieldHelper.formErrors }}</Message>
+
         <InputGroup>
           <InputGroupAddon>
             <i class="pi pi-at"></i>
           </InputGroupAddon>
-          <InputText v-model="email" :placeholder="ls.l('email')" :invalid="!!formError" />
+          <InputText v-model="fields.email!.value" v-bind="fields.email?.attributes" :placeholder="ls.l('email')"
+            :invalid="fields.email?.hasError" />
         </InputGroup>
+        <FieldError :field="fields.email" />
 
         <InputGroup>
           <InputGroupAddon>
             <i class="pi pi-key"></i>
           </InputGroupAddon>
-          <Password v-model="password" :placeholder="ls.l('password')" :feedback="false" :invalid="!!formError" />
+          <Password v-model="fields.password!.value" v-bind="fields.password?.attributes"
+            :placeholder="ls.l('password')" :feedback="false" :invalid="fields.email?.hasError" />
         </InputGroup>
+        <FieldError :field="fields.password" />
 
         <Button class="mt-1" :label="ls.l('login')" @click="tryLogin" />
         <p>
           <span>{{ ls.l('dontHaveAnAccountQuestion') }}</span>
-          <RouterLink class="ml-1 link" :to="{ name: 'home' }">{{ ls.l('register') }}</RouterLink>
+          <RouterLink class="ml-1 link" :to="{ name: 'register' }">{{ ls.l('register') }}</RouterLink>
         </p>
       </form>
     </Panel>
@@ -31,34 +36,41 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import FieldError from '@/components/FieldError.vue';
+import { LoginDto, type ILoginDto } from '@/services/api-client';
 import { AuthService } from '@/services/auth-service';
-import { ApiException, LoginDto } from '@/services/api-client';
 import { LocaleService } from '@/services/locale-service';
+import { FieldHelper } from '@/utils/field-helper';
+import { toTypedSchema } from '@vee-validate/yup';
+import { object, string } from 'yup';
+import { useForm } from 'vee-validate';
 import { useRouter } from 'vue-router';
 
-const authService = new AuthService()
-const ls = new LocaleService()
-const router = useRouter()
+const authService = new AuthService();
+const ls = new LocaleService();
+const router = useRouter();
 
-const email = ref('')
-const password = ref('')
-const formError = ref('')
+const form = useForm({
+  validationSchema: toTypedSchema(object({
+    email: string().required().email(),
+    password: string().required()
+  }))
+})
+const { values, handleSubmit } = form;
+const fieldHelper = new FieldHelper<ILoginDto>(form);
+fieldHelper.defineMultipleFields([
+  "email",
+  "password"
+]);
+const fields = fieldHelper.fields;
 
-async function tryLogin() {
-  const loginDto = new LoginDto({
-    email: email.value,
-    password: password.value
-  })
+const tryLogin = handleSubmit(async () => {
+  const loginDto = new LoginDto(values)
   try {
     await authService.login(loginDto)
     router.push({ name: 'home' })
   } catch (error) {
-    if (ApiException.isApiException(error)) {
-      formError.value = error?.response ?? error?.message
-    } else {
-      throw error
-    }
+    fieldHelper.handleErrors(error)
   }
-}
+})
 </script>
