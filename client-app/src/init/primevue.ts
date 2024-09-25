@@ -7,6 +7,9 @@ import { type App } from 'vue'
 import PrimeVue from 'primevue/config'
 import AuraPreset from '@/presets/aura'
 
+//File
+import FileUpload from 'primevue/fileupload'
+
 //Menu
 import MenuBar from 'primevue/menubar'
 
@@ -28,37 +31,38 @@ import Panel from 'primevue/panel'
 import Message from 'primevue/message'
 import Checkbox from 'primevue/checkbox'
 
-const customPassTrough = 
-  {
-    password: {
+const customPassTrough = {
+  password: {
+    root: {
+      class: 'flex-1'
+    },
+    input: {
       root: {
         class: 'flex-1'
-      },
-      input: {
-        root: {
-          class: 'flex-1'
-        }
       }
     }
   }
+}
 
 export function initPrimeVue(app: App<Element>) {
-  const globalPassTrough = usePassThrough(
-    AuraPreset,
-    customPassTrough,
-    { mergeSections: true, mergeProps: true}
-  )
-  
+  const globalPassTrough = usePassThrough(AuraPreset, customPassTrough, {
+    mergeSections: true,
+    mergeProps: true
+  })
+
   app.use(PrimeVue, {
     unstyled: true,
     pt: globalPassTrough,
-    ptOptions: { mergeSections: true, mergeProps: true },
+    ptOptions: { mergeSections: true, mergeProps: true }
   })
-  
+
   const localeService = new LocaleService(app.config.globalProperties.$primevue)
-  localeService.loadLocale("en")
-  
+  localeService.loadLocale('en')
+
   //components
+  //File
+  app.component('FileUpload', FileUpload)
+
   //Menu
   app.component('MenuBar', MenuBar)
 

@@ -50,7 +50,7 @@
 
 html {
   font-size: 16px;
-  @apply h-full
+  @apply h-full;
 }
 
 body {
@@ -64,15 +64,15 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 
-  @apply h-full
+  @apply h-full;
 }
 
 #app {
-  @apply h-full flex flex-col
+  @apply h-full flex flex-col;
 }
 
 a.link {
-  @apply underline text-blue-600 hover:text-blue-800 visited:text-purple-600
+  @apply underline text-blue-600 hover:text-blue-800 visited:text-purple-600;
 }
 
 @keyframes fadein {

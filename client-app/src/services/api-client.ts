@@ -8,749 +8,748 @@
 /* eslint-disable */
 // ReSharper disable InconsistentNaming
 
-import axios, { AxiosError } from 'axios';
-import type { AxiosInstance, AxiosRequestConfig, AxiosResponse, CancelToken } from 'axios';
+import axios, { AxiosError } from 'axios'
+import type { AxiosInstance, AxiosRequestConfig, AxiosResponse, CancelToken } from 'axios'
 
 export class Client {
-    protected instance: AxiosInstance;
-    protected baseUrl: string;
-    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+  protected instance: AxiosInstance
+  protected baseUrl: string
+  protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined
 
-    constructor(baseUrl?: string, instance?: AxiosInstance) {
+  constructor(baseUrl?: string, instance?: AxiosInstance) {
+    this.instance = instance || axios.create()
 
-        this.instance = instance || axios.create();
+    this.baseUrl = baseUrl ?? ''
+  }
 
-        this.baseUrl = baseUrl ?? "";
+  /**
+   * @param body (optional)
+   * @return Success
+   */
+  authenticate(body: LoginDto | undefined, cancelToken?: CancelToken): Promise<string> {
+    let url_ = this.baseUrl + '/api/Login/Authenticate'
+    url_ = url_.replace(/[?&]$/, '')
 
+    const content_ = JSON.stringify(body)
+
+    let options_: AxiosRequestConfig = {
+      data: content_,
+      method: 'POST',
+      url: url_,
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: 'text/plain'
+      },
+      cancelToken
     }
 
-    /**
-     * @param body (optional) 
-     * @return Success
-     */
-    authenticate(body: LoginDto | undefined, cancelToken?: CancelToken): Promise<string> {
-        let url_ = this.baseUrl + "/api/Login/Authenticate";
-        url_ = url_.replace(/[?&]$/, "");
-
-        const content_ = JSON.stringify(body);
-
-        let options_: AxiosRequestConfig = {
-            data: content_,
-            method: "POST",
-            url: url_,
-            headers: {
-                "Content-Type": "application/json",
-                "Accept": "text/plain"
-            },
-            cancelToken
-        };
-
-        return this.instance.request(options_).catch((_error: any) => {
-            if (isAxiosError(_error) && _error.response) {
-                return _error.response;
-            } else {
-                throw _error;
-            }
-        }).then((_response: AxiosResponse) => {
-            return this.processAuthenticate(_response);
-        });
-    }
-
-    protected processAuthenticate(response: AxiosResponse): Promise<string> {
-        const status = response.status;
-        let _headers: any = {};
-        if (response.headers && typeof response.headers === "object") {
-            for (const k in response.headers) {
-                if (response.headers.hasOwnProperty(k)) {
-                    _headers[k] = response.headers[k];
-                }
-            }
+    return this.instance
+      .request(options_)
+      .catch((_error: any) => {
+        if (isAxiosError(_error) && _error.response) {
+          return _error.response
+        } else {
+          throw _error
         }
-        if (status === 200) {
-            const _responseText = response.data;
-            let result200: any = null;
-            let resultData200  = _responseText;
-                result200 = resultData200 !== undefined ? resultData200 : <any>null;
-    
-            return Promise.resolve<string>(result200);
+      })
+      .then((_response: AxiosResponse) => {
+        return this.processAuthenticate(_response)
+      })
+  }
 
-        } else if (status === 400) {
-            const _responseText = response.data;
-            let result400: any = null;
-            let resultData400  = _responseText;
-            result400 = RequestError.fromJS(resultData400);
-            return throwException("Bad Request", status, _responseText, _headers, result400);
-
-        } else if (status !== 200 && status !== 204) {
-            const _responseText = response.data;
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+  protected processAuthenticate(response: AxiosResponse): Promise<string> {
+    const status = response.status
+    let _headers: any = {}
+    if (response.headers && typeof response.headers === 'object') {
+      for (const k in response.headers) {
+        if (response.headers.hasOwnProperty(k)) {
+          _headers[k] = response.headers[k]
         }
-        return Promise.resolve<string>(null as any);
+      }
+    }
+    if (status === 200) {
+      const _responseText = response.data
+      let result200: any = null
+      let resultData200 = _responseText
+      result200 = resultData200 !== undefined ? resultData200 : <any>null
+
+      return Promise.resolve<string>(result200)
+    } else if (status === 400) {
+      const _responseText = response.data
+      let result400: any = null
+      let resultData400 = _responseText
+      result400 = RequestError.fromJS(resultData400)
+      return throwException('Bad Request', status, _responseText, _headers, result400)
+    } else if (status !== 200 && status !== 204) {
+      const _responseText = response.data
+      return throwException('An unexpected server error occurred.', status, _responseText, _headers)
+    }
+    return Promise.resolve<string>(null as any)
+  }
+
+  /**
+   * @param body (optional)
+   * @return Success
+   */
+  getUserList(
+    body: DataTableQuery | undefined,
+    cancelToken?: CancelToken
+  ): Promise<UserListItemDataTableQueryResponse> {
+    let url_ = this.baseUrl + '/api/User/GetUserList'
+    url_ = url_.replace(/[?&]$/, '')
+
+    const content_ = JSON.stringify(body)
+
+    let options_: AxiosRequestConfig = {
+      data: content_,
+      method: 'POST',
+      url: url_,
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: 'text/plain'
+      },
+      cancelToken
     }
 
-    /**
-     * @param body (optional) 
-     * @return Success
-     */
-    getUserList(body: DataTableQuery | undefined, cancelToken?: CancelToken): Promise<UserListItemDataTableQueryResponse> {
-        let url_ = this.baseUrl + "/api/User/GetUserList";
-        url_ = url_.replace(/[?&]$/, "");
+    return this.instance
+      .request(options_)
+      .catch((_error: any) => {
+        if (isAxiosError(_error) && _error.response) {
+          return _error.response
+        } else {
+          throw _error
+        }
+      })
+      .then((_response: AxiosResponse) => {
+        return this.processGetUserList(_response)
+      })
+  }
 
-        const content_ = JSON.stringify(body);
+  protected processGetUserList(
+    response: AxiosResponse
+  ): Promise<UserListItemDataTableQueryResponse> {
+    const status = response.status
+    let _headers: any = {}
+    if (response.headers && typeof response.headers === 'object') {
+      for (const k in response.headers) {
+        if (response.headers.hasOwnProperty(k)) {
+          _headers[k] = response.headers[k]
+        }
+      }
+    }
+    if (status === 200) {
+      const _responseText = response.data
+      let result200: any = null
+      let resultData200 = _responseText
+      result200 = UserListItemDataTableQueryResponse.fromJS(resultData200)
+      return Promise.resolve<UserListItemDataTableQueryResponse>(result200)
+    } else if (status !== 200 && status !== 204) {
+      const _responseText = response.data
+      return throwException('An unexpected server error occurred.', status, _responseText, _headers)
+    }
+    return Promise.resolve<UserListItemDataTableQueryResponse>(null as any)
+  }
 
-        let options_: AxiosRequestConfig = {
-            data: content_,
-            method: "POST",
-            url: url_,
-            headers: {
-                "Content-Type": "application/json",
-                "Accept": "text/plain"
-            },
-            cancelToken
-        };
+  /**
+   * @param body (optional)
+   * @return Success
+   */
+  register(body: RegisterDto | undefined, cancelToken?: CancelToken): Promise<OkResult> {
+    let url_ = this.baseUrl + '/api/User/Register'
+    url_ = url_.replace(/[?&]$/, '')
 
-        return this.instance.request(options_).catch((_error: any) => {
-            if (isAxiosError(_error) && _error.response) {
-                return _error.response;
-            } else {
-                throw _error;
-            }
-        }).then((_response: AxiosResponse) => {
-            return this.processGetUserList(_response);
-        });
+    const content_ = JSON.stringify(body)
+
+    let options_: AxiosRequestConfig = {
+      data: content_,
+      method: 'POST',
+      url: url_,
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: 'text/plain'
+      },
+      cancelToken
     }
 
-    protected processGetUserList(response: AxiosResponse): Promise<UserListItemDataTableQueryResponse> {
-        const status = response.status;
-        let _headers: any = {};
-        if (response.headers && typeof response.headers === "object") {
-            for (const k in response.headers) {
-                if (response.headers.hasOwnProperty(k)) {
-                    _headers[k] = response.headers[k];
-                }
-            }
+    return this.instance
+      .request(options_)
+      .catch((_error: any) => {
+        if (isAxiosError(_error) && _error.response) {
+          return _error.response
+        } else {
+          throw _error
         }
-        if (status === 200) {
-            const _responseText = response.data;
-            let result200: any = null;
-            let resultData200  = _responseText;
-            result200 = UserListItemDataTableQueryResponse.fromJS(resultData200);
-            return Promise.resolve<UserListItemDataTableQueryResponse>(result200);
+      })
+      .then((_response: AxiosResponse) => {
+        return this.processRegister(_response)
+      })
+  }
 
-        } else if (status !== 200 && status !== 204) {
-            const _responseText = response.data;
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+  protected processRegister(response: AxiosResponse): Promise<OkResult> {
+    const status = response.status
+    let _headers: any = {}
+    if (response.headers && typeof response.headers === 'object') {
+      for (const k in response.headers) {
+        if (response.headers.hasOwnProperty(k)) {
+          _headers[k] = response.headers[k]
         }
-        return Promise.resolve<UserListItemDataTableQueryResponse>(null as any);
+      }
     }
-
-    /**
-     * @param body (optional) 
-     * @return Success
-     */
-    register(body: RegisterDto | undefined, cancelToken?: CancelToken): Promise<OkResult> {
-        let url_ = this.baseUrl + "/api/User/Register";
-        url_ = url_.replace(/[?&]$/, "");
-
-        const content_ = JSON.stringify(body);
-
-        let options_: AxiosRequestConfig = {
-            data: content_,
-            method: "POST",
-            url: url_,
-            headers: {
-                "Content-Type": "application/json",
-                "Accept": "text/plain"
-            },
-            cancelToken
-        };
-
-        return this.instance.request(options_).catch((_error: any) => {
-            if (isAxiosError(_error) && _error.response) {
-                return _error.response;
-            } else {
-                throw _error;
-            }
-        }).then((_response: AxiosResponse) => {
-            return this.processRegister(_response);
-        });
+    if (status === 200) {
+      const _responseText = response.data
+      let result200: any = null
+      let resultData200 = _responseText
+      result200 = OkResult.fromJS(resultData200)
+      return Promise.resolve<OkResult>(result200)
+    } else if (status === 400) {
+      const _responseText = response.data
+      let result400: any = null
+      let resultData400 = _responseText
+      result400 = RequestError.fromJS(resultData400)
+      return throwException('Bad Request', status, _responseText, _headers, result400)
+    } else if (status !== 200 && status !== 204) {
+      const _responseText = response.data
+      return throwException('An unexpected server error occurred.', status, _responseText, _headers)
     }
-
-    protected processRegister(response: AxiosResponse): Promise<OkResult> {
-        const status = response.status;
-        let _headers: any = {};
-        if (response.headers && typeof response.headers === "object") {
-            for (const k in response.headers) {
-                if (response.headers.hasOwnProperty(k)) {
-                    _headers[k] = response.headers[k];
-                }
-            }
-        }
-        if (status === 200) {
-            const _responseText = response.data;
-            let result200: any = null;
-            let resultData200  = _responseText;
-            result200 = OkResult.fromJS(resultData200);
-            return Promise.resolve<OkResult>(result200);
-
-        } else if (status === 400) {
-            const _responseText = response.data;
-            let result400: any = null;
-            let resultData400  = _responseText;
-            result400 = RequestError.fromJS(resultData400);
-            return throwException("Bad Request", status, _responseText, _headers, result400);
-
-        } else if (status !== 200 && status !== 204) {
-            const _responseText = response.data;
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-        }
-        return Promise.resolve<OkResult>(null as any);
-    }
+    return Promise.resolve<OkResult>(null as any)
+  }
 }
 
 export class DataTableQuery implements IDataTableQuery {
-    draw?: number;
-    start?: number | undefined;
-    length?: number | undefined;
-    search?: SearchQuery;
-    order?: OrderQuery[] | undefined;
-    columns?: TableColumn[] | undefined;
+  draw?: number
+  start?: number | undefined
+  length?: number | undefined
+  search?: SearchQuery
+  order?: OrderQuery[] | undefined
+  columns?: TableColumn[] | undefined
 
-    constructor(data?: IDataTableQuery) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
+  constructor(data?: IDataTableQuery) {
+    if (data) {
+      for (var property in data) {
+        if (data.hasOwnProperty(property)) (<any>this)[property] = (<any>data)[property]
+      }
     }
+  }
 
-    init(_data?: any) {
-        if (_data) {
-            this.draw = _data["draw"];
-            this.start = _data["start"];
-            this.length = _data["length"];
-            this.search = _data["search"] ? SearchQuery.fromJS(_data["search"]) : <any>undefined;
-            if (Array.isArray(_data["order"])) {
-                this.order = [] as any;
-                for (let item of _data["order"])
-                    this.order!.push(OrderQuery.fromJS(item));
-            }
-            if (Array.isArray(_data["columns"])) {
-                this.columns = [] as any;
-                for (let item of _data["columns"])
-                    this.columns!.push(TableColumn.fromJS(item));
-            }
-        }
+  init(_data?: any) {
+    if (_data) {
+      this.draw = _data['draw']
+      this.start = _data['start']
+      this.length = _data['length']
+      this.search = _data['search'] ? SearchQuery.fromJS(_data['search']) : <any>undefined
+      if (Array.isArray(_data['order'])) {
+        this.order = [] as any
+        for (let item of _data['order']) this.order!.push(OrderQuery.fromJS(item))
+      }
+      if (Array.isArray(_data['columns'])) {
+        this.columns = [] as any
+        for (let item of _data['columns']) this.columns!.push(TableColumn.fromJS(item))
+      }
     }
+  }
 
-    static fromJS(data: any): DataTableQuery {
-        data = typeof data === 'object' ? data : {};
-        let result = new DataTableQuery();
-        result.init(data);
-        return result;
-    }
+  static fromJS(data: any): DataTableQuery {
+    data = typeof data === 'object' ? data : {}
+    let result = new DataTableQuery()
+    result.init(data)
+    return result
+  }
 
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["draw"] = this.draw;
-        data["start"] = this.start;
-        data["length"] = this.length;
-        data["search"] = this.search ? this.search.toJSON() : <any>undefined;
-        if (Array.isArray(this.order)) {
-            data["order"] = [];
-            for (let item of this.order)
-                data["order"].push(item.toJSON());
-        }
-        if (Array.isArray(this.columns)) {
-            data["columns"] = [];
-            for (let item of this.columns)
-                data["columns"].push(item.toJSON());
-        }
-        return data;
+  toJSON(data?: any) {
+    data = typeof data === 'object' ? data : {}
+    data['draw'] = this.draw
+    data['start'] = this.start
+    data['length'] = this.length
+    data['search'] = this.search ? this.search.toJSON() : <any>undefined
+    if (Array.isArray(this.order)) {
+      data['order'] = []
+      for (let item of this.order) data['order'].push(item.toJSON())
     }
+    if (Array.isArray(this.columns)) {
+      data['columns'] = []
+      for (let item of this.columns) data['columns'].push(item.toJSON())
+    }
+    return data
+  }
 }
 
 export interface IDataTableQuery {
-    draw?: number;
-    start?: number | undefined;
-    length?: number | undefined;
-    search?: SearchQuery;
-    order?: OrderQuery[] | undefined;
-    columns?: TableColumn[] | undefined;
+  draw?: number
+  start?: number | undefined
+  length?: number | undefined
+  search?: SearchQuery
+  order?: OrderQuery[] | undefined
+  columns?: TableColumn[] | undefined
 }
 
 export class LoginDto implements ILoginDto {
-    email?: string | undefined;
-    password?: string | undefined;
+  email?: string | undefined
+  password?: string | undefined
 
-    constructor(data?: ILoginDto) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
+  constructor(data?: ILoginDto) {
+    if (data) {
+      for (var property in data) {
+        if (data.hasOwnProperty(property)) (<any>this)[property] = (<any>data)[property]
+      }
     }
+  }
 
-    init(_data?: any) {
-        if (_data) {
-            this.email = _data["email"];
-            this.password = _data["password"];
-        }
+  init(_data?: any) {
+    if (_data) {
+      this.email = _data['email']
+      this.password = _data['password']
     }
+  }
 
-    static fromJS(data: any): LoginDto {
-        data = typeof data === 'object' ? data : {};
-        let result = new LoginDto();
-        result.init(data);
-        return result;
-    }
+  static fromJS(data: any): LoginDto {
+    data = typeof data === 'object' ? data : {}
+    let result = new LoginDto()
+    result.init(data)
+    return result
+  }
 
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["email"] = this.email;
-        data["password"] = this.password;
-        return data;
-    }
+  toJSON(data?: any) {
+    data = typeof data === 'object' ? data : {}
+    data['email'] = this.email
+    data['password'] = this.password
+    return data
+  }
 }
 
 export interface ILoginDto {
-    email?: string | undefined;
-    password?: string | undefined;
+  email?: string | undefined
+  password?: string | undefined
 }
 
 export class OkResult implements IOkResult {
-    statusCode?: number;
+  statusCode?: number
 
-    constructor(data?: IOkResult) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
+  constructor(data?: IOkResult) {
+    if (data) {
+      for (var property in data) {
+        if (data.hasOwnProperty(property)) (<any>this)[property] = (<any>data)[property]
+      }
     }
+  }
 
-    init(_data?: any) {
-        if (_data) {
-            this.statusCode = _data["statusCode"];
-        }
+  init(_data?: any) {
+    if (_data) {
+      this.statusCode = _data['statusCode']
     }
+  }
 
-    static fromJS(data: any): OkResult {
-        data = typeof data === 'object' ? data : {};
-        let result = new OkResult();
-        result.init(data);
-        return result;
-    }
+  static fromJS(data: any): OkResult {
+    data = typeof data === 'object' ? data : {}
+    let result = new OkResult()
+    result.init(data)
+    return result
+  }
 
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["statusCode"] = this.statusCode;
-        return data;
-    }
+  toJSON(data?: any) {
+    data = typeof data === 'object' ? data : {}
+    data['statusCode'] = this.statusCode
+    return data
+  }
 }
 
 export interface IOkResult {
-    statusCode?: number;
+  statusCode?: number
 }
 
 export class OrderQuery implements IOrderQuery {
-    column?: number;
-    direction?: string | undefined;
+  column?: number
+  direction?: string | undefined
 
-    constructor(data?: IOrderQuery) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
+  constructor(data?: IOrderQuery) {
+    if (data) {
+      for (var property in data) {
+        if (data.hasOwnProperty(property)) (<any>this)[property] = (<any>data)[property]
+      }
     }
+  }
 
-    init(_data?: any) {
-        if (_data) {
-            this.column = _data["column"];
-            this.direction = _data["direction"];
-        }
+  init(_data?: any) {
+    if (_data) {
+      this.column = _data['column']
+      this.direction = _data['direction']
     }
+  }
 
-    static fromJS(data: any): OrderQuery {
-        data = typeof data === 'object' ? data : {};
-        let result = new OrderQuery();
-        result.init(data);
-        return result;
-    }
+  static fromJS(data: any): OrderQuery {
+    data = typeof data === 'object' ? data : {}
+    let result = new OrderQuery()
+    result.init(data)
+    return result
+  }
 
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["column"] = this.column;
-        data["direction"] = this.direction;
-        return data;
-    }
+  toJSON(data?: any) {
+    data = typeof data === 'object' ? data : {}
+    data['column'] = this.column
+    data['direction'] = this.direction
+    return data
+  }
 }
 
 export interface IOrderQuery {
-    column?: number;
-    direction?: string | undefined;
+  column?: number
+  direction?: string | undefined
 }
 
 export class RegisterDto implements IRegisterDto {
-    email!: string;
-    isEmailPublic?: boolean;
-    password!: string;
-    passwordConfirmation!: string;
-    firstName!: string;
-    lastName!: string;
-    userName!: string;
-    phoneNumber!: string;
-    isPhoneNumberPublic?: boolean;
+  email!: string
+  isEmailPublic?: boolean
+  password!: string
+  passwordConfirmation!: string
+  firstName!: string
+  lastName!: string
+  userName!: string
+  phoneNumber!: string
+  isPhoneNumberPublic?: boolean
 
-    constructor(data?: IRegisterDto) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
+  constructor(data?: IRegisterDto) {
+    if (data) {
+      for (var property in data) {
+        if (data.hasOwnProperty(property)) (<any>this)[property] = (<any>data)[property]
+      }
     }
+  }
 
-    init(_data?: any) {
-        if (_data) {
-            this.email = _data["email"];
-            this.isEmailPublic = _data["isEmailPublic"];
-            this.password = _data["password"];
-            this.passwordConfirmation = _data["passwordConfirmation"];
-            this.firstName = _data["firstName"];
-            this.lastName = _data["lastName"];
-            this.userName = _data["userName"];
-            this.phoneNumber = _data["phoneNumber"];
-            this.isPhoneNumberPublic = _data["isPhoneNumberPublic"];
-        }
+  init(_data?: any) {
+    if (_data) {
+      this.email = _data['email']
+      this.isEmailPublic = _data['isEmailPublic']
+      this.password = _data['password']
+      this.passwordConfirmation = _data['passwordConfirmation']
+      this.firstName = _data['firstName']
+      this.lastName = _data['lastName']
+      this.userName = _data['userName']
+      this.phoneNumber = _data['phoneNumber']
+      this.isPhoneNumberPublic = _data['isPhoneNumberPublic']
     }
+  }
 
-    static fromJS(data: any): RegisterDto {
-        data = typeof data === 'object' ? data : {};
-        let result = new RegisterDto();
-        result.init(data);
-        return result;
-    }
+  static fromJS(data: any): RegisterDto {
+    data = typeof data === 'object' ? data : {}
+    let result = new RegisterDto()
+    result.init(data)
+    return result
+  }
 
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["email"] = this.email;
-        data["isEmailPublic"] = this.isEmailPublic;
-        data["password"] = this.password;
-        data["passwordConfirmation"] = this.passwordConfirmation;
-        data["firstName"] = this.firstName;
-        data["lastName"] = this.lastName;
-        data["userName"] = this.userName;
-        data["phoneNumber"] = this.phoneNumber;
-        data["isPhoneNumberPublic"] = this.isPhoneNumberPublic;
-        return data;
-    }
+  toJSON(data?: any) {
+    data = typeof data === 'object' ? data : {}
+    data['email'] = this.email
+    data['isEmailPublic'] = this.isEmailPublic
+    data['password'] = this.password
+    data['passwordConfirmation'] = this.passwordConfirmation
+    data['firstName'] = this.firstName
+    data['lastName'] = this.lastName
+    data['userName'] = this.userName
+    data['phoneNumber'] = this.phoneNumber
+    data['isPhoneNumberPublic'] = this.isPhoneNumberPublic
+    return data
+  }
 }
 
 export interface IRegisterDto {
-    email: string;
-    isEmailPublic?: boolean;
-    password: string;
-    passwordConfirmation: string;
-    firstName: string;
-    lastName: string;
-    userName: string;
-    phoneNumber: string;
-    isPhoneNumberPublic?: boolean;
+  email: string
+  isEmailPublic?: boolean
+  password: string
+  passwordConfirmation: string
+  firstName: string
+  lastName: string
+  userName: string
+  phoneNumber: string
+  isPhoneNumberPublic?: boolean
 }
 
 export class RequestError implements IRequestError {
-    errorCodes?: string[] | undefined;
-    errors?: { [key: string]: string[]; } | undefined;
+  errorCodes?: string[] | undefined
+  errors?: { [key: string]: string[] } | undefined
 
-    constructor(data?: IRequestError) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
+  constructor(data?: IRequestError) {
+    if (data) {
+      for (var property in data) {
+        if (data.hasOwnProperty(property)) (<any>this)[property] = (<any>data)[property]
+      }
     }
+  }
 
-    init(_data?: any) {
-        if (_data) {
-            if (Array.isArray(_data["errorCodes"])) {
-                this.errorCodes = [] as any;
-                for (let item of _data["errorCodes"])
-                    this.errorCodes!.push(item);
-            }
-            if (_data["errors"]) {
-                this.errors = {} as any;
-                for (let key in _data["errors"]) {
-                    if (_data["errors"].hasOwnProperty(key))
-                        (<any>this.errors)![key] = _data["errors"][key] !== undefined ? _data["errors"][key] : [];
-                }
-            }
+  init(_data?: any) {
+    if (_data) {
+      if (Array.isArray(_data['errorCodes'])) {
+        this.errorCodes = [] as any
+        for (let item of _data['errorCodes']) this.errorCodes!.push(item)
+      }
+      if (_data['errors']) {
+        this.errors = {} as any
+        for (let key in _data['errors']) {
+          if (_data['errors'].hasOwnProperty(key))
+            (<any>this.errors)![key] =
+              _data['errors'][key] !== undefined ? _data['errors'][key] : []
         }
+      }
     }
+  }
 
-    static fromJS(data: any): RequestError {
-        data = typeof data === 'object' ? data : {};
-        let result = new RequestError();
-        result.init(data);
-        return result;
-    }
+  static fromJS(data: any): RequestError {
+    data = typeof data === 'object' ? data : {}
+    let result = new RequestError()
+    result.init(data)
+    return result
+  }
 
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        if (Array.isArray(this.errorCodes)) {
-            data["errorCodes"] = [];
-            for (let item of this.errorCodes)
-                data["errorCodes"].push(item);
-        }
-        if (this.errors) {
-            data["errors"] = {};
-            for (let key in this.errors) {
-                if (this.errors.hasOwnProperty(key))
-                    (<any>data["errors"])[key] = (<any>this.errors)[key];
-            }
-        }
-        return data;
+  toJSON(data?: any) {
+    data = typeof data === 'object' ? data : {}
+    if (Array.isArray(this.errorCodes)) {
+      data['errorCodes'] = []
+      for (let item of this.errorCodes) data['errorCodes'].push(item)
     }
+    if (this.errors) {
+      data['errors'] = {}
+      for (let key in this.errors) {
+        if (this.errors.hasOwnProperty(key)) (<any>data['errors'])[key] = (<any>this.errors)[key]
+      }
+    }
+    return data
+  }
 }
 
 export interface IRequestError {
-    errorCodes?: string[] | undefined;
-    errors?: { [key: string]: string[]; } | undefined;
+  errorCodes?: string[] | undefined
+  errors?: { [key: string]: string[] } | undefined
 }
 
 export class SearchQuery implements ISearchQuery {
-    value?: string | undefined;
-    regex?: boolean;
+  value?: string | undefined
+  regex?: boolean
 
-    constructor(data?: ISearchQuery) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
+  constructor(data?: ISearchQuery) {
+    if (data) {
+      for (var property in data) {
+        if (data.hasOwnProperty(property)) (<any>this)[property] = (<any>data)[property]
+      }
     }
+  }
 
-    init(_data?: any) {
-        if (_data) {
-            this.value = _data["value"];
-            this.regex = _data["regex"];
-        }
+  init(_data?: any) {
+    if (_data) {
+      this.value = _data['value']
+      this.regex = _data['regex']
     }
+  }
 
-    static fromJS(data: any): SearchQuery {
-        data = typeof data === 'object' ? data : {};
-        let result = new SearchQuery();
-        result.init(data);
-        return result;
-    }
+  static fromJS(data: any): SearchQuery {
+    data = typeof data === 'object' ? data : {}
+    let result = new SearchQuery()
+    result.init(data)
+    return result
+  }
 
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["value"] = this.value;
-        data["regex"] = this.regex;
-        return data;
-    }
+  toJSON(data?: any) {
+    data = typeof data === 'object' ? data : {}
+    data['value'] = this.value
+    data['regex'] = this.regex
+    return data
+  }
 }
 
 export interface ISearchQuery {
-    value?: string | undefined;
-    regex?: boolean;
+  value?: string | undefined
+  regex?: boolean
 }
 
 export class TableColumn implements ITableColumn {
-    data?: string | undefined;
-    name?: string | undefined;
-    searchable?: boolean;
-    orderable?: boolean;
-    search?: SearchQuery;
+  data?: string | undefined
+  name?: string | undefined
+  searchable?: boolean
+  orderable?: boolean
+  search?: SearchQuery
 
-    constructor(data?: ITableColumn) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
+  constructor(data?: ITableColumn) {
+    if (data) {
+      for (var property in data) {
+        if (data.hasOwnProperty(property)) (<any>this)[property] = (<any>data)[property]
+      }
     }
+  }
 
-    init(_data?: any) {
-        if (_data) {
-            this.data = _data["data"];
-            this.name = _data["name"];
-            this.searchable = _data["searchable"];
-            this.orderable = _data["orderable"];
-            this.search = _data["search"] ? SearchQuery.fromJS(_data["search"]) : <any>undefined;
-        }
+  init(_data?: any) {
+    if (_data) {
+      this.data = _data['data']
+      this.name = _data['name']
+      this.searchable = _data['searchable']
+      this.orderable = _data['orderable']
+      this.search = _data['search'] ? SearchQuery.fromJS(_data['search']) : <any>undefined
     }
+  }
 
-    static fromJS(data: any): TableColumn {
-        data = typeof data === 'object' ? data : {};
-        let result = new TableColumn();
-        result.init(data);
-        return result;
-    }
+  static fromJS(data: any): TableColumn {
+    data = typeof data === 'object' ? data : {}
+    let result = new TableColumn()
+    result.init(data)
+    return result
+  }
 
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["data"] = this.data;
-        data["name"] = this.name;
-        data["searchable"] = this.searchable;
-        data["orderable"] = this.orderable;
-        data["search"] = this.search ? this.search.toJSON() : <any>undefined;
-        return data;
-    }
+  toJSON(data?: any) {
+    data = typeof data === 'object' ? data : {}
+    data['data'] = this.data
+    data['name'] = this.name
+    data['searchable'] = this.searchable
+    data['orderable'] = this.orderable
+    data['search'] = this.search ? this.search.toJSON() : <any>undefined
+    return data
+  }
 }
 
 export interface ITableColumn {
-    data?: string | undefined;
-    name?: string | undefined;
-    searchable?: boolean;
-    orderable?: boolean;
-    search?: SearchQuery;
+  data?: string | undefined
+  name?: string | undefined
+  searchable?: boolean
+  orderable?: boolean
+  search?: SearchQuery
 }
 
 export class UserListItem implements IUserListItem {
-    id?: number;
-    firstName?: string | undefined;
-    lastName?: string | undefined;
+  id?: number
+  firstName?: string | undefined
+  lastName?: string | undefined
 
-    constructor(data?: IUserListItem) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
+  constructor(data?: IUserListItem) {
+    if (data) {
+      for (var property in data) {
+        if (data.hasOwnProperty(property)) (<any>this)[property] = (<any>data)[property]
+      }
     }
+  }
 
-    init(_data?: any) {
-        if (_data) {
-            this.id = _data["id"];
-            this.firstName = _data["firstName"];
-            this.lastName = _data["lastName"];
-        }
+  init(_data?: any) {
+    if (_data) {
+      this.id = _data['id']
+      this.firstName = _data['firstName']
+      this.lastName = _data['lastName']
     }
+  }
 
-    static fromJS(data: any): UserListItem {
-        data = typeof data === 'object' ? data : {};
-        let result = new UserListItem();
-        result.init(data);
-        return result;
-    }
+  static fromJS(data: any): UserListItem {
+    data = typeof data === 'object' ? data : {}
+    let result = new UserListItem()
+    result.init(data)
+    return result
+  }
 
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["id"] = this.id;
-        data["firstName"] = this.firstName;
-        data["lastName"] = this.lastName;
-        return data;
-    }
+  toJSON(data?: any) {
+    data = typeof data === 'object' ? data : {}
+    data['id'] = this.id
+    data['firstName'] = this.firstName
+    data['lastName'] = this.lastName
+    return data
+  }
 }
 
 export interface IUserListItem {
-    id?: number;
-    firstName?: string | undefined;
-    lastName?: string | undefined;
+  id?: number
+  firstName?: string | undefined
+  lastName?: string | undefined
 }
 
 export class UserListItemDataTableQueryResponse implements IUserListItemDataTableQueryResponse {
-    draw?: number;
-    recordsTotal?: number;
-    recordsFiltered?: number;
-    data?: UserListItem[] | undefined;
-    error?: string | undefined;
+  draw?: number
+  recordsTotal?: number
+  recordsFiltered?: number
+  data?: UserListItem[] | undefined
+  error?: string | undefined
 
-    constructor(data?: IUserListItemDataTableQueryResponse) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
+  constructor(data?: IUserListItemDataTableQueryResponse) {
+    if (data) {
+      for (var property in data) {
+        if (data.hasOwnProperty(property)) (<any>this)[property] = (<any>data)[property]
+      }
     }
+  }
 
-    init(_data?: any) {
-        if (_data) {
-            this.draw = _data["draw"];
-            this.recordsTotal = _data["recordsTotal"];
-            this.recordsFiltered = _data["recordsFiltered"];
-            if (Array.isArray(_data["data"])) {
-                this.data = [] as any;
-                for (let item of _data["data"])
-                    this.data!.push(UserListItem.fromJS(item));
-            }
-            this.error = _data["error"];
-        }
+  init(_data?: any) {
+    if (_data) {
+      this.draw = _data['draw']
+      this.recordsTotal = _data['recordsTotal']
+      this.recordsFiltered = _data['recordsFiltered']
+      if (Array.isArray(_data['data'])) {
+        this.data = [] as any
+        for (let item of _data['data']) this.data!.push(UserListItem.fromJS(item))
+      }
+      this.error = _data['error']
     }
+  }
 
-    static fromJS(data: any): UserListItemDataTableQueryResponse {
-        data = typeof data === 'object' ? data : {};
-        let result = new UserListItemDataTableQueryResponse();
-        result.init(data);
-        return result;
-    }
+  static fromJS(data: any): UserListItemDataTableQueryResponse {
+    data = typeof data === 'object' ? data : {}
+    let result = new UserListItemDataTableQueryResponse()
+    result.init(data)
+    return result
+  }
 
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["draw"] = this.draw;
-        data["recordsTotal"] = this.recordsTotal;
-        data["recordsFiltered"] = this.recordsFiltered;
-        if (Array.isArray(this.data)) {
-            data["data"] = [];
-            for (let item of this.data)
-                data["data"].push(item.toJSON());
-        }
-        data["error"] = this.error;
-        return data;
+  toJSON(data?: any) {
+    data = typeof data === 'object' ? data : {}
+    data['draw'] = this.draw
+    data['recordsTotal'] = this.recordsTotal
+    data['recordsFiltered'] = this.recordsFiltered
+    if (Array.isArray(this.data)) {
+      data['data'] = []
+      for (let item of this.data) data['data'].push(item.toJSON())
     }
+    data['error'] = this.error
+    return data
+  }
 }
 
 export interface IUserListItemDataTableQueryResponse {
-    draw?: number;
-    recordsTotal?: number;
-    recordsFiltered?: number;
-    data?: UserListItem[] | undefined;
-    error?: string | undefined;
+  draw?: number
+  recordsTotal?: number
+  recordsFiltered?: number
+  data?: UserListItem[] | undefined
+  error?: string | undefined
 }
 
 export class ApiException extends Error {
-    override message: string;
-    status: number;
-    response: string;
-    headers: { [key: string]: any; };
-    result: any;
+  override message: string
+  status: number
+  response: string
+  headers: { [key: string]: any }
+  result: any
 
-    constructor(message: string, status: number, response: string, headers: { [key: string]: any; }, result: any) {
-        super();
+  constructor(
+    message: string,
+    status: number,
+    response: string,
+    headers: { [key: string]: any },
+    result: any
+  ) {
+    super()
 
-        this.message = message;
-        this.status = status;
-        this.response = response;
-        this.headers = headers;
-        this.result = result;
-    }
+    this.message = message
+    this.status = status
+    this.response = response
+    this.headers = headers
+    this.result = result
+  }
 
-    protected isApiException = true;
+  protected isApiException = true
 
-    static isApiException(obj: any): obj is ApiException {
-        return obj.isApiException === true;
-    }
+  static isApiException(obj: any): obj is ApiException {
+    return obj.isApiException === true
+  }
 }
 
-function throwException(message: string, status: number, response: string, headers: { [key: string]: any; }, result?: any): any {
-    if (result !== null && result !== undefined)
-        throw result;
-    else
-        throw new ApiException(message, status, response, headers, null);
+function throwException(
+  message: string,
+  status: number,
+  response: string,
+  headers: { [key: string]: any },
+  result?: any
+): any {
+  if (result !== null && result !== undefined) throw result
+  else throw new ApiException(message, status, response, headers, null)
 }
 
 function isAxiosError(obj: any): obj is AxiosError {
-    return obj && obj.isAxiosError === true;
+  return obj && obj.isAxiosError === true
 }

@@ -28,7 +28,7 @@
 import { RouterLink, RouterView } from 'vue-router'
 import { ref, type Ref } from 'vue'
 import type { MenuItem } from 'primevue/menuitem'
-import { LocaleService } from './services/locale-service';
+import { LocaleService } from './services/locale-service'
 
 const ls = new LocaleService()
 
