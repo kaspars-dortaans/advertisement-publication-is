@@ -59,8 +59,9 @@ public class DbSeeder
                 LastName = "Admin",
                 Email = "admin@test.org",
                 NormalizedEmail = "ADMIN@TEST.ORG",
-                PasswordHash = "AQAAAAIAAYagAAAAEPbIfbEpyzBC101sGTPOS6fZvLQCfK85dLDZFWuCf5ngCFkILo8KI9GB3dWY4mHhNg=="//123
-
+                PasswordHash = "AQAAAAIAAYagAAAAEPbIfbEpyzBC101sGTPOS6fZvLQCfK85dLDZFWuCf5ngCFkILo8KI9GB3dWY4mHhNg==",//123
+                IsEmailPublic = true,
+                IsPhoneNumberPublic = true
             },
             u => u.Email == "admin@test.org");
 
