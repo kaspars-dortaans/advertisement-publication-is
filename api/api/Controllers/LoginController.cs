@@ -1,11 +1,11 @@
-﻿using api.Dto.Login;
+using api.Dto.Login;
 using api.Provaiders.Jwt;
 using Microsoft.AspNetCore.Mvc;
 
 namespace api.Controllers;
 
 [ApiController]
-[Route("[controller]")]
+[Route("api/[controller]/[action]")]
 public class LoginController
 {
     private readonly IJwtProvider _jwtProvider;

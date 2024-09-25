@@ -1,4 +1,4 @@
-﻿using api.Authorization;
+using api.Authorization;
 using api.Dto.Common;
 using api.Dto.DataTableQuery;
 using api.Dto.User;
@@ -7,10 +7,13 @@ using api.Helpers;
 using api.Services;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
-
 namespace api.Controllers;
 
-public class UserController : BaseController
+
+[Authorize]
+[ApiController]
+    [Route("api/[controller]/[action]")]
+public class UserController : ControllerBase
 {
     private readonly IBaseService<User> _userService;
     public UserController(IBaseService<User> userService, IMapper mapper) : base(mapper)
