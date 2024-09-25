@@ -1,7 +1,7 @@
 using api.Authorization;
 using api.Entities;
 using api.Helpers;
-using api.Provaiders.Jwt;
+using api.Authentication.Jwt;
 using api.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -14,6 +14,19 @@ using System.Reflection;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
+
+//CORS
+var corsFrontEndPolicy = "AllowFrontEndPolicy";
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(name: corsFrontEndPolicy,
+                      policy =>
+    {
+        policy.WithOrigins("https://localhost:5173", "http://localhost:5173")
+            .AllowAnyHeader()
+            .AllowAnyMethod();
+    });
+});
 
 //Authentication
 var jwtIssuer = builder.Configuration.GetSection("Jwt:Issuer").Get<string>();
@@ -101,18 +114,7 @@ builder.Services.Configure<IdentityOptions>(options =>
     // User settings.
     options.User.AllowedUserNameCharacters =
     "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";
-    options.User.RequireUniqueEmail = false;
-});
-
-builder.Services.ConfigureApplicationCookie(options =>
-{
-    // Cookie settings
-    options.Cookie.HttpOnly = true;
-    options.ExpireTimeSpan = TimeSpan.FromMinutes(5);
-
-    options.LoginPath = "/Identity/Account/Login";
-    options.AccessDeniedPath = "/Identity/Account/AccessDenied";
-    options.SlidingExpiration = true;
+    options.User.RequireUniqueEmail = true;
 });
 
 //Add Options
@@ -144,6 +146,8 @@ if (app.Environment.IsDevelopment())
     dbSeeder?.Seed();
 }
 app.UseHttpsRedirection();
+
+app.UseCors(corsFrontEndPolicy);
 
 app.UseAuthentication();
 app.UseAuthorization();
