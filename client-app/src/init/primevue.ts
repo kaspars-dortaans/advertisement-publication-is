@@ -26,6 +26,7 @@ import Panel from 'primevue/panel'
 
 //Message
 import Message from 'primevue/message'
+import Checkbox from 'primevue/checkbox'
 
 const customPassTrough = 
   {
@@ -65,6 +66,7 @@ export function initPrimeVue(app: App<Element>) {
   app.component('Button', Button)
 
   //Form
+  app.component('Checkbox', Checkbox)
   app.component('InputGroup', InputGroup)
   app.component('InputGroupAddon', InputGroupAddon)
   app.component('InputText', InputText)

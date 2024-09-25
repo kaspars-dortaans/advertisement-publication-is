@@ -2,8 +2,16 @@
     "login": "Login",
     "register": "Register",
     "dontHaveAnAccountQuestion": "Don't have an account?",
+    "alreadyHaveAnAccount": "Already have an account?",
     "email": "E-mail",
     "password": "Password",
+    "confirmPassword": "Confirm password",
+    "firstName": "First name",
+    "lastName": "Last name",
+    "username": "Username",
+    "publiclyDisplayEmail": "Publicly display e-mail",
+    "phoneNumber": "Phone number",
+    "publiclyDisplayPhoneNumber": "Publicly display phone number",
 
     "errors": {
         "Required": "This field is required",
