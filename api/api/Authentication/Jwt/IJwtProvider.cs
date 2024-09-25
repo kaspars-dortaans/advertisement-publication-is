@@ -1,4 +1,4 @@
-﻿namespace api.Provaiders.Jwt;
+﻿namespace api.Authentication.Jwt;
 
 public interface IJwtProvider
 {
