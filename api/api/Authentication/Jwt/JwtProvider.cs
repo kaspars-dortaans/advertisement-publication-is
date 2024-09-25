@@ -1,3 +1,4 @@
+﻿using api.Constants;
 using api.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
@@ -24,12 +25,12 @@ namespace api.Authentication.Jwt
             var user = await _userManager.FindByEmailAsync(email);
             if (user == null)
             {
-                throw new Exception("Invalid credentials");
+                throw new InvalidCredentialException();
             }
 
             if (!await _userManager.CheckPasswordAsync(user, password))
             {
-                throw  new Exception("Invalid credentials");
+                throw  new InvalidCredentialException();
             }
 
             var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_options.SecretKey));
