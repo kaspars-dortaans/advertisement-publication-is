@@ -36,7 +36,7 @@ const customPassTrough = {
     root: {
       class: 'flex-1'
     },
-    input: {
+    pcInput: {
       root: {
         class: 'flex-1'
       }

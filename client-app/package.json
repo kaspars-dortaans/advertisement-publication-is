@@ -18,7 +18,7 @@
     "axios": "^1.7.2",
     "nswag": "^14.0.8",
     "primeicons": "^7.0.0",
-    "primevue": "^3.53.0",
+    "primevue": "^4.0.7",
     "vee-validate": "^4.13.2",
     "vue": "^3.4.29",
     "vue-router": "^4.3.3",

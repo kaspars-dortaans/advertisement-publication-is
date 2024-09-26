@@ -1,9 +1,13 @@
 export default {
   root: ({ props, state }) => ({
     class: [
-      // Display and Position
-      'inline-flex',
       'relative',
+
+      // Flex
+      {
+        flex: props.fluid,
+        'inline-flex': !props.fluid
+      },
 
       // Shape
       'rounded-md',
@@ -76,7 +80,7 @@ export default {
       'appearance-none'
     ]
   }),
-  dropdownbutton: {
+  dropdown: {
     class: [
       // Flexbox
       'flex items-center justify-center',
@@ -93,7 +97,7 @@ export default {
       'rounded-r-md'
     ]
   },
-  panel: {
+  overlay: {
     class: [
       // Colors
       'bg-surface-0 dark:bg-surface-900',
@@ -105,19 +109,10 @@ export default {
       'shadow-md'
     ]
   },
-  wrapper: {
-    class: [
-      // Sizing
-      'max-h-[200px]',
-
-      // Misc
-      'overflow-auto'
-    ]
-  },
   list: {
-    class: 'p-1 list-none m-0'
+    class: 'flex flex-col list-none p-0 m-0 gap-[2px] min-w-full'
   },
-  item: ({ context }) => ({
+  option: ({ context }) => ({
     class: [
       //Shape
       'rounded-[4px]',
@@ -128,8 +123,9 @@ export default {
       // Colors
       {
         'text-surface-500 dark:text-white/70': !context.focused && !context.active,
-        'text-surface-500 dark:text-white/70 bg-surface-200': context.focused && !context.active,
-        'text-primary-highlight-inverse bg-primary-highlight':
+        'text-surface-500 dark:text-white/70 bg-surface-200 dark:bg-surface-600/90':
+          context.focused && !context.active,
+        'bg-highlight':
           (context.focused && context.active) ||
           context.active ||
           (!context.focused && context.active)
@@ -142,14 +138,14 @@ export default {
       // States
       {
         'hover:bg-surface-100 dark:hover:bg-[rgba(255,255,255,0.03)]': !context.active,
-        'hover:bg-primary-highlight-hover text-primary-highlight-inverse': context.active
+        'hover:bg-highlight-emphasis': context.active
       },
 
       // Disabled
       { 'opacity-60 pointer-events-none cursor-default': context.disabled }
     ]
   }),
-  content: {
+  optionContent: {
     class: [
       'relative',
       'leading-[normal]',
@@ -162,9 +158,6 @@ export default {
       'py-2',
       'px-3',
 
-      // Color
-      'text-surface-700 dark:text-white/80',
-
       // Misc
       'no-underline',
       'overflow-hidden',
@@ -172,19 +165,20 @@ export default {
       'select-none'
     ]
   },
-  groupicon: {
+  groupIcon: {
     class: [
       // Alignment
       'ml-auto'
     ]
   },
-  sublist: {
+  optionList: {
     class: [
+      'min-w-full',
+
       // Spacing
       'p-1',
       'm-0',
       'list-none',
-      'min-w-[12.5rem]',
 
       // Shape
       'shadow-none sm:shadow-md',
@@ -198,9 +192,6 @@ export default {
       // Color
       'bg-surface-0 dark:bg-surface-900'
     ]
-  },
-  separator: {
-    class: 'border-t border-surface-200 dark:border-surface-600 my-1'
   },
   transition: {
     enterFromClass: 'opacity-0 scale-y-[0.8]',
