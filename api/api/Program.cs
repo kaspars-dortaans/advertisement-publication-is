@@ -13,6 +13,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Reflection;
 using System.Text;
 using ImageMagick;
+using api.OpenApi;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -86,6 +87,12 @@ builder.Services.AddSwaggerGen(o =>
             new string[]{}
         }
     });
+
+    ////Mappings
+    o.MapType(typeof(IFormFile), () => new OpenApiSchema() { Type = "file", Format = "binary" });
+
+    ////Filters
+    o.OperationFilter<FixFromFormOperationFilter>();
 });
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
