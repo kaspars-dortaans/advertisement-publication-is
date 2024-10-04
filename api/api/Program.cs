@@ -12,6 +12,7 @@ using Microsoft.OpenApi.Models;
 using System.IdentityModel.Tokens.Jwt;
 using System.Reflection;
 using System.Text;
+using ImageMagick;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -131,6 +132,9 @@ builder.Services.AddScoped<DbSeeder>();
 
 //Automapper
 builder.Services.AddAutoMapper(Assembly.GetExecutingAssembly());
+
+//Initialize libs
+MagickNET.Initialize();
 
 var app = builder.Build();
 
