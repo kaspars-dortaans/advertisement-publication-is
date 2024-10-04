@@ -39,7 +39,7 @@ public class DbSeeder
 
         //Add all permissions to admin role
         var adminRole = _context.Roles.First(r => r.Name == "Admin");
-        var rolePermissionIds = _context.Permisssions.Select(p => p.Id).ToList();
+        var rolePermissionIds = _context.Permissions.Select(p => p.Id).ToList();
         foreach (var permissionId in rolePermissionIds)
         {
             AddIfNotExists(

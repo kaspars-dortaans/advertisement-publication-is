@@ -1,11 +1,7 @@
 ﻿namespace api.Entities;
 
-public class Image
+public class Image : File
 {
-    public int Id { get; set; }
-    public string Path { get; set; } = default!;
-    public int OwnerUserId { get; set; }
-    public int Advertisementid { get; set; }
-    public User OwnerUser { get; set; } = default!;
+    public int AdvertisementId { get; set; }
     public Advertisement Advertisement { get; set; } = default!;
 }
