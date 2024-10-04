@@ -14,6 +14,7 @@ using System.Reflection;
 using System.Text;
 using ImageMagick;
 using api.OpenApi;
+using api.Helpers.Storage;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -84,7 +85,7 @@ builder.Services.AddSwaggerGen(o =>
             {
                 Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = "Bearer" }
             },
-            new string[]{}
+            Array.Empty<string>()
         }
     });
 
@@ -127,6 +128,7 @@ builder.Services.Configure<IdentityOptions>(options =>
 
 //Add Options
 builder.Services.AddOptions<JwtProviderOptions>().Bind(builder.Configuration.GetSection("Jwt"));
+builder.Services.AddOptions<StorageOptions>().Bind(builder.Configuration.GetSection("Storage"));
 
 //Providers
 builder.Services.AddScoped<IJwtProvider, JwtProvider>();
@@ -134,10 +136,13 @@ builder.Services.AddScoped<IJwtProvider, JwtProvider>();
 //Register services here
 builder.Services.AddScoped(typeof(IBaseService<>), typeof(BaseService<>));
 
+//Helpers
+builder.Services.AddScoped(typeof(IStorage), typeof(LocalFileStorage));
+
 //Db seeding
 builder.Services.AddScoped<DbSeeder>();
 
-//Automapper
+//AutoMapper
 builder.Services.AddAutoMapper(Assembly.GetExecutingAssembly());
 
 //Initialize libs
