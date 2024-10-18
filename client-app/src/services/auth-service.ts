@@ -1,9 +1,9 @@
 import { axiosInstance } from '@/init/axios'
-import { getCLient } from '@/utils/client-builder'
-import { type LoginDto } from './api-client'
+import { getClient } from '@/utils/client-builder'
+import { LoginClient, type LoginDto } from './api-client'
 
 export class AuthService {
-  readonly client = getCLient()
+  readonly client = getClient(LoginClient)
   readonly tokenStorageKey = 'AuthToken'
   jwtToken: string | null = null
 
