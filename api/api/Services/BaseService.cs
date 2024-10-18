@@ -7,8 +7,11 @@ namespace api.Services;
 public class BaseService<Entity> : IBaseService<Entity> where Entity : class
 {
     protected DbSet<Entity> DbSet { get; set; }
+    protected Context _dbContext { get; set; }
 
-    public BaseService(Context context) {
+    public BaseService(Context context)
+    {
+        _dbContext = context;
         DbSet = context.Set<Entity>();
     }
 
@@ -33,7 +36,20 @@ public class BaseService<Entity> : IBaseService<Entity> where Entity : class
     }
 
     public async Task<bool> ExistsAsync(Expression<Func<Entity, bool>> predicate)
-    {return await DbSet.AnyAsync(predicate);
+    {
+        return await DbSet.AnyAsync(predicate);
+    }
+    public async Task<Entity> AddAsync(Entity entity)
+    {
+        var entityEntry = DbSet.Add(entity);
+        await _dbContext.SaveChangesAsync();
+        return entityEntry.Entity;
+    }
 
+    public async Task<Entity> UpdateAsync(Entity entity)
+    {
+        var entityEntry = DbSet.Update(entity);
+        await _dbContext.SaveChangesAsync();
+        return entityEntry.Entity;
     }
 }

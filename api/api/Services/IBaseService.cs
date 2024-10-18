@@ -9,4 +9,6 @@ public interface IBaseService<Entity> where Entity : class
     public IQueryable<Entity> GetAll();
     public bool Exists(Expression<Func<Entity, bool>> predicate);
     public Task<bool> ExistsAsync(Expression<Func<Entity, bool>> predicate);
+    public Task<Entity> AddAsync(Entity entity);
+    public Task<Entity> UpdateAsync(Entity entity);
 }
