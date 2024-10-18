@@ -36,5 +36,9 @@ public class Context : IdentityDbContext<User, Role, int>
             .HasForeignKey(ur => ur.RoleId)
             .IsRequired();
 
+        modelBuilder.Entity<User>()
+            .HasOne(user => user.ProfileImageFile)
+            .WithOne(file => file.OwnerUser)
+            .HasForeignKey<File>(file => file.OwnerUserId);
     }
 }
