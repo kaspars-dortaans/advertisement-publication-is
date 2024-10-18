@@ -1,8 +1,12 @@
+using api.Authentication.Jwt;
 using api.Authorization;
 using api.Entities;
 using api.Helpers;
-using api.Authentication.Jwt;
+using api.Helpers.FilePathResolver;
+using api.Helpers.Storage;
+using api.OpenApi;
 using api.Services;
+using ImageMagick;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -12,9 +16,6 @@ using Microsoft.OpenApi.Models;
 using System.IdentityModel.Tokens.Jwt;
 using System.Reflection;
 using System.Text;
-using ImageMagick;
-using api.OpenApi;
-using api.Helpers.Storage;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -135,9 +136,11 @@ builder.Services.AddScoped<IJwtProvider, JwtProvider>();
 
 //Register services here
 builder.Services.AddScoped(typeof(IBaseService<>), typeof(BaseService<>));
+builder.Services.AddScoped<IUserService, UserService>();
 
 //Helpers
 builder.Services.AddScoped(typeof(IStorage), typeof(LocalFileStorage));
+builder.Services.AddScoped(typeof(IFilePathResolver), typeof(FilePathResolver));
 
 //Db seeding
 builder.Services.AddScoped<DbSeeder>();

@@ -33,4 +33,9 @@ public class RegisterDto
     public string PhoneNumber { get; set; } = default!;
 
     public bool IsPhoneNumberPublic { get; set; }
+
+    [MaxFileSize(ProfileImageConstants.MaxFileSizeInBytes)]
+    [AllowedFileTypes(ProfileImageConstants.AllowedFileTypes)]
+    [AllowedImageAspectRatio(ProfileImageConstants.AllowedAspectRatio)]
+    public IFormFile? ProfileImage { get; set; }
 }
