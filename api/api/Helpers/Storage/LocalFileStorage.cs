@@ -23,9 +23,10 @@ public class LocalFileStorage : IStorage
 
     public async Task PutFile(string path, Stream fileStream)
     {
-        EnsureDirectoryExists(_storageOptions.Value.LocalFolderPath);
+        var fullPath = FullPath(path);
+        EnsureDirectoryExists(fullPath);
 
-        var newFile = File.Open(FullPath(path), FileMode.Create);
+        var newFile = File.Open(fullPath, FileMode.Create);
         try
         {
             await fileStream.CopyToAsync(newFile);
@@ -45,9 +46,16 @@ public class LocalFileStorage : IStorage
 
     public void EnsureDirectoryExists(string path)
     {
-        if (!Directory.Exists(path))
+        var directoryPath = Path.GetDirectoryName(path);
+        if (directoryPath is null)
         {
-            Directory.CreateDirectory(path);
+            //No directory in provided path, return
+            return;
+        }
+
+        if (!Directory.Exists(directoryPath))
+        {
+            Directory.CreateDirectory(directoryPath);
         }
     }
 }
