@@ -3,6 +3,7 @@ using api.Authentication.Jwt;
 using api.Constants;
 using api.Dto;
 using api.Dto.Login;
+using api.Helpers;
 using Microsoft.AspNetCore.Mvc;
 
 namespace api.Controllers;
@@ -19,21 +20,18 @@ public class LoginController
     }
 
     [HttpPost]
-    [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(RequestError), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(RequestResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(RequestResponse), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Authenticate(LoginDto request)
     {
         try
         {
             var token = await _jwtProvider.GetJwtToken(request.Email, request.Password);
-            return new OkObjectResult(token);
-        } catch (InvalidCredentialException)
+            return new RequestResponse(token).ToObjectResult();
+        } catch (Exception e)
         {
-            var error = new RequestError(CustomErrorCodes.InvalidLoginCredentials);
-            return new BadRequestObjectResult(error);
-        } catch (Exception)
-        {
-            return new BadRequestResult();
+            var errorCode = e is InvalidCredentialException ? CustomErrorCodes.InvalidLoginCredentials : e.Message;
+            return new RequestResponse(new List<string> { errorCode }, new Dictionary<string, IList<string>>()).ToObjectResult();
         }
     }
 }
