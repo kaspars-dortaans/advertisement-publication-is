@@ -78,7 +78,7 @@ export class LoginClient {
             const _responseText = response.data;
             let result400: any = null;
             let resultData400  = _responseText;
-            result400 = RequestError.fromJS(resultData400);
+            result400 = RequestExceptionResponse.fromJS(resultData400);
             return throwException("Bad Request", status, _responseText, _headers, result400);
 
         } else if (status !== 200 && status !== 204) {
@@ -259,7 +259,7 @@ export class UserClient {
             const _responseText = response.data;
             let result400: any = null;
             let resultData400  = _responseText;
-            result400 = RequestError.fromJS(resultData400);
+            result400 = RequestExceptionResponse.fromJS(resultData400);
             return throwException("Bad Request", status, _responseText, _headers, result400);
 
         } else if (status !== 200 && status !== 204) {
@@ -530,11 +530,18 @@ export interface IRegisterDto {
     profileImage?: any | undefined;
 }
 
-export class RequestError implements IRequestError {
-    errorCodes?: string[] | undefined;
+export class RequestExceptionResponse implements IRequestExceptionResponse {
+    type?: string | undefined;
+    title?: string | undefined;
+    status?: number | undefined;
+    detail?: string | undefined;
+    instance?: string | undefined;
     errors?: { [key: string]: string[]; } | undefined;
+    errorCodes?: string[] | undefined;
 
-    constructor(data?: IRequestError) {
+    [key: string]: any;
+
+    constructor(data?: IRequestExceptionResponse) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
@@ -545,11 +552,15 @@ export class RequestError implements IRequestError {
 
     init(_data?: any) {
         if (_data) {
-            if (Array.isArray(_data["errorCodes"])) {
-                this.errorCodes = [] as any;
-                for (let item of _data["errorCodes"])
-                    this.errorCodes!.push(item);
+            for (var property in _data) {
+                if (_data.hasOwnProperty(property))
+                    this[property] = _data[property];
             }
+            this.type = _data["type"];
+            this.title = _data["title"];
+            this.status = _data["status"];
+            this.detail = _data["detail"];
+            this.instance = _data["instance"];
             if (_data["errors"]) {
                 this.errors = {} as any;
                 for (let key in _data["errors"]) {
@@ -557,23 +568,32 @@ export class RequestError implements IRequestError {
                         (<any>this.errors)![key] = _data["errors"][key] !== undefined ? _data["errors"][key] : [];
                 }
             }
+            if (Array.isArray(_data["errorCodes"])) {
+                this.errorCodes = [] as any;
+                for (let item of _data["errorCodes"])
+                    this.errorCodes!.push(item);
+            }
         }
     }
 
-    static fromJS(data: any): RequestError {
+    static fromJS(data: any): RequestExceptionResponse {
         data = typeof data === 'object' ? data : {};
-        let result = new RequestError();
+        let result = new RequestExceptionResponse();
         result.init(data);
         return result;
     }
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        if (Array.isArray(this.errorCodes)) {
-            data["errorCodes"] = [];
-            for (let item of this.errorCodes)
-                data["errorCodes"].push(item);
+        for (var property in this) {
+            if (this.hasOwnProperty(property))
+                data[property] = this[property];
         }
+        data["type"] = this.type;
+        data["title"] = this.title;
+        data["status"] = this.status;
+        data["detail"] = this.detail;
+        data["instance"] = this.instance;
         if (this.errors) {
             data["errors"] = {};
             for (let key in this.errors) {
@@ -581,13 +601,25 @@ export class RequestError implements IRequestError {
                     (<any>data["errors"])[key] = (<any>this.errors)[key];
             }
         }
+        if (Array.isArray(this.errorCodes)) {
+            data["errorCodes"] = [];
+            for (let item of this.errorCodes)
+                data["errorCodes"].push(item);
+        }
         return data;
     }
 }
 
-export interface IRequestError {
-    errorCodes?: string[] | undefined;
+export interface IRequestExceptionResponse {
+    type?: string | undefined;
+    title?: string | undefined;
+    status?: number | undefined;
+    detail?: string | undefined;
+    instance?: string | undefined;
     errors?: { [key: string]: string[]; } | undefined;
+    errorCodes?: string[] | undefined;
+
+    [key: string]: any;
 }
 
 export class SearchQuery implements ISearchQuery {

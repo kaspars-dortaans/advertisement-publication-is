@@ -37,7 +37,7 @@ export class AuthService {
   }
 
   async login(loginDto: LoginDto) {
-    this.updateToken(await this.client.authenticate(loginDto))
+    this.updateToken((await this.client.authenticate(loginDto)))
   }
 
   logout() {
