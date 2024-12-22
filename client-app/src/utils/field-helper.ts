@@ -1,4 +1,4 @@
-import { RequestError } from '@/services/api-client'
+import { RequestExceptionResponse } from '@/services/api-client'
 import type {
   BaseFieldProps,
   FormContext,
@@ -109,10 +109,11 @@ export class FieldHelper<TValues extends GenericObject> {
         this.defineField(field)
       }
     }
+    return this.fields;
   }
 
   handleErrors(errorObj: unknown) {
-    if (!(errorObj instanceof RequestError)) {
+    if (!(errorObj instanceof RequestExceptionResponse)) {
       throw errorObj
     }
 

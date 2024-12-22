@@ -12,6 +12,12 @@
   "publiclyDisplayEmail": "Publicly display e-mail",
   "phoneNumber": "Phone number",
   "publiclyDisplayPhoneNumber": "Publicly display phone number",
+  "choose": "Choose",
+  "cancel": "Cancel",
+  "upload": "Upload",
+  "accept": "Accpet",
+  "edit": "Edit",
+  "dragAndDropToUpload": "Drag and drop here to upload",
 
   "errors": {
     "Required": "This field is required",
@@ -23,6 +29,7 @@
     "PasswordRequiresNonAlphanumeric": "Password requires symbols which are not number or letters",
     "PasswordRequiresLower": "Password requires to contain lower case letters",
     "PasswordRequiresUpper": "Password requires upper case letters",
-    "ComparablePropertyDidNotMatch": "This field did not match {comparableFieldName} field"
+    "ComparablePropertyDidNotMatch": "This field did not match {comparableFieldName} field",
+    "DuplicateEmail": "This email is already taken"
   }
 }

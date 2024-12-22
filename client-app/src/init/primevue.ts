@@ -31,6 +31,9 @@ import Panel from 'primevue/panel'
 import Message from 'primevue/message'
 import Checkbox from 'primevue/checkbox'
 
+//Media
+import Image from 'primevue/image'
+
 const customPassTrough = {
   password: {
     root: {
@@ -81,4 +84,7 @@ export function initPrimeVue(app: App<Element>) {
 
   //Message
   app.component('Message', Message)
+
+  //Media
+  app.component("Image", Image)
 }

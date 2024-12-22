@@ -5,7 +5,7 @@
         <span class="text-2xl">{{ ls.l('register') }}</span>
       </template>
       <form class="flex flex-col gap-3 items-center bg-white" @submit="onSubmit">
-        <div class="flex gap-5">
+        <div class="flex gap-5 items-center">
           <div class="flex flex-col gap-2 min-w-80">
             <Message v-if="fieldHelper.hasFormErrors.value" severity="error">{{
               fieldHelper.formErrors
@@ -13,6 +13,7 @@
 
             <InputText
               v-model="fields.firstName!.value"
+              v-bind="fields.firstName?.attributes"
               :placeholder="ls.l('firstName')"
               :invalid="fields.firstName!.hasError"
             />
@@ -20,6 +21,7 @@
 
             <InputText
               v-model="fields.lastName!.value"
+              v-bind="fields.lastName?.attributes"
               :placeholder="ls.l('lastName')"
               :invalid="fields.lastName!.hasError"
             />
@@ -27,6 +29,7 @@
 
             <InputText
               v-model="fields.userName!.value"
+              v-bind="fields.userName?.attributes"
               :placeholder="ls.l('username')"
               :invalid="fields.userName!.hasError"
             />
@@ -43,6 +46,7 @@
             <div class="flex items-center">
               <Checkbox
                 v-model="fields.isEmailPublic!.value"
+                v-bind="fields.isEmailPublic?.attributes"
                 :invalid="fields.isEmailPublic!.hasError"
                 :binary="true"
                 inputId="register.isEmailPublic"
@@ -55,6 +59,7 @@
 
             <InputText
               v-model="fields.phoneNumber!.value"
+              v-bind="fields.phoneNumber?.attributes"
               :placeholder="ls.l('phoneNumber')"
               :invalid="fields.phoneNumber!.hasError"
             />
@@ -63,6 +68,7 @@
             <div class="flex items-center">
               <Checkbox
                 v-model="fields.isPhoneNumberPublic!.value"
+                v-bind="fields.isPhoneNumberPublic?.attributes"
                 :invalid="!!fields.isPhoneNumberPublic!.hasError"
                 :binary="true"
                 inputId="register.isPhonePublic"
@@ -75,6 +81,7 @@
 
             <Password
               v-model="fields.password!.value"
+              v-bind="fields.password?.attributes"
               :placeholder="ls.l('password')"
               :invalid="fields.password!.hasError"
             />
@@ -82,6 +89,7 @@
 
             <Password
               v-model="fields.passwordConfirmation!.value"
+              v-bind="fields.passwordConfirmation?.attributes"
               :placeholder="ls.l('confirmPassword')"
               :feedback="false"
               :invalid="fields.passwordConfirmation!.hasError"
@@ -89,7 +97,12 @@
             <FieldError :field="fields.passwordConfirmation" />
           </div>
 
-          <div>TODO: Profile picture input</div>
+          <ImageUpload
+            v-model="fields.profileImage!.value"
+            v-bind="fields.profileImage?.attributes"
+            :invalid="fields.profileImage?.hasError"
+          />
+          <FieldError :field="fields.profileImage" />
         </div>
 
         <Button type="submit" :label="ls.l('register')" />
@@ -104,22 +117,22 @@
 
 <script setup lang="ts">
 import FieldError from '@/components/FieldError.vue'
-import { RegisterDto, type IRegisterDto } from '@/services/api-client'
+import ImageUpload from '@/components/ImageUpload.vue'
+import { UserClient, type FileParameter, type IRegisterDto } from '@/services/api-client'
 import { LocaleService } from '@/services/locale-service'
-import { getCLient } from '@/utils/client-builder'
+import { getClient } from '@/utils/client-builder'
 import { FieldHelper } from '@/utils/field-helper'
 import { useForm } from 'vee-validate'
 import { useRouter } from 'vue-router'
 
-const api = getCLient()
+const api = getClient(UserClient)
 const ls = new LocaleService()
 const router = useRouter()
 
+// Form and fields
 const form = useForm<IRegisterDto>()
 const fieldHelper = new FieldHelper<IRegisterDto>(form)
-const { values, handleSubmit, validate } = form
-
-fieldHelper.defineMultipleFields([
+const fields = fieldHelper.defineMultipleFields([
   'firstName',
   'lastName',
   'userName',
@@ -128,16 +141,40 @@ fieldHelper.defineMultipleFields([
   'phoneNumber',
   'isPhoneNumberPublic',
   'password',
-  'passwordConfirmation'
+  'passwordConfirmation',
+  'profileImage'
 ])
-const fields = fieldHelper.fields
+const { values, handleSubmit, validate, setValues } = form
+
+setValues({
+  isEmailPublic: false,
+  isPhoneNumberPublic: false
+})
 
 const onSubmit = handleSubmit(async () => {
   fieldHelper.clearErrors()
   await validate()
-  const registerDto = new RegisterDto(values)
+
   try {
-    await api.register(registerDto)
+    const profileImage = values.profileImage
+      ? ({
+          data: values.profileImage,
+          fileName: (values.profileImage as File).name
+        } as FileParameter)
+      : undefined
+
+    await api.register(
+      values.email,
+      values.isEmailPublic,
+      values.password,
+      values.passwordConfirmation,
+      values.firstName,
+      values.lastName,
+      values.userName,
+      values.phoneNumber,
+      values.isPhoneNumberPublic,
+      profileImage
+    )
     router.push({ name: 'login' })
   } catch (error) {
     fieldHelper.handleErrors(error)
