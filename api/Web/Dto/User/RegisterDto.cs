@@ -1,6 +1,6 @@
 ﻿using BusinessLogic.Constants;
-using Web.Validators;
 using System.ComponentModel.DataAnnotations;
+using Web.Validators;
 
 namespace Web.Dto.User;
 

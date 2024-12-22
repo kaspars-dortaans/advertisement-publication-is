@@ -171,7 +171,7 @@ export class UserClient {
      * @param profileImage (optional) 
      * @return Success
      */
-    register(email: string | undefined, isEmailPublic: boolean | undefined, password: string | undefined, passwordConfirmation: string | undefined, firstName: string | undefined, lastName: string | undefined, userName: string | undefined, phoneNumber: string | undefined, isPhoneNumberPublic: boolean | undefined, profileImage: FileParameter | undefined, cancelToken?: CancelToken): Promise<OkResult> {
+    register(email: string | undefined, isEmailPublic: boolean | undefined, password: string | undefined, passwordConfirmation: string | undefined, firstName: string | undefined, lastName: string | undefined, userName: string | undefined, phoneNumber: string | undefined, isPhoneNumberPublic: boolean | undefined, profileImage: FileParameter | null | undefined, cancelToken?: CancelToken): Promise<OkResult> {
         let url_ = this.baseUrl + "/api/User/Register";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -179,43 +179,41 @@ export class UserClient {
         if (email === null || email === undefined)
             throw new Error("The parameter 'email' cannot be null.");
         else
-            content_.append("Email", email.toString());
+            content_.append("email", email.toString());
         if (isEmailPublic === null || isEmailPublic === undefined)
             throw new Error("The parameter 'isEmailPublic' cannot be null.");
         else
-            content_.append("IsEmailPublic", isEmailPublic.toString());
+            content_.append("isEmailPublic", isEmailPublic.toString());
         if (password === null || password === undefined)
             throw new Error("The parameter 'password' cannot be null.");
         else
-            content_.append("Password", password.toString());
+            content_.append("password", password.toString());
         if (passwordConfirmation === null || passwordConfirmation === undefined)
             throw new Error("The parameter 'passwordConfirmation' cannot be null.");
         else
-            content_.append("PasswordConfirmation", passwordConfirmation.toString());
+            content_.append("passwordConfirmation", passwordConfirmation.toString());
         if (firstName === null || firstName === undefined)
             throw new Error("The parameter 'firstName' cannot be null.");
         else
-            content_.append("FirstName", firstName.toString());
+            content_.append("firstName", firstName.toString());
         if (lastName === null || lastName === undefined)
             throw new Error("The parameter 'lastName' cannot be null.");
         else
-            content_.append("LastName", lastName.toString());
+            content_.append("lastName", lastName.toString());
         if (userName === null || userName === undefined)
             throw new Error("The parameter 'userName' cannot be null.");
         else
-            content_.append("UserName", userName.toString());
+            content_.append("userName", userName.toString());
         if (phoneNumber === null || phoneNumber === undefined)
             throw new Error("The parameter 'phoneNumber' cannot be null.");
         else
-            content_.append("PhoneNumber", phoneNumber.toString());
+            content_.append("phoneNumber", phoneNumber.toString());
         if (isPhoneNumberPublic === null || isPhoneNumberPublic === undefined)
             throw new Error("The parameter 'isPhoneNumberPublic' cannot be null.");
         else
-            content_.append("IsPhoneNumberPublic", isPhoneNumberPublic.toString());
-        if (profileImage === null || profileImage === undefined)
-            throw new Error("The parameter 'profileImage' cannot be null.");
-        else
-            content_.append("ProfileImage", profileImage.data, profileImage.fileName ? profileImage.fileName : "ProfileImage");
+            content_.append("isPhoneNumberPublic", isPhoneNumberPublic.toString());
+        if (profileImage !== null && profileImage !== undefined)
+            content_.append("profileImage", profileImage.data, profileImage.fileName ? profileImage.fileName : "profileImage");
 
         let options_: AxiosRequestConfig = {
             data: content_,
