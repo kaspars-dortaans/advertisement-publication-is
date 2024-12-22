@@ -1,1 +1,1 @@
-../node_modules/.bin/nswag run /runtime:net60
+../node_modules/.bin/nswag run /runtime:net80
