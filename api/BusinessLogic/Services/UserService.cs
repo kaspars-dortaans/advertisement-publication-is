@@ -1,6 +1,6 @@
 ﻿using BusinessLogic.Constants;
-using BusinessLogic.Dto;
 using BusinessLogic.Entities;
+using BusinessLogic.Exceptions;
 using BusinessLogic.Helpers.FilePathResolver;
 using BusinessLogic.Helpers.Storage;
 using Microsoft.AspNetCore.Http;
@@ -23,19 +23,17 @@ public class UserService(
     /// </summary>
     /// <param name="registerDto"></param>
     /// <returns></returns>
-    public async Task<RequestResponse> Register(User user, string password, IFormFile? profileImage)
+    public async Task Register(User user, string password, IFormFile? profileImage)
     {
         var createResult = await _userManager.CreateAsync(user, password);
 
         //Handle user creation errors
-        var response = HandleCreateUserResult(createResult);
-        if (!response.Successful || profileImage is null)
+        HandleCreateUserResult(createResult);
+        if (profileImage is not null)
         {
-            return response;
+            //Save ProfileImage
+            await SaveProfileImage(user.Email!, profileImage);
         }
-
-        //Save ProfileImage
-        return await SaveProfileImage(user.Email!, profileImage);
     }
 
     /// <summary>
@@ -43,29 +41,29 @@ public class UserService(
     /// </summary>
     /// <param name="createResult"></param>
     /// <returns></returns>
-    private static RequestResponse HandleCreateUserResult(IdentityResult createResult)
+    private static void HandleCreateUserResult(IdentityResult createResult)
     {
-        var response = new RequestResponse();
         if (!createResult.Succeeded)
         {
+            var apiException = new ApiException();
             foreach (var error in createResult.Errors)
             {
                 if (error.Code.StartsWith("Password"))
                 {
-                    response.AddError("Password", error.Code);
+                    apiException.AddValidationError("Password", error.Code);
                 } else if (error.Code.EndsWith("Email"))
                 {
-                    response.AddError("Email", error.Code);
+                    apiException.AddValidationError("Email", error.Code);
                 } else if (error.Code.EndsWith("UserName"))
                 {
-                    response.AddError("UserName", error.Code);
+                    apiException.AddValidationError("UserName", error.Code);
                 } else
                 {
-                    response.AddErrorCode(error.Code);
+                    apiException.AddErrorCode(error.Code);
                 }
             }
+            throw apiException;
         }
-        return response;
     }
 
     /// <summary>
@@ -75,16 +73,13 @@ public class UserService(
     /// <param name="userEmail"></param>
     /// <param name="profileImage"></param>
     /// <returns></returns>
-    public async Task<RequestResponse> SaveProfileImage(string userEmail, IFormFile profileImage)
+    public async Task SaveProfileImage(string userEmail, IFormFile profileImage)
     {
-        var response = new RequestResponse();
-
         //Get created user
         var user = await _userManager.FindByEmailAsync(userEmail);
         if (user is null)
         {
-            response.AddErrorCode(CustomErrorCodes.UserNotFound);
-            return response;
+            throw new ApiException([CustomErrorCodes.UserNotFound]);
         }
 
         //Add file entity
@@ -102,7 +97,5 @@ public class UserService(
         //Save file data in storage
         var fileReadStream = profileImage.OpenReadStream();
         await _storage.PutFile(filePath, fileReadStream);
-
-        return response;
     }
 }

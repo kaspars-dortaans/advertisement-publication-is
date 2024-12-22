@@ -14,21 +14,14 @@ namespace Web.Controllers;
 [Authorize]
 [ApiController]
 [Route("api/[controller]/[action]")]
-public class UserController : ControllerBase
+public class UserController(
+    IBaseService<User> userBaseService,
+    IUserService userService,
+    IMapper mapper) : ControllerBase
 {
-    private readonly IBaseService<User> _userBaseService;
-    private readonly IUserService _userService;
-    private readonly IMapper _mapper;
-
-    public UserController(
-        IBaseService<User> userBaseService,
-        IUserService userService,
-        IMapper mapper)
-    {
-        _userBaseService = userBaseService;
-        _userService = userService;
-        _mapper = mapper;
-    }
+    private readonly IBaseService<User> _userBaseService = userBaseService;
+    private readonly IUserService _userService = userService;
+    private readonly IMapper _mapper = mapper;
 
     [HasPermission(BusinessLogic.Authorization.Permission.ViewUsers)]
     [HttpPost]
@@ -42,12 +35,13 @@ public class UserController : ControllerBase
     }
 
     [AllowAnonymous]
-    [ProducesResponseType(typeof(RequestResponse), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(RequestResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(OkResult), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(RequestExceptionResponse), StatusCodes.Status400BadRequest)]
     [HttpPost]
     public async Task<IActionResult> Register([FromForm] RegisterDto registerDto)
     {
         var user = _mapper.Map(registerDto, new User());
-        return (await _userService.Register(user, registerDto.Password, registerDto.ProfileImage)).ToObjectResult();
+        await _userService.Register(user, registerDto.Password, registerDto.ProfileImage);
+        return Ok();
     }
 }

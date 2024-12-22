@@ -4,15 +4,10 @@ namespace Web.Controllers
 {
     [ApiController]
     [Route("api/[controller]/[action]")]
-    public class AdvertisementController : ControllerBase
+    public class AdvertisementController(ILogger<AdvertisementController> logger) : ControllerBase
     {
 
-        private readonly ILogger<AdvertisementController> _logger;
-
-        public AdvertisementController(ILogger<AdvertisementController> logger)
-        {
-            _logger = logger;
-        }
+        private readonly ILogger<AdvertisementController> _logger = logger;
 
         //[HttpGet]
         //public IEnumerable<WeatherForecast> Get()

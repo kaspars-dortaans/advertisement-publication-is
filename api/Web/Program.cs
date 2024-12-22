@@ -12,9 +12,9 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using System.IdentityModel.Tokens.Jwt;
 using System.Reflection;
 using System.Text;
+using Web.Filters;
 using Web.OpenApi;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -64,7 +64,11 @@ builder.Services.AddAuthorization(o =>
 builder.Services.AddSingleton<IAuthorizationHandler, PermissionAuthorizationHandler>();
 builder.Services.AddSingleton<IAuthorizationPolicyProvider, PermissionAuthorizationPolicyProvider>();
 
-builder.Services.AddControllers();
+builder.Services.AddControllers(options =>
+{
+    //Add request filters
+    options.Filters.Add<ApiExceptionFilter>();
+});
 
 // Add OpenApi
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -143,8 +147,8 @@ builder.Services.AddScoped(typeof(IBaseService<>), typeof(BaseService<>));
 builder.Services.AddScoped<IUserService, UserService>();
 
 //Helpers
-builder.Services.AddScoped(typeof(IStorage), typeof(LocalFileStorage));
-builder.Services.AddScoped(typeof(IFilePathResolver), typeof(FilePathResolver));
+builder.Services.AddScoped<IStorage, LocalFileStorage>();
+builder.Services.AddScoped<IFilePathResolver, FilePathResolver>();
 
 //Db seeding
 builder.Services.AddScoped<DbSeeder>();

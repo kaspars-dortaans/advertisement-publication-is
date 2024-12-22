@@ -2,7 +2,7 @@
 using BusinessLogic.Authentication.Jwt;
 using BusinessLogic.Constants;
 using BusinessLogic.Dto;
-using BusinessLogic.Helpers;
+using BusinessLogic.Exceptions;
 using Microsoft.AspNetCore.Mvc;
 using Web.Dto.Login;
 
@@ -15,18 +15,17 @@ public class LoginController(IJwtProvider jwtProvider)
     private readonly IJwtProvider _jwtProvider = jwtProvider;
 
     [HttpPost]
-    [ProducesResponseType(typeof(RequestResponse), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(RequestResponse), StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> Authenticate(LoginDto request)
+    [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(RequestExceptionResponse), StatusCodes.Status400BadRequest)]
+    public async Task<string> Authenticate(LoginDto request)
     {
         try
         {
             var token = await _jwtProvider.GetJwtToken(request.Email, request.Password);
-            return new RequestResponse(token).ToObjectResult();
-        } catch (Exception e)
+            return token;
+        } catch (InvalidCredentialException)
         {
-            var errorCode = e is InvalidCredentialException ? CustomErrorCodes.InvalidLoginCredentials : e.Message;
-            return new RequestResponse(new List<string> { errorCode }, new Dictionary<string, IList<string>>()).ToObjectResult();
+            throw new ApiException([CustomErrorCodes.InvalidLoginCredentials]);
         }
     }
 }
