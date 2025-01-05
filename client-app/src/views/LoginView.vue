@@ -2,7 +2,7 @@
   <div class="flex items-center justify-center flex-1 bg-primary">
     <Panel>
       <template #header>
-        <span class="text-2xl">{{ ls.l('login') }}</span>
+        <span class="text-2xl">{{ ls.l('navigation.login') }}</span>
       </template>
       <form class="flex-none flex flex-col items-center gap-2 min-w-80 bg-white" @submit="tryLogin">
         <Message v-if="fieldHelper.formErrors.value" severity="error">{{
@@ -16,7 +16,7 @@
           <InputText
             v-model="fields.email!.value"
             v-bind="fields.email?.attributes"
-            :placeholder="ls.l('email')"
+            :placeholder="ls.l('form.email')"
             :invalid="fields.email?.hasError"
           />
         </InputGroup>
@@ -29,18 +29,18 @@
           <Password
             v-model="fields.password!.value"
             v-bind="fields.password?.attributes"
-            :placeholder="ls.l('password')"
+            :placeholder="ls.l('form.password')"
             :feedback="false"
             :invalid="fields.email?.hasError"
           />
         </InputGroup>
         <FieldError :field="fields.password" />
 
-        <Button class="mt-1" :label="ls.l('login')" @click="tryLogin" />
+        <Button class="mt-1" :label="ls.l('navigation.login')" @click="tryLogin" />
         <p>
-          <span>{{ ls.l('dontHaveAnAccountQuestion') }}</span>
+          <span>{{ ls.l('form.dontHaveAnAccountQuestion') }}</span>
           <RouterLink class="ml-1 link" :to="{ name: 'register' }">{{
-            ls.l('register')
+            ls.l('navigation.register')
           }}</RouterLink>
         </p>
       </form>

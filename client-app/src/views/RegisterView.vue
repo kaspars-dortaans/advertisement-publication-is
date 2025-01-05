@@ -2,7 +2,7 @@
   <div class="flex items-center justify-center flex-1 bg-primary">
     <Panel>
       <template #header>
-        <span class="text-2xl">{{ ls.l('register') }}</span>
+        <span class="text-2xl">{{ ls.l('navigation.register') }}</span>
       </template>
       <form class="flex flex-col gap-3 items-center bg-white" @submit="onSubmit">
         <div class="flex gap-5 items-center">
@@ -14,7 +14,7 @@
             <InputText
               v-model="fields.firstName!.value"
               v-bind="fields.firstName?.attributes"
-              :placeholder="ls.l('firstName')"
+              :placeholder="ls.l('form.firstName')"
               :invalid="fields.firstName!.hasError"
             />
             <FieldError :field="fields.firstName" />
@@ -22,7 +22,7 @@
             <InputText
               v-model="fields.lastName!.value"
               v-bind="fields.lastName?.attributes"
-              :placeholder="ls.l('lastName')"
+              :placeholder="ls.l('form.lastName')"
               :invalid="fields.lastName!.hasError"
             />
             <FieldError :field="fields.lastName" />
@@ -30,7 +30,7 @@
             <InputText
               v-model="fields.userName!.value"
               v-bind="fields.userName?.attributes"
-              :placeholder="ls.l('username')"
+              :placeholder="ls.l('form.username')"
               :invalid="fields.userName!.hasError"
             />
             <FieldError :field="fields.userName" />
@@ -38,7 +38,7 @@
             <InputText
               v-model="fields.email!.value"
               v-bind="fields.email!.attributes"
-              :placeholder="ls.l('email')"
+              :placeholder="ls.l('form.email')"
               :invalid="fields.email!.hasError"
             />
             <FieldError :field="fields.email" />
@@ -52,7 +52,7 @@
                 inputId="register.isEmailPublic"
               />
               <label class="ml-2" for="register.isEmailPublic">{{
-                ls.l('publiclyDisplayEmail')
+                ls.l('form.publiclyDisplayEmail')
               }}</label>
             </div>
             <FieldError :field="fields.isEmailPublic" />
@@ -60,7 +60,7 @@
             <InputText
               v-model="fields.phoneNumber!.value"
               v-bind="fields.phoneNumber?.attributes"
-              :placeholder="ls.l('phoneNumber')"
+              :placeholder="ls.l('form.phoneNumber')"
               :invalid="fields.phoneNumber!.hasError"
             />
             <FieldError :field="fields.phoneNumber" />
@@ -74,7 +74,7 @@
                 inputId="register.isPhonePublic"
               />
               <label class="ml-2" for="register.isPhonePublic">{{
-                ls.l('publiclyDisplayPhoneNumber')
+                ls.l('form.publiclyDisplayPhoneNumber')
               }}</label>
             </div>
             <FieldError :field="fields.isPhoneNumberPublic" />
@@ -82,7 +82,7 @@
             <Password
               v-model="fields.password!.value"
               v-bind="fields.password?.attributes"
-              :placeholder="ls.l('password')"
+              :placeholder="ls.l('form.password')"
               :invalid="fields.password!.hasError"
             />
             <FieldError :field="fields.password" />
@@ -90,7 +90,7 @@
             <Password
               v-model="fields.passwordConfirmation!.value"
               v-bind="fields.passwordConfirmation?.attributes"
-              :placeholder="ls.l('confirmPassword')"
+              :placeholder="ls.l('form.confirmPassword')"
               :feedback="false"
               :invalid="fields.passwordConfirmation!.hasError"
             />
@@ -105,10 +105,12 @@
           <FieldError :field="fields.profileImage" />
         </div>
 
-        <Button type="submit" :label="ls.l('register')" />
+        <Button type="submit" :label="ls.l('navigation.register')" />
         <p>
-          <span>{{ ls.l('alreadyHaveAnAccount') }}</span>
-          <RouterLink class="ml-1 link" :to="{ name: 'login' }">{{ ls.l('login') }}</RouterLink>
+          <span>{{ ls.l('form.alreadyHaveAnAccount') }}</span>
+          <RouterLink class="ml-1 link" :to="{ name: 'login' }">{{
+            ls.l('navigation.login')
+          }}</RouterLink>
         </p>
       </form>
     </Panel>

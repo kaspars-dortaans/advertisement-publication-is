@@ -13,18 +13,22 @@
     <template #empty>
       <div class="flex items-center justify-center flex-col">
         <i class="pi pi-cloud-upload !border-2 !rounded-full !p-8 !text-4xl !text-muted-color" />
-        <p class="mt-6 mb-0">{{ ls.l('dragAndDropToUpload') }}</p>
+        <p class="mt-6 mb-0">{{ ls.l('form.dragAndDropToUpload') }}</p>
       </div>
     </template>
 
     <template #header="{ chooseCallback, clearCallback, files }">
       <div class="flex flex-wrap justify-between items-center flex-1 gap-4">
         <div class="flex gap-2">
-          <Button :label="ls.l('choose')" @click="chooseCallback" icon="pi pi-plus"></Button>
+          <Button
+            :label="ls.l('actions.choose')"
+            @click="chooseCallback"
+            icon="pi pi-plus"
+          ></Button>
           <Button
             v-if="editingImage"
             :disabled="!files || files.length === 0"
-            :label="ls.l('accept')"
+            :label="ls.l('actions.accept')"
             icon="pi pi-check"
             severity="success"
             @click="acceptEdit(files)"
@@ -32,13 +36,13 @@
           <Button
             v-else
             :disabled="!files || files.length === 0"
-            :label="ls.l('edit')"
+            :label="ls.l('actions.edit')"
             icon="pi pi-pencil"
             @click="editAcceptedImage()"
           ></Button>
           <Button
             :disabled="!files || files.length === 0"
-            :label="ls.l('cancel')"
+            :label="ls.l('actions.cancel')"
             icon="pi pi-times"
             severity="danger"
             @click="clearCallback()"

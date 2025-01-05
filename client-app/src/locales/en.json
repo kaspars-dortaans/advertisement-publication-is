@@ -1,23 +1,41 @@
 {
-  "login": "Login",
-  "register": "Register",
-  "dontHaveAnAccountQuestion": "Don't have an account?",
-  "alreadyHaveAnAccount": "Already have an account?",
-  "email": "E-mail",
-  "password": "Password",
-  "confirmPassword": "Confirm password",
-  "firstName": "First name",
-  "lastName": "Last name",
-  "username": "Username",
-  "publiclyDisplayEmail": "Publicly display e-mail",
-  "phoneNumber": "Phone number",
-  "publiclyDisplayPhoneNumber": "Publicly display phone number",
-  "choose": "Choose",
-  "cancel": "Cancel",
-  "upload": "Upload",
-  "accept": "Accpet",
-  "edit": "Edit",
-  "dragAndDropToUpload": "Drag and drop here to upload",
+  "actions": {
+    "choose": "Choose",
+    "cancel": "Cancel",
+    "upload": "Upload",
+    "accept": "Accpet",
+    "edit": "Edit"
+  },
+
+  "form": {
+    "dontHaveAnAccountQuestion": "Don't have an account?",
+    "alreadyHaveAnAccount": "Already have an account?",
+    "email": "E-mail",
+    "password": "Password",
+    "confirmPassword": "Confirm password",
+    "firstName": "First name",
+    "lastName": "Last name",
+    "username": "Username",
+    "publiclyDisplayEmail": "Publicly display e-mail",
+    "phoneNumber": "Phone number",
+    "publiclyDisplayPhoneNumber": "Publicly display phone number",
+    "dragAndDropToUpload": "Drag and drop here to upload"
+  },
+
+  "navigation": {
+    "login": "Login",
+    "register": "Register",
+    "advertisements": "Advertisements",
+    "seeAdvertisements": "See advertisements",
+    "savedAdvertisements": "Saved advertisements",
+    "recenltyViewedAdvertisements": "Recenlty viewed advertisements",
+    "createAdvertisement": "Create advertisements"
+  },
+
+  "languages": {
+    "en": "EN",
+    "lv": "LV"
+  },
 
   "errors": {
     "Required": "This field is required",
