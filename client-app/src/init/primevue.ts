@@ -19,6 +19,8 @@ import Button from 'primevue/button'
 //Form
 import InputGroup from 'primevue/inputgroup'
 import InputGroupAddon from 'primevue/inputgroupaddon'
+import IconField from 'primevue/iconfield'
+import InputIcon from 'primevue/inputicon'
 import InputText from 'primevue/inputtext'
 import Password from 'primevue/password'
 import { usePassThrough } from 'primevue/passthrough'
@@ -44,6 +46,9 @@ const customPassTrough = {
         class: 'flex-1'
       }
     }
+  },
+  menubar: {
+    start: 'flex-1'
   }
 }
 
@@ -74,6 +79,8 @@ export function initPrimeVue(app: App<Element>) {
 
   //Form
   app.component('Checkbox', Checkbox)
+  app.component('IconField', IconField)
+  app.component('InputIcon', InputIcon)
   app.component('InputGroup', InputGroup)
   app.component('InputGroupAddon', InputGroupAddon)
   app.component('InputText', InputText)

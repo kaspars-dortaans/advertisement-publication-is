@@ -1,20 +1,26 @@
 <template>
   <MenuBar :model="items">
     <template #start>
-      <RouterLink :to="{ name: 'home' }">
-        <h3>Site title</h3>
-      </RouterLink>
+      <div class="flex flex-row items-baseline gap-2 w-full">
+        <RouterLink :to="{ name: 'home' }">
+          <h3>Site title</h3>
+        </RouterLink>
+        <IconField class="flex-1">
+          <InputIcon class="pi pi-search" />
+          <InputText class="w-full" :placeholder="ls.l('actions.search')" size="small" />
+        </IconField>
+      </div>
     </template>
     <template #item="{ item, props, hasSubmenu }">
       <router-link v-if="item.route" v-slot="{ href, navigate }" :to="{ name: item.route }" custom>
         <a :href="href" v-bind="props.action" @click="navigate">
-          <span :class="item.icon"></span>
-          <span class="ml-2">{{ ls.l(item.label) }}</span>
+          <i v-if="item.icon" class="mr-2" :class="item.icon" />
+          <span v-if="item.label">{{ ls.l(item.label) }}</span>
         </a>
       </router-link>
       <a v-else :href="item.url" :target="item.target" v-bind="props.action">
-        <span :class="item.icon"></span>
-        <span class="ml-2">{{ ls.l(item.label) }}</span>
+        <i v-if="item.icon" class="mr-2" :class="item.icon" />
+        <span v-if="item.label">{{ ls.l(item.label) }}</span>
         <span v-if="hasSubmenu" class="pi pi-fw pi-angle-down ml-2"></span>
       </a>
     </template>
@@ -61,7 +67,7 @@ const items = reactive([
   },
   {
     route: 'login',
-    label: 'navigation.login'
+    icon: 'pi pi-user'
   }
 ])
 </script>

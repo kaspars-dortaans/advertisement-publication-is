@@ -67,6 +67,10 @@ export class LocaleService {
   }
 
   l(keyString: string, ...params: (string | number)[]) {
+    if (!keyString) {
+      return ''
+    }
+
     const locale = this.primevue.config.locale as object
     const keys = keyString.split('.')
     let object = locale
