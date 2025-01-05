@@ -32,11 +32,6 @@
     "createAdvertisement": "Create advertisements"
   },
 
-  "languages": {
-    "en": "EN",
-    "lv": "LV"
-  },
-
   "errors": {
     "Required": "This field is required",
     "RequiredField": "{fieldName} is a required field",
