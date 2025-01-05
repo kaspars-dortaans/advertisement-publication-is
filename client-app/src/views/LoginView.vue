@@ -1,6 +1,6 @@
 <template>
   <div class="flex items-center justify-center flex-1 bg-primary">
-    <Panel>
+    <Panel class="m-2">
       <template #header>
         <span class="text-2xl">{{ ls.l('navigation.login') }}</span>
       </template>
