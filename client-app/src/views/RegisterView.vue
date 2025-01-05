@@ -128,7 +128,7 @@ import { useForm } from 'vee-validate'
 import { useRouter } from 'vue-router'
 
 const api = getClient(UserClient)
-const ls = new LocaleService()
+const ls = LocaleService.get()
 const router = useRouter()
 
 // Form and fields

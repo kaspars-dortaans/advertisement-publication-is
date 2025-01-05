@@ -59,7 +59,7 @@ export function initPrimeVue(app: App<Element>) {
     ptOptions: { mergeSections: true, mergeProps: true }
   })
 
-  const localeService = new LocaleService(app.config.globalProperties.$primevue)
+  const localeService = LocaleService.get(app.config.globalProperties.$primevue)
   localeService.loadLocale('en')
 
   //components
@@ -86,5 +86,5 @@ export function initPrimeVue(app: App<Element>) {
   app.component('Message', Message)
 
   //Media
-  app.component("Image", Image)
+  app.component('Image', Image)
 }

@@ -3,7 +3,7 @@ import type { App } from 'vue'
 import { setLocale } from 'yup'
 
 export const initYup = (app: App<Element>) => {
-  const ls = new LocaleService(app.config.globalProperties.$primevue)
+  const ls = LocaleService.get(app.config.globalProperties.$primevue)
   setLocale({
     string: {
       email: () => ls.l('errors.NotAnEmail')

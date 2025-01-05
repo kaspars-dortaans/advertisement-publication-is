@@ -85,7 +85,7 @@ import { CircleStencil, Cropper } from 'vue-advanced-cropper'
 import 'vue-advanced-cropper/dist/style.css'
 
 //Services
-const ls = new LocaleService()
+const ls = LocaleService.get()
 
 //Refs
 const cropper = useTemplateRef('cropper')

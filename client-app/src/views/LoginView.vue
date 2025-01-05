@@ -60,7 +60,7 @@ import { useForm } from 'vee-validate'
 import { useRouter } from 'vue-router'
 
 const authService = new AuthService()
-const ls = new LocaleService()
+const ls = LocaleService.get()
 const router = useRouter()
 
 const form = useForm({
