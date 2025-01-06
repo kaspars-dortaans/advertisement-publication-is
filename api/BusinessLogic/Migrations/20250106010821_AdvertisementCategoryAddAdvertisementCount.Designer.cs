@@ -3,6 +3,7 @@ using System;
 using BusinessLogic.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BusinessLogic.Migrations
 {
     [DbContext(typeof(Context))]
-    partial class ContextModelSnapshot : ModelSnapshot
+    [Migration("20250106010821_AdvertisementCategoryAddAdvertisementCount")]
+    partial class AdvertisementCategoryAddAdvertisementCount
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -169,6 +172,10 @@ namespace BusinessLogic.Migrations
                     b.Property<bool>("CanContainAdvertisements")
                         .HasColumnType("boolean");
 
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<int?>("ParentCategoryId")
                         .HasColumnType("integer");
 
@@ -177,32 +184,6 @@ namespace BusinessLogic.Migrations
                     b.HasIndex("ParentCategoryId");
 
                     b.ToTable("Categories");
-                });
-
-            modelBuilder.Entity("BusinessLogic.Entities.CategoryNameLocaleText", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("CategoryId")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("Locale")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Text")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CategoryId");
-
-                    b.ToTable("CategoryNameLocaleTexts");
                 });
 
             modelBuilder.Entity("BusinessLogic.Entities.File", b =>
@@ -602,15 +583,6 @@ namespace BusinessLogic.Migrations
                     b.Navigation("ParentCategory");
                 });
 
-            modelBuilder.Entity("BusinessLogic.Entities.CategoryNameLocaleText", b =>
-                {
-                    b.HasOne("BusinessLogic.Entities.Category", null)
-                        .WithMany("LocalisedNames")
-                        .HasForeignKey("CategoryId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("BusinessLogic.Entities.File", b =>
                 {
                     b.HasOne("BusinessLogic.Entities.User", "OwnerUser")
@@ -725,11 +697,6 @@ namespace BusinessLogic.Migrations
             modelBuilder.Entity("BusinessLogic.Entities.Advertisement", b =>
                 {
                     b.Navigation("ThumbnailImage");
-                });
-
-            modelBuilder.Entity("BusinessLogic.Entities.Category", b =>
-                {
-                    b.Navigation("LocalisedNames");
                 });
 
             modelBuilder.Entity("BusinessLogic.Entities.Role", b =>

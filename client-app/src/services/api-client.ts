@@ -11,6 +11,83 @@
 import axios, { AxiosError } from 'axios';
 import type { AxiosInstance, AxiosRequestConfig, AxiosResponse, CancelToken } from 'axios';
 
+export class AdvertisementClient {
+    protected instance: AxiosInstance;
+    protected baseUrl: string;
+    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+
+    constructor(baseUrl?: string, instance?: AxiosInstance) {
+
+        this.instance = instance || axios.create();
+
+        this.baseUrl = baseUrl ?? "";
+
+    }
+
+    /**
+     * @param locale (optional) 
+     * @return Success
+     */
+    getCategories(locale: string | undefined, cancelToken?: CancelToken): Promise<CategoryItem[]> {
+        let url_ = this.baseUrl + "/api/Advertisement/GetCategories?";
+        if (locale === null)
+            throw new Error("The parameter 'locale' cannot be null.");
+        else if (locale !== undefined)
+            url_ += "locale=" + encodeURIComponent("" + locale) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: AxiosRequestConfig = {
+            method: "GET",
+            url: url_,
+            headers: {
+                "Accept": "text/plain"
+            },
+            cancelToken
+        };
+
+        return this.instance.request(options_).catch((_error: any) => {
+            if (isAxiosError(_error) && _error.response) {
+                return _error.response;
+            } else {
+                throw _error;
+            }
+        }).then((_response: AxiosResponse) => {
+            return this.processGetCategories(_response);
+        });
+    }
+
+    protected processGetCategories(response: AxiosResponse): Promise<CategoryItem[]> {
+        const status = response.status;
+        let _headers: any = {};
+        if (response.headers && typeof response.headers === "object") {
+            for (const k in response.headers) {
+                if (response.headers.hasOwnProperty(k)) {
+                    _headers[k] = response.headers[k];
+                }
+            }
+        }
+        if (status === 200) {
+            const _responseText = response.data;
+            let result200: any = null;
+            let resultData200  = _responseText;
+            if (Array.isArray(resultData200)) {
+                result200 = [] as any;
+                for (let item of resultData200)
+                    result200!.push(CategoryItem.fromJS(item));
+            }
+            else {
+                result200 = <any>null;
+            }
+            return Promise.resolve<CategoryItem[]>(result200);
+
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.data;
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Promise.resolve<CategoryItem[]>(null as any);
+    }
+}
+
 export class LoginClient {
     protected instance: AxiosInstance;
     protected baseUrl: string;
@@ -266,6 +343,58 @@ export class UserClient {
         }
         return Promise.resolve<OkResult>(null as any);
     }
+}
+
+export class CategoryItem implements ICategoryItem {
+    id!: number;
+    name!: string;
+    canContainAdvertisements!: boolean;
+    parentCategoryId?: number | undefined;
+    advertisementCount?: number | undefined;
+
+    constructor(data?: ICategoryItem) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.name = _data["name"];
+            this.canContainAdvertisements = _data["canContainAdvertisements"];
+            this.parentCategoryId = _data["parentCategoryId"];
+            this.advertisementCount = _data["advertisementCount"];
+        }
+    }
+
+    static fromJS(data: any): CategoryItem {
+        data = typeof data === 'object' ? data : {};
+        let result = new CategoryItem();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["name"] = this.name;
+        data["canContainAdvertisements"] = this.canContainAdvertisements;
+        data["parentCategoryId"] = this.parentCategoryId;
+        data["advertisementCount"] = this.advertisementCount;
+        return data;
+    }
+}
+
+export interface ICategoryItem {
+    id: number;
+    name: string;
+    canContainAdvertisements: boolean;
+    parentCategoryId?: number | undefined;
+    advertisementCount?: number | undefined;
 }
 
 export class DataTableQuery implements IDataTableQuery {

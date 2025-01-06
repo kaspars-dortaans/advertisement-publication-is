@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BusinessLogic.Entities;
 
-public class Context : IdentityDbContext<User, Role, int>
+public class Context(DbContextOptions<Context> options) : IdentityDbContext<User, Role, int>(options)
 {
     public virtual DbSet<Advertisement> Advertisements { get; set; }
     public virtual DbSet<AdvertisementAttributeValue> AdvertisementAttributeValues { get; set; }
@@ -11,16 +11,12 @@ public class Context : IdentityDbContext<User, Role, int>
     public virtual DbSet<AttributeValueList> AttributeValueLists { get; set; }
     public virtual DbSet<AttributeValueListEntry> AttributeValueListEntries { get; set; }
     public virtual DbSet<Category> Categories { get; set; }
+    public virtual DbSet<CategoryNameLocaleText> CategoryNameLocaleTexts { get; set; }
     public virtual DbSet<Image> Images { get; set; }
     public virtual DbSet<File> Files { get; set; }
     public virtual DbSet<Message> Messages { get; set; }
     public virtual DbSet<Permission> Permissions { get; set; }
     public virtual DbSet<RolePermission> RolePermissions { get; set; }
-
-    public Context(DbContextOptions<Context> options) : base(options)
-    {
-        
-    }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

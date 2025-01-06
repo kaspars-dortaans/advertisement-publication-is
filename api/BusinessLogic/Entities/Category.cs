@@ -1,11 +1,11 @@
-﻿namespace BusinessLogic.Entities
+﻿namespace BusinessLogic.Entities;
+
+public class Category
 {
-    public class Category
-    {
-        public int Id { get; set; }
-        public int? ParentCategoryId { get; set; }
-        public string Name { get; set; } = default!;
-        public bool ContainsAdvertisements { get; set; }
-        public Category? ParentCategory { get; set; }
-    }
+    public int Id { get; set; }
+    public bool CanContainAdvertisements { get; set; }
+    public int? AdvertisementCount { get; set; }
+    public int? ParentCategoryId { get; set; }
+    public Category? ParentCategory { get; set; }
+    public ICollection<CategoryNameLocaleText> LocalisedNames { get; set; } = default!;
 }

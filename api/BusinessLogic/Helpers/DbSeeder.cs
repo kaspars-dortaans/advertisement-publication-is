@@ -74,6 +74,89 @@ public class DbSeeder
                 UserId = adminUser.Id
             },
             ur => ur.UserId == adminUser.Id && ur.RoleId == adminRole.Id);
+
+        //Add advertisement categories
+        var categories = new List<Category>()
+        {
+            new()
+            {
+                Id = 1,
+                CanContainAdvertisements = false,
+            },
+            new()
+            {
+                Id = 2,
+                CanContainAdvertisements = false,
+                ParentCategoryId = 1,
+            },
+            new()
+            {
+                Id = 3,
+                CanContainAdvertisements = false,
+                ParentCategoryId = 2,
+            },
+            new()
+            {
+                Id = 4,
+                CanContainAdvertisements = true,
+                ParentCategoryId = 3,
+                AdvertisementCount = 1
+            },
+            new()
+            {
+                Id = 5,
+                CanContainAdvertisements = true,
+                ParentCategoryId = 3,
+                AdvertisementCount = 2
+            }
+        };
+        foreach(var category in categories)
+        {
+            AddIfNotExists(category, c => c.Id == category.Id);
+        }
+
+        var categoryNameLocales = new List<CategoryNameLocaleText>()
+        {
+            new()
+            {
+                Id = 1,
+                CategoryId = 1,
+                Locale = "ENG",
+                Text = "Electric devices"
+            },
+            new()
+            {
+                Id = 2,
+                CategoryId = 2,
+                Locale = "ENG",
+                Text = "Phones"
+            },
+            new()
+            {
+                Id = 3,
+                CategoryId = 3,
+                Locale = "ENG",
+                Text = "Mobile phones"
+            },
+            new()
+            {
+                Id = 4,
+                CategoryId = 4,
+                Locale = "ENG",
+                Text = "Samsung"
+            },
+            new()
+            {
+                Id = 5,
+                CategoryId = 5,
+                Locale = "ENG",
+                Text = "Apple"
+            },
+        };
+        foreach(var localeText in categoryNameLocales)
+        {
+            AddIfNotExists(localeText, t => t.Id == localeText.Id);
+        }
     }
 
     private void AddIfNotExists<T>(T entity, Expression<Func<T, bool>> predicate) where T : class

@@ -15,7 +15,11 @@ export class LocaleService {
     if (!this._instance) {
       this._instance = new LocaleService()
     }
-    this._instance._primevue = primevue
+
+    if (primevue) {
+      this._instance._primevue = primevue
+    }
+
     return this._instance
   }
 

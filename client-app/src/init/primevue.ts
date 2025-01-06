@@ -2,6 +2,7 @@
 /* eslint-disable vue/multi-word-component-names */
 
 import { type App } from 'vue'
+import { LocaleService } from '@/services/locale-service'
 
 //PrimeVue
 import PrimeVue from 'primevue/config'
@@ -24,7 +25,9 @@ import InputIcon from 'primevue/inputicon'
 import InputText from 'primevue/inputtext'
 import Password from 'primevue/password'
 import { usePassThrough } from 'primevue/passthrough'
-import { LocaleService } from '@/services/locale-service'
+
+//Data
+import Tree from 'primevue/tree'
 
 //Panel
 import Panel from 'primevue/panel'
@@ -86,6 +89,9 @@ export function initPrimeVue(app: App<Element>) {
   app.component('InputGroupAddon', InputGroupAddon)
   app.component('InputText', InputText)
   app.component('Password', Password)
+
+  //Data
+  app.component('Tree', Tree)
 
   //Panel
   app.component('Panel', Panel)
