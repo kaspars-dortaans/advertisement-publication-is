@@ -65,7 +65,8 @@ export function initPrimeVue(app: App<Element>) {
   })
 
   const localeService = LocaleService.get(app.config.globalProperties.$primevue)
-  localeService.loadLocale('en')
+  // TODO: define default locale as constant or env variable
+  localeService.loadLocale('eng')
 
   //components
   //File
