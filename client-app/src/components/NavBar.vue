@@ -1,13 +1,20 @@
 <template>
   <MenuBar :model="items">
     <template #start>
-      <div class="flex flex-row items-baseline gap-2 w-full">
+      <div class="flex flex-row items-center gap-2 w-full">
         <RouterLink :to="{ name: 'home' }">
-          <h3>Site title</h3>
+          <img class="h-9" :src="logoUrl" :alt="ls.l('navigation.siteLogo')" />
         </RouterLink>
         <IconField class="flex-1">
-          <InputIcon class="pi pi-search" />
-          <InputText class="w-full" :placeholder="ls.l('actions.search')" size="small" />
+          <InputIcon class="pi pi-search" @click="immediateSearch" />
+          <InputText
+            v-model="searchInput"
+            class="w-full"
+            :placeholder="ls.l('actions.search')"
+            size="small"
+            @input="debouncedSearch"
+            @keydown.enter="immediateSearch"
+          />
         </IconField>
       </div>
     </template>
@@ -29,16 +36,24 @@
 
 <script setup lang="ts">
 import { LocaleService } from '@/services/locale-service'
-import { reactive } from 'vue'
+import { reactive, ref } from 'vue'
+import { debounceFn } from '@/utils/debounce'
+
+import logoUrl from '@/assets/logo.svg'
 
 const ls = LocaleService.get()
+
+// TODO: Move to constant file?
+const inputDebounceTime = 3000
+
+const searchInput = ref('')
 
 const localeItems = ls.localeList.map((localeName) => ({
   label: localeName,
   command: () => ls.loadLocale(localeName)
 }))
 
-//TODO: filter items based on user permissions
+// TODO: filter items based on user permissions
 const items = reactive([
   {
     label: 'navigation.advertisements',
@@ -70,4 +85,19 @@ const items = reactive([
     icon: 'pi pi-user'
   }
 ])
+
+const search = () => {
+  console.log(searchInput.value)
+  // TODO: Navigate to search page
+}
+
+const immediateSearch = () => {
+  clearDebounceSearch()
+  search()
+}
+
+const { debounce: debouncedSearch, clear: clearDebounceSearch } = debounceFn(
+  search,
+  inputDebounceTime
+)
 </script>
