@@ -6,8 +6,8 @@ public class DataTableQuery
     public int? Start { get; set; }
     public int? Length { get; set; }
     public SearchQuery? Search { get; set; } = default!;
-    public IEnumerable<OrderQuery> Order { get; set; } = [];
-    public IEnumerable<TableColumn> Columns { get; set; } = [];
+    public IEnumerable<OrderQuery> Order { get; set; } = default!;
+    public IEnumerable<TableColumn> Columns { get; set; } = default!;
 }
 
 public class SearchQuery

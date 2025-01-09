@@ -1,6 +1,7 @@
 ﻿using BusinessLogic.Dto.DataTableQuery;
 using AutoMapper;
 using System.Linq.Expressions;
+using Microsoft.EntityFrameworkCore;
 
 namespace BusinessLogic.Helpers;
 
@@ -9,26 +10,30 @@ public static class DataTableQueryResolver
 
     //TODO: Test, refactor and optimise
     //Implement datatable query suppport per https://datatables.net/manual/server-side
-    public static DataTableQueryResponse<Entity> ResolveDataTableQuery<Entity>(this IQueryable<Entity> query, DataTableQuery request, DataTableQueryConfig<Entity>? config) where Entity : class
+    public static async Task<DataTableQueryResponse<Entity>> ResolveDataTableQuery<Entity>(this IQueryable<Entity> query, DataTableQuery request, DataTableQueryConfig<Entity>? config = null) where Entity : class
     {
         //Total record count
         var recordsTotal = query.Count();
         
         //Search
         var searchableColumns = request.Columns.Where(c => c.Searchable).ToList();
-        if (!string.IsNullOrEmpty(request.Search?.Value) && searchableColumns.Any())
+        if (!string.IsNullOrEmpty(request.Search?.Value) && searchableColumns.Count > 0)
         {
             query = query.Where(ReflectionHelper.GetWhereSearchPredicate<Entity>(searchableColumns.Select(c => c.Name).ToList(), request.Search.Value));
         }
 
         //Filter
         var filteredColumns = request.Columns.Where(c => !string.IsNullOrEmpty(c.Search?.Value)).ToList();
-        if (filteredColumns.Any())
+        if (filteredColumns.Count > 0)
         {
             foreach (var column in filteredColumns)
             {
                 query = query.Where(ReflectionHelper.GetWhereSearchPredicate<Entity>(new List<string>() { column.Name }, column.Search!.Value));
             }
+        }
+        if(config?.AdditionalFilter != null)
+        {
+            query = config.AdditionalFilter(query);
         }
 
         //Filtered record count
@@ -36,9 +41,15 @@ public static class DataTableQueryResolver
 
 
         //Order
+        var orderApplied = false;
         if (request.Order.Any())
         {
             query = OrderQuery(query, request);
+            orderApplied = true;
+        }
+        if(config?.AdditionalSort != null)
+        {
+            query = config.AdditionalSort(query, orderApplied);
         }
 
         //Skip
@@ -56,7 +67,7 @@ public static class DataTableQueryResolver
         return new DataTableQueryResponse<Entity>()
         {
             Draw = request.Draw,
-            Data = query.ToList(),
+            Data = await query.ToListAsync(),
             RecordsTotal = recordsTotal,
             RecordsFiltered = recordsFiltered,
         };
@@ -92,12 +103,11 @@ public static class DataTableQueryResolver
     static IQueryable<Entity> OrderQuery<Entity>(IQueryable<Entity> query, DataTableQuery request)
     {
         var orderList = request.Order.ToList();
-        var secondarySort = false;
         string ascendingOrderMethodName = nameof(Queryable.OrderBy), descendingOrderMethodName = nameof(Queryable.OrderByDescending);
         for(var i = 0; i < orderList.Count; i++)
         {
             var sortApplied = ApplySort(ascendingOrderMethodName, descendingOrderMethodName, orderList[i]);
-            if(!secondarySort && sortApplied)
+            if(sortApplied)
             {
                 ascendingOrderMethodName = nameof(Queryable.ThenBy);
                 descendingOrderMethodName = nameof(Queryable.ThenByDescending);

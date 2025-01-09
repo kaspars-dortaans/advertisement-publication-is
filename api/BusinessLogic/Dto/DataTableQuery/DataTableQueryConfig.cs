@@ -1,7 +1,7 @@
-﻿namespace BusinessLogic.Dto.DataTableQuery
+﻿namespace BusinessLogic.Dto.DataTableQuery;
+
+public class DataTableQueryConfig<TResult> where TResult : class
 {
-    public class DataTableQueryConfig<Entity> where Entity : class
-    {
-        public IDictionary<string, Func<Entity, dynamic>> ValueSelectors { get; set; } = new Dictionary<string, Func<Entity, dynamic>>();
-    }
+    public Func<IQueryable<TResult>, bool, IQueryable<TResult>> AdditionalSort { get; set; } = default!;
+    public Func<IQueryable<TResult>, IQueryable<TResult>> AdditionalFilter { get; set; } = default!;
 }
