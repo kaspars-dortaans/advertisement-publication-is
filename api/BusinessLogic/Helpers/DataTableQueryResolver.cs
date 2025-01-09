@@ -31,7 +31,7 @@ public static class DataTableQueryResolver
                 query = query.Where(ReflectionHelper.GetWhereSearchPredicate<Entity>(new List<string>() { column.Name }, column.Search!.Value));
             }
         }
-        if(config?.AdditionalFilter != null)
+        if(config?.AdditionalFilter is not null)
         {
             query = config.AdditionalFilter(query);
         }
@@ -47,7 +47,7 @@ public static class DataTableQueryResolver
             query = OrderQuery(query, request);
             orderApplied = true;
         }
-        if(config?.AdditionalSort != null)
+        if(config?.AdditionalSort is not null)
         {
             query = config.AdditionalSort(query, orderApplied);
         }

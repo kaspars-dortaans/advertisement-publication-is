@@ -58,7 +58,7 @@ public static class ReflectionHelper
         //combine them with and 1=1 Like no expression
         Expression? combined = null;
 
-        if (searchFieldList != null)
+        if (searchFieldList is not null)
         {
             var toLowerMethod = typeof(string).GetMethod("ToLower", BindingFlags.Public | BindingFlags.Instance, Array.Empty<Type>())!;
             var containsMethod = typeof(string).GetMethod("Contains", BindingFlags.Public | BindingFlags.Instance, new Type[] { typeof(string) })!;
@@ -72,7 +72,7 @@ public static class ReflectionHelper
                 if (entityProperty.Type != typeof(string))
                 {
                     var toStringMethod = entityProperty.Type.GetMethod("ToString", BindingFlags.Public | BindingFlags.Instance, new Type[] { });
-                    entityProperty = toStringMethod != null ? Expression.Call(entityProperty, toStringMethod) : Expression.Constant(string.Empty);
+                    entityProperty = toStringMethod is not null ? Expression.Call(entityProperty, toStringMethod) : Expression.Constant(string.Empty);
                 }
 
                 var propertyLowercase = Expression.Call(entityProperty, toLowerMethod);

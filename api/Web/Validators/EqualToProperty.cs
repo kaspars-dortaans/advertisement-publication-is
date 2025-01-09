@@ -23,7 +23,7 @@ public class EqualToProperty : ValidationAttribute
         }
 
         var comparableValue = comparableProperty.GetValue(ctx.ObjectInstance);
-        if ((value != null && value.Equals(comparableValue)) || (value == comparableValue))
+        if ((value is not null && value.Equals(comparableValue)) || (value == comparableValue))
         {
             return ValidationResult.Success;
         }
