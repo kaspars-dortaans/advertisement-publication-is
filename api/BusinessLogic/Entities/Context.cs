@@ -11,17 +11,20 @@ public class Context(DbContextOptions<Context> options) : IdentityDbContext<User
     public virtual DbSet<AttributeValueList> AttributeValueLists { get; set; }
     public virtual DbSet<AttributeValueListEntry> AttributeValueListEntries { get; set; }
     public virtual DbSet<Category> Categories { get; set; }
-    public virtual DbSet<CategoryNameLocaleText> CategoryNameLocaleTexts { get; set; }
     public virtual DbSet<Image> Images { get; set; }
     public virtual DbSet<File> Files { get; set; }
     public virtual DbSet<Message> Messages { get; set; }
     public virtual DbSet<Permission> Permissions { get; set; }
     public virtual DbSet<RolePermission> RolePermissions { get; set; }
+    public virtual DbSet<LocaleText> LocaleTexts { get; set; }
+    public virtual DbSet<AttributeNameLocaleText> AttributeNameLocaleTexts { get; set; }
+    public virtual DbSet<CategoryNameLocaleText> CategoryNameLocaleTexts { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
-        modelBuilder.Entity<Advertisement>()
+        var advertisementBuilder = modelBuilder.Entity<Advertisement>();
+        advertisementBuilder
             .HasOne(advertisement => advertisement.ThumbnailImage)
             .WithOne(image => image.Advertisement)
             .HasForeignKey<Image>(image => image.AdvertisementId);
@@ -36,5 +39,10 @@ public class Context(DbContextOptions<Context> options) : IdentityDbContext<User
             .HasOne(user => user.ProfileImageFile)
             .WithOne(file => file.OwnerUser)
             .HasForeignKey<File>(file => file.OwnerUserId);
+
+        modelBuilder.Entity<Category>()
+            .HasMany(c => c.Attributes)
+            .WithMany(a => a.UsedInCategories);
+
     }
 }

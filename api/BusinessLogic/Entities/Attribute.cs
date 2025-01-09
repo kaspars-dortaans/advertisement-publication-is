@@ -1,6 +1,4 @@
-﻿using System.Text.RegularExpressions;
-
-namespace BusinessLogic.Entities;
+﻿namespace BusinessLogic.Entities;
 
 public class Attribute
 {
@@ -10,4 +8,6 @@ public class Attribute
     public int? AttributeValueListId { get; set; }
 
     public AttributeValueList? AttributeValueList{ get; set; }
+    public ICollection<Category> UsedInCategories { get; set; } = default!;
+    public ICollection<AttributeNameLocaleText> AttributeNameLocales { get; set; } = default!;
 }

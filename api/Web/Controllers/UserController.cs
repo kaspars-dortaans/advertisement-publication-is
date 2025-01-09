@@ -25,10 +25,10 @@ public class UserController(
 
     [HasPermission(BusinessLogic.Authorization.Permission.ViewUsers)]
     [HttpPost]
-    public DataTableQueryResponse<UserListItem> GetUserList(DataTableQuery query)
+    public async Task<DataTableQueryResponse<UserListItem>> GetUserList(DataTableQuery query)
     {
         var users = _userBaseService.GetAll();
-        var queryResult = users.ResolveDataTableQuery(query, null);
+        var queryResult = await users.ResolveDataTableQuery(query, null);
         var listItems = _mapper.MapDataTableResult<User, UserListItem>(queryResult);
 
         return listItems;

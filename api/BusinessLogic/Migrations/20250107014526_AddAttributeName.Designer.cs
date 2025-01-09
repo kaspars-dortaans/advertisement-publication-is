@@ -3,6 +3,7 @@ using System;
 using BusinessLogic.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BusinessLogic.Migrations
 {
     [DbContext(typeof(Context))]
-    partial class ContextModelSnapshot : ModelSnapshot
+    [Migration("20250107014526_AddAttributeName")]
+    partial class AddAttributeName
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -34,7 +37,7 @@ namespace BusinessLogic.Migrations
 
                     b.HasIndex("UsedInCategoriesId");
 
-                    b.ToTable("AttributeCategory", (string)null);
+                    b.ToTable("AttributeCategory");
                 });
 
             modelBuilder.Entity("BusinessLogic.Entities.Advertisement", b =>
@@ -77,7 +80,7 @@ namespace BusinessLogic.Migrations
 
                     b.HasIndex("OwnerId");
 
-                    b.ToTable("Advertisements", (string)null);
+                    b.ToTable("Advertisements");
                 });
 
             modelBuilder.Entity("BusinessLogic.Entities.AdvertisementAttributeValue", b =>
@@ -104,7 +107,7 @@ namespace BusinessLogic.Migrations
 
                     b.HasIndex("AttributeId");
 
-                    b.ToTable("AdvertisementAttributeValues", (string)null);
+                    b.ToTable("AdvertisementAttributeValues");
                 });
 
             modelBuilder.Entity("BusinessLogic.Entities.Attribute", b =>
@@ -128,7 +131,7 @@ namespace BusinessLogic.Migrations
 
                     b.HasIndex("AttributeValueListId");
 
-                    b.ToTable("Attributes", (string)null);
+                    b.ToTable("Attributes");
                 });
 
             modelBuilder.Entity("BusinessLogic.Entities.AttributeValueList", b =>
@@ -145,7 +148,7 @@ namespace BusinessLogic.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("AttributeValueLists", (string)null);
+                    b.ToTable("AttributeValueLists");
                 });
 
             modelBuilder.Entity("BusinessLogic.Entities.AttributeValueListEntry", b =>
@@ -167,7 +170,7 @@ namespace BusinessLogic.Migrations
 
                     b.HasIndex("AttributeValueListId");
 
-                    b.ToTable("AttributeValueListEntries", (string)null);
+                    b.ToTable("AttributeValueListEntries");
                 });
 
             modelBuilder.Entity("BusinessLogic.Entities.Category", b =>
@@ -191,7 +194,7 @@ namespace BusinessLogic.Migrations
 
                     b.HasIndex("ParentCategoryId");
 
-                    b.ToTable("Categories", (string)null);
+                    b.ToTable("Categories");
                 });
 
             modelBuilder.Entity("BusinessLogic.Entities.File", b =>
@@ -219,7 +222,7 @@ namespace BusinessLogic.Migrations
                     b.HasIndex("OwnerUserId")
                         .IsUnique();
 
-                    b.ToTable("Files", (string)null);
+                    b.ToTable("Files");
 
                     b.HasDiscriminator().HasValue("File");
 
@@ -249,7 +252,7 @@ namespace BusinessLogic.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("LocaleTexts", (string)null);
+                    b.ToTable("LocaleTexts");
 
                     b.HasDiscriminator().HasValue("LocaleText");
 
@@ -282,7 +285,7 @@ namespace BusinessLogic.Migrations
 
                     b.HasIndex("ToUserId");
 
-                    b.ToTable("Messages", (string)null);
+                    b.ToTable("Messages");
                 });
 
             modelBuilder.Entity("BusinessLogic.Entities.Permission", b =>
@@ -299,7 +302,7 @@ namespace BusinessLogic.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Permissions", (string)null);
+                    b.ToTable("Permissions");
                 });
 
             modelBuilder.Entity("BusinessLogic.Entities.Role", b =>
@@ -351,7 +354,7 @@ namespace BusinessLogic.Migrations
 
                     b.HasIndex("RoleId");
 
-                    b.ToTable("RolePermissions", (string)null);
+                    b.ToTable("RolePermissions");
                 });
 
             modelBuilder.Entity("BusinessLogic.Entities.User", b =>

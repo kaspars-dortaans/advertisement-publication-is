@@ -3,6 +3,7 @@ using System;
 using BusinessLogic.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BusinessLogic.Migrations
 {
     [DbContext(typeof(Context))]
-    partial class ContextModelSnapshot : ModelSnapshot
+    [Migration("20250107013449_AddedAttributesToCategories")]
+    partial class AddedAttributesToCategories
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -34,7 +37,7 @@ namespace BusinessLogic.Migrations
 
                     b.HasIndex("UsedInCategoriesId");
 
-                    b.ToTable("AttributeCategory", (string)null);
+                    b.ToTable("AttributeCategory");
                 });
 
             modelBuilder.Entity("BusinessLogic.Entities.Advertisement", b =>
@@ -77,7 +80,7 @@ namespace BusinessLogic.Migrations
 
                     b.HasIndex("OwnerId");
 
-                    b.ToTable("Advertisements", (string)null);
+                    b.ToTable("Advertisements");
                 });
 
             modelBuilder.Entity("BusinessLogic.Entities.AdvertisementAttributeValue", b =>
@@ -104,7 +107,7 @@ namespace BusinessLogic.Migrations
 
                     b.HasIndex("AttributeId");
 
-                    b.ToTable("AdvertisementAttributeValues", (string)null);
+                    b.ToTable("AdvertisementAttributeValues");
                 });
 
             modelBuilder.Entity("BusinessLogic.Entities.Attribute", b =>
@@ -128,7 +131,7 @@ namespace BusinessLogic.Migrations
 
                     b.HasIndex("AttributeValueListId");
 
-                    b.ToTable("Attributes", (string)null);
+                    b.ToTable("Attributes");
                 });
 
             modelBuilder.Entity("BusinessLogic.Entities.AttributeValueList", b =>
@@ -145,7 +148,7 @@ namespace BusinessLogic.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("AttributeValueLists", (string)null);
+                    b.ToTable("AttributeValueLists");
                 });
 
             modelBuilder.Entity("BusinessLogic.Entities.AttributeValueListEntry", b =>
@@ -167,7 +170,7 @@ namespace BusinessLogic.Migrations
 
                     b.HasIndex("AttributeValueListId");
 
-                    b.ToTable("AttributeValueListEntries", (string)null);
+                    b.ToTable("AttributeValueListEntries");
                 });
 
             modelBuilder.Entity("BusinessLogic.Entities.Category", b =>
@@ -191,7 +194,33 @@ namespace BusinessLogic.Migrations
 
                     b.HasIndex("ParentCategoryId");
 
-                    b.ToTable("Categories", (string)null);
+                    b.ToTable("Categories");
+                });
+
+            modelBuilder.Entity("BusinessLogic.Entities.CategoryNameLocaleText", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CategoryId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Locale")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Text")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CategoryId");
+
+                    b.ToTable("CategoryNameLocaleTexts");
                 });
 
             modelBuilder.Entity("BusinessLogic.Entities.File", b =>
@@ -219,39 +248,9 @@ namespace BusinessLogic.Migrations
                     b.HasIndex("OwnerUserId")
                         .IsUnique();
 
-                    b.ToTable("Files", (string)null);
+                    b.ToTable("Files");
 
                     b.HasDiscriminator().HasValue("File");
-
-                    b.UseTphMappingStrategy();
-                });
-
-            modelBuilder.Entity("BusinessLogic.Entities.LocaleText", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Discriminator")
-                        .IsRequired()
-                        .HasMaxLength(34)
-                        .HasColumnType("character varying(34)");
-
-                    b.Property<string>("Locale")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Text")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("LocaleTexts", (string)null);
-
-                    b.HasDiscriminator().HasValue("LocaleText");
 
                     b.UseTphMappingStrategy();
                 });
@@ -282,7 +281,7 @@ namespace BusinessLogic.Migrations
 
                     b.HasIndex("ToUserId");
 
-                    b.ToTable("Messages", (string)null);
+                    b.ToTable("Messages");
                 });
 
             modelBuilder.Entity("BusinessLogic.Entities.Permission", b =>
@@ -299,7 +298,7 @@ namespace BusinessLogic.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Permissions", (string)null);
+                    b.ToTable("Permissions");
                 });
 
             modelBuilder.Entity("BusinessLogic.Entities.Role", b =>
@@ -351,7 +350,7 @@ namespace BusinessLogic.Migrations
 
                     b.HasIndex("RoleId");
 
-                    b.ToTable("RolePermissions", (string)null);
+                    b.ToTable("RolePermissions");
                 });
 
             modelBuilder.Entity("BusinessLogic.Entities.User", b =>
@@ -554,30 +553,6 @@ namespace BusinessLogic.Migrations
                     b.HasDiscriminator().HasValue("Image");
                 });
 
-            modelBuilder.Entity("BusinessLogic.Entities.AttributeNameLocaleText", b =>
-                {
-                    b.HasBaseType("BusinessLogic.Entities.LocaleText");
-
-                    b.Property<int>("AttributeId")
-                        .HasColumnType("integer");
-
-                    b.HasIndex("AttributeId");
-
-                    b.HasDiscriminator().HasValue("AttributeNameLocaleText");
-                });
-
-            modelBuilder.Entity("BusinessLogic.Entities.CategoryNameLocaleText", b =>
-                {
-                    b.HasBaseType("BusinessLogic.Entities.LocaleText");
-
-                    b.Property<int>("CategoryId")
-                        .HasColumnType("integer");
-
-                    b.HasIndex("CategoryId");
-
-                    b.HasDiscriminator().HasValue("CategoryNameLocaleText");
-                });
-
             modelBuilder.Entity("AttributeCategory", b =>
                 {
                     b.HasOne("BusinessLogic.Entities.Attribute", null)
@@ -658,6 +633,15 @@ namespace BusinessLogic.Migrations
                         .HasForeignKey("ParentCategoryId");
 
                     b.Navigation("ParentCategory");
+                });
+
+            modelBuilder.Entity("BusinessLogic.Entities.CategoryNameLocaleText", b =>
+                {
+                    b.HasOne("BusinessLogic.Entities.Category", null)
+                        .WithMany("LocalisedNames")
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("BusinessLogic.Entities.File", b =>
@@ -771,32 +755,9 @@ namespace BusinessLogic.Migrations
                     b.Navigation("Advertisement");
                 });
 
-            modelBuilder.Entity("BusinessLogic.Entities.AttributeNameLocaleText", b =>
-                {
-                    b.HasOne("BusinessLogic.Entities.Attribute", null)
-                        .WithMany("AttributeValueListLocales")
-                        .HasForeignKey("AttributeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("BusinessLogic.Entities.CategoryNameLocaleText", b =>
-                {
-                    b.HasOne("BusinessLogic.Entities.Category", null)
-                        .WithMany("LocalisedNames")
-                        .HasForeignKey("CategoryId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("BusinessLogic.Entities.Advertisement", b =>
                 {
                     b.Navigation("ThumbnailImage");
-                });
-
-            modelBuilder.Entity("BusinessLogic.Entities.Attribute", b =>
-                {
-                    b.Navigation("AttributeValueListLocales");
                 });
 
             modelBuilder.Entity("BusinessLogic.Entities.Category", b =>

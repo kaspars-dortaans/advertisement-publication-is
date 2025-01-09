@@ -2,7 +2,7 @@
 
 public enum ValueTypes
 {
-    Text,
+    Text = 0,
     Integer,
     FloatingNumber,
     ValueListEntry

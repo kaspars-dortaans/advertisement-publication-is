@@ -10,9 +10,10 @@ public class Advertisement
     public int ViewCount { get; set; }
 
     public int OwnerId { get; set; }
-    public int CategoryId { get; set; }
-    public int? ThumbnailImageId { get; set; }
     public User Owner { get; set; } = default!;
+    public int CategoryId { get; set; }
     public Category Category { get; set; } = default!;
+    public int? ThumbnailImageId { get; set; }
     public Image? ThumbnailImage { get; set; }
+    public ICollection<AdvertisementAttributeValue> AttributeValues { get; set; } = default!;
 }
