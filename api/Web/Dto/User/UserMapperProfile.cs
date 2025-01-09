@@ -6,5 +6,6 @@ public class UserMapperProfile : Profile
 {
     public UserMapperProfile() {
         CreateMap<RegisterDto, BusinessLogic.Entities.User>();
+        CreateMap<BusinessLogic.Entities.User, UserListItem>();
     }
 }
