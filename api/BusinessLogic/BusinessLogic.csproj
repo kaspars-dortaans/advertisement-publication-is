@@ -19,6 +19,7 @@
     <PackageReference Include="Microsoft.Extensions.Identity.Core" Version="8.0.11" />
     <PackageReference Include="Microsoft.Extensions.Identity.Stores" Version="8.0.11" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.11" />
+    <PackageReference Include="Z.EntityFramework.Plus.EFCore" Version="8.103.7" />
   </ItemGroup>
 
 </Project>
