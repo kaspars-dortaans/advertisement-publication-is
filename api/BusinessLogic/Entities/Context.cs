@@ -44,5 +44,18 @@ public class Context(DbContextOptions<Context> options) : IdentityDbContext<User
             .HasMany(c => c.Attributes)
             .WithMany(a => a.UsedInCategories);
 
+        // Functions
+        modelBuilder
+            .HasDbFunction(() => GetCategoryChildIds(default))
+            .HasName("get_child_category_ids");
+
+        modelBuilder.Entity<GetChildCategoryIdsResult>().HasNoKey();
     }
+
+    /// <summary>
+    /// Returns category child category ids (including nested children)
+    /// </summary>
+    /// <param name="categoryId"></param>
+    /// <returns></returns>
+    public IQueryable<GetChildCategoryIdsResult> GetCategoryChildIds(int categoryId) => FromExpression(() => GetCategoryChildIds(categoryId));
 }
