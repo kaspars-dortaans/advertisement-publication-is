@@ -18,48 +18,106 @@ import { LocaleService } from '@/services/locale-service'
 import { buildNodeHierarchy } from '@/utils/build-node-hierarchy'
 import { getClient } from '@/utils/client-builder'
 import type { TreeNode } from 'primevue/treenode'
-import { nextTick, onMounted, ref, type Ref } from 'vue'
+import { nextTick, onMounted, ref, watch, type Ref } from 'vue'
 
+// Component output
+const model = defineModel()
 const emit = defineEmits(['category-selected'])
 
+// Services
 const advertisementService = getClient(AdvertisementClient)
 const ls = LocaleService.get()
 
+// Reactive data
 const categoryNodes: Ref<TreeNode[]> = ref([])
 const displayedCategoryNodes: Ref<TreeNode[]> = ref([])
 const selectedCategoryKeys = ref({})
 const expandedCategoryKeys: Ref<{ [key: string]: boolean }> = ref({})
 
+// Constants
+const newCategoryKey = 'new-category'
+
+// Hooks
 onMounted(async () => {
-  const categories = await advertisementService.getCategories(ls.currentLocale.value)
-  categoryNodes.value = buildNodeHierarchy<CategoryItem, TreeNode>(
-    categories,
-    'id',
-    'parentCategoryId',
-    (category, children) => ({
-      key: '' + category.id,
-      label: category.name,
-      children,
-      leaf: !children.length,
+  //Add first 'new category' - show all advertisements
+  categoryNodes.value = [
+    {
+      key: newCategoryKey,
+      label: ls.l('categoryMenu.new'),
+      children: [],
+      leaf: true,
       data: {
         parent: null
       }
-    }),
-    (node) => {
-      if (!node.children?.length) {
-        return
-      }
+    } as TreeNode
+  ]
+  const categories = await advertisementService.getCategories(ls.currentLocale.value)
+  categoryNodes.value = [
+    ...categoryNodes.value,
+    ...buildNodeHierarchy<CategoryItem, TreeNode>(
+      categories,
+      'id',
+      'parentCategoryId',
+      (category, children) => ({
+        key: '' + category.id,
+        label: category.name,
+        children,
+        leaf: !children.length,
+        data: {
+          parent: null
+        }
+      }),
+      (node) => {
+        if (!node.children?.length) {
+          return
+        }
 
-      for (const child of node.children) {
-        child.data.parent = node
+        for (const child of node.children) {
+          child.data.parent = node
+        }
       }
-    }
-  )
+    )
+  ]
   displayedCategoryNodes.value = categoryNodes.value
 })
 
+// Watchers
+watch(model, (newValue) => {
+  let idStr: number | string | undefined
+  if (typeof newValue === 'number') {
+    idStr = '' + newValue
+  } else if (newValue === null) {
+    idStr = newCategoryKey
+  } else if (newValue === undefined || typeof newValue === 'string') {
+    idStr = newValue
+  } else {
+    return
+  }
+
+  const selectedKeys = Object.keys(selectedCategoryKeys.value)
+  const selectedIdStr = selectedKeys.length ? selectedKeys[0] : undefined
+  if (idStr !== selectedIdStr) {
+    selectedCategoryKeys.value = idStr !== undefined ? { [idStr]: true } : {}
+  }
+})
+
+watch(ls.currentLocale, () => {
+  const newCategory = categoryNodes.value.find((c) => c.key === newCategoryKey)
+  if (newCategory) {
+    newCategory.label = ls.l('categoryMenu.new')
+  }
+})
+
+// Methods
 const handleCategorySelection = (categoryNode: TreeNode) => {
-  emit('category-selected', categoryNode.key)
+  const id =
+    categoryNode.key === newCategoryKey
+      ? null
+      : categoryNode.key
+        ? parseInt(categoryNode.key)
+        : categoryNode.key
+  model.value = id
+  emit('category-selected', id, categoryNode.label)
 
   // Display selected node and its child nodes
   if (categoryNode.leaf === false) {
@@ -132,4 +190,19 @@ const displayRootNodes = (categoryNode: TreeNode) => {
     }
   }
 }
+
+const getCategoryName = (id: number | string | null | undefined) => {
+  let idStr = id
+  if (typeof id === 'number') {
+    idStr = '' + id
+  } else if (id === null) {
+    idStr = newCategoryKey
+  } else if (id === undefined) {
+    return undefined
+  }
+
+  return categoryNodes.value.find((c) => c.key === idStr)?.label
+}
+
+defineExpose({ getCategoryName })
 </script>
