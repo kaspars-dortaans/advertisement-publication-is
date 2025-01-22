@@ -19,6 +19,8 @@ public class Context(DbContextOptions<Context> options) : IdentityDbContext<User
     public virtual DbSet<LocaleText> LocaleTexts { get; set; }
     public virtual DbSet<AttributeNameLocaleText> AttributeNameLocaleTexts { get; set; }
     public virtual DbSet<CategoryNameLocaleText> CategoryNameLocaleTexts { get; set; }
+    public virtual DbSet<AttributeValueListLocaleText> AttributeValueListLocaleTexts { get; set; }
+    public virtual DbSet<AttributeValueListEntryLocaleText> AttributeValueListLocaleEntryTexts { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -49,7 +51,7 @@ public class Context(DbContextOptions<Context> options) : IdentityDbContext<User
             .HasDbFunction(() => GetCategoryChildIds(default))
             .HasName("get_child_category_ids");
 
-        modelBuilder.Entity<GetChildCategoryIdsResult>().HasNoKey();
+        modelBuilder.Entity<GetChildCategoryIdsResult>().ToTable("_", t => t.ExcludeFromMigrations());
     }
 
     /// <summary>
