@@ -1,16 +1,14 @@
-import { fileURLToPath, URL } from 'node:url';
+import { fileURLToPath, URL } from 'node:url'
 
-import vue from '@vitejs/plugin-vue';
-import { ConfigEnv, loadEnv, UserConfig } from 'vite';
+import vue from '@vitejs/plugin-vue'
+import { ConfigEnv, loadEnv, UserConfig } from 'vite'
 
 // https://vitejs.dev/config/
-export default ((configEnv: ConfigEnv) => {
-  const env = loadEnv(configEnv.mode, process.cwd());
+export default (configEnv: ConfigEnv) => {
+  const env = loadEnv(configEnv.mode, process.cwd())
 
   return {
-    plugins: [
-      vue(),
-    ],
+    plugins: [vue()],
     base: env.VITE_BASE_URL,
     resolve: {
       alias: {
@@ -18,4 +16,4 @@ export default ((configEnv: ConfigEnv) => {
       }
     }
   } as UserConfig
-})
+}

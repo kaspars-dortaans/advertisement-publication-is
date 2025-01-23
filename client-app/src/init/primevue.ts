@@ -6,7 +6,6 @@ import { LocaleService } from '@/services/locale-service'
 
 //PrimeVue
 import PrimeVue from 'primevue/config'
-import AuraPreset from '@/presets/aura'
 
 //File
 import FileUpload from 'primevue/fileupload'
@@ -56,13 +55,13 @@ const customPassTrough = {
 }
 
 export function initPrimeVue(app: App<Element>) {
-  const globalPassTrough = usePassThrough(AuraPreset, customPassTrough, {
+  const globalPassTrough = usePassThrough(customPassTrough, {
     mergeSections: true,
     mergeProps: true
   })
 
   app.use(PrimeVue, {
-    unstyled: true,
+    theme: 'none',
     pt: globalPassTrough,
     ptOptions: { mergeSections: true, mergeProps: true }
   })
