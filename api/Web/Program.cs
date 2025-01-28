@@ -14,6 +14,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Reflection;
 using System.Text;
+using System.Text.Json.Serialization;
 using Web.Filters;
 using Web.OpenApi;
 
@@ -64,11 +65,13 @@ builder.Services.AddAuthorization(o =>
 builder.Services.AddSingleton<IAuthorizationHandler, PermissionAuthorizationHandler>();
 builder.Services.AddSingleton<IAuthorizationPolicyProvider, PermissionAuthorizationPolicyProvider>();
 
-builder.Services.AddControllers(options =>
-{
-    //Add request filters
-    options.Filters.Add<ApiExceptionFilter>();
-});
+builder.Services
+    .AddControllers(options =>
+        {
+            //Add request filters
+            options.Filters.Add<ApiExceptionFilter>();
+        })
+    .AddJsonOptions(options => options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
 
 // Add OpenApi
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -145,6 +148,8 @@ builder.Services.AddScoped<IJwtProvider, JwtProvider>();
 //Register services here
 builder.Services.AddScoped(typeof(IBaseService<>), typeof(BaseService<>));
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IAdvertisementService, AdvertisementService>();
+builder.Services.AddScoped<ICategoryService, CategoryService>();
 
 //Helpers
 builder.Services.AddScoped<IStorage, LocalFileStorage>();

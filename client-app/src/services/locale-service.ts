@@ -1,5 +1,5 @@
 import { usePrimeVue, type PrimeVueLocaleOptions } from 'primevue/config'
-import { ref } from 'vue'
+import { nextTick, ref, type Ref } from 'vue'
 
 export class LocaleService {
   private static _instance: LocaleService
@@ -8,8 +8,8 @@ export class LocaleService {
     '@/locales/*.json'
   )
   private _localeMap: Map<string, string>
-  private _localeList: string[]
-  private _currentLocale = ref('')
+  readonly localeList: Ref<string[]> = ref([])
+  readonly currentLocale = ref('')
 
   public static get(primevue?: ReturnType<typeof usePrimeVue>) {
     if (!this._instance) {
@@ -25,14 +25,14 @@ export class LocaleService {
 
   private constructor() {
     this._localeMap = new Map()
-    this._localeList = []
+    this.localeList.value = []
 
     for (const filePath in this._localeFiles) {
       const filePathSplit = filePath.split('/')
       const fileName = filePathSplit[filePathSplit.length - 1]
       const localeName = fileName.substring(0, fileName.lastIndexOf('.')).toLocaleUpperCase()
       this._localeMap.set(localeName, filePath)
-      this._localeList.push(localeName)
+      this.localeList.value.push(localeName)
     }
   }
 
@@ -42,28 +42,37 @@ export class LocaleService {
     return this._primevue
   }
 
-  /**
-   * Return available locale list. Do NOT modify it
-   */
-  get localeList() {
-    return this._localeList
-  }
-
-  get currentLocale() {
-    return this._currentLocale
-  }
-
   async loadLocale(name: string) {
     const nameNormalized = name.toLocaleUpperCase()
-    if (!this._localeList.some((value) => value === nameNormalized)) {
+    if (!this.localeList.value.some((value) => value === nameNormalized)) {
       //Locale not found, return
       return
     }
 
-    this._currentLocale.value = nameNormalized
+    // If no locale is assigned, assign new immidietly to prevent errors
+    const unassignedLocale = !this.currentLocale.value
+    if (unassignedLocale) {
+      this.currentLocale.value = nameNormalized
+    }
+
     const filePath = this._localeMap.get(nameNormalized)!
     const locale = await this._localeFiles[filePath]()
     this.primevue.config.locale = locale as PrimeVueLocaleOptions
+
+    // If no locale was assigned force ref update to take into account loaded locale
+    if (unassignedLocale) {
+      const locales = Object.keys(this._localeMap)
+      const tempLocaleIndex =
+        locales.length > 1
+          ? (locales.findIndex((l) => l === nameNormalized) + 1) % locales.length
+          : undefined
+      this.currentLocale.value = typeof tempLocaleIndex === 'number' ? locales[tempLocaleIndex] : ''
+      nextTick(() => {
+        this.currentLocale.value = nameNormalized
+      })
+    } else {
+      this.currentLocale.value = nameNormalized
+    }
   }
 
   localizeMultiple(keys: string[], suffix?: string, ...params: string[]) {
@@ -94,20 +103,22 @@ export class LocaleService {
 
     const paramsPrefix = '{'
     const paramSuffix = '}'
-    let result = str
+    let result = ''
     let lastParamIndex = 0,
       prefixIndex = -1,
       suffixIndex = -1
+
     for (const param of params) {
-      prefixIndex = result.indexOf(paramsPrefix, lastParamIndex)
-      suffixIndex = result.indexOf(paramSuffix, prefixIndex)
+      prefixIndex = str.indexOf(paramsPrefix, lastParamIndex)
+      suffixIndex = str.indexOf(paramSuffix, lastParamIndex)
       if (prefixIndex >= 0 && suffixIndex >= 0) {
-        result = result.slice(0, prefixIndex) + param + result.slice(suffixIndex + 1)
-        lastParamIndex = prefixIndex
+        result += str.slice(lastParamIndex, prefixIndex) + param
+        lastParamIndex = suffixIndex + 1
       } else {
         break
       }
     }
+    result += str.slice(lastParamIndex)
     return result
   }
 }

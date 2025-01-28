@@ -1,4 +1,5 @@
 ﻿using System.Linq.Expressions;
+using Z.EntityFramework.Plus;
 
 namespace BusinessLogic.Services;
 
@@ -11,4 +12,5 @@ public interface IBaseService<Entity> where Entity : class
     public Task<bool> ExistsAsync(Expression<Func<Entity, bool>> predicate);
     public Task<Entity> AddAsync(Entity entity);
     public Task<Entity> UpdateAsync(Entity entity);
+    public IQueryable<Entity> Where(Expression<Func<Entity, bool>> predicate);
 }

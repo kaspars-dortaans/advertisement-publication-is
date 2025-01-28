@@ -9,5 +9,6 @@ public class Category
     public Category? ParentCategory { get; set; }
     public ICollection<Category> ChildCategories { get; set; } = default!;
     public ICollection<CategoryNameLocaleText> LocalisedNames { get; set; } = default!;
+    public ICollection<CategoryAttribute> CategoryAttributes { get; set; } = default!;
     public ICollection<Attribute> Attributes { get; set; } = default!;
 }

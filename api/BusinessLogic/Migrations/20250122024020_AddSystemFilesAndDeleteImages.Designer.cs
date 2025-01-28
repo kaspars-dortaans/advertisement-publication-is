@@ -3,6 +3,7 @@ using System;
 using BusinessLogic.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BusinessLogic.Migrations
 {
     [DbContext(typeof(Context))]
-    partial class ContextModelSnapshot : ModelSnapshot
+    [Migration("20250122024020_AddSystemFilesAndDeleteImages")]
+    partial class AddSystemFilesAndDeleteImages
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -105,9 +108,6 @@ namespace BusinessLogic.Migrations
                     b.Property<int?>("AttributeValueListId")
                         .HasColumnType("integer");
 
-                    b.Property<int>("FilterType")
-                        .HasColumnType("integer");
-
                     b.Property<int?>("IconId")
                         .HasColumnType("integer");
 
@@ -154,9 +154,6 @@ namespace BusinessLogic.Migrations
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<int>("AttributeValueListId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("OrderIndex")
                         .HasColumnType("integer");
 
                     b.HasKey("Id");

@@ -22,11 +22,16 @@ import InputGroupAddon from 'primevue/inputgroupaddon'
 import IconField from 'primevue/iconfield'
 import InputIcon from 'primevue/inputicon'
 import InputText from 'primevue/inputtext'
+import InputNumber from 'primevue/inputnumber'
 import Password from 'primevue/password'
 import { usePassThrough } from 'primevue/passthrough'
+import FloatLabel from 'primevue/floatlabel'
+import Select from 'primevue/select'
 
 //Data
 import Tree from 'primevue/tree'
+import DataTable from 'primevue/datatable'
+import Column from 'primevue/column'
 
 //Panel
 import Panel from 'primevue/panel'
@@ -51,6 +56,18 @@ const customPassTrough = {
   },
   menubar: {
     start: 'flex-1'
+  },
+  datatable: {
+    pcPaginator: {
+      content: {
+        class: 'flex flex-row items-center justify-center w-full'
+      },
+      pcRowPerPageDropdown: {
+        root: {
+          class: 'ml-auto mr-2'
+        }
+      }
+    }
   }
 }
 
@@ -87,10 +104,15 @@ export function initPrimeVue(app: App<Element>) {
   app.component('InputGroup', InputGroup)
   app.component('InputGroupAddon', InputGroupAddon)
   app.component('InputText', InputText)
+  app.component('InputNumber', InputNumber)
   app.component('Password', Password)
+  app.component('FloatLabel', FloatLabel)
+  app.component('Select', Select)
 
   //Data
   app.component('Tree', Tree)
+  app.component('DataTable', DataTable)
+  app.component('Column', Column)
 
   //Panel
   app.component('Panel', Panel)

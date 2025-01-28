@@ -3,5 +3,6 @@
 public class AttributeValueList
 {
     public int Id { get; set; }
-    public ICollection<AttributeValueListLocaleText> LocelisedNames { get; set; } = default!;
+    public ICollection<AttributeValueListEntry> ListEntries { get; set; } = default!;
+    public ICollection<AttributeValueListLocaleText> LocalisedNames { get; set; } = default!;
 }

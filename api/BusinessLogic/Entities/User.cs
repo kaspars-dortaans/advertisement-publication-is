@@ -9,5 +9,5 @@ public class User : IdentityUser<int>
     public bool IsPhoneNumberPublic { get; set; }
     public bool IsEmailPublic { get; set; }
     public int? ProfileImageFileId { get; set; }
-    public File ProfileImageFile { get; set; } = default!;
+    public UserFile ProfileImageFile { get; set; } = default!;
 }

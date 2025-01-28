@@ -48,7 +48,7 @@ const inputDebounceTime = 3000
 
 const searchInput = ref('')
 
-const localeItems = ls.localeList.map((localeName) => ({
+const localeItems = ls.localeList.value.map((localeName) => ({
   label: localeName,
   command: () => ls.loadLocale(localeName)
 }))
@@ -87,8 +87,8 @@ const items = reactive([
 ])
 
 const search = () => {
-  console.log(searchInput.value)
   // TODO: Navigate to search page
+  alert('Not implented')
 }
 
 const immediateSearch = () => {

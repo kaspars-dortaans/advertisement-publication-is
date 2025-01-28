@@ -3,6 +3,7 @@ using System;
 using BusinessLogic.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BusinessLogic.Migrations
 {
     [DbContext(typeof(Context))]
-    partial class ContextModelSnapshot : ModelSnapshot
+    [Migration("20250122013943_AddCategoryAttributeConfiguration")]
+    partial class AddCategoryAttributeConfiguration
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -62,8 +65,6 @@ namespace BusinessLogic.Migrations
 
                     b.HasIndex("OwnerId");
 
-                    b.HasIndex("ThumbnailImageId");
-
                     b.ToTable("Advertisements");
                 });
 
@@ -105,12 +106,6 @@ namespace BusinessLogic.Migrations
                     b.Property<int?>("AttributeValueListId")
                         .HasColumnType("integer");
 
-                    b.Property<int>("FilterType")
-                        .HasColumnType("integer");
-
-                    b.Property<int?>("IconId")
-                        .HasColumnType("integer");
-
                     b.Property<bool>("Searchable")
                         .HasColumnType("boolean");
 
@@ -126,8 +121,6 @@ namespace BusinessLogic.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("AttributeValueListId");
-
-                    b.HasIndex("IconId");
 
                     b.ToTable("Attributes");
                 });
@@ -154,9 +147,6 @@ namespace BusinessLogic.Migrations
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<int>("AttributeValueListId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("OrderIndex")
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
@@ -218,14 +208,20 @@ namespace BusinessLogic.Migrations
 
                     b.Property<string>("Discriminator")
                         .IsRequired()
-                        .HasMaxLength(13)
-                        .HasColumnType("character varying(13)");
+                        .HasMaxLength(5)
+                        .HasColumnType("character varying(5)");
+
+                    b.Property<int>("OwnerUserId")
+                        .HasColumnType("integer");
 
                     b.Property<string>("Path")
                         .IsRequired()
                         .HasColumnType("text");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("OwnerUserId")
+                        .IsUnique();
 
                     b.ToTable("Files");
 
@@ -565,24 +561,17 @@ namespace BusinessLogic.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("BusinessLogic.Entities.SystemFile", b =>
+            modelBuilder.Entity("BusinessLogic.Entities.Image", b =>
                 {
                     b.HasBaseType("BusinessLogic.Entities.File");
 
-                    b.HasDiscriminator().HasValue("SystemFile");
-                });
-
-            modelBuilder.Entity("BusinessLogic.Entities.UserFile", b =>
-                {
-                    b.HasBaseType("BusinessLogic.Entities.File");
-
-                    b.Property<int>("OwnerUserId")
+                    b.Property<int>("AdvertisementId")
                         .HasColumnType("integer");
 
-                    b.HasIndex("OwnerUserId")
+                    b.HasIndex("AdvertisementId")
                         .IsUnique();
 
-                    b.HasDiscriminator().HasValue("UserFile");
+                    b.HasDiscriminator().HasValue("Image");
                 });
 
             modelBuilder.Entity("BusinessLogic.Entities.AttributeNameLocaleText", b =>
@@ -647,15 +636,9 @@ namespace BusinessLogic.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("BusinessLogic.Entities.File", "ThumbnailImage")
-                        .WithMany()
-                        .HasForeignKey("ThumbnailImageId");
-
                     b.Navigation("Category");
 
                     b.Navigation("Owner");
-
-                    b.Navigation("ThumbnailImage");
                 });
 
             modelBuilder.Entity("BusinessLogic.Entities.AdvertisementAttributeValue", b =>
@@ -683,13 +666,7 @@ namespace BusinessLogic.Migrations
                         .WithMany()
                         .HasForeignKey("AttributeValueListId");
 
-                    b.HasOne("BusinessLogic.Entities.SystemFile", "Icon")
-                        .WithMany()
-                        .HasForeignKey("IconId");
-
                     b.Navigation("AttributeValueList");
-
-                    b.Navigation("Icon");
                 });
 
             modelBuilder.Entity("BusinessLogic.Entities.AttributeValueListEntry", b =>
@@ -729,6 +706,17 @@ namespace BusinessLogic.Migrations
                     b.Navigation("Attribute");
 
                     b.Navigation("Category");
+                });
+
+            modelBuilder.Entity("BusinessLogic.Entities.File", b =>
+                {
+                    b.HasOne("BusinessLogic.Entities.User", "OwnerUser")
+                        .WithOne("ProfileImageFile")
+                        .HasForeignKey("BusinessLogic.Entities.File", "OwnerUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("OwnerUser");
                 });
 
             modelBuilder.Entity("BusinessLogic.Entities.Message", b =>
@@ -820,15 +808,15 @@ namespace BusinessLogic.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("BusinessLogic.Entities.UserFile", b =>
+            modelBuilder.Entity("BusinessLogic.Entities.Image", b =>
                 {
-                    b.HasOne("BusinessLogic.Entities.User", "OwnerUser")
-                        .WithOne("ProfileImageFile")
-                        .HasForeignKey("BusinessLogic.Entities.UserFile", "OwnerUserId")
+                    b.HasOne("BusinessLogic.Entities.Advertisement", "Advertisement")
+                        .WithOne("ThumbnailImage")
+                        .HasForeignKey("BusinessLogic.Entities.Image", "AdvertisementId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("OwnerUser");
+                    b.Navigation("Advertisement");
                 });
 
             modelBuilder.Entity("BusinessLogic.Entities.AttributeNameLocaleText", b =>
@@ -874,6 +862,8 @@ namespace BusinessLogic.Migrations
             modelBuilder.Entity("BusinessLogic.Entities.Advertisement", b =>
                 {
                     b.Navigation("AttributeValues");
+
+                    b.Navigation("ThumbnailImage");
                 });
 
             modelBuilder.Entity("BusinessLogic.Entities.Attribute", b =>

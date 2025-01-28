@@ -4,6 +4,6 @@ public enum ValueTypes
 {
     Text = 0,
     Integer,
-    FloatingNumber,
+    Decimal,
     ValueListEntry
 }

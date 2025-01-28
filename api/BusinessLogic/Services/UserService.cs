@@ -8,10 +8,11 @@ using Microsoft.AspNetCore.Identity;
 namespace BusinessLogic.Services;
 
 public class UserService(
+    Context context,
     UserManager<User> userManager,
     IStorage storage,
     IFilePathResolver filePathResolver,
-    IBaseService<Entities.File> fileService) : IUserService
+    IBaseService<Entities.File> fileService) : BaseService<User>(context), IUserService
 {
     private readonly UserManager<User> _userManager = userManager;
     private readonly IStorage _storage = storage;
@@ -84,7 +85,7 @@ public class UserService(
 
         //Add file entity
         var filePath = _filePathResolver.GenerateUniqueFilePath(FileFolderConstants.ProfileImageFolder, profileImage.FileName);
-        var file = await _fileService.AddAsync(new Entities.File()
+        var file = await _fileService.AddAsync(new Entities.UserFile()
         {
             OwnerUserId = user.Id,
             Path = filePath

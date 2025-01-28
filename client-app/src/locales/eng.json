@@ -8,6 +8,16 @@
     "search": "Search"
   },
 
+  "dataTable": {
+    "pageReportTemplate": "{1} to {2} of {3}",
+    "from": "From",
+    "to": "To"
+  },
+
+  "categoryMenu": {
+    "new": "New"
+  },
+
   "form": {
     "dontHaveAnAccountQuestion": "Don't have an account?",
     "alreadyHaveAnAccount": "Already have an account?",

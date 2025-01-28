@@ -1,19 +1,17 @@
-﻿using BusinessLogic.Dto.DataTableQuery;
-using AutoMapper;
+﻿using AutoMapper;
+using BusinessLogic.Dto.DataTableQuery;
 using System.Linq.Expressions;
-using Microsoft.EntityFrameworkCore;
-
+using Z.EntityFramework.Plus;
 namespace BusinessLogic.Helpers;
 
 public static class DataTableQueryResolver
 {
 
-    //TODO: Test, refactor and optimise
     //Implement datatable query suppport per https://datatables.net/manual/server-side
     public static async Task<DataTableQueryResponse<Entity>> ResolveDataTableQuery<Entity>(this IQueryable<Entity> query, DataTableQuery request, DataTableQueryConfig<Entity>? config = null) where Entity : class
     {
         //Total record count
-        var recordsTotal = query.Count();
+        var totalRecords = query.DeferredCount().FutureValue();
         
         //Search
         var searchableColumns = request.Columns.Where(c => c.Searchable).ToList();
@@ -37,8 +35,7 @@ public static class DataTableQueryResolver
         }
 
         //Filtered record count
-        var recordsFiltered = query.Count();
-
+        var filteredRecordCount = query.DeferredCount().FutureValue();
 
         //Order
         var orderApplied = false;
@@ -64,12 +61,13 @@ public static class DataTableQueryResolver
             query = query.Take(request.Length.Value);
         }
 
+        var queryResult = await query.Future().ToListAsync();
         return new DataTableQueryResponse<Entity>()
         {
             Draw = request.Draw,
-            Data = await query.ToListAsync(),
-            RecordsTotal = recordsTotal,
-            RecordsFiltered = recordsFiltered,
+            RecordsTotal = totalRecords.Value,
+            RecordsFiltered = filteredRecordCount.Value,
+            Data = queryResult
         };
     }
 

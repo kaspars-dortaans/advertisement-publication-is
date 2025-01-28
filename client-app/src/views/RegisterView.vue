@@ -118,8 +118,8 @@
 </template>
 
 <script setup lang="ts">
-import FieldError from '@/components/FieldError.vue'
-import ImageUpload from '@/components/ImageUpload.vue'
+import FieldError from '@/components/Form/FieldError.vue'
+import ImageUpload from '@/components/Form/ImageUpload.vue'
 import { UserClient, type FileParameter, type IRegisterDto } from '@/services/api-client'
 import { LocaleService } from '@/services/locale-service'
 import { getClient } from '@/utils/client-builder'

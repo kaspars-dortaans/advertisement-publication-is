@@ -25,6 +25,62 @@ export class AdvertisementClient {
     }
 
     /**
+     * @param body (optional) 
+     * @return Success
+     */
+    getAdvertisements(body: AdvertismentQuery | undefined, cancelToken?: CancelToken): Promise<AdvertisementListItemDataTableQueryResponse> {
+        let url_ = this.baseUrl + "/api/Advertisement/GetAdvertisements";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_: AxiosRequestConfig = {
+            data: content_,
+            method: "POST",
+            url: url_,
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "text/plain"
+            },
+            cancelToken
+        };
+
+        return this.instance.request(options_).catch((_error: any) => {
+            if (isAxiosError(_error) && _error.response) {
+                return _error.response;
+            } else {
+                throw _error;
+            }
+        }).then((_response: AxiosResponse) => {
+            return this.processGetAdvertisements(_response);
+        });
+    }
+
+    protected processGetAdvertisements(response: AxiosResponse): Promise<AdvertisementListItemDataTableQueryResponse> {
+        const status = response.status;
+        let _headers: any = {};
+        if (response.headers && typeof response.headers === "object") {
+            for (const k in response.headers) {
+                if (response.headers.hasOwnProperty(k)) {
+                    _headers[k] = response.headers[k];
+                }
+            }
+        }
+        if (status === 200) {
+            const _responseText = response.data;
+            let result200: any = null;
+            let resultData200  = _responseText;
+            result200 = AdvertisementListItemDataTableQueryResponse.fromJS(resultData200);
+            return Promise.resolve<AdvertisementListItemDataTableQueryResponse>(result200);
+
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.data;
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Promise.resolve<AdvertisementListItemDataTableQueryResponse>(null as any);
+    }
+
+    /**
      * @param locale (optional) 
      * @return Success
      */
@@ -85,6 +141,67 @@ export class AdvertisementClient {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
         }
         return Promise.resolve<CategoryItem[]>(null as any);
+    }
+
+    /**
+     * @param categoryId (optional) 
+     * @param locale (optional) 
+     * @return Success
+     */
+    getCategoryInfo(categoryId: number | undefined, locale: string | undefined, cancelToken?: CancelToken): Promise<CategoryInfo> {
+        let url_ = this.baseUrl + "/api/Advertisement/GetCategoryInfo?";
+        if (categoryId === null)
+            throw new Error("The parameter 'categoryId' cannot be null.");
+        else if (categoryId !== undefined)
+            url_ += "categoryId=" + encodeURIComponent("" + categoryId) + "&";
+        if (locale === null)
+            throw new Error("The parameter 'locale' cannot be null.");
+        else if (locale !== undefined)
+            url_ += "locale=" + encodeURIComponent("" + locale) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: AxiosRequestConfig = {
+            method: "GET",
+            url: url_,
+            headers: {
+                "Accept": "text/plain"
+            },
+            cancelToken
+        };
+
+        return this.instance.request(options_).catch((_error: any) => {
+            if (isAxiosError(_error) && _error.response) {
+                return _error.response;
+            } else {
+                throw _error;
+            }
+        }).then((_response: AxiosResponse) => {
+            return this.processGetCategoryInfo(_response);
+        });
+    }
+
+    protected processGetCategoryInfo(response: AxiosResponse): Promise<CategoryInfo> {
+        const status = response.status;
+        let _headers: any = {};
+        if (response.headers && typeof response.headers === "object") {
+            for (const k in response.headers) {
+                if (response.headers.hasOwnProperty(k)) {
+                    _headers[k] = response.headers[k];
+                }
+            }
+        }
+        if (status === 200) {
+            const _responseText = response.data;
+            let result200: any = null;
+            let resultData200  = _responseText;
+            result200 = CategoryInfo.fromJS(resultData200);
+            return Promise.resolve<CategoryInfo>(result200);
+
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.data;
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Promise.resolve<CategoryInfo>(null as any);
     }
 }
 
@@ -345,6 +462,594 @@ export class UserClient {
     }
 }
 
+export class AdvertisementListItem implements IAdvertisementListItem {
+    id?: number;
+    categoryId?: number;
+    categoryName?: string | undefined;
+    postedDate?: Date;
+    title?: string | undefined;
+    advertisementText?: string | undefined;
+    thumbnailImagePath?: string | undefined;
+    attributeValues?: AttributeValueItem[] | undefined;
+
+    constructor(data?: IAdvertisementListItem) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.categoryId = _data["categoryId"];
+            this.categoryName = _data["categoryName"];
+            this.postedDate = _data["postedDate"] ? new Date(_data["postedDate"].toString()) : <any>undefined;
+            this.title = _data["title"];
+            this.advertisementText = _data["advertisementText"];
+            this.thumbnailImagePath = _data["thumbnailImagePath"];
+            if (Array.isArray(_data["attributeValues"])) {
+                this.attributeValues = [] as any;
+                for (let item of _data["attributeValues"])
+                    this.attributeValues!.push(AttributeValueItem.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): AdvertisementListItem {
+        data = typeof data === 'object' ? data : {};
+        let result = new AdvertisementListItem();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["categoryId"] = this.categoryId;
+        data["categoryName"] = this.categoryName;
+        data["postedDate"] = this.postedDate ? this.postedDate.toISOString() : <any>undefined;
+        data["title"] = this.title;
+        data["advertisementText"] = this.advertisementText;
+        data["thumbnailImagePath"] = this.thumbnailImagePath;
+        if (Array.isArray(this.attributeValues)) {
+            data["attributeValues"] = [];
+            for (let item of this.attributeValues)
+                data["attributeValues"].push(item.toJSON());
+        }
+        return data;
+    }
+}
+
+export interface IAdvertisementListItem {
+    id?: number;
+    categoryId?: number;
+    categoryName?: string | undefined;
+    postedDate?: Date;
+    title?: string | undefined;
+    advertisementText?: string | undefined;
+    thumbnailImagePath?: string | undefined;
+    attributeValues?: AttributeValueItem[] | undefined;
+}
+
+export class AdvertisementListItemDataTableQueryResponse implements IAdvertisementListItemDataTableQueryResponse {
+    draw?: number;
+    recordsTotal?: number;
+    recordsFiltered?: number;
+    data?: AdvertisementListItem[] | undefined;
+    error?: string | undefined;
+
+    constructor(data?: IAdvertisementListItemDataTableQueryResponse) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.draw = _data["draw"];
+            this.recordsTotal = _data["recordsTotal"];
+            this.recordsFiltered = _data["recordsFiltered"];
+            if (Array.isArray(_data["data"])) {
+                this.data = [] as any;
+                for (let item of _data["data"])
+                    this.data!.push(AdvertisementListItem.fromJS(item));
+            }
+            this.error = _data["error"];
+        }
+    }
+
+    static fromJS(data: any): AdvertisementListItemDataTableQueryResponse {
+        data = typeof data === 'object' ? data : {};
+        let result = new AdvertisementListItemDataTableQueryResponse();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["draw"] = this.draw;
+        data["recordsTotal"] = this.recordsTotal;
+        data["recordsFiltered"] = this.recordsFiltered;
+        if (Array.isArray(this.data)) {
+            data["data"] = [];
+            for (let item of this.data)
+                data["data"].push(item.toJSON());
+        }
+        data["error"] = this.error;
+        return data;
+    }
+}
+
+export interface IAdvertisementListItemDataTableQueryResponse {
+    draw?: number;
+    recordsTotal?: number;
+    recordsFiltered?: number;
+    data?: AdvertisementListItem[] | undefined;
+    error?: string | undefined;
+}
+
+export class AdvertismentQuery implements IAdvertismentQuery {
+    draw?: number;
+    start?: number | undefined;
+    length?: number | undefined;
+    search?: SearchQuery;
+    order?: OrderQuery[] | undefined;
+    columns?: TableColumn[] | undefined;
+    categoryId?: number | undefined;
+    locale!: string;
+    attributeSearch?: AttributeSearchQuery[] | undefined;
+    attributeOrder?: AttributeOrderQuery[] | undefined;
+
+    constructor(data?: IAdvertismentQuery) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.draw = _data["draw"];
+            this.start = _data["start"];
+            this.length = _data["length"];
+            this.search = _data["search"] ? SearchQuery.fromJS(_data["search"]) : <any>undefined;
+            if (Array.isArray(_data["order"])) {
+                this.order = [] as any;
+                for (let item of _data["order"])
+                    this.order!.push(OrderQuery.fromJS(item));
+            }
+            if (Array.isArray(_data["columns"])) {
+                this.columns = [] as any;
+                for (let item of _data["columns"])
+                    this.columns!.push(TableColumn.fromJS(item));
+            }
+            this.categoryId = _data["categoryId"];
+            this.locale = _data["locale"];
+            if (Array.isArray(_data["attributeSearch"])) {
+                this.attributeSearch = [] as any;
+                for (let item of _data["attributeSearch"])
+                    this.attributeSearch!.push(AttributeSearchQuery.fromJS(item));
+            }
+            if (Array.isArray(_data["attributeOrder"])) {
+                this.attributeOrder = [] as any;
+                for (let item of _data["attributeOrder"])
+                    this.attributeOrder!.push(AttributeOrderQuery.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): AdvertismentQuery {
+        data = typeof data === 'object' ? data : {};
+        let result = new AdvertismentQuery();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["draw"] = this.draw;
+        data["start"] = this.start;
+        data["length"] = this.length;
+        data["search"] = this.search ? this.search.toJSON() : <any>undefined;
+        if (Array.isArray(this.order)) {
+            data["order"] = [];
+            for (let item of this.order)
+                data["order"].push(item.toJSON());
+        }
+        if (Array.isArray(this.columns)) {
+            data["columns"] = [];
+            for (let item of this.columns)
+                data["columns"].push(item.toJSON());
+        }
+        data["categoryId"] = this.categoryId;
+        data["locale"] = this.locale;
+        if (Array.isArray(this.attributeSearch)) {
+            data["attributeSearch"] = [];
+            for (let item of this.attributeSearch)
+                data["attributeSearch"].push(item.toJSON());
+        }
+        if (Array.isArray(this.attributeOrder)) {
+            data["attributeOrder"] = [];
+            for (let item of this.attributeOrder)
+                data["attributeOrder"].push(item.toJSON());
+        }
+        return data;
+    }
+}
+
+export interface IAdvertismentQuery {
+    draw?: number;
+    start?: number | undefined;
+    length?: number | undefined;
+    search?: SearchQuery;
+    order?: OrderQuery[] | undefined;
+    columns?: TableColumn[] | undefined;
+    categoryId?: number | undefined;
+    locale: string;
+    attributeSearch?: AttributeSearchQuery[] | undefined;
+    attributeOrder?: AttributeOrderQuery[] | undefined;
+}
+
+export class AttributeOrderQuery implements IAttributeOrderQuery {
+    attributeId!: number;
+    direction!: string;
+
+    constructor(data?: IAttributeOrderQuery) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.attributeId = _data["attributeId"];
+            this.direction = _data["direction"];
+        }
+    }
+
+    static fromJS(data: any): AttributeOrderQuery {
+        data = typeof data === 'object' ? data : {};
+        let result = new AttributeOrderQuery();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["attributeId"] = this.attributeId;
+        data["direction"] = this.direction;
+        return data;
+    }
+}
+
+export interface IAttributeOrderQuery {
+    attributeId: number;
+    direction: string;
+}
+
+export class AttributeSearchQuery implements IAttributeSearchQuery {
+    attributeId!: number;
+    value?: string | undefined;
+    secondaryValue?: string | undefined;
+
+    constructor(data?: IAttributeSearchQuery) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.attributeId = _data["attributeId"];
+            this.value = _data["value"];
+            this.secondaryValue = _data["secondaryValue"];
+        }
+    }
+
+    static fromJS(data: any): AttributeSearchQuery {
+        data = typeof data === 'object' ? data : {};
+        let result = new AttributeSearchQuery();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["attributeId"] = this.attributeId;
+        data["value"] = this.value;
+        data["secondaryValue"] = this.secondaryValue;
+        return data;
+    }
+}
+
+export interface IAttributeSearchQuery {
+    attributeId: number;
+    value?: string | undefined;
+    secondaryValue?: string | undefined;
+}
+
+export class AttributeValueItem implements IAttributeValueItem {
+    attributeId?: number;
+    attributeName?: string | undefined;
+    value?: string | undefined;
+
+    constructor(data?: IAttributeValueItem) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.attributeId = _data["attributeId"];
+            this.attributeName = _data["attributeName"];
+            this.value = _data["value"];
+        }
+    }
+
+    static fromJS(data: any): AttributeValueItem {
+        data = typeof data === 'object' ? data : {};
+        let result = new AttributeValueItem();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["attributeId"] = this.attributeId;
+        data["attributeName"] = this.attributeName;
+        data["value"] = this.value;
+        return data;
+    }
+}
+
+export interface IAttributeValueItem {
+    attributeId?: number;
+    attributeName?: string | undefined;
+    value?: string | undefined;
+}
+
+export class AttributeValueListEntryItem implements IAttributeValueListEntryItem {
+    id?: number;
+    name?: string | undefined;
+    orderIndex?: number;
+
+    constructor(data?: IAttributeValueListEntryItem) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.name = _data["name"];
+            this.orderIndex = _data["orderIndex"];
+        }
+    }
+
+    static fromJS(data: any): AttributeValueListEntryItem {
+        data = typeof data === 'object' ? data : {};
+        let result = new AttributeValueListEntryItem();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["name"] = this.name;
+        data["orderIndex"] = this.orderIndex;
+        return data;
+    }
+}
+
+export interface IAttributeValueListEntryItem {
+    id?: number;
+    name?: string | undefined;
+    orderIndex?: number;
+}
+
+export class AttributeValueListItem implements IAttributeValueListItem {
+    id?: number;
+    name?: string | undefined;
+    entries?: AttributeValueListEntryItem[] | undefined;
+
+    constructor(data?: IAttributeValueListItem) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.name = _data["name"];
+            if (Array.isArray(_data["entries"])) {
+                this.entries = [] as any;
+                for (let item of _data["entries"])
+                    this.entries!.push(AttributeValueListEntryItem.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): AttributeValueListItem {
+        data = typeof data === 'object' ? data : {};
+        let result = new AttributeValueListItem();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["name"] = this.name;
+        if (Array.isArray(this.entries)) {
+            data["entries"] = [];
+            for (let item of this.entries)
+                data["entries"].push(item.toJSON());
+        }
+        return data;
+    }
+}
+
+export interface IAttributeValueListItem {
+    id?: number;
+    name?: string | undefined;
+    entries?: AttributeValueListEntryItem[] | undefined;
+}
+
+export class CategoryAttributeInfo implements ICategoryAttributeInfo {
+    id?: number;
+    name?: string | undefined;
+    sortable?: boolean;
+    searchable?: boolean;
+    order?: number;
+    valueListId?: number | undefined;
+    iconUrl?: string | undefined;
+    attributeValueType?: ValueTypes;
+    attributeFilterType?: FilterType;
+
+    constructor(data?: ICategoryAttributeInfo) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.name = _data["name"];
+            this.sortable = _data["sortable"];
+            this.searchable = _data["searchable"];
+            this.order = _data["order"];
+            this.valueListId = _data["valueListId"];
+            this.iconUrl = _data["iconUrl"];
+            this.attributeValueType = _data["attributeValueType"];
+            this.attributeFilterType = _data["attributeFilterType"];
+        }
+    }
+
+    static fromJS(data: any): CategoryAttributeInfo {
+        data = typeof data === 'object' ? data : {};
+        let result = new CategoryAttributeInfo();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["name"] = this.name;
+        data["sortable"] = this.sortable;
+        data["searchable"] = this.searchable;
+        data["order"] = this.order;
+        data["valueListId"] = this.valueListId;
+        data["iconUrl"] = this.iconUrl;
+        data["attributeValueType"] = this.attributeValueType;
+        data["attributeFilterType"] = this.attributeFilterType;
+        return data;
+    }
+}
+
+export interface ICategoryAttributeInfo {
+    id?: number;
+    name?: string | undefined;
+    sortable?: boolean;
+    searchable?: boolean;
+    order?: number;
+    valueListId?: number | undefined;
+    iconUrl?: string | undefined;
+    attributeValueType?: ValueTypes;
+    attributeFilterType?: FilterType;
+}
+
+export class CategoryInfo implements ICategoryInfo {
+    categoryName?: string | undefined;
+    attributeInfo?: CategoryAttributeInfo[] | undefined;
+    attributeValueLists?: AttributeValueListItem[] | undefined;
+
+    constructor(data?: ICategoryInfo) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.categoryName = _data["categoryName"];
+            if (Array.isArray(_data["attributeInfo"])) {
+                this.attributeInfo = [] as any;
+                for (let item of _data["attributeInfo"])
+                    this.attributeInfo!.push(CategoryAttributeInfo.fromJS(item));
+            }
+            if (Array.isArray(_data["attributeValueLists"])) {
+                this.attributeValueLists = [] as any;
+                for (let item of _data["attributeValueLists"])
+                    this.attributeValueLists!.push(AttributeValueListItem.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): CategoryInfo {
+        data = typeof data === 'object' ? data : {};
+        let result = new CategoryInfo();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["categoryName"] = this.categoryName;
+        if (Array.isArray(this.attributeInfo)) {
+            data["attributeInfo"] = [];
+            for (let item of this.attributeInfo)
+                data["attributeInfo"].push(item.toJSON());
+        }
+        if (Array.isArray(this.attributeValueLists)) {
+            data["attributeValueLists"] = [];
+            for (let item of this.attributeValueLists)
+                data["attributeValueLists"].push(item.toJSON());
+        }
+        return data;
+    }
+}
+
+export interface ICategoryInfo {
+    categoryName?: string | undefined;
+    attributeInfo?: CategoryAttributeInfo[] | undefined;
+    attributeValueLists?: AttributeValueListItem[] | undefined;
+}
+
 export class CategoryItem implements ICategoryItem {
     id!: number;
     name!: string;
@@ -467,6 +1172,12 @@ export interface IDataTableQuery {
     search?: SearchQuery;
     order?: OrderQuery[] | undefined;
     columns?: TableColumn[] | undefined;
+}
+
+export enum FilterType {
+    Search = "Search",
+    FromTo = "FromTo",
+    Match = "Match",
 }
 
 export class LoginDto implements ILoginDto {
@@ -943,6 +1654,13 @@ export interface IUserListItemDataTableQueryResponse {
     recordsFiltered?: number;
     data?: UserListItem[] | undefined;
     error?: string | undefined;
+}
+
+export enum ValueTypes {
+    Text = "Text",
+    Integer = "Integer",
+    Decimal = "Decimal",
+    ValueListEntry = "ValueListEntry",
 }
 
 export interface FileParameter {

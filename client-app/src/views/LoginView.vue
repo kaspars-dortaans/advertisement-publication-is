@@ -49,7 +49,7 @@
 </template>
 
 <script setup lang="ts">
-import FieldError from '@/components/FieldError.vue'
+import FieldError from '@/components/Form/FieldError.vue'
 import { LoginDto, type ILoginDto } from '@/services/api-client'
 import { AuthService } from '@/services/auth-service'
 import { LocaleService } from '@/services/locale-service'

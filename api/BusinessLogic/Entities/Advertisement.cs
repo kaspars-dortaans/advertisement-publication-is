@@ -14,6 +14,6 @@ public class Advertisement
     public int CategoryId { get; set; }
     public Category Category { get; set; } = default!;
     public int? ThumbnailImageId { get; set; }
-    public Image? ThumbnailImage { get; set; }
+    public File? ThumbnailImage { get; set; }
     public ICollection<AdvertisementAttributeValue> AttributeValues { get; set; } = default!;
 }
