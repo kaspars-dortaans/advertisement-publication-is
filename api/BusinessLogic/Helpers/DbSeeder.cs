@@ -241,7 +241,7 @@ public class DbSeeder
                 AttributeValueList = new AttributeValueList()
                 {
                     Id = 1,
-                    LocelisedNames = new List<AttributeValueListLocaleText>()
+                    LocalisedNames = new List<AttributeValueListLocaleText>()
                     {
                         new()
                         {

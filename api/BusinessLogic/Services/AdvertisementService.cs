@@ -55,11 +55,10 @@ public class AdvertisementService(
             var isValueInt = int.TryParse(search.Value, out var valueInt);
             var isSecondaryValueInt = int.TryParse(search.SecondaryValue, out var secondaryValueInt);
 
-            //TODO: Improve query
             query = query
                 .Where(advertisement =>
                     DbContext.Attributes.First(attribute => attribute.Id == search.AttributeId).FilterType == Enums.FilterType.FromTo
-                    ? DbContext.Attributes.First(attribtue => attribtue.Id == search.AttributeId).ValueType == Enums.ValueTypes.ValueListEntry
+                    ? DbContext.Attributes.First(attribute => attribute.Id == search.AttributeId).ValueType == Enums.ValueTypes.ValueListEntry
                         //From to search
                         //For value lists  
                         ? ((!isValueInt || DbContext.AttributeValueListEntries.First(entry => entry.Id == Convert.ToInt32(advertisement.AttributeValues.First(attributeValue => attributeValue.AttributeId == search.AttributeId).Value)).OrderIndex >= valueInt)
@@ -80,7 +79,7 @@ public class AdvertisementService(
     //TODO: Test ordering for different attribute types
     private static IQueryable<AdvertisementListItem> OrderByAttributes(
         IQueryable<AdvertisementListItem> query,
-        bool sortAplied,
+        bool sortApplied,
         List<AttributeOrderQuery> attributeOrder)
     {
         if (attributeOrder.Count < 1)
@@ -90,7 +89,7 @@ public class AdvertisementService(
 
         var orderIndex = 0;
         // New expression is returned in order to capture current index into expression scope
-        // Otherwise expression refernces variable, which upon expression evaluation will be changed and identical for all expression calls
+        // Otherwise expression references variable, which upon expression evaluation will be changed and identical for all expression calls
         Expression<Func<AdvertisementListItem, string>> getKeySelectorExpression(int index)
         {
             return a => a.AttributeValues.First(v => v.AttributeId == attributeOrder[index].AttributeId).Value;
@@ -98,7 +97,7 @@ public class AdvertisementService(
 
         // If no order applied already call orderBy
         var orderedQuery = (IOrderedQueryable<AdvertisementListItem>)query;
-        if (!sortAplied)
+        if (!sortApplied)
         {
             orderedQuery = attributeOrder[orderIndex].Direction == Direction.Ascending
                 ? query.OrderBy(getKeySelectorExpression(orderIndex))
