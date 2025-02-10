@@ -12,6 +12,7 @@ public class AdvertisementService(
 {
     private readonly ICategoryService _categoryService = categoryService;
 
+    //TODO: Later check query performance and improve if necessary
     public async Task<DataTableQueryResponse<AdvertisementListItem>> GetActiveAdvertisementsByCategory(AdvertismentQuery request)
     {
         var normalizedLocale = request.Locale.ToUpper();
@@ -33,11 +34,14 @@ public class AdvertisementService(
                 Title = a.Title,
                 AdvertisementText = a.AdvertisementText,
                 ThumbnailImagePath = a.ThumbnailImage == null ? null : a.ThumbnailImage.Path,
-                AttributeValues = a.AttributeValues.Select(v => new AttributeValueItem
+                AttributeValues = a.AttributeValues.OrderBy(v => v.Attribute.CategoryAttributes.First(ca => ca.CategoryId == v.Advertisement.CategoryId).AttributeOrder).Select(v => new AttributeValueItem
                 {
                     AttributeId = v.AttributeId,
                     AttributeName = v.Attribute.AttributeNameLocales.Localise(normalizedLocale),
                     Value = v.Value,
+                    ValueName = v.Attribute.ValueType == Enums.ValueTypes.ValueListEntry && v.Attribute.AttributeValueList != null
+                        ? v.Attribute.AttributeValueList.ListEntries.First(entry => entry.Id == Convert.ToInt16(v.Value)).LocalisedNames.Localise(normalizedLocale)
+                        : null
                 })
             });
 
@@ -52,6 +56,11 @@ public class AdvertisementService(
     {
         foreach (var search in attributeSearch)
         {
+            if (string.IsNullOrEmpty(search.Value))
+            {
+                continue;
+            }
+
             var isValueInt = int.TryParse(search.Value, out var valueInt);
             var isSecondaryValueInt = int.TryParse(search.SecondaryValue, out var secondaryValueInt);
 

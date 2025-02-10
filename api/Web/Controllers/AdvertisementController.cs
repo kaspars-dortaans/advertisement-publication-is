@@ -60,18 +60,19 @@ public class AdvertisementController(
             .Select(c => new CategoryInfo()
             {
                 CategoryName = c.LocalisedNames.Localise(normalizedLocale),
-                AttributeInfo = c.CategoryAttributes.Select(ca => new CategoryAttributeInfo()
-                {
-                    Id = ca.Attribute.Id,
-                    Name = ca.Attribute.AttributeNameLocales.Localise(normalizedLocale),
-                    Searchable = ca.Attribute.Searchable,
-                    Sortable = ca.Attribute.Sortable,
-                    Order = ca.AttributeOrder,
-                    ValueListId = ca.Attribute.AttributeValueListId,
-                    AttributeFilterType = ca.Attribute.FilterType,
-                    AttributeValueType = ca.Attribute.ValueType,
-                    IconUrl = ca.Attribute.Icon != null ? ca.Attribute.Icon.Path : null
-                }),
+                AttributeInfo = c.CategoryAttributes
+                    .OrderBy(ca => ca.AttributeOrder)
+                    .Select(ca => new CategoryAttributeInfo()
+                    {
+                        Id = ca.Attribute.Id,
+                        Name = ca.Attribute.AttributeNameLocales.Localise(normalizedLocale),
+                        Searchable = ca.Attribute.Searchable,
+                        Sortable = ca.Attribute.Sortable,
+                        ValueListId = ca.Attribute.AttributeValueListId,
+                        AttributeFilterType = ca.Attribute.FilterType,
+                        AttributeValueType = ca.Attribute.ValueType,
+                        IconUrl = ca.Attribute.Icon != null ? ca.Attribute.Icon.Path : null
+                    }),
                 AttributeValueLists = c.Attributes
                     .Where(a => a.AttributeValueList != null)
                     .Select(a => new AttributeValueListItem()
