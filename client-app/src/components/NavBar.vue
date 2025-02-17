@@ -50,7 +50,9 @@ const searchInput = ref('')
 
 const localeItems = ls.localeList.value.map((localeName) => ({
   label: localeName,
-  command: () => ls.loadLocale(localeName)
+  command: () => {
+    ls.loadLocale(localeName)
+  }
 }))
 
 // TODO: filter items based on user permissions
@@ -68,7 +70,7 @@ const items = reactive([
       },
       {
         route: 'home',
-        label: 'navigation.recenltyViewedAdvertisements'
+        label: 'navigation.recentlyViewedAdvertisements'
       },
       {
         route: 'home',
@@ -88,7 +90,7 @@ const items = reactive([
 
 const search = () => {
   // TODO: Navigate to search page
-  alert('Not implented')
+  alert('Not implemented')
 }
 
 const immediateSearch = () => {

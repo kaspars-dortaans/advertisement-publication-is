@@ -6,5 +6,5 @@ namespace BusinessLogic.Services;
 
 public interface IAdvertisementService : IBaseService<Advertisement>
 {
-    public Task<DataTableQueryResponse<AdvertisementListItem>> GetActiveAdvertisementsByCategory(AdvertismentQuery request);
+    public Task<DataTableQueryResponse<AdvertisementListItem>> GetActiveAdvertisementsByCategory(AdvertisementQuery request);
 }

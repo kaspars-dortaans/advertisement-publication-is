@@ -7,7 +7,7 @@ namespace BusinessLogic.Helpers;
 public static class DataTableQueryResolver
 {
 
-    //Implement datatable query suppport per https://datatables.net/manual/server-side
+    //Implement datatable query support per https://datatables.net/manual/server-side
     public static async Task<DataTableQueryResponse<Entity>> ResolveDataTableQuery<Entity>(this IQueryable<Entity> query, DataTableQuery request, DataTableQueryConfig<Entity>? config = null) where Entity : class
     {
         //Total record count

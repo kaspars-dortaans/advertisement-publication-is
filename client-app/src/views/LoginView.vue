@@ -38,7 +38,7 @@
 
         <Button class="mt-1" :label="ls.l('navigation.login')" @click="tryLogin" />
         <p>
-          <span>{{ ls.l('form.dontHaveAnAccountQuestion') }}</span>
+          <span>{{ ls.l('form.doNotHaveAnAccountQuestion') }}</span>
           <RouterLink class="ml-1 link" :to="{ name: 'register' }">{{
             ls.l('navigation.register')
           }}</RouterLink>

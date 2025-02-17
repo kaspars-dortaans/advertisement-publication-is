@@ -1,8 +1,8 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 
 namespace BusinessLogic.Dto.Advertisement;
 
-public class AdvertismentQuery : DataTableQuery.DataTableQuery
+public class AdvertisementQuery : DataTableQuery.DataTableQuery
 {
     public int? CategoryId { get; set; }
     [Required]

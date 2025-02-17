@@ -87,7 +87,7 @@ import { Direction } from '@/constants/direction'
 import {
   AdvertisementClient,
   AdvertisementListItem,
-  AdvertismentQuery,
+  AdvertisementQuery,
   AttributeOrderQuery,
   AttributeSearchQuery,
   AttributeValueItem,
@@ -221,7 +221,7 @@ const loadAdvertisements = async () => {
   isLoading.value++
 
   const response = await advertisementService.getAdvertisements(
-    new AdvertismentQuery({
+    new AdvertisementQuery({
       categoryId: categoryId.value ?? undefined,
       locale: ls.currentLocale.value,
       attributeOrder: attributeOrderQuery.value,

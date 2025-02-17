@@ -49,7 +49,7 @@ export class LocaleService {
       return
     }
 
-    // If no locale is assigned, assign new immidietly to prevent errors
+    // If no locale is assigned, assign new immediately to prevent errors
     const unassignedLocale = !this.currentLocale.value
     if (unassignedLocale) {
       this.currentLocale.value = nameNormalized

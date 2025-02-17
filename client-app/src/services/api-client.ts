@@ -28,7 +28,7 @@ export class AdvertisementClient {
      * @param body (optional) 
      * @return Success
      */
-    getAdvertisements(body: AdvertismentQuery | undefined, cancelToken?: CancelToken): Promise<AdvertisementListItemDataTableQueryResponse> {
+    getAdvertisements(body: AdvertisementQuery | undefined, cancelToken?: CancelToken): Promise<AdvertisementListItemDataTableQueryResponse> {
         let url_ = this.baseUrl + "/api/Advertisement/GetAdvertisements";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -594,7 +594,7 @@ export interface IAdvertisementListItemDataTableQueryResponse {
     error?: string | undefined;
 }
 
-export class AdvertismentQuery implements IAdvertismentQuery {
+export class AdvertisementQuery implements IAdvertisementQuery {
     draw?: number;
     start?: number | undefined;
     length?: number | undefined;
@@ -606,7 +606,7 @@ export class AdvertismentQuery implements IAdvertismentQuery {
     attributeSearch?: AttributeSearchQuery[] | undefined;
     attributeOrder?: AttributeOrderQuery[] | undefined;
 
-    constructor(data?: IAdvertismentQuery) {
+    constructor(data?: IAdvertisementQuery) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
@@ -648,7 +648,7 @@ export class AdvertismentQuery implements IAdvertismentQuery {
 
     static fromJS(data: any): AdvertismentQuery {
         data = typeof data === 'object' ? data : {};
-        let result = new AdvertismentQuery();
+        let result = new AdvertisementQuery();
         result.init(data);
         return result;
     }
@@ -685,7 +685,7 @@ export class AdvertismentQuery implements IAdvertismentQuery {
     }
 }
 
-export interface IAdvertismentQuery {
+export interface IAdvertisementQuery {
     draw?: number;
     start?: number | undefined;
     length?: number | undefined;
