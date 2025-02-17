@@ -110,4 +110,9 @@ public static class ReflectionHelper
 
         return Expression.Lambda<Func<T, TKey>>(propertyExpression, new ParameterExpression[] { pe });
     }
+
+    public static IEnumerable<Type> GetTypesWithAttribute(Assembly assembly, Type attributeType)
+    {
+        return assembly.GetTypes().Where(t => t.GetCustomAttributes(attributeType, true).Length > 0).ToList();
+    }
 }

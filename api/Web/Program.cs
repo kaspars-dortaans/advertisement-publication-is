@@ -104,6 +104,7 @@ builder.Services.AddSwaggerGen(o =>
 
     ////Filters
     o.OperationFilter<FixFromFormOperationFilter>();
+    o.DocumentFilter<IncludeDocumentFilter>();
 });
 
 //Add db
