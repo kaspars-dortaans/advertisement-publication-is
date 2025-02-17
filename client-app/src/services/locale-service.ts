@@ -1,14 +1,25 @@
+import { DefaultLocale } from '@/constants/default-locale'
 import { usePrimeVue, type PrimeVueLocaleOptions } from 'primevue/config'
-import { nextTick, ref, type Ref } from 'vue'
+import { ref, type Ref } from 'vue'
+import { Settings } from './settings'
 
 export class LocaleService {
   private static _instance: LocaleService
   private _primevue: ReturnType<typeof usePrimeVue> | undefined
+  private _settings: Settings
+
+  /** Object for locale loading */
   private _localeFiles: { [key: string]: () => Promise<unknown> } = import.meta.glob(
     '@/locales/*.json'
   )
+
+  /** map Locale name -> locale file promise key*/
   private _localeMap: Map<string, string>
+
+  /** List with available locales */
   readonly localeList: Ref<string[]> = ref([])
+
+  /** Currently selected locale */
   readonly currentLocale = ref('')
 
   public static get(primevue?: ReturnType<typeof usePrimeVue>) {
@@ -24,6 +35,7 @@ export class LocaleService {
   }
 
   private constructor() {
+    this._settings = Settings.get()
     this._localeMap = new Map()
     this.localeList.value = []
 
@@ -42,6 +54,45 @@ export class LocaleService {
     return this._primevue
   }
 
+  /** Try to get saved locale, if not present set to default locale */
+  async loadSavedOrDefaultLocale() {
+    if (!this._settings.userSettingCookieValue.locale) {
+      this._settings.userSettingCookieValue.locale = this.getBrowserCompatibleLocale()
+    }
+
+    const locale = this._settings.userSettingCookieValue.locale
+    await this.loadLocale(locale)
+  }
+
+  /** Return available app locale which also is present in navigator.languages, DefaultLocale is used as fallback */
+  getBrowserCompatibleLocale() {
+    const browserLocales = new Set<string>()
+    const languages = window.navigator.languages ?? [window.navigator.language]
+    for (const language of languages) {
+      const split = language.toUpperCase().split('-')
+      // From format xx-yy add both xx and yy (from en-us both 'en' and 'us' are added)
+      for (const l of split) {
+        browserLocales.add(l)
+      }
+    }
+
+    //Iterate over set and try find existing locale which is equal to preferred browser locale
+    const iterator = browserLocales.values()
+    let iteratorResult = iterator.next()
+    while (!iteratorResult.done) {
+      if (
+        this.localeList.value.some((availableLocale) => iteratorResult.value == availableLocale)
+      ) {
+        return iteratorResult.value
+      }
+      iteratorResult = iterator.next()
+    }
+
+    //If no compatible locale found return default
+    return DefaultLocale
+  }
+
+  /** Load locale by name */
   async loadLocale(name: string) {
     const nameNormalized = name.toLocaleUpperCase()
     if (!this.localeList.value.some((value) => value === nameNormalized)) {
@@ -59,26 +110,16 @@ export class LocaleService {
     const locale = await this._localeFiles[filePath]()
     this.primevue.config.locale = locale as PrimeVueLocaleOptions
 
-    // If no locale was assigned force ref update to take into account loaded locale
-    if (unassignedLocale) {
-      const locales = Object.keys(this._localeMap)
-      const tempLocaleIndex =
-        locales.length > 1
-          ? (locales.findIndex((l) => l === nameNormalized) + 1) % locales.length
-          : undefined
-      this.currentLocale.value = typeof tempLocaleIndex === 'number' ? locales[tempLocaleIndex] : ''
-      nextTick(() => {
-        this.currentLocale.value = nameNormalized
-      })
-    } else {
-      this.currentLocale.value = nameNormalized
-    }
+    this.currentLocale.value = nameNormalized
+    this._settings.userSettingCookieValue.locale = nameNormalized
   }
 
+  /** Localize and format multiple strings */
   localizeMultiple(keys: string[], suffix?: string, ...params: string[]) {
     return keys.map((k) => this.l((suffix ?? '') + k, ...params))
   }
 
+  /** Localize and format string */
   l(keyString: string, ...params: (string | number)[]) {
     if (!keyString) {
       return ''
@@ -93,10 +134,11 @@ export class LocaleService {
         object = object[key as keyof object]
       } else return keyString
     }
-    return this.insertParamsIntoString(object + '', params)
+    return this.f(object + '', params)
   }
 
-  insertParamsIntoString(str: string, params: (string | number)[]) {
+  /** Format string */
+  private f(str: string, params: (string | number)[]) {
     if (!params.length) {
       return str
     }

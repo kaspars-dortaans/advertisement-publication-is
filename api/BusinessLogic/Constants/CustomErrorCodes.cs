@@ -15,4 +15,5 @@ public static class CustomErrorCodes
     public const string InvalidImage = "InvalidImage";
     public const string DisallowedAspectRatio = "DisallowedAspectRatio";
     public const string UserNotFound = "UserNotFound";
+    public const string InvalidCookie = "InvalidCookie";
 }

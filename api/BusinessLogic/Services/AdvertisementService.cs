@@ -2,21 +2,22 @@
 using BusinessLogic.Dto.DataTableQuery;
 using BusinessLogic.Entities;
 using BusinessLogic.Helpers;
+using BusinessLogic.Helpers.CookieSettings;
 using System.Linq.Expressions;
 
 namespace BusinessLogic.Services;
 
 public class AdvertisementService(
     Context context,
-    ICategoryService categoryService) : BaseService<Advertisement>(context), IAdvertisementService
+    ICategoryService categoryService,
+    CookieSettingsHelper cookieSettingHelper) : BaseService<Advertisement>(context), IAdvertisementService
 {
     private readonly ICategoryService _categoryService = categoryService;
+    private readonly CookieSettingsHelper _cookieSettingHelper = cookieSettingHelper;
 
     //TODO: Later check query performance and improve if necessary
-    public async Task<DataTableQueryResponse<AdvertisementListItem>> GetActiveAdvertisementsByCategory(AdvertismentQuery request)
+    public async Task<DataTableQueryResponse<AdvertisementListItem>> GetActiveAdvertisementsByCategory(AdvertisementQuery request)
     {
-        var normalizedLocale = request.Locale.ToUpper();
-
         var advertisementQuery = DbSet.Where(a => a.ValidToDate > DateTime.UtcNow);
         if (request.CategoryId is not null)
         {
@@ -24,12 +25,13 @@ public class AdvertisementService(
             advertisementQuery = advertisementQuery.Where(a => a.CategoryId == request.CategoryId.Value || childCategoryIds.Contains(a.CategoryId));
         }
 
+        var locale = _cookieSettingHelper.Settings.NormalizedLocale;
         var advertisementItemQuery = advertisementQuery
             .Select(a => new AdvertisementListItem()
             {
                 Id = a.Id,
                 CategoryId = a.CategoryId,
-                CategoryName = a.Category.LocalisedNames.Localise(normalizedLocale),
+                CategoryName = a.Category.LocalisedNames.Localise(locale),
                 PostedDate = a.PostedDate,
                 Title = a.Title,
                 AdvertisementText = a.AdvertisementText,
@@ -37,10 +39,10 @@ public class AdvertisementService(
                 AttributeValues = a.AttributeValues.OrderBy(v => v.Attribute.CategoryAttributes.First(ca => ca.CategoryId == v.Advertisement.CategoryId).AttributeOrder).Select(v => new AttributeValueItem
                 {
                     AttributeId = v.AttributeId,
-                    AttributeName = v.Attribute.AttributeNameLocales.Localise(normalizedLocale),
+                    AttributeName = v.Attribute.AttributeNameLocales.Localise(locale),
                     Value = v.Value,
                     ValueName = v.Attribute.ValueType == Enums.ValueTypes.ValueListEntry && v.Attribute.AttributeValueList != null
-                        ? v.Attribute.AttributeValueList.ListEntries.First(entry => entry.Id == Convert.ToInt16(v.Value)).LocalisedNames.Localise(normalizedLocale)
+                        ? v.Attribute.AttributeValueList.ListEntries.First(entry => entry.Id == Convert.ToInt16(v.Value)).LocalisedNames.Localise(locale)
                         : null
                 })
             });

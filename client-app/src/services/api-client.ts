@@ -81,15 +81,10 @@ export class AdvertisementClient {
     }
 
     /**
-     * @param locale (optional) 
      * @return Success
      */
-    getCategories(locale: string | undefined, cancelToken?: CancelToken): Promise<CategoryItem[]> {
-        let url_ = this.baseUrl + "/api/Advertisement/GetCategories?";
-        if (locale === null)
-            throw new Error("The parameter 'locale' cannot be null.");
-        else if (locale !== undefined)
-            url_ += "locale=" + encodeURIComponent("" + locale) + "&";
+    getCategories( cancelToken?: CancelToken): Promise<CategoryItem[]> {
+        let url_ = this.baseUrl + "/api/Advertisement/GetCategories";
         url_ = url_.replace(/[?&]$/, "");
 
         let options_: AxiosRequestConfig = {
@@ -145,19 +140,14 @@ export class AdvertisementClient {
 
     /**
      * @param categoryId (optional) 
-     * @param locale (optional) 
      * @return Success
      */
-    getCategoryInfo(categoryId: number | undefined, locale: string | undefined, cancelToken?: CancelToken): Promise<CategoryInfo> {
+    getCategoryInfo(categoryId: number | undefined, cancelToken?: CancelToken): Promise<CategoryInfo> {
         let url_ = this.baseUrl + "/api/Advertisement/GetCategoryInfo?";
         if (categoryId === null)
             throw new Error("The parameter 'categoryId' cannot be null.");
         else if (categoryId !== undefined)
             url_ += "categoryId=" + encodeURIComponent("" + categoryId) + "&";
-        if (locale === null)
-            throw new Error("The parameter 'locale' cannot be null.");
-        else if (locale !== undefined)
-            url_ += "locale=" + encodeURIComponent("" + locale) + "&";
         url_ = url_.replace(/[?&]$/, "");
 
         let options_: AxiosRequestConfig = {
@@ -602,8 +592,7 @@ export class AdvertisementQuery implements IAdvertisementQuery {
     order?: OrderQuery[] | undefined;
     columns?: TableColumn[] | undefined;
     categoryId?: number | undefined;
-    locale!: string;
-    attributeSearch?: AttributeSearchQuery[] | undefined;
+    attributeSearch!: AttributeSearchQuery[];
     attributeOrder?: AttributeOrderQuery[] | undefined;
 
     constructor(data?: IAdvertisementQuery) {
@@ -612,6 +601,9 @@ export class AdvertisementQuery implements IAdvertisementQuery {
                 if (data.hasOwnProperty(property))
                     (<any>this)[property] = (<any>data)[property];
             }
+        }
+        if (!data) {
+            this.attributeSearch = [];
         }
     }
 
@@ -632,7 +624,6 @@ export class AdvertisementQuery implements IAdvertisementQuery {
                     this.columns!.push(TableColumn.fromJS(item));
             }
             this.categoryId = _data["categoryId"];
-            this.locale = _data["locale"];
             if (Array.isArray(_data["attributeSearch"])) {
                 this.attributeSearch = [] as any;
                 for (let item of _data["attributeSearch"])
@@ -646,7 +637,7 @@ export class AdvertisementQuery implements IAdvertisementQuery {
         }
     }
 
-    static fromJS(data: any): AdvertismentQuery {
+    static fromJS(data: any): AdvertisementQuery {
         data = typeof data === 'object' ? data : {};
         let result = new AdvertisementQuery();
         result.init(data);
@@ -670,7 +661,6 @@ export class AdvertisementQuery implements IAdvertisementQuery {
                 data["columns"].push(item.toJSON());
         }
         data["categoryId"] = this.categoryId;
-        data["locale"] = this.locale;
         if (Array.isArray(this.attributeSearch)) {
             data["attributeSearch"] = [];
             for (let item of this.attributeSearch)
@@ -693,8 +683,7 @@ export interface IAdvertisementQuery {
     order?: OrderQuery[] | undefined;
     columns?: TableColumn[] | undefined;
     categoryId?: number | undefined;
-    locale: string;
-    attributeSearch?: AttributeSearchQuery[] | undefined;
+    attributeSearch: AttributeSearchQuery[];
     attributeOrder?: AttributeOrderQuery[] | undefined;
 }
 

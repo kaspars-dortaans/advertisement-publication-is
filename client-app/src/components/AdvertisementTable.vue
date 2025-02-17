@@ -166,7 +166,10 @@ const valueLists: ComputedRef<{ [key: number]: AttributeValueItem }> = computed(
 // Hooks
 onMounted(() => {
   categoryId.value = null
-  handleSelectedCategory(categoryId.value, categoryMenu.value?.getCategoryName(categoryId.value))
+  handleSelectedCategory(
+    categoryId.value,
+    categoryMenu.value?.getCategoryName(categoryId.value, ls.currentLocale.value)
+  )
 })
 
 // Watchers
@@ -183,14 +186,18 @@ watch(
   { immediate: true }
 )
 
-watch(ls.currentLocale, () => {
-  categoryInfo.value.categoryName = categoryMenu.value?.getCategoryName(categoryId.value)
+watch(ls.currentLocale, async (newLocale) => {
+  handleSelectedCategory(
+    categoryId.value,
+    categoryMenu.value?.getCategoryName(categoryId.value, newLocale)
+  )
+  loadAdvertisements()
 })
 
 //Methods
 const handleSelectedCategory = async (
   selectedCategoryId?: number | null,
-  selectedCategoryName?: string
+  selectedCategoryName?: string | Promise<string | undefined>
 ) => {
   isLoading.value++
   const promises = [loadAdvertisements()]
@@ -198,7 +205,7 @@ const handleSelectedCategory = async (
     promises.push(loadCategoryInfo())
   } else {
     categoryInfo.value = new CategoryInfo({
-      categoryName: selectedCategoryName,
+      categoryName: await Promise.resolve(selectedCategoryName),
       attributeInfo: [],
       attributeValueLists: []
     })
@@ -211,10 +218,7 @@ const loadCategoryInfo = async () => {
   if (!categoryId.value) {
     return
   }
-  categoryInfo.value = await advertisementService.getCategoryInfo(
-    categoryId.value,
-    ls.currentLocale.value
-  )
+  categoryInfo.value = await advertisementService.getCategoryInfo(categoryId.value)
 }
 
 const loadAdvertisements = async () => {
@@ -223,7 +227,6 @@ const loadAdvertisements = async () => {
   const response = await advertisementService.getAdvertisements(
     new AdvertisementQuery({
       categoryId: categoryId.value ?? undefined,
-      locale: ls.currentLocale.value,
       attributeOrder: attributeOrderQuery.value,
       attributeSearch: attributeFilterQuery.value,
       start: pageFirstRecord.value,

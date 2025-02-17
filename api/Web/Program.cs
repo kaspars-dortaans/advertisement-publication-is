@@ -2,6 +2,7 @@ using BusinessLogic.Authentication.Jwt;
 using BusinessLogic.Authorization;
 using BusinessLogic.Entities;
 using BusinessLogic.Helpers;
+using BusinessLogic.Helpers.CookieSettings;
 using BusinessLogic.Helpers.FilePathResolver;
 using BusinessLogic.Helpers.Storage;
 using BusinessLogic.Services;
@@ -29,7 +30,8 @@ builder.Services.AddCors(options =>
     {
         policy.WithOrigins("https://localhost:5173", "http://localhost:5173")
             .AllowAnyHeader()
-            .AllowAnyMethod();
+            .AllowAnyMethod()
+            .AllowCredentials();
     });
 });
 
@@ -155,6 +157,7 @@ builder.Services.AddScoped<ICategoryService, CategoryService>();
 //Helpers
 builder.Services.AddScoped<IStorage, LocalFileStorage>();
 builder.Services.AddScoped<IFilePathResolver, FilePathResolver>();
+builder.Services.AddScoped<CookieSettingsHelper>();
 
 //Db seeding
 builder.Services.AddScoped<DbSeeder>();

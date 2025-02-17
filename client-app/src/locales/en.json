@@ -3,7 +3,7 @@
     "choose": "Choose",
     "cancel": "Cancel",
     "upload": "Upload",
-    "accept": "Accpet",
+    "accept": "Accept",
     "edit": "Edit",
     "search": "Search",
     "clear": "Clear"
@@ -20,7 +20,7 @@
   },
 
   "form": {
-    "dontHaveAnAccountQuestion": "Don't have an account?",
+    "doNotHaveAnAccountQuestion": "Don't have an account?",
     "alreadyHaveAnAccount": "Already have an account?",
     "email": "E-mail",
     "password": "Password",
@@ -40,7 +40,7 @@
     "advertisements": "Advertisements",
     "seeAdvertisements": "See advertisements",
     "savedAdvertisements": "Saved advertisements",
-    "recenltyViewedAdvertisements": "Recenlty viewed advertisements",
+    "recentlyViewedAdvertisements": "Recently viewed advertisements",
     "createAdvertisement": "Create advertisements",
     "siteLogo": "Site logo"
   },

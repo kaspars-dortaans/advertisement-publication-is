@@ -6,6 +6,7 @@ export const axiosInstance = axios.create()
 
 export const initAxios = (app: App<Element>) => {
   axiosInstance.defaults.baseURL = import.meta.env.VITE_API_URL
+  axiosInstance.defaults.withCredentials = true
 
   const ls = LocaleService.get(app.config.globalProperties.$primevue)
   axiosInstance.interceptors.response.use(

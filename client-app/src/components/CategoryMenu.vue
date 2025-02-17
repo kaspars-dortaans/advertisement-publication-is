@@ -34,11 +34,19 @@ const displayedCategoryNodes: Ref<TreeNode[]> = ref([])
 const selectedCategoryKeys = ref({})
 const expandedCategoryKeys: Ref<{ [key: string]: boolean }> = ref({})
 
+// Data
+let getCategoryNameExecutors: (() => void)[] = []
+let loadedCategoryLocale = ''
+
 // Constants
 const newCategoryKey = 'new-category'
 
 // Hooks
-onMounted(async () => {
+onMounted(() => {
+  loadCategories()
+})
+
+const loadCategories = async () => {
   //Add first 'new category' - show all advertisements
   categoryNodes.value = [
     {
@@ -51,7 +59,7 @@ onMounted(async () => {
       }
     } as TreeNode
   ]
-  const categories = await advertisementService.getCategories(ls.currentLocale.value)
+  const categories = await advertisementService.getCategories()
   categoryNodes.value = [
     ...categoryNodes.value,
     ...buildNodeHierarchy<CategoryItem, TreeNode>(
@@ -79,7 +87,14 @@ onMounted(async () => {
     )
   ]
   displayedCategoryNodes.value = categoryNodes.value
-})
+  loadedCategoryLocale = ls.currentLocale.value
+
+  //Resolve getCategoryName promises which were called in loading time
+  for (const executor of getCategoryNameExecutors) {
+    executor()
+  }
+  getCategoryNameExecutors = []
+}
 
 // Watchers
 watch(model, (newValue) => {
@@ -101,11 +116,8 @@ watch(model, (newValue) => {
   }
 })
 
-watch(ls.currentLocale, () => {
-  const newCategory = categoryNodes.value.find((c) => c.key === newCategoryKey)
-  if (newCategory) {
-    newCategory.label = ls.l('categoryMenu.new')
-  }
+watch(ls.currentLocale, async () => {
+  await loadCategories()
 })
 
 // Methods
@@ -191,17 +203,30 @@ const displayRootNodes = (categoryNode: TreeNode) => {
   }
 }
 
-const getCategoryName = (id: number | string | null | undefined) => {
-  let idStr = id
-  if (typeof id === 'number') {
-    idStr = '' + id
-  } else if (id === null) {
-    idStr = newCategoryKey
-  } else if (id === undefined) {
-    return undefined
-  }
+/** Get category name by id, if component is currently loading categories, response will be deferred */
+const getCategoryName = (id: number | string | null | undefined, locale: string) => {
+  const result = new Promise<string | undefined>((executor) => {
+    let idStr = id
+    if (typeof id === 'number') {
+      idStr = '' + id
+    } else if (id === null) {
+      idStr = newCategoryKey
+    } else if (id === undefined) {
+      executor(undefined)
+      return
+    }
 
-  return categoryNodes.value.find((c) => c.key === idStr)?.label
+    const resolve = () => {
+      executor(categoryNodes.value.find((c) => c.key === idStr)?.label)
+    }
+
+    if (loadedCategoryLocale !== locale) {
+      getCategoryNameExecutors.push(resolve)
+    } else {
+      resolve()
+    }
+  })
+  return result
 }
 
 defineExpose({ getCategoryName })

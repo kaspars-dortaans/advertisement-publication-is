@@ -3,6 +3,7 @@ using BusinessLogic.Dto.Advertisement;
 using BusinessLogic.Dto.DataTableQuery;
 using BusinessLogic.Entities;
 using BusinessLogic.Helpers;
+using BusinessLogic.Helpers.CookieSettings;
 using BusinessLogic.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -18,25 +19,26 @@ public class AdvertisementController(
     ILogger<AdvertisementController> logger,
     IMapper mapper,
     IBaseService<Category> categoryService,
-    IAdvertisementService advertisementService) : ControllerBase
+    IAdvertisementService advertisementService,
+    CookieSettingsHelper cookieSettingsHelper) : ControllerBase
 {
     private readonly ILogger<AdvertisementController> _logger = logger;
     private readonly IMapper _mapper = mapper;
     private readonly IBaseService<Category> _categoryService = categoryService;
     private readonly IAdvertisementService _advertisementService = advertisementService;
+    private readonly CookieSettingsHelper _cookieSettingsHelper = cookieSettingsHelper;
 
     [AllowAnonymous]
     [HttpPost]
-    public Task<DataTableQueryResponse<AdvertisementListItem>> GetAdvertisements(AdvertismentQuery request)
+    public Task<DataTableQueryResponse<AdvertisementListItem>> GetAdvertisements(AdvertisementQuery request)
     {
         return _advertisementService.GetActiveAdvertisementsByCategory(request);
     }
 
     [AllowAnonymous]
     [HttpGet]
-    public async Task<IEnumerable<CategoryItem>> GetCategories(string locale)
+    public async Task<IEnumerable<CategoryItem>> GetCategories()
     {
-        var normalizedLocale = locale.ToUpper();
         return await _categoryService
             .GetAll()
             .Select(c => new CategoryItem()
@@ -45,27 +47,27 @@ public class AdvertisementController(
                 ParentCategoryId = c.ParentCategoryId,
                 AdvertisementCount = c.AdvertisementCount,
                 CanContainAdvertisements = c.CanContainAdvertisements,
-                Name = c.LocalisedNames.Localise(normalizedLocale),
+                Name = c.LocalisedNames.Localise(_cookieSettingsHelper.Settings.NormalizedLocale),
             })
             .ToListAsync();
     }
 
     [AllowAnonymous]
     [HttpGet]
-    public async Task<CategoryInfo> GetCategoryInfo(int categoryId, string locale)
+    public async Task<CategoryInfo> GetCategoryInfo(int categoryId)
     {
-        var normalizedLocale = locale.ToUpper();
+        var locale = _cookieSettingsHelper.Settings.NormalizedLocale;
         var result = await _categoryService
             .Where(c => c.Id == categoryId)
             .Select(c => new CategoryInfo()
             {
-                CategoryName = c.LocalisedNames.Localise(normalizedLocale),
+                CategoryName = c.LocalisedNames.Localise(locale),
                 AttributeInfo = c.CategoryAttributes
                     .OrderBy(ca => ca.AttributeOrder)
                     .Select(ca => new CategoryAttributeInfo()
                     {
                         Id = ca.Attribute.Id,
-                        Name = ca.Attribute.AttributeNameLocales.Localise(normalizedLocale),
+                        Name = ca.Attribute.AttributeNameLocales.Localise(locale),
                         Searchable = ca.Attribute.Searchable,
                         Sortable = ca.Attribute.Sortable,
                         ValueListId = ca.Attribute.AttributeValueListId,
@@ -78,11 +80,11 @@ public class AdvertisementController(
                     .Select(a => new AttributeValueListItem()
                     {
                         Id = a.AttributeValueList!.Id,
-                        Name = a.AttributeValueList!.LocalisedNames.Localise(normalizedLocale),
-                        Entries = a.AttributeValueList!.ListEntries.Select(e =>  new AttributeValueListEntryItem()
+                        Name = a.AttributeValueList!.LocalisedNames.Localise(locale),
+                        Entries = a.AttributeValueList!.ListEntries.Select(e => new AttributeValueListEntryItem()
                         {
                             Id = e.Id,
-                            Name = e.LocalisedNames.Localise(normalizedLocale),
+                            Name = e.LocalisedNames.Localise(locale),
                             OrderIndex = e.OrderIndex
                         }),
                     })
