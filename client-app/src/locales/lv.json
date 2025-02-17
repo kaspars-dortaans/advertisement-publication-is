@@ -1,0 +1,61 @@
+{
+  "actions": {
+    "choose": "Izvēlēties",
+    "cancel": "Atcelt",
+    "upload": "Augšupielādēt",
+    "accept": "Apstiprināt",
+    "edit": "Rediģēt",
+    "search": "Meklēt",
+    "clear": "Tīrīt"
+  },
+
+  "dataTable": {
+    "pageReportTemplate": "{1} līdz {2} no {3}",
+    "from": "No",
+    "to": "Līdz"
+  },
+
+  "categoryMenu": {
+    "new": "Jauns"
+  },
+
+  "form": {
+    "doNotHaveAnAccountQuestion": "Don't have an account?",
+    "alreadyHaveAnAccount": "Already have an account?",
+    "email": "E-mail",
+    "password": "Password",
+    "confirmPassword": "Confirm password",
+    "firstName": "First name",
+    "lastName": "Last name",
+    "username": "Username",
+    "publiclyDisplayEmail": "Publicly display e-mail",
+    "phoneNumber": "Phone number",
+    "publiclyDisplayPhoneNumber": "Publicly display phone number",
+    "dragAndDropToUpload": "Drag and drop here to upload"
+  },
+
+  "navigation": {
+    "login": "Login",
+    "register": "Register",
+    "advertisements": "Advertisements",
+    "seeAdvertisements": "See advertisements",
+    "savedAdvertisements": "Saved advertisements",
+    "recentlyViewedAdvertisements": "Recently viewed advertisements",
+    "createAdvertisement": "Create advertisements",
+    "siteLogo": "Site logo"
+  },
+
+  "errors": {
+    "Required": "This field is required",
+    "RequiredField": "{fieldName} is a required field",
+    "NotAnEmail": "This field must contain valid email address",
+    "NotAPhoneNumber": "This field must contain valid phone number",
+    "InvalidLoginCredentials": "Entered e-mail or password is not correct",
+    "PasswordTooShort": "Password is too short",
+    "PasswordRequiresNonAlphanumeric": "Password requires symbols which are not number or letters",
+    "PasswordRequiresLower": "Password requires to contain lower case letters",
+    "PasswordRequiresUpper": "Password requires upper case letters",
+    "ComparablePropertyDidNotMatch": "This field did not match {comparableFieldName} field",
+    "DuplicateEmail": "This email is already taken"
+  }
+}

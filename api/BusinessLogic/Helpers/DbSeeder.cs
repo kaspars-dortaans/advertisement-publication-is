@@ -100,28 +100,20 @@ public class DbSeeder
             {
                 Id = 4,
                 CanContainAdvertisements = true,
-                ParentCategoryId = 3,
+                ParentCategoryId = 2,
                 AdvertisementCount = 1
             },
             new()
             {
                 Id = 5,
-                CanContainAdvertisements = true,
-                ParentCategoryId = 3,
-                AdvertisementCount = 2
+                CanContainAdvertisements = false,
             },
             new()
             {
                 Id = 6,
-                CanContainAdvertisements = false
+                ParentCategoryId = 5,
+                CanContainAdvertisements = true
             },
-            new()
-            {
-                Id = 7,
-                CanContainAdvertisements = true,
-                ParentCategoryId = 6,
-                AdvertisementCount = 2
-            }
         };
         foreach(var category in categories)
         {
@@ -135,50 +127,85 @@ public class DbSeeder
             {
                 Id = 1,
                 CategoryId = 1,
-                Locale = "ENG",
+                Locale = "EN",
                 Text = "Electric devices"
             },
             new()
             {
                 Id = 2,
-                CategoryId = 2,
-                Locale = "ENG",
-                Text = "Phones"
+                CategoryId = 1,
+                Locale = "LV",
+                Text = "Elektriskās ierīces"
             },
             new()
             {
                 Id = 3,
-                CategoryId = 3,
-                Locale = "ENG",
-                Text = "Mobile phones"
+                CategoryId = 2,
+                Locale = "EN",
+                Text = "Phones"
             },
             new()
             {
                 Id = 4,
-                CategoryId = 4,
-                Locale = "ENG",
-                Text = "Samsung"
+                CategoryId = 2,
+                Locale = "LV",
+                Text = "Tālruņi"
             },
             new()
             {
                 Id = 5,
-                CategoryId = 5,
-                Locale = "ENG",
-                Text = "Apple"
+                CategoryId = 3,
+                Locale = "EN",
+                Text = "Mobile phones"
             },
             new()
             {
                 Id = 6,
-                CategoryId = 6,
-                Locale = "ENG",
-                Text = "Vehicle"
+                CategoryId = 3,
+                Locale = "LV",
+                Text = "Mobīlie tālruņi"
             },
             new()
             {
                 Id = 7,
-                CategoryId = 7,
-                Locale = "ENG",
-                Text = "Bike"
+                CategoryId = 4,
+                Locale = "EN",
+                Text = "Smartphone"
+            },
+            new()
+            {
+                Id = 8,
+                CategoryId = 4,
+                Locale = "LV",
+                Text = "Viedtālruņi"
+            },
+            new()
+            {
+                Id = 9,
+                CategoryId = 5,
+                Locale = "EN",
+                Text = "Vehicle"
+            },
+            new()
+            {
+                Id = 10,
+                CategoryId = 5,
+                Locale = "LV",
+                Text = "Transportlīdzkļi"
+            },
+            new()
+            {
+                Id = 11,
+                CategoryId = 6,
+                Locale = "EN",
+                Text = "Motorcycle"
+            },
+            new()
+            {
+                Id = 12,
+                CategoryId = 6,
+                Locale = "LV",
+                Text = "Motocikls"
             },
         };
         foreach(var localeText in categoryNameLocales)
@@ -199,10 +226,17 @@ public class DbSeeder
                 {
                     new()
                     {
-                        Id = 9,
+                        Id = 13,
                         AttributeId = 2,
-                        Locale = "ENG",
+                        Locale = "EN",
                         Text = "Width"
+                    },
+                    new()
+                    {
+                        Id = 14,
+                        AttributeId = 2,
+                        Locale = "LV",
+                        Text = "Platums"
                     }
                 },
                 CategoryAttributes = new List<CategoryAttribute>()
@@ -224,10 +258,17 @@ public class DbSeeder
                 {
                     new()
                     {
-                        Id = 10,
+                        Id = 15,
                         AttributeId = 3,
-                        Locale = "ENG",
+                        Locale = "EN",
                         Text = "Manufacturer"
+                    },
+                    new()
+                    {
+                        Id = 16,
+                        AttributeId = 3,
+                        Locale = "LV",
+                        Text = "Ražotājs"
                     }
                 },
                 CategoryAttributes = new List<CategoryAttribute>()
@@ -245,9 +286,16 @@ public class DbSeeder
                     {
                         new()
                         {
-                            Id = 11,
-                            Locale = "ENG",
-                            Text = "Manufacturer value list",
+                            Id = 17,
+                            Locale = "EN",
+                            Text = "Phone manufacturer list",
+                            AttributeValueListId = 1
+                        },
+                        new()
+                        {
+                            Id = 18,
+                            Locale = "LV",
+                            Text = "Tālruņu ražotāju saraksts",
                             AttributeValueListId = 1
                         }
                     },
@@ -260,8 +308,14 @@ public class DbSeeder
                             {
                                 new()
                                 {
-                                    Id = 12,
-                                    Locale = "ENG",
+                                    Id = 19,
+                                    Locale = "EN",
+                                    Text = "LG"
+                                },
+                                new()
+                                {
+                                    Id = 20,
+                                    Locale = "LV",
                                     Text = "LG"
                                 },
                             }
@@ -273,8 +327,14 @@ public class DbSeeder
                             {
                                 new()
                                 {
-                                    Id = 13,
-                                    Locale = "ENG",
+                                    Id = 21,
+                                    Locale = "EN",
+                                    Text = "SAMSUNG"
+                                },
+                                new()
+                                {
+                                    Id = 22,
+                                    Locale = "LV",
                                     Text = "SAMSUNG"
                                 }
                             }
@@ -283,9 +343,9 @@ public class DbSeeder
                 }
             }
         };
-        foreach(var attribtue in attributes)
+        foreach(var attribute in attributes)
         {
-            AddIfNotExists(attribtue, a => a.Id == attribtue.Id);
+            AddIfNotExists(attribute, a => a.Id == attribute.Id);
         }
 
         // Advertisements
