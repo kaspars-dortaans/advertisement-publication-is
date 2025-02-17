@@ -4,10 +4,11 @@
       :is="inputComponent"
       v-model="model"
       :options="valueList?.entries"
+      :id="inputId"
       optionLabel="name"
       optionValue="id"
       showClear
-      :id="inputId"
+      class="w-full"
     ></component>
     <label :for="inputId">{{ props.label }}</label>
   </FloatLabel>

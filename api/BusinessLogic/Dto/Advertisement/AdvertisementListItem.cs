@@ -17,5 +17,7 @@ public class AttributeValueItem
     public int AttributeId { get; set; }
     public string AttributeName { get; set; } = default!;
     public string Value { get; set; } = default!;
+    //For value list entry name
+    public string? ValueName { get; set; } = default!;
 }
 

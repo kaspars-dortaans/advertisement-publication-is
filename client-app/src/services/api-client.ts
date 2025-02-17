@@ -786,6 +786,7 @@ export class AttributeValueItem implements IAttributeValueItem {
     attributeId?: number;
     attributeName?: string | undefined;
     value?: string | undefined;
+    valueName?: string | undefined;
 
     constructor(data?: IAttributeValueItem) {
         if (data) {
@@ -801,6 +802,7 @@ export class AttributeValueItem implements IAttributeValueItem {
             this.attributeId = _data["attributeId"];
             this.attributeName = _data["attributeName"];
             this.value = _data["value"];
+            this.valueName = _data["valueName"];
         }
     }
 
@@ -816,6 +818,7 @@ export class AttributeValueItem implements IAttributeValueItem {
         data["attributeId"] = this.attributeId;
         data["attributeName"] = this.attributeName;
         data["value"] = this.value;
+        data["valueName"] = this.valueName;
         return data;
     }
 }
@@ -824,6 +827,7 @@ export interface IAttributeValueItem {
     attributeId?: number;
     attributeName?: string | undefined;
     value?: string | undefined;
+    valueName?: string | undefined;
 }
 
 export class AttributeValueListEntryItem implements IAttributeValueListEntryItem {

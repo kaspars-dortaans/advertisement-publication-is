@@ -5,7 +5,8 @@
     "upload": "Upload",
     "accept": "Accpet",
     "edit": "Edit",
-    "search": "Search"
+    "search": "Search",
+    "clear": "Clear"
   },
 
   "dataTable": {
