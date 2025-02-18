@@ -88,7 +88,8 @@ public class UserService(
         var file = await _fileService.AddAsync(new Entities.UserFile()
         {
             OwnerUserId = user.Id,
-            Path = filePath
+            Path = filePath,
+            IsPublic = true
         });
 
         //Update user profile image reference

@@ -53,6 +53,11 @@ public class BaseService<Entity> : IBaseService<Entity> where Entity : class
         return entityEntry.Entity;
     }
 
+    public Task<Entity?> FirstOrDefaultAsync(Expression<Func<Entity, bool>> predicate)
+    {
+        return DbSet.FirstOrDefaultAsync(predicate);
+    }
+
     public IQueryable<Entity> Where(Expression<Func<Entity, bool>> predicate)
     {
         return DbSet.Where(predicate);

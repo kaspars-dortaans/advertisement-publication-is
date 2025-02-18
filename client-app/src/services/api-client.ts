@@ -195,6 +195,95 @@ export class AdvertisementClient {
     }
 }
 
+export class FileClient {
+    protected instance: AxiosInstance;
+    protected baseUrl: string;
+    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+
+    constructor(baseUrl?: string, instance?: AxiosInstance) {
+
+        this.instance = instance || axios.create();
+
+        this.baseUrl = baseUrl ?? "";
+
+    }
+
+    /**
+     * @param id (optional) 
+     * @return Success
+     */
+    getFile(id: number | undefined, cancelToken?: CancelToken): Promise<FileResponse> {
+        let url_ = this.baseUrl + "/File/GetFile?";
+        if (id === null)
+            throw new Error("The parameter 'id' cannot be null.");
+        else if (id !== undefined)
+            url_ += "id=" + encodeURIComponent("" + id) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: AxiosRequestConfig = {
+            responseType: "blob",
+            method: "GET",
+            url: url_,
+            headers: {
+                "Accept": "text/plain"
+            },
+            cancelToken
+        };
+
+        return this.instance.request(options_).catch((_error: any) => {
+            if (isAxiosError(_error) && _error.response) {
+                return _error.response;
+            } else {
+                throw _error;
+            }
+        }).then((_response: AxiosResponse) => {
+            return this.processGetFile(_response);
+        });
+    }
+
+    protected processGetFile(response: AxiosResponse): Promise<FileResponse> {
+        const status = response.status;
+        let _headers: any = {};
+        if (response.headers && typeof response.headers === "object") {
+            for (const k in response.headers) {
+                if (response.headers.hasOwnProperty(k)) {
+                    _headers[k] = response.headers[k];
+                }
+            }
+        }
+        if (status === 200 || status === 206) {
+            const contentDisposition = response.headers ? response.headers["content-disposition"] : undefined;
+            let fileNameMatch = contentDisposition ? /filename\*=(?:(\\?['"])(.*?)\1|(?:[^\s]+'.*?')?([^;\n]*))/g.exec(contentDisposition) : undefined;
+            let fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[3] || fileNameMatch[2] : undefined;
+            if (fileName) {
+                fileName = decodeURIComponent(fileName);
+            } else {
+                fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
+                fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
+            }
+            return Promise.resolve({ fileName: fileName, status: status, data: new Blob([response.data], { type: response.headers["content-type"] }), headers: _headers });
+        } else if (status === 404) {
+            const _responseText = response.data;
+            let result404: any = null;
+            let resultData404  = _responseText;
+            result404 = NotFoundResult.fromJS(resultData404);
+            return throwException("Not Found", status, _responseText, _headers, result404);
+
+        } else if (status === 403) {
+            const _responseText = response.data;
+            let result403: any = null;
+            let resultData403  = _responseText;
+            result403 = ForbidResult.fromJS(resultData403);
+            return throwException("Forbidden", status, _responseText, _headers, result403);
+
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.data;
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Promise.resolve<FileResponse>(null as any);
+    }
+}
+
 export class LoginClient {
     protected instance: AxiosInstance;
     protected baseUrl: string;
@@ -915,6 +1004,54 @@ export interface IAttributeValueListItem {
     entries?: AttributeValueListEntryItem[] | undefined;
 }
 
+export class AuthenticationProperties implements IAuthenticationProperties {
+    items?: { [key: string]: string; } | undefined;
+
+    constructor(data?: IAuthenticationProperties) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            if (_data["items"]) {
+                this.items = {} as any;
+                for (let key in _data["items"]) {
+                    if (_data["items"].hasOwnProperty(key))
+                        (<any>this.items)![key] = _data["items"][key];
+                }
+            }
+        }
+    }
+
+    static fromJS(data: any): AuthenticationProperties {
+        data = typeof data === 'object' ? data : {};
+        let result = new AuthenticationProperties();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        if (this.items) {
+            data["items"] = {};
+            for (let key in this.items) {
+                if (this.items.hasOwnProperty(key))
+                    (<any>data["items"])[key] = (<any>this.items)[key];
+            }
+        }
+        return data;
+    }
+}
+
+export interface IAuthenticationProperties {
+    items?: { [key: string]: string; } | undefined;
+}
+
 export class CategoryAttributeInfo implements ICategoryAttributeInfo {
     id?: number;
     name?: string | undefined;
@@ -1173,6 +1310,54 @@ export enum FilterType {
     Match = "Match",
 }
 
+export class ForbidResult implements IForbidResult {
+    authenticationSchemes?: string[] | undefined;
+    properties?: AuthenticationProperties;
+
+    constructor(data?: IForbidResult) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            if (Array.isArray(_data["authenticationSchemes"])) {
+                this.authenticationSchemes = [] as any;
+                for (let item of _data["authenticationSchemes"])
+                    this.authenticationSchemes!.push(item);
+            }
+            this.properties = _data["properties"] ? AuthenticationProperties.fromJS(_data["properties"]) : <any>undefined;
+        }
+    }
+
+    static fromJS(data: any): ForbidResult {
+        data = typeof data === 'object' ? data : {};
+        let result = new ForbidResult();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        if (Array.isArray(this.authenticationSchemes)) {
+            data["authenticationSchemes"] = [];
+            for (let item of this.authenticationSchemes)
+                data["authenticationSchemes"].push(item);
+        }
+        data["properties"] = this.properties ? this.properties.toJSON() : <any>undefined;
+        return data;
+    }
+}
+
+export interface IForbidResult {
+    authenticationSchemes?: string[] | undefined;
+    properties?: AuthenticationProperties;
+}
+
 export class LoginDto implements ILoginDto {
     email?: string | undefined;
     password?: string | undefined;
@@ -1211,6 +1396,42 @@ export class LoginDto implements ILoginDto {
 export interface ILoginDto {
     email?: string | undefined;
     password?: string | undefined;
+}
+
+export class NotFoundResult implements INotFoundResult {
+    statusCode?: number;
+
+    constructor(data?: INotFoundResult) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.statusCode = _data["statusCode"];
+        }
+    }
+
+    static fromJS(data: any): NotFoundResult {
+        data = typeof data === 'object' ? data : {};
+        let result = new NotFoundResult();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["statusCode"] = this.statusCode;
+        return data;
+    }
+}
+
+export interface INotFoundResult {
+    statusCode?: number;
 }
 
 export class OkResult implements IOkResult {
@@ -1659,6 +1880,13 @@ export enum ValueTypes {
 export interface FileParameter {
     data: any;
     fileName: string;
+}
+
+export interface FileResponse {
+    data: Blob;
+    status: number;
+    fileName?: string;
+    headers?: { [name: string]: any };
 }
 
 export class ApiException extends Error {
