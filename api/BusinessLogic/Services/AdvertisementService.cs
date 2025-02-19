@@ -16,7 +16,7 @@ public class AdvertisementService(
     private readonly CookieSettingsHelper _cookieSettingHelper = cookieSettingHelper;
 
     //TODO: Later check query performance and improve if necessary
-    public async Task<DataTableQueryResponse<AdvertisementListItem>> GetActiveAdvertisementsByCategory(AdvertisementQuery request)
+    public async Task<DataTableQueryResponse<AdvertisementListItemDto>> GetActiveAdvertisementsByCategory(AdvertisementQuery request)
     {
         var advertisementQuery = DbSet.Where(a => a.ValidToDate > DateTime.UtcNow);
         if (request.CategoryId is not null)
@@ -27,7 +27,7 @@ public class AdvertisementService(
 
         var locale = _cookieSettingHelper.Settings.NormalizedLocale;
         var advertisementItemQuery = advertisementQuery
-            .Select(a => new AdvertisementListItem()
+            .Select(a => new AdvertisementListItemDto()
             {
                 Id = a.Id,
                 CategoryId = a.CategoryId,
@@ -35,8 +35,10 @@ public class AdvertisementService(
                 PostedDate = a.PostedDate,
                 Title = a.Title,
                 AdvertisementText = a.AdvertisementText,
-                ThumbnailImagePath = a.ThumbnailImage == null ? null : a.ThumbnailImage.Path,
-                AttributeValues = a.AttributeValues.OrderBy(v => v.Attribute.CategoryAttributes.First(ca => ca.CategoryId == v.Advertisement.CategoryId).AttributeOrder).Select(v => new AttributeValueItem
+                ThumbnailImageId = a.ThumbnailImageId,
+                AttributeValues = a.AttributeValues
+                    .OrderBy(v => v.Attribute.CategoryAttributes.First(ca => ca.CategoryId == v.Advertisement.CategoryId).AttributeOrder)
+                    .Select(v => new AttributeValueItem
                 {
                     AttributeId = v.AttributeId,
                     AttributeName = v.Attribute.AttributeNameLocales.Localise(locale),
@@ -47,14 +49,14 @@ public class AdvertisementService(
                 })
             });
 
-        return await advertisementItemQuery.ResolveDataTableQuery(request, new DataTableQueryConfig<AdvertisementListItem>()
+        return await advertisementItemQuery.ResolveDataTableQuery(request, new DataTableQueryConfig<AdvertisementListItemDto>()
         {
             AdditionalFilter = query => FilterByAttributes(query, request.AttributeSearch.ToList()),
             AdditionalSort = (query, isSortApplied) => OrderByAttributes(query, isSortApplied, request.AttributeOrder.ToList())
         });
     }
 
-    private IQueryable<AdvertisementListItem> FilterByAttributes(IQueryable<AdvertisementListItem> query, List<AttributeSearchQuery> attributeSearch)
+    private IQueryable<AdvertisementListItemDto> FilterByAttributes(IQueryable<AdvertisementListItemDto> query, List<AttributeSearchQuery> attributeSearch)
     {
         foreach (var search in attributeSearch)
         {
@@ -88,8 +90,8 @@ public class AdvertisementService(
     }
 
     //TODO: Test ordering for different attribute types
-    private static IQueryable<AdvertisementListItem> OrderByAttributes(
-        IQueryable<AdvertisementListItem> query,
+    private static IQueryable<AdvertisementListItemDto> OrderByAttributes(
+        IQueryable<AdvertisementListItemDto> query,
         bool sortApplied,
         List<AttributeOrderQuery> attributeOrder)
     {
@@ -101,13 +103,13 @@ public class AdvertisementService(
         var orderIndex = 0;
         // New expression is returned in order to capture current index into expression scope
         // Otherwise expression references variable, which upon expression evaluation will be changed and identical for all expression calls
-        Expression<Func<AdvertisementListItem, string>> getKeySelectorExpression(int index)
+        Expression<Func<AdvertisementListItemDto, string>> getKeySelectorExpression(int index)
         {
             return a => a.AttributeValues.First(v => v.AttributeId == attributeOrder[index].AttributeId).Value;
         }
 
         // If no order applied already call orderBy
-        var orderedQuery = (IOrderedQueryable<AdvertisementListItem>)query;
+        var orderedQuery = (IOrderedQueryable<AdvertisementListItemDto>)query;
         if (!sortApplied)
         {
             orderedQuery = attributeOrder[orderIndex].Direction == Direction.Ascending

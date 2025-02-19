@@ -548,7 +548,7 @@ export class AdvertisementListItem implements IAdvertisementListItem {
     postedDate?: Date;
     title?: string | undefined;
     advertisementText?: string | undefined;
-    thumbnailImagePath?: string | undefined;
+    thumbnailImageUrl?: string | undefined;
     attributeValues?: AttributeValueItem[] | undefined;
 
     constructor(data?: IAdvertisementListItem) {
@@ -568,7 +568,7 @@ export class AdvertisementListItem implements IAdvertisementListItem {
             this.postedDate = _data["postedDate"] ? new Date(_data["postedDate"].toString()) : <any>undefined;
             this.title = _data["title"];
             this.advertisementText = _data["advertisementText"];
-            this.thumbnailImagePath = _data["thumbnailImagePath"];
+            this.thumbnailImageUrl = _data["thumbnailImageUrl"];
             if (Array.isArray(_data["attributeValues"])) {
                 this.attributeValues = [] as any;
                 for (let item of _data["attributeValues"])
@@ -592,7 +592,7 @@ export class AdvertisementListItem implements IAdvertisementListItem {
         data["postedDate"] = this.postedDate ? this.postedDate.toISOString() : <any>undefined;
         data["title"] = this.title;
         data["advertisementText"] = this.advertisementText;
-        data["thumbnailImagePath"] = this.thumbnailImagePath;
+        data["thumbnailImageUrl"] = this.thumbnailImageUrl;
         if (Array.isArray(this.attributeValues)) {
             data["attributeValues"] = [];
             for (let item of this.attributeValues)
@@ -609,7 +609,7 @@ export interface IAdvertisementListItem {
     postedDate?: Date;
     title?: string | undefined;
     advertisementText?: string | undefined;
-    thumbnailImagePath?: string | undefined;
+    thumbnailImageUrl?: string | undefined;
     attributeValues?: AttributeValueItem[] | undefined;
 }
 

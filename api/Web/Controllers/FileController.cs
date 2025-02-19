@@ -25,7 +25,7 @@ public class FileController(
     [ProducesResponseType<FileResult>((int)HttpStatusCode.OK)]
     [ProducesResponseType<NotFoundResult>((int)HttpStatusCode.NotFound)]
     [ProducesResponseType<ForbidResult>((int)HttpStatusCode.Forbidden)]
-    [HttpGet]
+    [HttpGet(Name = nameof(GetFile))]
     public async Task<IActionResult> GetFile(int id)
     {
         var file = await _fileService.FirstOrDefaultAsync(f => f.Id == id);

@@ -12,7 +12,7 @@ public static class DataTableQueryResolver
     {
         //Total record count
         var totalRecords = query.DeferredCount().FutureValue();
-        
+
         //Search
         var searchableColumns = request.Columns.Where(c => c.Searchable).ToList();
         if (!string.IsNullOrEmpty(request.Search?.Value) && searchableColumns.Count > 0)
@@ -29,7 +29,7 @@ public static class DataTableQueryResolver
                 query = query.Where(ReflectionHelper.GetWhereSearchPredicate<Entity>(new List<string>() { column.Name }, column.Search!.Value));
             }
         }
-        if(config?.AdditionalFilter is not null)
+        if (config?.AdditionalFilter is not null)
         {
             query = config.AdditionalFilter(query);
         }
@@ -44,7 +44,7 @@ public static class DataTableQueryResolver
             query = OrderQuery(query, request);
             orderApplied = true;
         }
-        if(config?.AdditionalSort is not null)
+        if (config?.AdditionalSort is not null)
         {
             query = config.AdditionalSort(query, orderApplied);
         }
@@ -68,6 +68,30 @@ public static class DataTableQueryResolver
             RecordsTotal = totalRecords.Value,
             RecordsFiltered = filteredRecordCount.Value,
             Data = queryResult
+        };
+    }
+
+    /// <summary>
+    /// Map data table response Data property to different Dto
+    /// </summary>
+    /// <typeparam name="TSource"></typeparam>
+    /// <typeparam name="TDestination"></typeparam>
+    /// <param name="response">Data table query response instance</param>
+    /// <param name="mapper">Mapper instance</param>
+    /// <param name="opts">Mapping options passed to mapper</param>
+    /// <returns></returns>
+    public static DataTableQueryResponse<TDestination> MapDataTableResponse<TSource, TDestination>(
+        this DataTableQueryResponse<TSource> response,
+        IMapper mapper,
+        Action<IMappingOperationOptions<object, IEnumerable<TDestination>>> opts)
+    {
+        return new DataTableQueryResponse<TDestination>()
+        {
+            Draw = response.Draw,
+            Error = response.Error,
+            RecordsFiltered = response.RecordsFiltered,
+            RecordsTotal = response.RecordsTotal,
+            Data = mapper.Map<IEnumerable<TDestination>>(response.Data, opts)
         };
     }
 
@@ -102,10 +126,10 @@ public static class DataTableQueryResolver
     {
         var orderList = request.Order.ToList();
         string ascendingOrderMethodName = nameof(Queryable.OrderBy), descendingOrderMethodName = nameof(Queryable.OrderByDescending);
-        for(var i = 0; i < orderList.Count; i++)
+        for (var i = 0; i < orderList.Count; i++)
         {
             var sortApplied = ApplySort(ascendingOrderMethodName, descendingOrderMethodName, orderList[i]);
-            if(sortApplied)
+            if (sortApplied)
             {
                 ascendingOrderMethodName = nameof(Queryable.ThenBy);
                 descendingOrderMethodName = nameof(Queryable.ThenByDescending);
@@ -142,7 +166,7 @@ public static class DataTableQueryResolver
                 new Type[] { typeof(IQueryable<Entity>), keySelectorExpressionType },
                 new Type[] { typeof(Entity), columnType },
                 new object[] { query, keySelectorLambda });
-            
+
             return true;
         }
     }

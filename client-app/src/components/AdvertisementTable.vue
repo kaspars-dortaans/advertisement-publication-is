@@ -48,7 +48,7 @@
           <template #body="slotProps">
             <Panel>
               <div class="flex flex-row gap-2">
-                <img :src="slotProps.data.thumbnailImagePath" width="100" height="100" />
+                  <img :src="slotProps.data.thumbnailImageUrl" width="100" height="100" />
                 <div class="flex flex-col gap-2">
                   <h4>{{ slotProps.data.title }}</h4>
                   <p>{{ slotProps.data.advertisementText }}</p>

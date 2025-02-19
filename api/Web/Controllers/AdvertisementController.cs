@@ -30,9 +30,10 @@ public class AdvertisementController(
 
     [AllowAnonymous]
     [HttpPost]
-    public Task<DataTableQueryResponse<AdvertisementListItem>> GetAdvertisements(AdvertisementQuery request)
+    public async Task<DataTableQueryResponse<AdvertisementListItem>> GetAdvertisements(AdvertisementQuery request)
     {
-        return _advertisementService.GetActiveAdvertisementsByCategory(request);
+        var result = await _advertisementService.GetActiveAdvertisementsByCategory(request);
+        return result.MapDataTableResponse<AdvertisementListItemDto, AdvertisementListItem>(_mapper, opts => opts.Items[nameof(Url)] = Url);
     }
 
     [AllowAnonymous]
