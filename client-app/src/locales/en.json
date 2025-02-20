@@ -19,6 +19,15 @@
     "new": "New"
   },
 
+  "advertisements": {
+    "contacts": "Contacts",
+    "viewProfile": "View profile",
+    "sendMessage": "Send message",
+    "showPhoneNumber": "Show phone number",
+    "showEmail": "Show email",
+    "reportRuleViolation": "Report rule violation"
+  },
+
   "form": {
     "doNotHaveAnAccountQuestion": "Don't have an account?",
     "alreadyHaveAnAccount": "Already have an account?",

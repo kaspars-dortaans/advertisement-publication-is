@@ -19,6 +19,15 @@
     "new": "Jauns"
   },
 
+  "advertisements": {
+    "contacts": "Kontakti",
+    "viewProfile": "Skatīt profilu",
+    "sendMessage": "Sūtīt ziņu",
+    "showPhoneNumber": "Parādīt tālruņa numuru",
+    "showEmail": "Parādīt e-pastu",
+    "reportRuleViolation": "Paziņot par notiekumu pārkāpumu"
+  },
+
   "form": {
     "doNotHaveAnAccountQuestion": "Don't have an account?",
     "alreadyHaveAnAccount": "Already have an account?",
