@@ -200,7 +200,7 @@ const editAcceptedImage = async () => {
  */
 const acceptEdit = async (files: File[]) => {
   const croppedImage = await new Promise<File | null>((resolve) =>
-    cropper.value?.getResult().canvas?.toBlob((blob) => {
+    cropper.value?.getResult().canvas?.toBlob((blob: Blob | null) => {
       resolve(new File([blob!], files[0].name))
     }, cropperSource.type)
   )

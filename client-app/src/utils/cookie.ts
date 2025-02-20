@@ -12,7 +12,7 @@ export const setCookie = (name: string, value: string, options?: ICookieOptions)
 
 /** Get page cookie by name. If cookie is not found returns undefined*/
 export const getCookie = (name: string) => {
-  const cookie = getCookieList().find((c) => c[0] == name)
+  const cookie = getCookieList().find((c) => c && c[0] == name)
   if (!cookie) {
     return undefined
   }
