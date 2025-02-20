@@ -2,6 +2,7 @@ import { DefaultLocale } from '@/constants/default-locale'
 import { usePrimeVue, type PrimeVueLocaleOptions } from 'primevue/config'
 import { ref, type Ref } from 'vue'
 import { Settings } from './settings'
+import { emptyLocale } from '@/init/empty-locale'
 
 export class LocaleService {
   private static _instance: LocaleService
@@ -38,6 +39,7 @@ export class LocaleService {
     this._settings = Settings.get()
     this._localeMap = new Map()
     this.localeList.value = []
+    LocaleService.currentLocale.value = emptyLocale
 
     for (const filePath in this._localeFiles) {
       const filePathSplit = filePath.split('/')
