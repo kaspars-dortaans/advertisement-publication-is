@@ -3,14 +3,14 @@
     <template #start>
       <div class="flex flex-row items-center gap-2 w-full">
         <RouterLink :to="{ name: 'home' }">
-          <img class="h-9" :src="logoUrl" :alt="ls.l('navigation.siteLogo')" />
+          <img class="h-9" :src="logoUrl" :alt="l.navigation.siteLogo" />
         </RouterLink>
         <IconField class="flex-1">
           <InputIcon class="pi pi-search" @click="immediateSearch" />
           <InputText
             v-model="searchInput"
             class="w-full"
-            :placeholder="ls.l('actions.search')"
+            :placeholder="l.actions.search"
             size="small"
             @input="debouncedSearch"
             @keydown.enter="immediateSearch"
@@ -42,6 +42,7 @@ import { debounceFn } from '@/utils/debounce'
 import logoUrl from '@/assets/logo.svg'
 
 const ls = LocaleService.get()
+const l = LocaleService.currentLocale
 
 // TODO: Move to constant file?
 const inputDebounceTime = 3000
@@ -79,7 +80,7 @@ const items = reactive([
     ]
   },
   {
-    label: ls.currentLocale,
+    label: LocaleService.currentLocaleName,
     items: localeItems
   },
   {

@@ -9,7 +9,7 @@
       optionValue="orderIndex"
       showClear
     ></component>
-    <label :for="inputId">{{ props.label }} {{ ls.l('dataTable.from') }}</label>
+    <label :for="inputId">{{ props.label }} {{ l.dataTable.from }}</label>
   </FloatLabel>
   <FloatLabel variant="on">
     <component
@@ -21,7 +21,7 @@
       optionValue="orderIndex"
       showClear
     ></component>
-    <label :for="secondaryInputId">{{ ls.l('dataTable.to') }}</label>
+    <label :for="secondaryInputId">{{ l.dataTable.to }}</label>
   </FloatLabel>
 </template>
 
@@ -39,7 +39,7 @@ const props = defineProps<{
 const fromModel = defineModel()
 const toModel = defineModel('secondaryValue')
 
-const ls = LocaleService.get()
+const l = LocaleService.currentLocale
 
 const inputId = useId()
 const secondaryInputId = useId()

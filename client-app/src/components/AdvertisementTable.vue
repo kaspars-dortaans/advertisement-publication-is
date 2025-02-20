@@ -40,15 +40,15 @@
                 class="min-w-52"
               />
             </div>
-            <Button severity="secondary" @click="clearFilter">{{ ls.l('actions.clear') }}</Button>
-            <Button severity="primary" @click="filterTable">{{ ls.l('actions.search') }}</Button>
+            <Button severity="secondary" @click="clearFilter">{{ l.actions.clear }}</Button>
+            <Button severity="primary" @click="filterTable">{{ l.actions.search }}</Button>
           </div>
         </template>
         <Column field="id">
           <template #body="slotProps">
             <Panel>
               <div class="flex flex-row gap-2">
-                  <img :src="slotProps.data.thumbnailImageUrl" width="100" height="100" />
+                <img :src="slotProps.data.thumbnailImageUrl" width="100" height="100" />
                 <div class="flex flex-col gap-2">
                   <h4>{{ slotProps.data.title }}</h4>
                   <p>{{ slotProps.data.advertisementText }}</p>
@@ -108,6 +108,7 @@ import { computed, onMounted, ref, useTemplateRef, watch, type ComputedRef, type
 // Services
 const advertisementService = getClient(AdvertisementClient)
 const ls = LocaleService.get()
+const l = LocaleService.currentLocale
 
 // Refs
 const categoryMenu = useTemplateRef('categoryMenu')
@@ -168,13 +169,13 @@ onMounted(() => {
   categoryId.value = null
   handleSelectedCategory(
     categoryId.value,
-    categoryMenu.value?.getCategoryName(categoryId.value, ls.currentLocale.value)
+    categoryMenu.value?.getCategoryName(categoryId.value, LocaleService.currentLocale.value)
   )
 })
 
 // Watchers
 watch(
-  ls.currentLocale,
+  LocaleService.currentLocaleName,
   () => {
     pageReportTemplate.value = ls.l(
       'dataTable.pageReportTemplate',
@@ -186,7 +187,7 @@ watch(
   { immediate: true }
 )
 
-watch(ls.currentLocale, async (newLocale) => {
+watch(LocaleService.currentLocaleName, async (newLocale) => {
   handleSelectedCategory(
     categoryId.value,
     categoryMenu.value?.getCategoryName(categoryId.value, newLocale)
@@ -265,7 +266,7 @@ const sortTable = (event: DataTableSortEvent) => {
         direction: s.order == 1 ? Direction.Ascending : Direction.Descending
       })
     })
-    .filter((s) => s != null)
+    .filter((s) => s != null) as AttributeOrderQuery[]
 
   loadAdvertisements()
 }

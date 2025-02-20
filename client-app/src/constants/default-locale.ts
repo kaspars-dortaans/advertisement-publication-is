@@ -1,1 +1,1 @@
-export const DefaultLocale = 'ENG'
+export const DefaultLocaleName = 'EN'

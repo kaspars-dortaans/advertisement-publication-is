@@ -84,7 +84,7 @@ export function initPrimeVue(app: App<Element>) {
   })
 
   const localeService = LocaleService.get(app.config.globalProperties.$primevue)
-  localeService.loadSavedOrDefaultLocale()
+  localeService.loadSavedOrDefaultLocaleName()
 
   //components
   //File

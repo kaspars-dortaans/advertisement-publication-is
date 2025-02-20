@@ -1,4 +1,4 @@
-import { DefaultLocale } from '@/constants/default-locale'
+import { DefaultLocaleName } from '@/constants/default-locale'
 import { usePrimeVue, type PrimeVueLocaleOptions } from 'primevue/config'
 import { ref, type Ref } from 'vue'
 import { Settings } from './settings'
@@ -20,9 +20,13 @@ export class LocaleService {
   /** List with available locales */
   readonly localeList: Ref<string[]> = ref([])
 
-  /** Currently selected locale */
-  readonly currentLocale = ref('')
+  /** Currently selected locale name */
+  static readonly currentLocaleName = ref('')
 
+  /** Currently selected locale */
+  static readonly currentLocale: Ref<any> = ref({})
+
+  /** Static method to get singleton instance */
   public static get(primevue?: ReturnType<typeof usePrimeVue>) {
     if (!this._instance) {
       this._instance = new LocaleService()
@@ -50,6 +54,7 @@ export class LocaleService {
     }
   }
 
+  /** Get primevue instance */
   get primevue() {
     if (!this._primevue) this._primevue = usePrimeVue()
 
@@ -57,7 +62,7 @@ export class LocaleService {
   }
 
   /** Try to get saved locale, if not present set to default locale */
-  async loadSavedOrDefaultLocale() {
+  async loadSavedOrDefaultLocaleName() {
     if (!this._settings.userSettingCookieValue.locale) {
       this._settings.userSettingCookieValue.locale = this.getBrowserCompatibleLocale()
     }
@@ -66,7 +71,7 @@ export class LocaleService {
     await this.loadLocale(locale)
   }
 
-  /** Return available app locale which also is present in navigator.languages, DefaultLocale is used as fallback */
+  /** Return available app locale which also is present in navigator.languages, DefaultLocaleName is used as fallback */
   getBrowserCompatibleLocale() {
     const browserLocales = new Set<string>()
     const languages = window.navigator.languages ?? [window.navigator.language]
@@ -91,7 +96,7 @@ export class LocaleService {
     }
 
     //If no compatible locale found return default
-    return DefaultLocale
+    return DefaultLocaleName
   }
 
   /** Load locale by name */
@@ -103,16 +108,17 @@ export class LocaleService {
     }
 
     // If no locale is assigned, assign new immediately to prevent errors
-    const unassignedLocale = !this.currentLocale.value
+    const unassignedLocale = !LocaleService.currentLocaleName.value
     if (unassignedLocale) {
-      this.currentLocale.value = nameNormalized
+      LocaleService.currentLocaleName.value = nameNormalized
     }
 
     const filePath = this._localeMap.get(nameNormalized)!
     const locale = await this._localeFiles[filePath]()
     this.primevue.config.locale = locale as PrimeVueLocaleOptions
 
-    this.currentLocale.value = nameNormalized
+    LocaleService.currentLocaleName.value = nameNormalized
+    LocaleService.currentLocale.value = locale
     this._settings.userSettingCookieValue.locale = nameNormalized
   }
 

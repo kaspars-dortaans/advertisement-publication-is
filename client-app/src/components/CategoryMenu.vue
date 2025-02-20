@@ -87,7 +87,7 @@ const loadCategories = async () => {
     )
   ]
   displayedCategoryNodes.value = categoryNodes.value
-  loadedCategoryLocale = ls.currentLocale.value
+  loadedCategoryLocale = LocaleService.currentLocaleName.value
 
   //Resolve getCategoryName promises which were called in loading time
   for (const executor of getCategoryNameExecutors) {
@@ -116,7 +116,7 @@ watch(model, (newValue) => {
   }
 })
 
-watch(ls.currentLocale, async () => {
+watch(LocaleService.currentLocaleName, async () => {
   await loadCategories()
 })
 
