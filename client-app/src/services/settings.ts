@@ -1,5 +1,5 @@
 import { UserSettingCookieName, UserSettingCookieOptions } from '@/constants/cookie-constants'
-import type { ICookieUserSettings } from '@/types/cookie-user-settings'
+import type { ICookieUserSettings } from '@/types/cookie/cookie-user-settings'
 import { getCookie, setCookie } from '@/utils/cookie'
 import { reactive, watch, type Reactive } from 'vue'
 

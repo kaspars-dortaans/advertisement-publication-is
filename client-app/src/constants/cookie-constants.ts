@@ -1,4 +1,4 @@
-import type { ICookieOptions } from '@/types/cookie-options'
+import type { ICookieOptions } from '@/types/cookie/cookie-options'
 
 //TODO: Consider fetching constants from API endpoint
 export const UserSettingCookieName = 'userSettings'

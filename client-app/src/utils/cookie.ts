@@ -1,4 +1,4 @@
-import type { ICookieOptions } from '@/types/cookie-options'
+import type { ICookieOptions } from '@/types/cookie/cookie-options'
 
 /** Set cookie */
 export const setCookie = (name: string, value: string, options?: ICookieOptions) => {
