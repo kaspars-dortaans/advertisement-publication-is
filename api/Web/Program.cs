@@ -25,7 +25,7 @@ var builder = WebApplication.CreateBuilder(args);
 var devCORSPolicy = "DevCORSPolicy";
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy(name: corsFrontEndPolicy,
+    options.AddPolicy(name: devCORSPolicy,
         policy =>
         {
             policy.WithOrigins("https://localhost:5173", "http://localhost:5173")

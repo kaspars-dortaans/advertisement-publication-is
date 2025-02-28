@@ -1,15 +1,14 @@
 import { LocaleService } from '@/services/locale-service'
 import axios, { AxiosError, HttpStatusCode } from 'axios'
-import type { App } from 'vue'
-import router from '@/router'
+import type { Router } from 'vue-router'
 
 export const axiosInstance = axios.create()
 
-export const initAxios = (app: App<Element>) => {
+export const initAxios = (router: Router) => {
   axiosInstance.defaults.baseURL = import.meta.env.VITE_API_URL
   axiosInstance.defaults.withCredentials = true
 
-  const ls = LocaleService.get(app.config.globalProperties.$primevue)
+  const ls = LocaleService.get()
   axiosInstance.interceptors.response.use(
     (response) => {
       return response

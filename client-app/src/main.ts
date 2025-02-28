@@ -9,13 +9,14 @@ import initAxios from './init/axios'
 import { initYup } from './init/yup'
 import { initServices } from './init/services'
 
+initAxios(router)
+
 const app = createApp(App)
 
 app.use(router)
 
 initPrimeVue(app)
 initServices(app)
-initAxios(app)
 initYup(app)
 
 app.mount('#app')
