@@ -22,17 +22,17 @@ using Web.OpenApi;
 var builder = WebApplication.CreateBuilder(args);
 
 //CORS
-var corsFrontEndPolicy = "AllowFrontEndPolicy";
+var devCORSPolicy = "DevCORSPolicy";
 builder.Services.AddCors(options =>
 {
     options.AddPolicy(name: corsFrontEndPolicy,
-                      policy =>
-    {
-        policy.WithOrigins("https://localhost:5173", "http://localhost:5173")
-            .AllowAnyHeader()
-            .AllowAnyMethod()
-            .AllowCredentials();
-    });
+        policy =>
+        {
+            policy.WithOrigins("https://localhost:5173", "http://localhost:5173")
+                .AllowAnyHeader()
+                .AllowAnyMethod()
+                .AllowCredentials();
+        });
 });
 
 //Authentication
@@ -171,6 +171,16 @@ MagickNET.Initialize();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
+// Docs: https://learn.microsoft.com/en-us/aspnet/core/fundamentals/middleware/?view=aspnetcore-8.0#middleware-order
+app.UseHttpsRedirection();
+
+app.UseCors(devCORSPolicy);
+
+app.UseAuthentication();
+app.UseAuthorization();
+
+app.MapControllers();
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -181,13 +191,5 @@ if (app.Environment.IsDevelopment())
     var dbSeeder = scope.ServiceProvider.GetService<DbSeeder>();
     dbSeeder?.Seed();
 }
-app.UseHttpsRedirection();
-
-app.UseCors(corsFrontEndPolicy);
-
-app.UseAuthentication();
-app.UseAuthorization();
-
-app.MapControllers();
 
 app.Run();

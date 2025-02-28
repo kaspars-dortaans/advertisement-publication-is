@@ -1,6 +1,4 @@
-﻿using BusinessLogic.Enums;
-
-namespace BusinessLogic.Entities;
+﻿namespace BusinessLogic.Entities;
 
 public class CategoryAttribute
 {

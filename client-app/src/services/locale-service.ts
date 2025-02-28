@@ -117,9 +117,9 @@ export class LocaleService {
     const locale = await this._localeFiles[filePath]()
     this.primevue.config.locale = locale as PrimeVueLocaleOptions
 
+    this._settings.userSettingCookieValue.locale = nameNormalized
     LocaleService.currentLocaleName.value = nameNormalized
     LocaleService.currentLocale.value = locale
-    this._settings.userSettingCookieValue.locale = nameNormalized
   }
 
   /** Localize and format multiple strings */

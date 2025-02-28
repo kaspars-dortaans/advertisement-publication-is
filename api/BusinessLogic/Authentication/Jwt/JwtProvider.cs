@@ -34,7 +34,7 @@ namespace BusinessLogic.Authentication.Jwt
 
             var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_options.SecretKey));
             var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
-            var userClaims = new List<Claim> { new Claim(JwtRegisteredClaimNames.Email, user.Email!), new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()) };
+            var userClaims = new List<Claim> { new (JwtRegisteredClaimNames.Email, user.Email!), new (JwtRegisteredClaimNames.Sub, user.Id.ToString()) };
 
             var securityToken = new JwtSecurityToken(
               _options.Issuer,

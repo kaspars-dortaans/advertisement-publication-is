@@ -11,7 +11,7 @@
     "type-check": "vue-tsc --build --force",
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore",
     "format": "prettier --write src/",
-    "gen:api-client": " cd nswag && nswag.bat",
+    "gen:api-client": " cd gen-scripts/nswag && nswag.bat",
     "gen:empty-locale": "tsx ./gen-scripts/build-empty-locale.ts"
   },
   "dependencies": {

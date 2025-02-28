@@ -1,6 +1,5 @@
-﻿namespace BusinessLogic.Authentication
+﻿namespace BusinessLogic.Authentication;
+
+public class InvalidCredentialException : Exception
 {
-    public class InvalidCredentialException : Exception
-    {
-    }
 }
