@@ -5,6 +5,7 @@ import { LoginClient, type LoginDto } from './api-client'
 export class AuthService {
   readonly client = getClient(LoginClient)
   readonly tokenStorageKey = 'AuthToken'
+  readonly authHeaderName = 'Authorization'
   jwtToken: string | null = null
 
   constructor() {
@@ -31,13 +32,13 @@ export class AuthService {
   }
 
   updateAuthorizationHeader() {
-    axiosInstance.defaults.headers.patch.Authorization = this.jwtToken
+    axiosInstance.defaults.headers.common[this.authHeaderName] = this.jwtToken
       ? 'Bearer ' + this.jwtToken
       : undefined
   }
 
   async login(loginDto: LoginDto) {
-    this.updateToken((await this.client.authenticate(loginDto)))
+    this.updateToken(await this.client.authenticate(loginDto))
   }
 
   logout() {
