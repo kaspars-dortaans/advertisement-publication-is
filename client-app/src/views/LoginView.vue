@@ -55,14 +55,21 @@ import { AuthService } from '@/services/auth-service'
 import { LocaleService } from '@/services/locale-service'
 import { FieldHelper } from '@/utils/field-helper'
 import { toTypedSchema } from '@vee-validate/yup'
-import { object, string } from 'yup'
 import { useForm } from 'vee-validate'
 import { useRouter } from 'vue-router'
+import { object, string } from 'yup'
 
-const authService = new AuthService()
-const l = LocaleService.currentLocale
+//Props
+const props = defineProps<{ redirect: boolean }>()
+
+//Route
 const router = useRouter()
 
+//Services
+const authService = new AuthService()
+const l = LocaleService.currentLocale
+
+//Form
 const form = useForm({
   validationSchema: toTypedSchema(
     object({
@@ -80,7 +87,11 @@ const tryLogin = handleSubmit(async () => {
   const loginDto = new LoginDto(values)
   try {
     await authService.login(loginDto)
-    router.push({ name: 'home' })
+    if (props.redirect) {
+      router.back()
+    } else {
+      router.push({ name: 'home' })
+    }
   } catch (error) {
     fieldHelper.handleErrors(error)
   }

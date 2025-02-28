@@ -1,6 +1,7 @@
 import { LocaleService } from '@/services/locale-service'
-import axios, { AxiosError } from 'axios'
+import axios, { AxiosError, HttpStatusCode } from 'axios'
 import type { App } from 'vue'
+import router from '@/router'
 
 export const axiosInstance = axios.create()
 
@@ -14,6 +15,12 @@ export const initAxios = (app: App<Element>) => {
       return response
     },
     (error: AxiosError) => {
+      const response = error?.response
+      //If unauthorized redirect to login page
+      if (response?.status === HttpStatusCode.Unauthorized) {
+        router.push({ name: 'login', query: { redirect: 'true' } })
+      }
+
       //If custom error codes where returned, localize them
       const data = error?.response?.data
       if (data && typeof data == 'object') {
