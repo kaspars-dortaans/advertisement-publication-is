@@ -2,7 +2,6 @@
 /* eslint-disable vue/multi-word-component-names */
 
 import { type App } from 'vue'
-import { LocaleService } from '@/services/locale-service'
 
 //PrimeVue
 import PrimeVue from 'primevue/config'
@@ -82,9 +81,6 @@ export function initPrimeVue(app: App<Element>) {
     pt: globalPassTrough,
     ptOptions: { mergeSections: true, mergeProps: true }
   })
-
-  const localeService = LocaleService.get(app.config.globalProperties.$primevue)
-  localeService.loadSavedOrDefaultLocaleName()
 
   //components
   //File
