@@ -4,4 +4,5 @@ export interface ICookieOptions {
   domain?: string
   samesite?: 'lax' | 'strict' | 'none'
   'max-age'?: number //seconds
+  secure?: boolean
 }

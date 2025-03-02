@@ -3,11 +3,20 @@ import type { ICookieOptions } from '@/types/cookie/cookie-options'
 /** Set cookie */
 export const setCookie = (name: string, value: string, options?: ICookieOptions) => {
   const optionString = options
-    ? Object.keys(options).reduce((key) => `${key}=${options[key as keyof ICookieOptions]};`)
+    ? Object.keys(options).reduce((accStr, key) => {
+        const option = options[key as keyof ICookieOptions]
+        const isFlag = typeof option === 'boolean'
+        if (isFlag && !option) {
+          return accStr
+        }
+
+        return accStr + (isFlag ? key + ';' : `${key}=${option};`)
+      }, '')
     : ''
 
   //Setting document.cookie to one cookie name value pair does not remove other existing cookies
-  document.cookie = `${name}=${encodeURIComponent(value)};${optionString}`
+  const setCookieString = `${name}=${encodeURIComponent(value)};${optionString}`
+  document.cookie = setCookieString
 }
 
 /** Get page cookie by name. If cookie is not found returns undefined*/
