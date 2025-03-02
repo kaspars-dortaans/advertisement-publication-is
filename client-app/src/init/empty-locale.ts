@@ -38,6 +38,15 @@ export const emptyLocale = {
     publiclyDisplayPhoneNumber: "",
     dragAndDropToUpload: "",
   },
+  advertisements: {
+    contacts: "",
+    viewProfile: "",
+    sendMessage: "",
+    showPhoneNumber: "",
+    showEmail: "",
+    reportRuleViolation: "",
+    bookmark: "",
+  },
   categoryMenu: {
     new: "",
   },
@@ -54,18 +63,5 @@ export const emptyLocale = {
     edit: "",
     search: "",
     clear: "",
-    test4: {
-      test7: {
-        test8: "",
-      },
-      test5: {
-        test6: "",
-      },
-    },
-    test1: {
-      test2: {
-        test3: "",
-      }
-    }
   }
 }

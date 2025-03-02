@@ -62,4 +62,31 @@ public class BaseService<Entity> : IBaseService<Entity> where Entity : class
     {
         return DbSet.Where(predicate);
     }
+
+    public Task DeleteWhereAsync(Expression<Func<Entity, bool>> predicate)
+    {
+        return DbSet.Where(predicate).DeleteFromQueryAsync();
+    }
+
+    public async Task<bool> AddIfNotExistsAsync(Entity entity)
+    {
+        using var transaction = await DbContext.Database.BeginTransactionAsync();
+        try
+        {
+
+            var entityExists = await DbSet.ContainsAsync(entity);
+            if (!entityExists)
+            {
+                await DbSet.AddAsync(entity);
+            }
+            await DbContext.SaveChangesAsync();
+            await transaction.CommitAsync();
+            return !entityExists;
+        }
+        catch (Exception)
+        {
+            await transaction.RollbackAsync();
+            throw;
+        }
+    }
 }

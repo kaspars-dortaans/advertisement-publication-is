@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
-using Microsoft.AspNetCore.Mvc;
-using Web.Controllers;
+using Web.Dto.Image;
+using Web.Helpers;
 
 namespace Web.Dto.Advertisement;
 
@@ -10,15 +10,14 @@ public class AdvertisementMapperProfile : Profile
     {
         CreateMap<BusinessLogic.Dto.Advertisement.AdvertisementListItemDto, AdvertisementListItem>()
             .ForMember(a => a.ThumbnailImageUrl, o => o
-                .MapFrom((a, _, _, context) => GetFileUrl(context, a.ThumbnailImageId)));
-    }
+                .MapFrom((a, _, _, context) => FileUrlHelper.MapperGetThumbnailUrl(context, a.ThumbnailImageId)));
 
-    private static string? GetFileUrl(ResolutionContext context, int? id)
-    {
-        if (id == null)
-        {
-            return null;
-        }
-        return (context.Items[nameof(ControllerBase.Url)] as IUrlHelper)!.Link(nameof(FileController.GetFile), new { id });
+        CreateMap<BusinessLogic.Dto.Advertisement.AdvertisementDto, AdvertisementDto>()
+        .ForMember(a => a.ImageURLs, o => o
+            .MapFrom((a, _, _, context) => a.ImageIds
+                .Select(id => new ImageUrl(){
+                    Url = FileUrlHelper.MapperGetFileUrl(context, id) ?? "",
+                    ThumbnailUrl = FileUrlHelper.MapperGetThumbnailUrl(context, id) ?? ""
+                })));
     }
 }

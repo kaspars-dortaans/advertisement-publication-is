@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+﻿using BusinessLogic.Entities.Files;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace BusinessLogic.Entities;
@@ -6,18 +7,25 @@ namespace BusinessLogic.Entities;
 public class Context(DbContextOptions<Context> options) : IdentityDbContext<User, Role, int>(options)
 {
     public virtual DbSet<Advertisement> Advertisements { get; set; }
+    public virtual DbSet<AdvertisementBookmark> AdvertisementBookmarks { get; set; }
     public virtual DbSet<AdvertisementAttributeValue> AdvertisementAttributeValues { get; set; }
     public virtual DbSet<Attribute> Attributes { get; set; }
     public virtual DbSet<AttributeValueList> AttributeValueLists { get; set; }
     public virtual DbSet<AttributeValueListEntry> AttributeValueListEntries { get; set; }
     public virtual DbSet<Category> Categories { get; set; }
-    public virtual DbSet<File> Files { get; set; }
-    public virtual DbSet<UserFile> UserFiles { get; set; }
-    public virtual DbSet<SystemFile> SystemFiles { get; set; }
     public virtual DbSet<Message> Messages { get; set; }
     public virtual DbSet<Permission> Permissions { get; set; }
     public virtual DbSet<RolePermission> RolePermissions { get; set; }
     public virtual DbSet<CategoryAttribute> CategoryAttributes { get; set; }
+    
+    //Files and images
+    public virtual DbSet<Files.File> Files { get; set; }
+    public virtual DbSet<Image> Images { get; set; }
+    public virtual DbSet<UserImage> UserImages { get; set; }
+    public virtual DbSet<SystemImage> SystemImages { get; set; }
+    public virtual DbSet<AdvertisementImage> AdvertisementImages { get; set; }
+    
+    //Locale texts
     public virtual DbSet<LocaleText> LocaleTexts { get; set; }
     public virtual DbSet<AttributeNameLocaleText> AttributeNameLocaleTexts { get; set; }
     public virtual DbSet<CategoryNameLocaleText> CategoryNameLocaleTexts { get; set; }
@@ -37,7 +45,7 @@ public class Context(DbContextOptions<Context> options) : IdentityDbContext<User
         modelBuilder.Entity<User>()
             .HasOne(user => user.ProfileImageFile)
             .WithOne(file => file.OwnerUser)
-            .HasForeignKey<UserFile>(file => file.OwnerUserId);
+            .HasForeignKey<UserImage>(file => file.OwnerUserId);
 
         modelBuilder.Entity<Category>()
             .HasMany(c => c.Attributes)
@@ -47,6 +55,16 @@ public class Context(DbContextOptions<Context> options) : IdentityDbContext<User
                 l => l.HasOne(ca => ca.Category).WithMany(c => c.CategoryAttributes),
                 j => j.HasKey(ca => new { ca.CategoryId, ca.AttributeId })
             );
+
+        var advertisementBuilder = modelBuilder.Entity<Advertisement>();
+        advertisementBuilder
+            .HasMany(a => a.BookmarksOwners)
+            .WithMany(u => u.BookmarkedAdvertisements)
+            .UsingEntity<AdvertisementBookmark>();
+
+        advertisementBuilder
+            .HasOne(a => a.Owner)
+            .WithMany(u => u.OwnedAdvertisements);
 
         // Functions
         modelBuilder

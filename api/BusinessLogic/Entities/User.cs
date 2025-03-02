@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using BusinessLogic.Entities.Files;
+using Microsoft.AspNetCore.Identity;
 
 namespace BusinessLogic.Entities;
 
@@ -9,5 +10,8 @@ public class User : IdentityUser<int>
     public bool IsPhoneNumberPublic { get; set; }
     public bool IsEmailPublic { get; set; }
     public int? ProfileImageFileId { get; set; }
-    public UserFile ProfileImageFile { get; set; } = default!;
+    public UserImage ProfileImageFile { get; set; } = default!;
+    public ICollection<Advertisement> OwnedAdvertisements { get; set; } = default!;
+    public ICollection<Advertisement> BookmarkedAdvertisements { get; set; } = default!;
+    public ICollection<AdvertisementBookmark> AdvertisementBookmarks { get; set; } = default!;
 }

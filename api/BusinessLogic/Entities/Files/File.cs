@@ -1,4 +1,4 @@
-﻿namespace BusinessLogic.Entities;
+﻿namespace BusinessLogic.Entities.Files;
 
 public class File
 {

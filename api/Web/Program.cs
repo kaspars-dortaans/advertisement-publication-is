@@ -153,6 +153,7 @@ builder.Services.AddScoped(typeof(IBaseService<>), typeof(BaseService<>));
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IAdvertisementService, AdvertisementService>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
+builder.Services.AddScoped<IFileService, FileService>();
 
 //Helpers
 builder.Services.AddScoped<IStorage, LocalFileStorage>();

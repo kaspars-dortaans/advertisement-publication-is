@@ -5,4 +5,5 @@ export interface ICookieOptions {
   samesite?: 'lax' | 'strict' | 'none'
   'max-age'?: number //seconds
   secure?: boolean
+  partitioned?: boolean
 }

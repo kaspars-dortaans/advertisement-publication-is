@@ -11,6 +11,14 @@ public interface IBaseService<Entity> where Entity : class
     public Task<bool> ExistsAsync(Expression<Func<Entity, bool>> predicate);
     public Task<Entity> AddAsync(Entity entity);
     public Task<Entity> UpdateAsync(Entity entity);
-    public Task<Entity?> FirstOrDefaultAsync(Expression<Func<Entity, bool>> predicae);
+    public Task<Entity?> FirstOrDefaultAsync(Expression<Func<Entity, bool>> predicate);
     public IQueryable<Entity> Where(Expression<Func<Entity, bool>> predicate);
+    public Task DeleteWhereAsync(Expression<Func<Entity, bool>> predicate);
+    
+    /// <summary>
+    /// Add entity if it does not exist.
+    /// </summary>
+    /// <param name="entity"></param>
+    /// <returns>If entity was added</returns>
+    public Task<bool> AddIfNotExistsAsync(Entity entity);
 }

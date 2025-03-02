@@ -25,7 +25,8 @@
     "sendMessage": "Sūtīt ziņu",
     "showPhoneNumber": "Parādīt tālruņa numuru",
     "showEmail": "Parādīt e-pastu",
-    "reportRuleViolation": "Paziņot par notiekumu pārkāpumu"
+    "reportRuleViolation": "Paziņot par notiekumu pārkāpumu",
+    "bookmark": "Atzīmēt sludinājumu"
   },
 
   "form": {

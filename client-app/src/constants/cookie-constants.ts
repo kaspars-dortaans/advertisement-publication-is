@@ -7,4 +7,6 @@ export const UserSettingCookieOptions: ICookieOptions = {
   path: '/',
   samesite: 'none',
   secure: true
+  //When serving over https set partitioned to true, see: https://developers.google.com/privacy-sandbox/cookies/chips
+  //partitioned: true
 }

@@ -3,6 +3,7 @@ using System;
 using BusinessLogic.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BusinessLogic.Migrations
 {
     [DbContext(typeof(Context))]
-    partial class ContextModelSnapshot : ModelSnapshot
+    [Migration("20250222220146_AddAdvertisementBookmarks")]
+    partial class AddAdvertisementBookmarks
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -223,7 +226,7 @@ namespace BusinessLogic.Migrations
                     b.ToTable("CategoryAttributes");
                 });
 
-            modelBuilder.Entity("BusinessLogic.Entities.Files.File", b =>
+            modelBuilder.Entity("BusinessLogic.Entities.File", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -370,7 +373,7 @@ namespace BusinessLogic.Migrations
                         .IsUnique()
                         .HasDatabaseName("RoleNameIndex");
 
-                    b.ToTable("AspNetRoles");
+                    b.ToTable("AspNetRoles", (string)null);
                 });
 
             modelBuilder.Entity("BusinessLogic.Entities.RolePermission", b =>
@@ -477,7 +480,7 @@ namespace BusinessLogic.Migrations
                         .IsUnique()
                         .HasDatabaseName("UserNameIndex");
 
-                    b.ToTable("AspNetUsers");
+                    b.ToTable("AspNetUsers", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<int>", b =>
@@ -501,7 +504,7 @@ namespace BusinessLogic.Migrations
 
                     b.HasIndex("RoleId");
 
-                    b.ToTable("AspNetRoleClaims");
+                    b.ToTable("AspNetRoleClaims", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<int>", b =>
@@ -525,7 +528,7 @@ namespace BusinessLogic.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("AspNetUserClaims");
+                    b.ToTable("AspNetUserClaims", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<int>", b =>
@@ -546,7 +549,7 @@ namespace BusinessLogic.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("AspNetUserLogins");
+                    b.ToTable("AspNetUserLogins", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<int>", b =>
@@ -561,7 +564,7 @@ namespace BusinessLogic.Migrations
 
                     b.HasIndex("RoleId");
 
-                    b.ToTable("AspNetUserRoles");
+                    b.ToTable("AspNetUserRoles", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<int>", b =>
@@ -580,54 +583,39 @@ namespace BusinessLogic.Migrations
 
                     b.HasKey("UserId", "LoginProvider", "Name");
 
-                    b.ToTable("AspNetUserTokens");
+                    b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("BusinessLogic.Entities.Files.AdvertisementImage", b =>
+            modelBuilder.Entity("BusinessLogic.Entities.AdvertisementFile", b =>
                 {
-                    b.HasBaseType("BusinessLogic.Entities.Files.File");
+                    b.HasBaseType("BusinessLogic.Entities.File");
 
                     b.Property<int>("AdvertisementId")
                         .HasColumnType("integer");
 
-                    b.Property<string>("ThumbnailPath")
-                        .IsRequired()
-                        .ValueGeneratedOnUpdateSometimes()
-                        .HasColumnType("text");
-
                     b.HasIndex("AdvertisementId");
 
-                    b.HasDiscriminator().HasValue("AdvertisementImage");
+                    b.HasDiscriminator().HasValue("AdvertisementFile");
                 });
 
-            modelBuilder.Entity("BusinessLogic.Entities.Files.SystemImage", b =>
+            modelBuilder.Entity("BusinessLogic.Entities.SystemFile", b =>
                 {
-                    b.HasBaseType("BusinessLogic.Entities.Files.File");
+                    b.HasBaseType("BusinessLogic.Entities.File");
 
-                    b.Property<string>("ThumbnailPath")
-                        .IsRequired()
-                        .ValueGeneratedOnUpdateSometimes()
-                        .HasColumnType("text");
-
-                    b.HasDiscriminator().HasValue("SystemImage");
+                    b.HasDiscriminator().HasValue("SystemFile");
                 });
 
-            modelBuilder.Entity("BusinessLogic.Entities.Files.UserImage", b =>
+            modelBuilder.Entity("BusinessLogic.Entities.UserFile", b =>
                 {
-                    b.HasBaseType("BusinessLogic.Entities.Files.File");
+                    b.HasBaseType("BusinessLogic.Entities.File");
 
                     b.Property<int>("OwnerUserId")
                         .HasColumnType("integer");
 
-                    b.Property<string>("ThumbnailPath")
-                        .IsRequired()
-                        .ValueGeneratedOnUpdateSometimes()
-                        .HasColumnType("text");
-
                     b.HasIndex("OwnerUserId")
                         .IsUnique();
 
-                    b.HasDiscriminator().HasValue("UserImage");
+                    b.HasDiscriminator().HasValue("UserFile");
                 });
 
             modelBuilder.Entity("BusinessLogic.Entities.AttributeNameLocaleText", b =>
@@ -692,7 +680,7 @@ namespace BusinessLogic.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("BusinessLogic.Entities.Files.File", "ThumbnailImage")
+                    b.HasOne("BusinessLogic.Entities.File", "ThumbnailImage")
                         .WithMany()
                         .HasForeignKey("ThumbnailImageId");
 
@@ -747,7 +735,7 @@ namespace BusinessLogic.Migrations
                         .WithMany()
                         .HasForeignKey("AttributeValueListId");
 
-                    b.HasOne("BusinessLogic.Entities.Files.SystemImage", "Icon")
+                    b.HasOne("BusinessLogic.Entities.SystemFile", "Icon")
                         .WithMany()
                         .HasForeignKey("IconId");
 
@@ -884,7 +872,7 @@ namespace BusinessLogic.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("BusinessLogic.Entities.Files.AdvertisementImage", b =>
+            modelBuilder.Entity("BusinessLogic.Entities.AdvertisementFile", b =>
                 {
                     b.HasOne("BusinessLogic.Entities.Advertisement", "Advertisement")
                         .WithMany("Images")
@@ -895,11 +883,11 @@ namespace BusinessLogic.Migrations
                     b.Navigation("Advertisement");
                 });
 
-            modelBuilder.Entity("BusinessLogic.Entities.Files.UserImage", b =>
+            modelBuilder.Entity("BusinessLogic.Entities.UserFile", b =>
                 {
                     b.HasOne("BusinessLogic.Entities.User", "OwnerUser")
                         .WithOne("ProfileImageFile")
-                        .HasForeignKey("BusinessLogic.Entities.Files.UserImage", "OwnerUserId")
+                        .HasForeignKey("BusinessLogic.Entities.UserFile", "OwnerUserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 

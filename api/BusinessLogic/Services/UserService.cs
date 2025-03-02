@@ -12,12 +12,12 @@ public class UserService(
     UserManager<User> userManager,
     IStorage storage,
     IFilePathResolver filePathResolver,
-    IBaseService<Entities.File> fileService) : BaseService<User>(context), IUserService
+    IBaseService<Entities.Files.File> fileService) : BaseService<User>(context), IUserService
 {
     private readonly UserManager<User> _userManager = userManager;
     private readonly IStorage _storage = storage;
     private readonly IFilePathResolver _filePathResolver = filePathResolver;
-    private readonly IBaseService<Entities.File> _fileService = fileService;
+    private readonly IBaseService<Entities.Files.File> _fileService = fileService;
 
     /// <summary>
     /// Register new user
@@ -85,7 +85,7 @@ public class UserService(
 
         //Add file entity
         var filePath = _filePathResolver.GenerateUniqueFilePath(FileFolderConstants.ProfileImageFolder, profileImage.FileName);
-        var file = await _fileService.AddAsync(new Entities.UserFile()
+        var file = await _fileService.AddAsync(new Entities.Files.UserImage()
         {
             OwnerUserId = user.Id,
             Path = filePath,

@@ -16,30 +16,31 @@ import MenuBar from 'primevue/menubar'
 import Button from 'primevue/button'
 
 //Form
+import FloatLabel from 'primevue/floatlabel'
+import IconField from 'primevue/iconfield'
 import InputGroup from 'primevue/inputgroup'
 import InputGroupAddon from 'primevue/inputgroupaddon'
-import IconField from 'primevue/iconfield'
 import InputIcon from 'primevue/inputicon'
-import InputText from 'primevue/inputtext'
 import InputNumber from 'primevue/inputnumber'
-import Password from 'primevue/password'
+import InputText from 'primevue/inputtext'
 import { usePassThrough } from 'primevue/passthrough'
-import FloatLabel from 'primevue/floatlabel'
+import Password from 'primevue/password'
 import Select from 'primevue/select'
 
 //Data
-import Tree from 'primevue/tree'
-import DataTable from 'primevue/datatable'
 import Column from 'primevue/column'
+import DataTable from 'primevue/datatable'
+import Tree from 'primevue/tree'
 
 //Panel
 import Panel from 'primevue/panel'
 
 //Message
-import Message from 'primevue/message'
 import Checkbox from 'primevue/checkbox'
+import Message from 'primevue/message'
 
 //Media
+import Galleria from 'primevue/galleria'
 import Image from 'primevue/image'
 
 const customPassTrough = {
@@ -66,6 +67,17 @@ const customPassTrough = {
           class: 'ml-auto mr-2'
         }
       }
+    }
+  },
+  galleria: {
+    content: {
+      class: 'max-h-full'
+    },
+    itemsContainer: {
+      class: 'min-h-0 flex-1'
+    },
+    items: {
+      class: 'galleria-item-button'
     }
   }
 }
@@ -117,4 +129,5 @@ export function initPrimeVue(app: App<Element>) {
 
   //Media
   app.component('Image', Image)
+  app.component('Galleria', Galleria)
 }

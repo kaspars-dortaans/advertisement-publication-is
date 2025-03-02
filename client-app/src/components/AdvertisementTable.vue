@@ -46,24 +46,31 @@
         </template>
         <Column field="id">
           <template #body="slotProps">
-            <Panel>
-              <div class="flex flex-row gap-2">
-                <img :src="slotProps.data.thumbnailImageUrl" width="100" height="100" />
-                <div class="flex flex-col gap-2">
-                  <h4>{{ slotProps.data.title }}</h4>
-                  <p>{{ slotProps.data.advertisementText }}</p>
-                  <div class="flex flex-row flex-wrap gap-2">
-                    <span
-                      v-for="attribute in slotProps.data.attributeValues"
-                      :key="slotProps.data.id + '-' + attribute.attributeId"
-                      :title="attribute.attributeName"
-                    >
-                      {{ attribute.valueName ?? attribute.value }}</span
-                    >
+            <RouterLink :to="{ name: 'advertisement', params: { id: slotProps.data.id } }">
+              <Panel class="hover:brightness-95">
+                <div class="flex flex-row gap-2 items-center">
+                  <img
+                    :src="slotProps.data.thumbnailImageUrl"
+                    class="flex-none"
+                    width="100"
+                    height="100"
+                  />
+                  <div class="flex flex-col gap-2">
+                    <h4>{{ slotProps.data.title }}</h4>
+                    <p class="line-clamp-2">{{ slotProps.data.advertisementText }}</p>
+                    <div class="flex flex-row flex-wrap gap-2">
+                      <span
+                        v-for="attribute in slotProps.data.attributeValues"
+                        :key="slotProps.data.id + '-' + attribute.attributeId"
+                        :title="attribute.attributeName"
+                      >
+                        {{ attribute.valueName ?? attribute.value }}</span
+                      >
+                    </div>
                   </div>
                 </div>
-              </div>
-            </Panel>
+              </Panel>
+            </RouterLink>
           </template>
         </Column>
         <Column
@@ -169,7 +176,7 @@ onMounted(() => {
   categoryId.value = null
   handleSelectedCategory(
     categoryId.value,
-    categoryMenu.value?.getCategoryName(categoryId.value, LocaleService.currentLocale.value)
+    categoryMenu.value?.getCategoryName(categoryId.value, LocaleService.currentLocaleName.value)
   )
 })
 

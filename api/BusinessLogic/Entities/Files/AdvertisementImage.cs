@@ -1,6 +1,6 @@
-﻿namespace BusinessLogic.Entities;
+﻿namespace BusinessLogic.Entities.Files;
 
-public class AdvertisementFile : File
+public class AdvertisementImage : Image
 {
     public int AdvertisementId { get; set; }
     public Advertisement Advertisement { get; set; } = default!;

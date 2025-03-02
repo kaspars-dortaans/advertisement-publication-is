@@ -1,8 +1,11 @@
-﻿using BusinessLogic.Dto.Advertisement;
+﻿using BusinessLogic.Constants;
+using BusinessLogic.Dto.Advertisement;
 using BusinessLogic.Dto.DataTableQuery;
 using BusinessLogic.Entities;
+using BusinessLogic.Exceptions;
 using BusinessLogic.Helpers;
 using BusinessLogic.Helpers.CookieSettings;
+using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 
 namespace BusinessLogic.Services;
@@ -10,10 +13,67 @@ namespace BusinessLogic.Services;
 public class AdvertisementService(
     Context context,
     ICategoryService categoryService,
+    IBaseService<AdvertisementBookmark> advertisementBookmarkService,
     CookieSettingsHelper cookieSettingHelper) : BaseService<Advertisement>(context), IAdvertisementService
 {
     private readonly ICategoryService _categoryService = categoryService;
+    private readonly IBaseService<AdvertisementBookmark> _advertisementBookmarkSerive = advertisementBookmarkService;
     private readonly CookieSettingsHelper _cookieSettingHelper = cookieSettingHelper;
+
+    public async Task<AdvertisementDto> FindActiveAdvertisement(int advertisementId, int? userId)
+    {
+        var locale = _cookieSettingHelper.Settings.NormalizedLocale;
+        var result = await Where(a => a.ValidToDate > DateTime.UtcNow)
+            .Select(a => new AdvertisementDto()
+            {
+                Id = a.Id,
+                AdvertisementText = a.AdvertisementText,
+                Title = a.Title,
+                CategoryId = a.CategoryId,
+                PostedDate = a.PostedDate,
+                ViewCount = a.ViewCount,
+                MaskedAdvertiserEmail = a.Owner.IsEmailPublic ? a.Owner.Email : null,
+                MaskedAdvertiserPhoneNumber = a.Owner.IsPhoneNumberPublic ? a.Owner.PhoneNumber : null,
+                OwnerId = a.OwnerId,
+                ImageIds = a.Images.Select(i => i.Id),
+                Attributes = a.AttributeValues.Select(v => new AttributeValueItem
+                {
+                    AttributeId = v.AttributeId,
+                    AttributeName = v.Attribute.AttributeNameLocales.Localise(locale),
+                    Value = v.Value,
+                    ValueName = v.Attribute.ValueType == Enums.ValueTypes.ValueListEntry && v.Attribute.AttributeValueList != null
+                        ? v.Attribute.AttributeValueList.ListEntries.First(entry => entry.Id == Convert.ToInt16(v.Value)).LocalisedNames.Localise(locale)
+                        : null
+                }),
+                IsBookmarked = userId == null ? null : a.BookmarksOwners.Any(o => o.Id == userId)
+            })
+            .FirstOrDefaultAsync(a => a.Id == advertisementId);
+
+        if (result is null)
+        {
+            throw new ApiException([CustomErrorCodes.NotFound]);
+        }
+
+        //Mask email
+        if (result.MaskedAdvertiserEmail is not null)
+        {
+            var email = result.MaskedAdvertiserEmail;
+            var atIndex = email.IndexOf('@');
+            var revealedCharacterCount = AdvertiserInfoMask.EmailRevealedCharacterCount * 2 > atIndex ? atIndex - AdvertiserInfoMask.EmailRevealedCharacterCount : AdvertiserInfoMask.EmailRevealedCharacterCount;
+            result.MaskedAdvertiserEmail = string.Concat(email.AsSpan(0, revealedCharacterCount), new string(AdvertiserInfoMask.MaskChar, atIndex - revealedCharacterCount), email.AsSpan(atIndex));
+        }
+
+        //Mask phone number
+        if (result.MaskedAdvertiserPhoneNumber is not null)
+        {
+            var number = result.MaskedAdvertiserPhoneNumber;
+            var maskedCharacterCount = AdvertiserInfoMask.PhoneNumberMaskedCharacterCount > number.Length ? number.Length : AdvertiserInfoMask.PhoneNumberMaskedCharacterCount;
+            var revealedCharacterCount = number.Length - maskedCharacterCount;
+            result.MaskedAdvertiserPhoneNumber = string.Concat(number.AsSpan(0, revealedCharacterCount), new string(AdvertiserInfoMask.MaskChar, maskedCharacterCount));
+        }
+
+        return result;
+    }
 
     //TODO: Later check query performance and improve if necessary
     public async Task<DataTableQueryResponse<AdvertisementListItemDto>> GetActiveAdvertisementsByCategory(AdvertisementQuery request)
@@ -39,14 +99,14 @@ public class AdvertisementService(
                 AttributeValues = a.AttributeValues
                     .OrderBy(v => v.Attribute.CategoryAttributes.First(ca => ca.CategoryId == v.Advertisement.CategoryId).AttributeOrder)
                     .Select(v => new AttributeValueItem
-                {
-                    AttributeId = v.AttributeId,
-                    AttributeName = v.Attribute.AttributeNameLocales.Localise(locale),
-                    Value = v.Value,
-                    ValueName = v.Attribute.ValueType == Enums.ValueTypes.ValueListEntry && v.Attribute.AttributeValueList != null
+                    {
+                        AttributeId = v.AttributeId,
+                        AttributeName = v.Attribute.AttributeNameLocales.Localise(locale),
+                        Value = v.Value,
+                        ValueName = v.Attribute.ValueType == Enums.ValueTypes.ValueListEntry && v.Attribute.AttributeValueList != null
                         ? v.Attribute.AttributeValueList.ListEntries.First(entry => entry.Id == Convert.ToInt16(v.Value)).LocalisedNames.Localise(locale)
                         : null
-                })
+                    })
             });
 
         return await advertisementItemQuery.ResolveDataTableQuery(request, new DataTableQueryConfig<AdvertisementListItemDto>()
@@ -127,5 +187,22 @@ public class AdvertisementService(
         }
 
         return orderedQuery;
+    }
+
+    public async Task BookmarkAdvertisement(int advertisementId, int userId, bool addBookmark)
+    {
+        if (addBookmark)
+        {
+            await _advertisementBookmarkSerive.AddIfNotExistsAsync(new AdvertisementBookmark()
+            {
+                BookmarkedAdvertisementId = advertisementId,
+                BookmarkOwnerId = userId
+            });
+        }
+        else
+        {
+            await _advertisementBookmarkSerive
+                .DeleteWhereAsync(ab => ab.BookmarkOwnerId == userId && ab.BookmarkedAdvertisementId == advertisementId);
+        }
     }
 }

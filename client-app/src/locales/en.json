@@ -25,7 +25,8 @@
     "sendMessage": "Send message",
     "showPhoneNumber": "Show phone number",
     "showEmail": "Show email",
-    "reportRuleViolation": "Report rule violation"
+    "reportRuleViolation": "Report rule violation",
+    "bookmark": "Bookmark"
   },
 
   "form": {

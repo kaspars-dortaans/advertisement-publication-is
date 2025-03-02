@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Web.Dto.Advertisement;
+using Web.Helpers;
 
 namespace Web.Controllers;
 
@@ -16,13 +17,11 @@ namespace Web.Controllers;
 [ApiController]
 [Route("api/[controller]/[action]")]
 public class AdvertisementController(
-    ILogger<AdvertisementController> logger,
     IMapper mapper,
     IBaseService<Category> categoryService,
     IAdvertisementService advertisementService,
     CookieSettingsHelper cookieSettingsHelper) : ControllerBase
 {
-    private readonly ILogger<AdvertisementController> _logger = logger;
     private readonly IMapper _mapper = mapper;
     private readonly IBaseService<Category> _categoryService = categoryService;
     private readonly IAdvertisementService _advertisementService = advertisementService;
@@ -34,6 +33,64 @@ public class AdvertisementController(
     {
         var result = await _advertisementService.GetActiveAdvertisementsByCategory(request);
         return result.MapDataTableResponse<AdvertisementListItemDto, AdvertisementListItem>(_mapper, opts => opts.Items[nameof(Url)] = Url);
+    }
+
+    [AllowAnonymous]
+    [HttpGet]
+    public async Task<Dto.Advertisement.AdvertisementDto> GetAdvertisement(int advertisementId)
+    {
+        var dto = await _advertisementService.FindActiveAdvertisement(advertisementId, User.GetUserId());
+        return _mapper.Map<Dto.Advertisement.AdvertisementDto>(dto, opts => opts.Items[nameof(Url)] = Url);
+    }
+
+    [AllowAnonymous]
+    [HttpGet]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(string))]
+    [ProducesResponseType(StatusCodes.Status403Forbidden, Type = typeof(ForbidResult))]
+    public async Task<IActionResult> RevealAdvertiserPhoneNumber(int advertisementId)
+    {
+        var queryResult = await _advertisementService
+            .Where(a => a.Id == advertisementId)
+            .Select(a => new { IsPublic = a.Owner.IsPhoneNumberPublic, a.Owner.PhoneNumber})
+            .FirstAsync();
+
+        if (!queryResult.IsPublic)
+        {
+            return Forbid();
+        }
+
+        return new OkObjectResult(queryResult.PhoneNumber);
+    }
+
+    [AllowAnonymous]
+    [HttpGet]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(string))]
+    [ProducesResponseType(StatusCodes.Status403Forbidden, Type = typeof(ForbidResult))]
+    public async Task<IActionResult> RevealAdvertiserEmail(int advertisementId)
+    {
+        var queryResult = await _advertisementService
+            .Where(a => a.Id == advertisementId)
+            .Select(a => new { IsPublic = a.Owner.IsEmailPublic, a.Owner.Email })
+            .FirstAsync();
+
+        if (!queryResult.IsPublic)
+        {
+            return Forbid();
+        }
+
+        return new OkObjectResult(queryResult.Email);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> BookmarkAdvertisement(BookmarkAdvertisementRequest request)
+    {
+        var userId = User.GetUserId();
+        if(userId is null)
+        {
+            return Unauthorized();
+        }
+        await _advertisementService.BookmarkAdvertisement(request.AdvertisementId, userId.Value, request.AddBookmark);
+        return Ok();
     }
 
     [AllowAnonymous]

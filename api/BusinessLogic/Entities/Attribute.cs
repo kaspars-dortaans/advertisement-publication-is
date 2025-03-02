@@ -1,4 +1,5 @@
-﻿using BusinessLogic.Enums;
+﻿using BusinessLogic.Entities.Files;
+using BusinessLogic.Enums;
 
 namespace BusinessLogic.Entities;
 
@@ -13,7 +14,7 @@ public class Attribute
     public bool Searchable { get; set; }
     public int? IconId { get; set; }
 
-    public SystemFile? Icon { get; set; }
+    public SystemImage? Icon { get; set; }
     public AttributeValueList? AttributeValueList { get; set; }
     public ICollection<Category> UsedInCategories { get; set; } = default!;
     public ICollection<CategoryAttribute> CategoryAttributes { get; set; } = default!;

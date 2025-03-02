@@ -1,6 +1,6 @@
-﻿namespace BusinessLogic.Entities;
+﻿namespace BusinessLogic.Entities.Files;
 
-public class UserFile : File
+public class UserImage : Image
 {
     public int OwnerUserId { get; set; }
     public User OwnerUser { get; set; } = default!;

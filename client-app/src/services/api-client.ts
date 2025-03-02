@@ -81,6 +81,242 @@ export class AdvertisementClient {
     }
 
     /**
+     * @param advertisementId (optional) 
+     * @return Success
+     */
+    getAdvertisement(advertisementId: number | undefined, cancelToken?: CancelToken): Promise<AdvertisementDto> {
+        let url_ = this.baseUrl + "/api/Advertisement/GetAdvertisement?";
+        if (advertisementId === null)
+            throw new Error("The parameter 'advertisementId' cannot be null.");
+        else if (advertisementId !== undefined)
+            url_ += "advertisementId=" + encodeURIComponent("" + advertisementId) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: AxiosRequestConfig = {
+            method: "GET",
+            url: url_,
+            headers: {
+                "Accept": "text/plain"
+            },
+            cancelToken
+        };
+
+        return this.instance.request(options_).catch((_error: any) => {
+            if (isAxiosError(_error) && _error.response) {
+                return _error.response;
+            } else {
+                throw _error;
+            }
+        }).then((_response: AxiosResponse) => {
+            return this.processGetAdvertisement(_response);
+        });
+    }
+
+    protected processGetAdvertisement(response: AxiosResponse): Promise<AdvertisementDto> {
+        const status = response.status;
+        let _headers: any = {};
+        if (response.headers && typeof response.headers === "object") {
+            for (const k in response.headers) {
+                if (response.headers.hasOwnProperty(k)) {
+                    _headers[k] = response.headers[k];
+                }
+            }
+        }
+        if (status === 200) {
+            const _responseText = response.data;
+            let result200: any = null;
+            let resultData200  = _responseText;
+            result200 = AdvertisementDto.fromJS(resultData200);
+            return Promise.resolve<AdvertisementDto>(result200);
+
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.data;
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Promise.resolve<AdvertisementDto>(null as any);
+    }
+
+    /**
+     * @param advertisementId (optional) 
+     * @return Success
+     */
+    revealAdvertiserPhoneNumber(advertisementId: number | undefined, cancelToken?: CancelToken): Promise<string> {
+        let url_ = this.baseUrl + "/api/Advertisement/RevealAdvertiserPhoneNumber?";
+        if (advertisementId === null)
+            throw new Error("The parameter 'advertisementId' cannot be null.");
+        else if (advertisementId !== undefined)
+            url_ += "advertisementId=" + encodeURIComponent("" + advertisementId) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: AxiosRequestConfig = {
+            method: "GET",
+            url: url_,
+            headers: {
+                "Accept": "text/plain"
+            },
+            cancelToken
+        };
+
+        return this.instance.request(options_).catch((_error: any) => {
+            if (isAxiosError(_error) && _error.response) {
+                return _error.response;
+            } else {
+                throw _error;
+            }
+        }).then((_response: AxiosResponse) => {
+            return this.processRevealAdvertiserPhoneNumber(_response);
+        });
+    }
+
+    protected processRevealAdvertiserPhoneNumber(response: AxiosResponse): Promise<string> {
+        const status = response.status;
+        let _headers: any = {};
+        if (response.headers && typeof response.headers === "object") {
+            for (const k in response.headers) {
+                if (response.headers.hasOwnProperty(k)) {
+                    _headers[k] = response.headers[k];
+                }
+            }
+        }
+        if (status === 200) {
+            const _responseText = response.data;
+            let result200: any = null;
+            let resultData200  = _responseText;
+                result200 = resultData200 !== undefined ? resultData200 : <any>null;
+    
+            return Promise.resolve<string>(result200);
+
+        } else if (status === 403) {
+            const _responseText = response.data;
+            let result403: any = null;
+            let resultData403  = _responseText;
+            result403 = ForbidResult.fromJS(resultData403);
+            return throwException("Forbidden", status, _responseText, _headers, result403);
+
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.data;
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Promise.resolve<string>(null as any);
+    }
+
+    /**
+     * @param advertisementId (optional) 
+     * @return Success
+     */
+    revealAdvertiserEmail(advertisementId: number | undefined, cancelToken?: CancelToken): Promise<string> {
+        let url_ = this.baseUrl + "/api/Advertisement/RevealAdvertiserEmail?";
+        if (advertisementId === null)
+            throw new Error("The parameter 'advertisementId' cannot be null.");
+        else if (advertisementId !== undefined)
+            url_ += "advertisementId=" + encodeURIComponent("" + advertisementId) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: AxiosRequestConfig = {
+            method: "GET",
+            url: url_,
+            headers: {
+                "Accept": "text/plain"
+            },
+            cancelToken
+        };
+
+        return this.instance.request(options_).catch((_error: any) => {
+            if (isAxiosError(_error) && _error.response) {
+                return _error.response;
+            } else {
+                throw _error;
+            }
+        }).then((_response: AxiosResponse) => {
+            return this.processRevealAdvertiserEmail(_response);
+        });
+    }
+
+    protected processRevealAdvertiserEmail(response: AxiosResponse): Promise<string> {
+        const status = response.status;
+        let _headers: any = {};
+        if (response.headers && typeof response.headers === "object") {
+            for (const k in response.headers) {
+                if (response.headers.hasOwnProperty(k)) {
+                    _headers[k] = response.headers[k];
+                }
+            }
+        }
+        if (status === 200) {
+            const _responseText = response.data;
+            let result200: any = null;
+            let resultData200  = _responseText;
+                result200 = resultData200 !== undefined ? resultData200 : <any>null;
+    
+            return Promise.resolve<string>(result200);
+
+        } else if (status === 403) {
+            const _responseText = response.data;
+            let result403: any = null;
+            let resultData403  = _responseText;
+            result403 = ForbidResult.fromJS(resultData403);
+            return throwException("Forbidden", status, _responseText, _headers, result403);
+
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.data;
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Promise.resolve<string>(null as any);
+    }
+
+    /**
+     * @param body (optional) 
+     * @return Success
+     */
+    bookmarkAdvertisement(body: BookmarkAdvertisementRequest | undefined, cancelToken?: CancelToken): Promise<void> {
+        let url_ = this.baseUrl + "/api/Advertisement/BookmarkAdvertisement";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_: AxiosRequestConfig = {
+            data: content_,
+            method: "POST",
+            url: url_,
+            headers: {
+                "Content-Type": "application/json",
+            },
+            cancelToken
+        };
+
+        return this.instance.request(options_).catch((_error: any) => {
+            if (isAxiosError(_error) && _error.response) {
+                return _error.response;
+            } else {
+                throw _error;
+            }
+        }).then((_response: AxiosResponse) => {
+            return this.processBookmarkAdvertisement(_response);
+        });
+    }
+
+    protected processBookmarkAdvertisement(response: AxiosResponse): Promise<void> {
+        const status = response.status;
+        let _headers: any = {};
+        if (response.headers && typeof response.headers === "object") {
+            for (const k in response.headers) {
+                if (response.headers.hasOwnProperty(k)) {
+                    _headers[k] = response.headers[k];
+                }
+            }
+        }
+        if (status === 200) {
+            const _responseText = response.data;
+            return Promise.resolve<void>(null as any);
+
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.data;
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Promise.resolve<void>(null as any);
+    }
+
+    /**
      * @return Success
      */
     getCategories( cancelToken?: CancelToken): Promise<CategoryItem[]> {
@@ -210,14 +446,19 @@ export class FileClient {
 
     /**
      * @param id (optional) 
+     * @param getThumbnail (optional) 
      * @return Success
      */
-    getFile(id: number | undefined, cancelToken?: CancelToken): Promise<FileResponse> {
+    getFile(id: number | undefined, getThumbnail: boolean | undefined, cancelToken?: CancelToken): Promise<FileResponse> {
         let url_ = this.baseUrl + "/File/GetFile?";
         if (id === null)
             throw new Error("The parameter 'id' cannot be null.");
         else if (id !== undefined)
             url_ += "id=" + encodeURIComponent("" + id) + "&";
+        if (getThumbnail === null)
+            throw new Error("The parameter 'getThumbnail' cannot be null.");
+        else if (getThumbnail !== undefined)
+            url_ += "getThumbnail=" + encodeURIComponent("" + getThumbnail) + "&";
         url_ = url_.replace(/[?&]$/, "");
 
         let options_: AxiosRequestConfig = {
@@ -539,6 +780,102 @@ export class UserClient {
         }
         return Promise.resolve<OkResult>(null as any);
     }
+}
+
+export class AdvertisementDto implements IAdvertisementDto {
+    categoryId?: number;
+    id?: number;
+    title?: string | undefined;
+    advertisementText?: string | undefined;
+    postedDate?: Date;
+    viewCount?: number;
+    isBookmarked?: boolean | undefined;
+    attributes?: AttributeValueItem[] | undefined;
+    imageURLs?: ImageUrl[] | undefined;
+    ownerId?: number;
+    maskedAdvertiserPhoneNumber?: string | undefined;
+    maskedAdvertiserEmail?: string | undefined;
+
+    constructor(data?: IAdvertisementDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.categoryId = _data["categoryId"];
+            this.id = _data["id"];
+            this.title = _data["title"];
+            this.advertisementText = _data["advertisementText"];
+            this.postedDate = _data["postedDate"] ? new Date(_data["postedDate"].toString()) : <any>undefined;
+            this.viewCount = _data["viewCount"];
+            this.isBookmarked = _data["isBookmarked"];
+            if (Array.isArray(_data["attributes"])) {
+                this.attributes = [] as any;
+                for (let item of _data["attributes"])
+                    this.attributes!.push(AttributeValueItem.fromJS(item));
+            }
+            if (Array.isArray(_data["imageURLs"])) {
+                this.imageURLs = [] as any;
+                for (let item of _data["imageURLs"])
+                    this.imageURLs!.push(ImageUrl.fromJS(item));
+            }
+            this.ownerId = _data["ownerId"];
+            this.maskedAdvertiserPhoneNumber = _data["maskedAdvertiserPhoneNumber"];
+            this.maskedAdvertiserEmail = _data["maskedAdvertiserEmail"];
+        }
+    }
+
+    static fromJS(data: any): AdvertisementDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new AdvertisementDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["categoryId"] = this.categoryId;
+        data["id"] = this.id;
+        data["title"] = this.title;
+        data["advertisementText"] = this.advertisementText;
+        data["postedDate"] = this.postedDate ? this.postedDate.toISOString() : <any>undefined;
+        data["viewCount"] = this.viewCount;
+        data["isBookmarked"] = this.isBookmarked;
+        if (Array.isArray(this.attributes)) {
+            data["attributes"] = [];
+            for (let item of this.attributes)
+                data["attributes"].push(item.toJSON());
+        }
+        if (Array.isArray(this.imageURLs)) {
+            data["imageURLs"] = [];
+            for (let item of this.imageURLs)
+                data["imageURLs"].push(item.toJSON());
+        }
+        data["ownerId"] = this.ownerId;
+        data["maskedAdvertiserPhoneNumber"] = this.maskedAdvertiserPhoneNumber;
+        data["maskedAdvertiserEmail"] = this.maskedAdvertiserEmail;
+        return data;
+    }
+}
+
+export interface IAdvertisementDto {
+    categoryId?: number;
+    id?: number;
+    title?: string | undefined;
+    advertisementText?: string | undefined;
+    postedDate?: Date;
+    viewCount?: number;
+    isBookmarked?: boolean | undefined;
+    attributes?: AttributeValueItem[] | undefined;
+    imageURLs?: ImageUrl[] | undefined;
+    ownerId?: number;
+    maskedAdvertiserPhoneNumber?: string | undefined;
+    maskedAdvertiserEmail?: string | undefined;
 }
 
 export class AdvertisementListItem implements IAdvertisementListItem {
@@ -1052,6 +1389,46 @@ export interface IAuthenticationProperties {
     items?: { [key: string]: string; } | undefined;
 }
 
+export class BookmarkAdvertisementRequest implements IBookmarkAdvertisementRequest {
+    advertisementId?: number;
+    addBookmark?: boolean;
+
+    constructor(data?: IBookmarkAdvertisementRequest) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.advertisementId = _data["advertisementId"];
+            this.addBookmark = _data["addBookmark"];
+        }
+    }
+
+    static fromJS(data: any): BookmarkAdvertisementRequest {
+        data = typeof data === 'object' ? data : {};
+        let result = new BookmarkAdvertisementRequest();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["advertisementId"] = this.advertisementId;
+        data["addBookmark"] = this.addBookmark;
+        return data;
+    }
+}
+
+export interface IBookmarkAdvertisementRequest {
+    advertisementId?: number;
+    addBookmark?: boolean;
+}
+
 export class CategoryAttributeInfo implements ICategoryAttributeInfo {
     id?: number;
     name?: string | undefined;
@@ -1356,6 +1733,46 @@ export class ForbidResult implements IForbidResult {
 export interface IForbidResult {
     authenticationSchemes?: string[] | undefined;
     properties?: AuthenticationProperties;
+}
+
+export class ImageUrl implements IImageUrl {
+    url?: string | undefined;
+    thumbnailUrl?: string | undefined;
+
+    constructor(data?: IImageUrl) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.url = _data["url"];
+            this.thumbnailUrl = _data["thumbnailUrl"];
+        }
+    }
+
+    static fromJS(data: any): ImageUrl {
+        data = typeof data === 'object' ? data : {};
+        let result = new ImageUrl();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["url"] = this.url;
+        data["thumbnailUrl"] = this.thumbnailUrl;
+        return data;
+    }
+}
+
+export interface IImageUrl {
+    url?: string | undefined;
+    thumbnailUrl?: string | undefined;
 }
 
 export class LoginDto implements ILoginDto {

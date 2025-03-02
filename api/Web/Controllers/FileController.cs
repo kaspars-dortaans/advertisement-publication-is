@@ -1,11 +1,11 @@
-﻿using BusinessLogic.Entities;
+﻿using BusinessLogic.Entities.Files;
 using BusinessLogic.Helpers.FilePathResolver;
 using BusinessLogic.Helpers.Storage;
 using BusinessLogic.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.IdentityModel.Tokens.Jwt;
 using System.Net;
+using Web.Helpers;
 
 namespace Web.Controllers;
 
@@ -13,11 +13,11 @@ namespace Web.Controllers;
 [Authorize]
 [Route("/[controller]/[action]")]
 public class FileController(
-    IBaseService<BusinessLogic.Entities.File> fileService,
+    IFileService fileService,
     IStorage storage,
     IFilePathResolver filePathResolver) : ControllerBase
 {
-    private readonly IBaseService<BusinessLogic.Entities.File> _fileService = fileService;
+    private readonly IFileService _fileService = fileService;
     private readonly IStorage _storage = storage;
     private readonly IFilePathResolver _filePathResolver = filePathResolver;
 
@@ -26,7 +26,7 @@ public class FileController(
     [ProducesResponseType<NotFoundResult>((int)HttpStatusCode.NotFound)]
     [ProducesResponseType<ForbidResult>((int)HttpStatusCode.Forbidden)]
     [HttpGet(Name = nameof(GetFile))]
-    public async Task<IActionResult> GetFile(int id)
+    public async Task<IActionResult> GetFile(int id, bool getThumbnail)
     {
         var file = await _fileService.FirstOrDefaultAsync(f => f.Id == id);
         if (file is null)
@@ -34,29 +34,32 @@ public class FileController(
             return new NotFoundResult();
         }
 
-        _ = int.TryParse(User.Claims.FirstOrDefault(c => c.Type == JwtRegisteredClaimNames.Sub)?.Value, out int userId);
-
-        //Perform file permission checks
-        if (!file.IsPublic)
+        var userId = User.Identity?.IsAuthenticated == true ? User.GetUserId() : null;
+        if (!_fileService.HasAccessToFile(file, userId))
         {
-            switch (file)
-            {
-                case UserFile:
-                    var isFileOwner = file is UserFile
-                            && (User?.Identity?.IsAuthenticated ?? false)
-                            && userId == (file as UserFile)!.OwnerUserId;
-
-                    if (!isFileOwner)
-                    {
-                        return Forbid();
-                    }
-                    break;
-                default:
-                    return Forbid();
-            }
+            return Forbid();
         }
 
-        var fileData = await _storage.GetFile(file.Path);
+        var filePath = "";
+        if (getThumbnail)
+        {
+            if (file is not Image image)
+            {
+                return BadRequest();
+            }
+            filePath = image.ThumbnailPath;
+        }
+        else
+        {
+            filePath = file.Path;
+        }
+
+        var fileData = await _storage.GetFile(filePath);
+        if (fileData is null)
+        {
+            return NotFound();
+        }
+
         return File(fileData, "application/octet-stream", _filePathResolver.GetOriginalFileName(file.Path));
     }
 }
