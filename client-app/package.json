@@ -12,7 +12,7 @@
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore",
     "format": "prettier --write src/",
     "gen:api-client": " cd gen-scripts/nswag && nswag.bat",
-    "gen:empty-locale": "tsx ./gen-scripts/build-empty-locale.ts"
+    "gen:locales": "tsx ./gen-scripts/build-locales.ts"
   },
   "dependencies": {
     "@vee-validate/yup": "^4.13.2",

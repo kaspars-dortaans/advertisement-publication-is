@@ -8,17 +8,14 @@
     "search": "Meklēt",
     "clear": "Tīrīt"
   },
-
   "dataTable": {
     "pageReportTemplate": "{1} līdz {2} no {3}",
     "from": "No",
     "to": "Līdz"
   },
-
   "categoryMenu": {
     "new": "Jauns"
   },
-
   "advertisements": {
     "contacts": "Kontakti",
     "viewProfile": "Skatīt profilu",
@@ -28,7 +25,6 @@
     "reportRuleViolation": "Paziņot par notiekumu pārkāpumu",
     "bookmark": "Atzīmēt sludinājumu"
   },
-
   "form": {
     "doNotHaveAnAccountQuestion": "Don't have an account?",
     "alreadyHaveAnAccount": "Already have an account?",
@@ -43,7 +39,6 @@
     "publiclyDisplayPhoneNumber": "Publicly display phone number",
     "dragAndDropToUpload": "Drag and drop here to upload"
   },
-
   "navigation": {
     "login": "Login",
     "register": "Register",
@@ -54,7 +49,6 @@
     "createAdvertisement": "Create advertisements",
     "siteLogo": "Site logo"
   },
-
   "errors": {
     "Required": "This field is required",
     "RequiredField": "{fieldName} is a required field",
