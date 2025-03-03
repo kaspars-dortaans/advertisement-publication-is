@@ -1,29 +1,30 @@
 <template>
-  <Button :severity="severity" :icon="icon" as="RouterLink" :to="navigateTo"></Button>
+  <Button
+    :severity="severity"
+    :icon="icon"
+    as="RouterLink"
+    :to="navigateTo"
+    @click="() => navigation.setNextAsBackNavigation()"
+  ></Button>
 </template>
 
 <script setup lang="ts">
+import { AppNavigation } from '@/services/app-navigation'
 import { onBeforeMount, ref } from 'vue'
-import { useRoute, type RouteLocationRaw } from 'vue-router'
+import { type RouteLocationRaw } from 'vue-router'
 
 const {
-  to,
+  defaultTo,
   icon = 'pi pi-arrow-left',
   severity = 'secondary'
-} = defineProps<{ to?: RouteLocationRaw; icon?: string; severity?: string }>()
+} = defineProps<{ defaultTo?: RouteLocationRaw; icon?: string; severity?: string }>()
 
-const { matched } = useRoute()
+const navigation = AppNavigation.get()
+const navigateTo = ref(defaultTo)
 
-const navigateTo = ref(to)
 onBeforeMount(() => {
-  if (!navigateTo.value) {
-    if (matched.length > 1) {
-      //If current route is child route navigate to parent route
-      navigateTo.value = matched[matched.length - 2]
-    } else {
-      //Else navigate to home page
-      navigateTo.value = { name: 'home' }
-    }
+  if (navigation.hasPrevious()) {
+    navigateTo.value = navigation.getPreviousFullPath
   }
 })
 </script>

@@ -46,7 +46,7 @@
         </template>
         <Column field="id">
           <template #body="slotProps">
-            <RouterLink :to="{ name: 'advertisement', params: { id: slotProps.data.id } }">
+            <RouterLink :to="{ name: 'viewAdvertisement', params: { id: slotProps.data.id } }">
               <Panel class="hover:brightness-95">
                 <div class="flex flex-row gap-2 items-center">
                   <img

@@ -16,7 +16,7 @@ const app = createApp(App)
 app.use(router)
 
 initPrimeVue(app)
-initServices(app)
+initServices(app, router)
 initYup(app)
 
 app.mount('#app')

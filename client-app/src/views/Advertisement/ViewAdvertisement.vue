@@ -3,7 +3,7 @@
   <Panel :pt="panelPt">
     <template #header>
       <div class="flex flex-row items-center gap-5 w-full">
-        <BackButton />
+        <BackButton :defaultTo="{ name: 'home' }" />
         <h3 class="font-semibold text-2xl mr-auto">{{ advertisement.title }}</h3>
         <Button
           :icon="bookmarkIcon"
@@ -69,9 +69,13 @@
             />
           </div>
 
-          <Button severity="danger" class="ml-auto" @click="todo">{{
-            l.advertisements.reportRuleViolation
-          }}</Button>
+          <Button
+            severity="danger"
+            class="ml-auto"
+            as="RouterLink"
+            :to="{ name: 'reportAdvertisement' }"
+            >{{ l.advertisements.reportRuleViolation }}</Button
+          >
         </div>
       </div>
     </template>

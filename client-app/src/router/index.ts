@@ -20,18 +20,29 @@ const router = createRouter({
       component: () => import('../views/User/RegisterView.vue')
     },
     {
-      path: '/advertisement/view/:id',
-      name: 'advertisement',
-      component: () => import('../views/Advertisement/ViewAdvertisement.vue'),
-      props: (route) => {
-        let id
-        if (Array.isArray(route.params.id)) {
-          id = parseInt(route.params.id[0])
-        } else {
-          id = parseInt(route.params.id)
+      path: '/advertisement/:id/',
+      redirect: (route) => ({ name: 'viewAdvertisement', params: route.params }),
+      children: [
+        {
+          path: '/advertisement/:id/view',
+          name: 'viewAdvertisement',
+          component: () => import('../views/Advertisement/ViewAdvertisement.vue'),
+          props: (route) => {
+            let id
+            if (Array.isArray(route.params.id)) {
+              id = parseInt(route.params.id[0])
+            } else {
+              id = parseInt(route.params.id)
+            }
+            return { id }
+          }
+        },
+        {
+          path: '/advertisement/:id/report',
+          name: 'reportAdvertisement',
+          component: () => import('../views/Advertisement/ReportAdvertisement.vue')
         }
-        return { id }
-      }
+      ]
     }
   ]
 })
