@@ -11,18 +11,18 @@ const router = createRouter({
     {
       path: '/login',
       name: 'login',
-      component: () => import('../views/LoginView.vue'),
+      component: () => import('../views/User/LoginView.vue'),
       props: (route) => ({ redirect: !!route.query.redirect })
     },
     {
       path: '/register',
       name: 'register',
-      component: () => import('../views/RegisterView.vue')
+      component: () => import('../views/User/RegisterView.vue')
     },
     {
-      path: '/advertisement/:id',
+      path: '/advertisement/view/:id',
       name: 'advertisement',
-      component: () => import('../views/AdvertisementView.vue'),
+      component: () => import('../views/Advertisement/ViewAdvertisement.vue'),
       props: (route) => {
         let id
         if (Array.isArray(route.params.id)) {
