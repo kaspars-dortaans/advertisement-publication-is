@@ -89,8 +89,8 @@
 <script setup lang="ts">
 import CategoryMenu from '@/components/CategoryMenu.vue'
 import DynamicFilter from '@/components/Filters/DynamicFilter.vue'
+import { Direction } from '@/constants/api/Direction'
 import { DefaultPageSize, PageSizeOptions } from '@/constants/data-table'
-import { Direction } from '@/constants/direction'
 import {
   AdvertisementClient,
   AdvertisementListItem,
