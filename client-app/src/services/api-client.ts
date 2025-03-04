@@ -429,6 +429,58 @@ export class AdvertisementClient {
         }
         return Promise.resolve<CategoryInfo>(null as any);
     }
+
+    /**
+     * @param body (optional) 
+     * @return Success
+     */
+    reportAdvertisement(body: ReportAdvertisementRequest | undefined, cancelToken?: CancelToken): Promise<void> {
+        let url_ = this.baseUrl + "/api/Advertisement/ReportAdvertisement";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_: AxiosRequestConfig = {
+            data: content_,
+            method: "POST",
+            url: url_,
+            headers: {
+                "Content-Type": "application/json",
+            },
+            cancelToken
+        };
+
+        return this.instance.request(options_).catch((_error: any) => {
+            if (isAxiosError(_error) && _error.response) {
+                return _error.response;
+            } else {
+                throw _error;
+            }
+        }).then((_response: AxiosResponse) => {
+            return this.processReportAdvertisement(_response);
+        });
+    }
+
+    protected processReportAdvertisement(response: AxiosResponse): Promise<void> {
+        const status = response.status;
+        let _headers: any = {};
+        if (response.headers && typeof response.headers === "object") {
+            for (const k in response.headers) {
+                if (response.headers.hasOwnProperty(k)) {
+                    _headers[k] = response.headers[k];
+                }
+            }
+        }
+        if (status === 200) {
+            const _responseText = response.data;
+            return Promise.resolve<void>(null as any);
+
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.data;
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Promise.resolve<void>(null as any);
+    }
 }
 
 export class FileClient {
@@ -1997,6 +2049,46 @@ export interface IRegisterDto {
     phoneNumber: string;
     isPhoneNumberPublic?: boolean;
     profileImage?: any | undefined;
+}
+
+export class ReportAdvertisementRequest implements IReportAdvertisementRequest {
+    description?: string | undefined;
+    reportedAdvertisementId?: number;
+
+    constructor(data?: IReportAdvertisementRequest) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.description = _data["description"];
+            this.reportedAdvertisementId = _data["reportedAdvertisementId"];
+        }
+    }
+
+    static fromJS(data: any): ReportAdvertisementRequest {
+        data = typeof data === 'object' ? data : {};
+        let result = new ReportAdvertisementRequest();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["description"] = this.description;
+        data["reportedAdvertisementId"] = this.reportedAdvertisementId;
+        return data;
+    }
+}
+
+export interface IReportAdvertisementRequest {
+    description?: string | undefined;
+    reportedAdvertisementId?: number;
 }
 
 export class RequestExceptionResponse implements IRequestExceptionResponse {

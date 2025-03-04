@@ -122,7 +122,7 @@ const savingBookmark = ref(false)
 
 //Hooks
 onMounted(() => {
-  if (isNaN(advertisementId)) {
+  if (typeof advertisementId !== 'number' || isNaN(advertisementId)) {
     push({ name: 'NotFound' })
     return
   }

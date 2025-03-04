@@ -9,6 +9,7 @@ export const emptyLocale = {
     edit: "",
     search: "",
     clear: "",
+    report: "",
   },
   dataTable: {
     pageReportTemplate: "",
@@ -26,6 +27,7 @@ export const emptyLocale = {
     showEmail: "",
     reportRuleViolation: "",
     bookmark: "",
+    description: "",
   },
   form: {
     doNotHaveAnAccountQuestion: "",

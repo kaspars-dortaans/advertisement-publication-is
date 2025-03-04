@@ -94,14 +94,14 @@ export class FieldHelper<TValues extends GenericObject> {
     return !!this._errors.value[this.formErrorKey]
   })
 
-  defineField(path: Path<TValues>, config?: FieldConfig<TValues, Path<TValues>>) {
+  defineField = (path: Path<TValues>, config?: FieldConfig<TValues, Path<TValues>>) => {
     const [field, fieldAttrs] = this._defineField(path, config)
     this.fields[path] = new Field(path, this._errors, field, fieldAttrs)
   }
 
-  defineMultipleFields(
+  defineMultipleFields = (
     fields: (Path<TValues> | [Path<TValues>, FieldConfig<TValues, Path<TValues>>?])[]
-  ) {
+  ) => {
     for (const field of fields) {
       if (Array.isArray(field)) {
         this.defineField(field[0], field[1])
@@ -109,10 +109,10 @@ export class FieldHelper<TValues extends GenericObject> {
         this.defineField(field)
       }
     }
-    return this.fields;
+    return this.fields
   }
 
-  handleErrors(errorObj: unknown) {
+  handleErrors = (errorObj: unknown) => {
     if (!(errorObj instanceof RequestExceptionResponse)) {
       throw errorObj
     }
@@ -136,10 +136,10 @@ export class FieldHelper<TValues extends GenericObject> {
     }
   }
 
-  clearErrors() {
-    const errorkeys = Object.keys(this._errors.value) as Path<TValues>[]
+  clearErrors = () => {
+    const errorKeys = Object.keys(this._errors.value) as Path<TValues>[]
     const errObj: Partial<{ [key in TPath<TValues>]: undefined }> = {}
-    for (const errorKey of errorkeys) {
+    for (const errorKey of errorKeys) {
       errObj[errorKey] = undefined
     }
     this._setErrors(errObj)

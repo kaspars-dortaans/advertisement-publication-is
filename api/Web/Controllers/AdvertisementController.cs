@@ -20,11 +20,13 @@ public class AdvertisementController(
     IMapper mapper,
     IBaseService<Category> categoryService,
     IAdvertisementService advertisementService,
+    IBaseService<RuleViolationReport> ruleViolationService,
     CookieSettingsHelper cookieSettingsHelper) : ControllerBase
 {
     private readonly IMapper _mapper = mapper;
     private readonly IBaseService<Category> _categoryService = categoryService;
     private readonly IAdvertisementService _advertisementService = advertisementService;
+    private readonly IBaseService<RuleViolationReport> _ruleViolationService = ruleViolationService;
     private readonly CookieSettingsHelper _cookieSettingsHelper = cookieSettingsHelper;
 
     [AllowAnonymous]
@@ -150,5 +152,13 @@ public class AdvertisementController(
             .FirstAsync();
 
         return result;
+    }
+
+    [AllowAnonymous]
+    [HttpPost]
+    public async Task ReportAdvertisement(ReportAdvertisementRequest request)
+    {
+        var report = _mapper.Map<RuleViolationReport>(request, o => o.Items[nameof(User)] = User);
+        await _ruleViolationService.AddAsync(report);
     }
 }

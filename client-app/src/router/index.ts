@@ -27,24 +27,21 @@ const router = createRouter({
           path: '/advertisement/:id/view',
           name: 'viewAdvertisement',
           component: () => import('../views/Advertisement/ViewAdvertisement.vue'),
-          props: (route) => {
-            let id
-            if (Array.isArray(route.params.id)) {
-              id = parseInt(route.params.id[0])
-            } else {
-              id = parseInt(route.params.id)
-            }
-            return { id }
-          }
+          props: (route) => ({ id: parseInt(firstParam(route.params.id)) })
         },
         {
           path: '/advertisement/:id/report',
           name: 'reportAdvertisement',
-          component: () => import('../views/Advertisement/ReportAdvertisement.vue')
+          component: () => import('../views/Advertisement/ReportAdvertisement.vue'),
+          props: (route) => ({ id: parseInt(firstParam(route.params.id)) })
         }
       ]
     }
   ]
 })
+
+const firstParam = (p: string | string[]) => {
+  return Array.isArray(p) ? p[0] : p
+}
 
 export default router

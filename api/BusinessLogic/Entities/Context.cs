@@ -17,6 +17,7 @@ public class Context(DbContextOptions<Context> options) : IdentityDbContext<User
     public virtual DbSet<Permission> Permissions { get; set; }
     public virtual DbSet<RolePermission> RolePermissions { get; set; }
     public virtual DbSet<CategoryAttribute> CategoryAttributes { get; set; }
+    public virtual DbSet<RuleViolationReport> RuleViolationReports { get; set; }
     
     //Files and images
     public virtual DbSet<Files.File> Files { get; set; }

@@ -6,19 +6,17 @@
     "accept": "Accept",
     "edit": "Edit",
     "search": "Search",
-    "clear": "Clear"
+    "clear": "Clear",
+    "report": "Report"
   },
-
   "dataTable": {
     "pageReportTemplate": "{1} to {2} of {3}",
     "from": "From",
     "to": "To"
   },
-
   "categoryMenu": {
     "new": "New"
   },
-
   "advertisements": {
     "contacts": "Contacts",
     "viewProfile": "View profile",
@@ -26,9 +24,9 @@
     "showPhoneNumber": "Show phone number",
     "showEmail": "Show email",
     "reportRuleViolation": "Report rule violation",
-    "bookmark": "Bookmark"
+    "bookmark": "Bookmark",
+    "description": "Description"
   },
-
   "form": {
     "doNotHaveAnAccountQuestion": "Don't have an account?",
     "alreadyHaveAnAccount": "Already have an account?",
@@ -43,7 +41,6 @@
     "publiclyDisplayPhoneNumber": "Publicly display phone number",
     "dragAndDropToUpload": "Drag and drop here to upload"
   },
-
   "navigation": {
     "login": "Login",
     "register": "Register",
@@ -54,7 +51,6 @@
     "createAdvertisement": "Create advertisements",
     "siteLogo": "Site logo"
   },
-
   "errors": {
     "Required": "This field is required",
     "RequiredField": "{fieldName} is a required field",

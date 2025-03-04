@@ -23,6 +23,7 @@ import InputGroupAddon from 'primevue/inputgroupaddon'
 import InputIcon from 'primevue/inputicon'
 import InputNumber from 'primevue/inputnumber'
 import InputText from 'primevue/inputtext'
+import Textarea from 'primevue/textarea'
 import { usePassThrough } from 'primevue/passthrough'
 import Password from 'primevue/password'
 import Select from 'primevue/select'
@@ -111,6 +112,7 @@ export function initPrimeVue(app: App<Element>) {
   app.component('InputGroup', InputGroup)
   app.component('InputGroupAddon', InputGroupAddon)
   app.component('InputText', InputText)
+  app.component('Textarea', Textarea)
   app.component('InputNumber', InputNumber)
   app.component('Password', Password)
   app.component('FloatLabel', FloatLabel)

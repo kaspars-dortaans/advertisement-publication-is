@@ -6,7 +6,8 @@
     "accept": "Apstiprināt",
     "edit": "Rediģēt",
     "search": "Meklēt",
-    "clear": "Tīrīt"
+    "clear": "Tīrīt",
+    "report": "Todo: Translate"
   },
   "dataTable": {
     "pageReportTemplate": "{1} līdz {2} no {3}",
@@ -23,7 +24,8 @@
     "showPhoneNumber": "Parādīt tālruņa numuru",
     "showEmail": "Parādīt e-pastu",
     "reportRuleViolation": "Paziņot par notiekumu pārkāpumu",
-    "bookmark": "Atzīmēt sludinājumu"
+    "bookmark": "Atzīmēt sludinājumu",
+    "description": "Todo: Translate"
   },
   "form": {
     "doNotHaveAnAccountQuestion": "Don't have an account?",

@@ -2,6 +2,7 @@
   <Button
     :severity="severity"
     :icon="icon"
+    :label="label"
     as="RouterLink"
     :to="navigateTo"
     @click="() => navigation.setNextAsBackNavigation()"
@@ -16,8 +17,14 @@ import { type RouteLocationRaw } from 'vue-router'
 const {
   defaultTo,
   icon = 'pi pi-arrow-left',
+  label = '',
   severity = 'secondary'
-} = defineProps<{ defaultTo?: RouteLocationRaw; icon?: string; severity?: string }>()
+} = defineProps<{
+  defaultTo?: RouteLocationRaw
+  icon?: string
+  label?: string
+  severity?: string
+}>()
 
 const navigation = AppNavigation.get()
 const navigateTo = ref(defaultTo)
