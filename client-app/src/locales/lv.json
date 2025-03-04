@@ -60,6 +60,9 @@
     "PasswordRequiresLower": "Password requires to contain lower case letters",
     "PasswordRequiresUpper": "Password requires upper case letters",
     "ComparablePropertyDidNotMatch": "This field did not match {comparableFieldName} field",
-    "DuplicateEmail": "This email is already taken"
+    "DuplicateEmail": "This email is already taken",
+    "InvalidFileType": "{0}: Nederīgs faila tips.",
+    "InvalidFileSize": "Nederīgs faila lielums, faila izmēram jābūt mazākam par {1}.",
+    "InvalidFileLimit": "Maksimālais augšupielādējamo failu skaits ir {0}."
   }
 }

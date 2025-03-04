@@ -21,7 +21,7 @@ public class AllowedFileTypes : ValidationAttribute
 
         if (value is not IFormFile formFile)
         {
-            return new ValidationResult(CustomErrorCodes.InvalidFile);
+            return new ValidationResult(CustomErrorCodes.InvalidFileExtension);
         }
 
         var formFileExtension = formFile.FileName.Split('.').Last();

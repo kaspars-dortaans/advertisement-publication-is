@@ -63,5 +63,8 @@ export const emptyLocale = {
     PasswordRequiresUpper: "",
     ComparablePropertyDidNotMatch: "",
     DuplicateEmail: "",
+    InvalidFileType: "",
+    InvalidFileSize: "",
+    InvalidFileLimit: "",
   }
 }

@@ -17,7 +17,7 @@ public class AllowedImageAspectRatio(double allowedImageAspectRation) : Validati
 
         if (value is not IFormFile formFile)
         {
-            return new ValidationResult(CustomErrorCodes.InvalidFile);
+            return new ValidationResult(CustomErrorCodes.InvalidImage);
         }
 
         try

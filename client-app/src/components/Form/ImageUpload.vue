@@ -1,13 +1,16 @@
 <template>
   <FileUpload
-    :accept="allowedFileType"
+    :accept="allowedFileTypes"
     :maxFileSize="maxFileSize"
     :showUploadButton="false"
     :pt="pt"
     :ptOptions="{
       mergeProps: false
     }"
-    @select="editImage"
+    :invalidFileLimitMessage="l.errors.InvalidFileLimit"
+    :invalidFileSizeMessage="l.errors.InvalidFileSize"
+    :invalidFileTypeMessage="l.errors.InvalidFileType"
+    @select="handleSelectImage"
     @clear="cancel()"
   >
     <template #empty>
@@ -47,7 +50,7 @@
       </div>
     </template>
 
-    <template #content="{ removeFileCallback, files }">
+    <template #content="{ removeFileCallback, files, messages }">
       <div class="w-96 h-96">
         <Cropper
           v-if="editingImage"
@@ -67,6 +70,7 @@
           @ready="removePreviousFiles(removeFileCallback, files.length)"
         ></Cropper>
         <Image v-else :src="resultImageUrl"></Image>
+        <FieldError :messages="messages"></FieldError>
       </div>
     </template>
   </FileUpload>
@@ -79,6 +83,15 @@ import type { FileUploadSelectEvent } from 'primevue/fileupload'
 import { onMounted, reactive, ref, useTemplateRef } from 'vue'
 import { CircleStencil, Cropper } from 'vue-advanced-cropper'
 import 'vue-advanced-cropper/dist/style.css'
+import FieldError from './FieldError.vue'
+
+//Props & emits
+const { maxFileSize, allowedFileTypes } = defineProps<{
+  maxFileSize: number
+  allowedFileTypes: string
+}>()
+
+const emit = defineEmits(['selectedInvalidFile'])
 
 //Services
 const l = LocaleService.currentLocale
@@ -87,8 +100,6 @@ const l = LocaleService.currentLocale
 const cropper = useTemplateRef('cropper')
 
 //Child props
-const allowedFileType = '.jpg, .png'
-const maxFileSize = 1000000
 const stencilSize = 128
 
 const cropperSource = reactive({
@@ -175,12 +186,22 @@ onMounted(() => {
 })
 
 //Methods
+
+const handleSelectImage = (e: FileUploadSelectEvent) => {
+  const file = e.files.length ? e.files[e.files.length - 1] : null
+  if (!file) {
+    emit('selectedInvalidFile')
+    return
+  }
+  editImage(file)
+}
+
 /**
  * Switch to edit mode and crop new selected file
  */
-const editImage = async (e: FileUploadSelectEvent) => {
+const editImage = async (imgFile: File) => {
   clearCropperSource()
-  const imgFile = e.files[e.files.length - 1]
+
   cropperSource.img = URL.createObjectURL(imgFile)
   cropperSource.type = await getImageMimeType(imgFile, imgFile.type)
   editingImage.value = true

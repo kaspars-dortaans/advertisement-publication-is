@@ -101,11 +101,12 @@
             v-model="fields.profileImage!.value"
             v-bind="fields.profileImage?.attributes"
             :invalid="fields.profileImage?.hasError"
+            :maxFileSize="ProfileImageConstants.MaxFileSizeInBytes"
+            :allowedFileTypes="ProfileImageConstants.AllowedFileTypes"
           />
-          <FieldError :field="fields.profileImage" />
         </div>
 
-        <Button type="submit" :label="l.navigation.register" />
+        <Button type="submit" :label="l.navigation.register" :loading="isSubmitting" />
         <p>
           <span>{{ l.form.alreadyHaveAnAccount }}</span>
           <RouterLink class="ml-1 link" :to="{ name: 'login' }">{{
@@ -120,19 +121,37 @@
 <script setup lang="ts">
 import FieldError from '@/components/Form/FieldError.vue'
 import ImageUpload from '@/components/Form/ImageUpload.vue'
+import { ProfileImageConstants } from '@/constants/api/ProfileImageConstants'
 import { UserClient, type FileParameter, type IRegisterDto } from '@/services/api-client'
 import { LocaleService } from '@/services/locale-service'
 import { getClient } from '@/utils/client-builder'
 import { FieldHelper } from '@/utils/field-helper'
+import { toTypedSchema } from '@vee-validate/yup'
 import { useForm } from 'vee-validate'
 import { useRouter } from 'vue-router'
+import { boolean, object, string } from 'yup'
 
+//Services
 const api = getClient(UserClient)
 const l = LocaleService.currentLocale
 const router = useRouter()
 
 // Form and fields
-const form = useForm<IRegisterDto>()
+const form = useForm<IRegisterDto>({
+  validationSchema: toTypedSchema(
+    object({
+      firstName: string().required(),
+      lastName: string().required(),
+      userName: string().required(),
+      email: string().required().email(),
+      isEmailPublic: boolean().default(false),
+      phoneNumber: string().required(),
+      isPhoneNumberPublic: boolean().default(false),
+      password: string().required(),
+      passwordConfirmation: string().required()
+    })
+  )
+})
 const fieldHelper = new FieldHelper<IRegisterDto>(form)
 const fields = fieldHelper.defineMultipleFields([
   'firstName',
@@ -146,12 +165,7 @@ const fields = fieldHelper.defineMultipleFields([
   'passwordConfirmation',
   'profileImage'
 ])
-const { values, handleSubmit, validate, setValues } = form
-
-setValues({
-  isEmailPublic: false,
-  isPhoneNumberPublic: false
-})
+const { values, handleSubmit, validate, setFieldError, isSubmitting } = form
 
 const onSubmit = handleSubmit(async () => {
   fieldHelper.clearErrors()

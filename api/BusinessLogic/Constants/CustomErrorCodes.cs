@@ -10,7 +10,8 @@ public static class CustomErrorCodes
     public const string PropertyWasNotFound = "PropertyWasNotFound";
     public const string ComparablePropertyDidNotMatch = "ComparablePropertyDidNotMatch";
     public const string InvalidFile = "InvalidFile";
-    public const string FileSizeIsTooLarge = "FileSizeIsTooLarge";
+    public const string InvalidFileExtension = "InvalidFileType";
+    public const string FileSizeIsTooLarge = "InvalidFileSize";
     public const string DisallowedFileType = "DisallowedFileType";
     public const string InvalidImage = "InvalidImage";
     public const string DisallowedAspectRatio = "DisallowedAspectRatio";

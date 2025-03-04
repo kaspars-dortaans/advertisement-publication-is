@@ -1,13 +1,18 @@
 <template>
-  <p v-if="props.field?.hasError" class="text-red-500 text-xs italic">{{ props.field.error }}</p>
+  <p v-if="errorMessage" class="text-red-500 text-xs italic">{{ errorMessage }}</p>
 </template>
 
 <script setup lang="ts" generic="FieldType, DtoType extends GenericObject">
-import type { GenericObject } from 'vee-validate'
 import { Field } from '@/utils/field-helper'
-import type { PropType } from 'vue'
+import type { GenericObject } from 'vee-validate'
+import { computed } from 'vue'
 
-const props = defineProps({
-  field: { type: Object as PropType<Field<FieldType, DtoType>> }
-})
+const { field, messages } = defineProps<{
+  field?: Field<FieldType, DtoType> | undefined
+  messages?: string | string[] | undefined
+}>()
+
+const errorMessage = computed(() =>
+  field && field.hasError ? field.error : Array.isArray(messages) ? messages.join('\n') : messages
+)
 </script>
