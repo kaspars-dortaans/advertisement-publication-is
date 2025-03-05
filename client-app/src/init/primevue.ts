@@ -58,7 +58,7 @@ const customPassTrough = {
   menubar: {
     start: 'flex-1'
   },
-  datatable: {
+  dataTable: {
     pcPaginator: {
       content: {
         class: 'flex flex-row items-center justify-center w-full'

@@ -23,7 +23,7 @@
         :showIndicators="true"
         :showItemNavigators="true"
         :circular="true"
-        containerClass="w-full sm:w-full md:max-w-sm lg:max-w-xl flex-shrink-0"
+        containerClass="w-full sm:w-full md:max-w-sm lg:max-w-xl flex-shrink-0 max-h-full flex"
       >
         <template #item="slotProps">
           <img :src="slotProps.item.url" class="object-contain max-w-full max-h-full" />
@@ -43,40 +43,40 @@
     </div>
 
     <template #footer>
-      <div>
-        <h3 class="font-semibold text-2xl mb-2">{{ l.advertisements.contacts }}</h3>
-        <div class="flex flex-row flex-wrap gap-10">
-          <div class="flex flex-row gap-2">
-            <Button @click="todo">{{ l.advertisements.viewProfile }}</Button>
-            <Button @click="todo">{{ l.advertisements.sendMessage }}</Button>
-          </div>
-
-          <div v-if="advertisement.maskedAdvertiserEmail" class="space-x-2">
-            <InputText v-model="advertisement.maskedAdvertiserEmail"></InputText>
-            <Button
-              :loading="loadingEmail"
-              :label="l.advertisements.showPhoneNumber"
-              @click="revealEmail"
-            />
-          </div>
-
-          <div v-if="advertisement.maskedAdvertiserPhoneNumber" class="space-x-2">
-            <InputText v-model="advertisement.maskedAdvertiserPhoneNumber"></InputText>
-            <Button
-              :loading="loadingPhoneNumber"
-              :label="l.advertisements.showPhoneNumber"
-              @click="revealPhoneNumber"
-            />
-          </div>
-
-          <Button
-            severity="danger"
-            class="ml-auto"
-            as="RouterLink"
-            :to="{ name: 'reportAdvertisement' }"
-            >{{ l.advertisements.reportRuleViolation }}</Button
-          >
+      <h3 class="font-semibold text-2xl mb-2">{{ l.advertisements.contacts }}</h3>
+      <div class="flex flex-row flex-wrap gap-10 items-baseline justify-center xl:justify-between">
+        <div class="flex flex-wrap justify-center gap-2 basis-full md:basis-auto">
+          <Button @click="todo">{{ l.advertisements.viewProfile }}</Button>
+          <Button @click="todo">{{ l.advertisements.sendMessage }}</Button>
         </div>
+
+        <div
+          v-if="advertisement.maskedAdvertiserEmail"
+          class="flex flex-wrap justify-center gap-2 basis-full md:basis-auto"
+        >
+          <InputText v-model="advertisement.maskedAdvertiserEmail"></InputText>
+          <Button
+            :loading="loadingEmail"
+            :label="l.advertisements.showPhoneNumber"
+            @click="revealEmail"
+          />
+        </div>
+
+        <div
+          v-if="advertisement.maskedAdvertiserPhoneNumber"
+          class="flex flex-wrap justify-center gap-2 basis-full md:basis-auto"
+        >
+          <InputText v-model="advertisement.maskedAdvertiserPhoneNumber"></InputText>
+          <Button
+            :loading="loadingPhoneNumber"
+            :label="l.advertisements.showPhoneNumber"
+            @click="revealPhoneNumber"
+          />
+        </div>
+
+        <Button severity="danger" as="RouterLink" :to="{ name: 'reportAdvertisement' }">{{
+          l.advertisements.reportRuleViolation
+        }}</Button>
       </div>
     </template>
   </Panel>
@@ -106,9 +106,9 @@ const l = LocaleService.currentLocale
 
 //constants
 const panelPt = {
-  root: ['flex', 'flex-col', 'flex-1', 'min-h-0'],
-  contentContainer: ['flex', 'flex-col', 'flex-1', 'min-h-0'],
-  content: ['flex-1', 'min-h-0']
+  root: ['flex', 'flex-col', 'flex-1', 'md:min-h-0'],
+  contentContainer: ['flex', 'flex-col', 'flex-1', 'md:min-h-0'],
+  content: ['flex-1', 'md:min-h-0']
 }
 
 //Reactive data

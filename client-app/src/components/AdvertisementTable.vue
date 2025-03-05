@@ -1,88 +1,95 @@
 <template>
-  <div class="flex flex-row justify-center items-center gap-3 h-full bg-primary p-2">
-    <div class="">
-      <CategoryMenu
-        v-model="categoryId"
-        ref="categoryMenu"
-        @category-selected="handleSelectedCategory"
-      />
-    </div>
+  <div
+    class="flex flex-row justify-center items-center gap-3 h-full bg-primary p-2 flex-wrap lg:flex-nowrap overflow-y-auto"
+  >
+    <CategoryMenu
+      v-model="categoryId"
+      ref="categoryMenu"
+      class="flex-none w-full lg:w-64 max-h-[50%] lg:max-h-full"
+      @category-selected="handleSelectedCategory"
+    />
 
-    <Panel class="flex-1">
-      <DataTable
-        :value="advertisements"
-        :loading="isLoading > 0"
-        :rows="DefaultPageSize"
-        :rowsPerPageOptions="PageSizeOptions"
-        :currentPageReportTemplate="pageReportTemplate"
-        :paginatorTemplate="paginatorTemplate"
-        :totalRecords="totalRecordCount"
-        :pt="dataTablePt"
-        sortMode="multiple"
-        removableSort
-        paginator
-        lazy
-        @page="pageTable"
-        @sort="sortTable"
-      >
-        <template #header>
-          <h3 class="font-semibold text-2xl">{{ categoryInfo.categoryName }}</h3>
-          <div class="flex flex-row gap-2">
-            <div class="flex-1 flex flex-row justify-center items-baseline flex-wrap gap-2">
-              <DynamicFilter
-                v-for="column in filterableColumns"
-                :key="column.id"
-                v-model="filter['' + column.id]"
-                :label="column.name"
-                :filterType="column.attributeFilterType!"
-                :valueType="column.attributeValueType!"
-                :valueList="valueLists[column.valueListId ?? 0]"
-                class="min-w-52"
-              />
-            </div>
-            <Button severity="secondary" @click="clearFilter">{{ l.actions.clear }}</Button>
+    <DataTable
+      :value="advertisements"
+      :loading="isLoading > 0"
+      :rows="DefaultPageSize"
+      :rowsPerPageOptions="PageSizeOptions"
+      :currentPageReportTemplate="pageReportTemplate"
+      :paginatorTemplate="paginatorTemplate"
+      :totalRecords="totalRecordCount"
+      :pt="dataTablePt"
+      sortMode="multiple"
+      class="flex-auto bg-white"
+      removableSort
+      paginator
+      lazy
+      @page="pageTable"
+      @sort="sortTable"
+    >
+      <template #header>
+        <h3 class="font-semibold text-2xl mb-2">{{ categoryInfo.categoryName }}</h3>
+        <div class="flex flex-row gap-2 flex-wrap justify-center">
+          <div class="flex-auto flex flex-row justify-center flex-wrap gap-2">
+            <DynamicFilter
+              v-for="column in filterableColumns"
+              :key="column.id"
+              v-model="filter['' + column.id]"
+              :label="column.name"
+              :filterType="column.attributeFilterType!"
+              :valueType="column.attributeValueType!"
+              :valueList="valueLists[column.valueListId ?? 0]"
+              class="min-w-52"
+            />
+          </div>
+          <div class="space-x-2">
+            <Button
+              :disabled="!filterableColumns?.length"
+              severity="secondary"
+              @click="clearFilter"
+              >{{ l.actions.clear }}</Button
+            >
             <Button severity="primary" @click="filterTable">{{ l.actions.search }}</Button>
           </div>
-        </template>
-        <Column field="id">
-          <template #body="slotProps">
-            <RouterLink :to="{ name: 'viewAdvertisement', params: { id: slotProps.data.id } }">
-              <Panel class="hover:brightness-95">
-                <div class="flex flex-row gap-2 items-center">
-                  <img
-                    :src="slotProps.data.thumbnailImageUrl"
-                    class="flex-none"
-                    width="100"
-                    height="100"
-                  />
-                  <div class="flex flex-col gap-2">
-                    <h4>{{ slotProps.data.title }}</h4>
-                    <p class="line-clamp-2">{{ slotProps.data.advertisementText }}</p>
-                    <div class="flex flex-row flex-wrap gap-2">
-                      <span
-                        v-for="attribute in slotProps.data.attributeValues"
-                        :key="slotProps.data.id + '-' + attribute.attributeId"
-                        :title="attribute.attributeName"
-                      >
-                        {{ attribute.valueName ?? attribute.value }}</span
-                      >
-                    </div>
+        </div>
+      </template>
+      <Column field="id">
+        <template #body="slotProps">
+          <RouterLink :to="{ name: 'viewAdvertisement', params: { id: slotProps.data.id } }">
+            <Panel class="hover:brightness-95">
+              <div class="flex flex-row gap-2 items-center">
+                <img
+                  :src="slotProps.data.thumbnailImageUrl"
+                  class="flex-none"
+                  width="100"
+                  height="100"
+                />
+                <div class="flex flex-col gap-2">
+                  <h4>{{ slotProps.data.title }}</h4>
+                  <p class="line-clamp-2">{{ slotProps.data.advertisementText }}</p>
+                  <div class="flex flex-row flex-wrap gap-2">
+                    <span
+                      v-for="attribute in slotProps.data.attributeValues"
+                      :key="slotProps.data.id + '-' + attribute.attributeId"
+                      :title="attribute.attributeName"
+                    >
+                      {{ attribute.valueName ?? attribute.value }}</span
+                    >
                   </div>
                 </div>
-              </Panel>
-            </RouterLink>
-          </template>
-        </Column>
-        <Column
-          v-for="column in sortableColumns"
-          :key="column.id"
-          :field="'' + column.id"
-          :header="column.name"
-          sortable
-        >
-        </Column>
-      </DataTable>
-    </Panel>
+              </div>
+            </Panel>
+          </RouterLink>
+        </template>
+      </Column>
+      <Column
+        v-for="column in sortableColumns"
+        :key="column.id"
+        :field="'' + column.id"
+        :header="column.name"
+        sortable
+      >
+      </Column>
+    </DataTable>
   </div>
 </template>
 
@@ -133,8 +140,11 @@ const dataTablePt = {
       bodyCell: {
         class: [{ hidden: hasIndex && index > 0 }],
         colspan: hasIndex && index > 0 ? 0 : (sortableColumns.value?.length ?? 0) + 1
-      } as ColumnPassThroughOptions
-    }
+      },
+      headerCell: {
+        class: [{ hidden: hasIndex && index === 0 }]
+      }
+    } as ColumnPassThroughOptions
   }
 } as DataTablePassThroughOptions
 

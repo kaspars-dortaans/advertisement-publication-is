@@ -1,5 +1,5 @@
 <template>
-  <div class="h-full bg-primary flex items-center justify-center">
+  <div class="h-full bg-primary flex items-center justify-center p-2">
     <Panel class="max-w-96 w-96">
       <template #header>
         <h3 class="text-2xl">{{ l.advertisements.reportRuleViolation }}</h3>

@@ -3,7 +3,6 @@
     ref="tree"
     v-model:selectionKeys="selectedCategoryKeys"
     v-model:expanded-keys="expandedCategoryKeys"
-    class="w-full"
     :value="displayedCategoryNodes"
     selectionMode="single"
     @nodeSelect="handleCategorySelection"
