@@ -1,80 +1,77 @@
-﻿using BusinessLogic.Entities;
+﻿using BusinessLogic.Authorization;
+using BusinessLogic.Entities;
 using Microsoft.AspNetCore.Identity;
 using System.Linq.Expressions;
 using Attribute = BusinessLogic.Entities.Attribute;
 
 namespace BusinessLogic.Helpers;
 
-public class DbSeeder
+public class DbSeeder(Context context, UserManager<User> userManager, RoleManager<Role> roleManager)
 {
-    private readonly Context _context;
+    private readonly Context _context = context;
+    private readonly UserManager<User> _userManager = userManager;
+    private readonly RoleManager<Role> _roleManager = roleManager;
 
-    public DbSeeder(Context context)
-    {
-        _context = context;
-    }
-
-    public void Seed()
+    public async Task Seed()
     {
         //Add permissions
         var permissions = ((IEnumerable<Authorization.Permission>)Enum.GetValues(typeof(Authorization.Permission)))
-            .Select(p => new Permission
+            .Select(p => new Entities.Permission
             {
                 Id = (int)p,
                 Name = Enum.GetName(p)!
             });
+        AddIfNotExistsMultiple(permissions, (pConst) => p => p.Name == pConst.Name);
 
-        foreach (var permission in permissions)
+        //Add 
+        var roles = Enum.GetValues<Roles>();
+        foreach (var role in roles)
         {
-            AddIfNotExists(permission, p => p.Name == permission.Name);
+            var roleName = Enum.GetName(role)!;
+            if (!await _roleManager.RoleExistsAsync(roleName))
+            {
+                await _roleManager.CreateAsync(new Role()
+                {
+                    Name = roleName,
+                    NormalizedName = roleName.ToLower()
+                });
+            }
         }
 
-        //Seed Admin role
-        AddIfNotExists(
-            new Role()
-            {
-                Name = "Admin",
-                NormalizedName = "admin",
-            },
-            r => r.Name == "Admin");
+        var allRoles = _roleManager.Roles.ToList();
 
         //Add all permissions to admin role
-        var adminRole = _context.Roles.First(r => r.Name == "Admin");
-        var rolePermissionIds = _context.Permissions.Select(p => p.Id).ToList();
-        foreach (var permissionId in rolePermissionIds)
+        var adminRole = _context.Roles.First(r => r.Name == nameof(Roles.Admin));
+        var adminPermissions = _context.Permissions.Select(p => new RolePermission()
         {
-            AddIfNotExists(
-                new RolePermission()
-                {
-                    PermissionId = permissionId,
-                    RoleId = adminRole.Id
-                },
-                rp => rp.RoleId == adminRole.Id && rp.PermissionId == permissionId);
-        }
+            PermissionId = p.Id,
+            RoleId = adminRole.Id
+        }).ToList();
+
+        AddIfNotExistsMultiple(
+            adminPermissions,
+            pConst => p => pConst.RoleId == p.RoleId && pConst.PermissionId == p.PermissionId);
 
         //Seed admin user
-        AddIfNotExists(
-            new User()
+        var adminEmail = "admin@test.org";
+        if ((await _userManager.FindByEmailAsync(adminEmail)) is null)
+        {
+            var res = await _userManager.CreateAsync(new User()
             {
                 FirstName = "Admin",
                 LastName = "Admin",
-                Email = "admin@test.org",
-                NormalizedEmail = "ADMIN@TEST.ORG",
-                PasswordHash = "AQAAAAIAAYagAAAAEPbIfbEpyzBC101sGTPOS6fZvLQCfK85dLDZFWuCf5ngCFkILo8KI9GB3dWY4mHhNg==",//123
+                UserName = "Admin",
+                Email = adminEmail,
                 IsEmailPublic = true,
-                IsPhoneNumberPublic = true
-            },
-            u => u.Email == "admin@test.org");
+                IsPhoneNumberPublic = true,
+            }, "!23Qwe");
 
-        //Seed admin role for admin user
-        var adminUser = _context.Users.First(u => u.Email == "admin@test.org");
-        AddIfNotExists(
-            new IdentityUserRole<int>()
-            {
-                RoleId = adminRole.Id,
-                UserId = adminUser.Id
-            },
-            ur => ur.UserId == adminUser.Id && ur.RoleId == adminRole.Id);
+        }
+
+        //Seed roles for dev testing user
+        var adminUser = (await _userManager.FindByEmailAsync(adminEmail))!;
+        var allRoleNames = _roleManager.Roles.Select(r => r.Name!).ToList();
+        await _userManager.AddToRolesAsync(adminUser, allRoleNames);
 
         //Add advertisement categories
         var categories = new List<Category>()
@@ -115,10 +112,9 @@ public class DbSeeder
                 CanContainAdvertisements = true
             },
         };
-        foreach(var category in categories)
-        {
-            AddIfNotExists(category, c => c.Id == category.Id);
-        }
+
+        AddIfNotExistsMultiple(categories, cConst => c => cConst.Id == c.Id);
+
 
         //Add category names
         var categoryNameLocales = new List<CategoryNameLocaleText>()
@@ -208,10 +204,8 @@ public class DbSeeder
                 Text = "Motocikls"
             },
         };
-        foreach(var localeText in categoryNameLocales)
-        {
-            AddIfNotExists(localeText, t => t.Id == localeText.Id);
-        }
+
+        AddIfNotExistsMultiple(categoryNameLocales, lConst => l => lConst.Id == l.Id);
 
         // Category attributes
         var attributes = new List<Attribute>()
@@ -343,10 +337,8 @@ public class DbSeeder
                 }
             }
         };
-        foreach(var attribute in attributes)
-        {
-            AddIfNotExists(attribute, a => a.Id == attribute.Id);
-        }
+
+        AddIfNotExistsMultiple(attributes, aConst => a => aConst.Id == a.Id);
 
         // Advertisements
         var advertisements = new List<Advertisement>()
@@ -404,10 +396,8 @@ public class DbSeeder
                 }
             },
         };
-        foreach(var advertisement in advertisements)
-        {
-            AddIfNotExists(advertisement, a => a.Id == advertisement.Id);
-        }
+
+        AddIfNotExistsMultiple(advertisements, aConst => a => aConst.Id == a.Id);
     }
 
     private void AddIfNotExists<T>(T entity, Expression<Func<T, bool>> predicate) where T : class
@@ -416,6 +406,14 @@ public class DbSeeder
         {
             _context.Add(entity);
             _context.SaveChanges();
+        }
+    }
+
+    private void AddIfNotExistsMultiple<T>(IEnumerable<T> entities, Func<T, Expression<Func<T, bool>>> buildPredicate) where T : class
+    {
+        foreach (var entity in entities)
+        {
+            AddIfNotExists(entity, buildPredicate(entity));
         }
     }
 }
