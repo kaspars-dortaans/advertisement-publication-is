@@ -9,6 +9,11 @@ const router = createRouter({
       component: () => import('../views/HomeView.vue')
     },
     {
+      path: '/not-found',
+      name: 'notFound',
+      component: () => import('../views/NotFound.vue')
+    },
+    {
       path: '/login',
       name: 'login',
       component: () => import('../views/User/LoginView.vue'),
@@ -18,6 +23,12 @@ const router = createRouter({
       path: '/register',
       name: 'register',
       component: () => import('../views/User/RegisterView.vue')
+    },
+    {
+      path: '/user/:id/',
+      name: 'viewUser',
+      component: () => import('../views/User/ViewUser.vue'),
+      props: (route) => ({ id: parseInt(firstParam(route.params.id)) })
     },
     {
       path: '/advertisement/:id/',

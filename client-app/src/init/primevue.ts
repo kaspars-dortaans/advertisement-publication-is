@@ -44,6 +44,9 @@ import Message from 'primevue/message'
 import Galleria from 'primevue/galleria'
 import Image from 'primevue/image'
 
+//Misc
+import BlockUI from 'primevue/blockui'
+
 const customPassTrough = {
   password: {
     root: {
@@ -59,6 +62,12 @@ const customPassTrough = {
     start: 'flex-1'
   },
   dataTable: {
+    root: 'flex flex-col flex-nowrap',
+    tableContainer: 'flex-auto',
+    table: 'h-full',
+    column: {
+      bodyCell: ['align-top']
+    },
     pcPaginator: {
       content: {
         class: 'flex flex-row items-center justify-center w-full'
@@ -132,4 +141,7 @@ export function initPrimeVue(app: App<Element>) {
   //Media
   app.component('Image', Image)
   app.component('Galleria', Galleria)
+
+  //Misc
+  app.component('BlockUI', BlockUI)
 }

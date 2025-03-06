@@ -118,6 +118,7 @@ builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 //Add identity
 builder.Services.AddIdentity<User, Role>()
+    .AddRoles<Role>()
     .AddEntityFrameworkStores<Context>();
 
 builder.Services.Configure<IdentityOptions>(options =>

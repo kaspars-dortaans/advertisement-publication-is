@@ -9,6 +9,7 @@ public class User : IdentityUser<int>
     public string LastName { get; set; } = string.Empty;
     public bool IsPhoneNumberPublic { get; set; }
     public bool IsEmailPublic { get; set; }
+    public string? LinkToUserSite { get; set; }
     public int? ProfileImageFileId { get; set; }
     public UserImage ProfileImageFile { get; set; } = default!;
     public ICollection<Advertisement> OwnedAdvertisements { get; set; } = default!;

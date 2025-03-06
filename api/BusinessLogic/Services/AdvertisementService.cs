@@ -78,7 +78,10 @@ public class AdvertisementService(
     //TODO: Later check query performance and improve if necessary
     public async Task<DataTableQueryResponse<AdvertisementListItemDto>> GetActiveAdvertisementsByCategory(AdvertisementQuery request)
     {
-        var advertisementQuery = DbSet.Where(a => a.ValidToDate > DateTime.UtcNow);
+        var advertisementQuery = DbSet
+            .Where(a => a.ValidToDate > DateTime.UtcNow)
+            .Filter(request.AdvertisementOwnerId, a => a.OwnerId == request.AdvertisementOwnerId);
+
         if (request.CategoryId is not null)
         {
             var childCategoryIds = _categoryService.GetCategoryChildIds(request.CategoryId.Value);

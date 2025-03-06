@@ -76,16 +76,16 @@ public static class ReflectionHelper
                 }
 
                 var propertyLowercase = Expression.Call(entityProperty, toLowerMethod);
-                var containsExporession = Expression.Call(propertyLowercase, containsMethod, new Expression[] { searchValueLowercase });
+                var containsExpression = Expression.Call(propertyLowercase, containsMethod, new Expression[] { searchValueLowercase });
 
                 if (combined == null)
                 {
-                    combined = containsExporession;
+                    combined = containsExpression;
                 }
                 else
                 {
                     //Be sure to use Expression.OrElse to not run in to bug: https://github.com/dotnet/efcore/issues/30181
-                    combined = Expression.OrElse(combined, containsExporession);
+                    combined = Expression.OrElse(combined, containsExpression);
                 }
             }
         }

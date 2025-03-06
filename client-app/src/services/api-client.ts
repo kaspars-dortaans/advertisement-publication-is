@@ -832,6 +832,69 @@ export class UserClient {
         }
         return Promise.resolve<OkResult>(null as any);
     }
+
+    /**
+     * @param userId (optional) 
+     * @return Success
+     */
+    getPublicUserInfo(userId: number | undefined, cancelToken?: CancelToken): Promise<PublicUserInfoDto> {
+        let url_ = this.baseUrl + "/api/User/GetPublicUserInfo?";
+        if (userId === null)
+            throw new Error("The parameter 'userId' cannot be null.");
+        else if (userId !== undefined)
+            url_ += "userId=" + encodeURIComponent("" + userId) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: AxiosRequestConfig = {
+            method: "GET",
+            url: url_,
+            headers: {
+                "Accept": "text/plain"
+            },
+            cancelToken
+        };
+
+        return this.instance.request(options_).catch((_error: any) => {
+            if (isAxiosError(_error) && _error.response) {
+                return _error.response;
+            } else {
+                throw _error;
+            }
+        }).then((_response: AxiosResponse) => {
+            return this.processGetPublicUserInfo(_response);
+        });
+    }
+
+    protected processGetPublicUserInfo(response: AxiosResponse): Promise<PublicUserInfoDto> {
+        const status = response.status;
+        let _headers: any = {};
+        if (response.headers && typeof response.headers === "object") {
+            for (const k in response.headers) {
+                if (response.headers.hasOwnProperty(k)) {
+                    _headers[k] = response.headers[k];
+                }
+            }
+        }
+        if (status === 200) {
+            const _responseText = response.data;
+            let result200: any = null;
+            let resultData200  = _responseText;
+            result200 = PublicUserInfoDto.fromJS(resultData200);
+            return Promise.resolve<PublicUserInfoDto>(result200);
+
+        } else if (status === 400) {
+            const _responseText = response.data;
+            let result400: any = null;
+            let resultData400  = _responseText;
+            result400 = RequestExceptionResponse.fromJS(resultData400);
+            return throwException("Bad Request", status, _responseText, _headers, result400);
+
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.data;
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Promise.resolve<PublicUserInfoDto>(null as any);
+    }
 }
 
 export class AdvertisementDto implements IAdvertisementDto {
@@ -1070,7 +1133,8 @@ export class AdvertisementQuery implements IAdvertisementQuery {
     order?: OrderQuery[] | undefined;
     columns?: TableColumn[] | undefined;
     categoryId?: number | undefined;
-    attributeSearch!: AttributeSearchQuery[];
+    advertisementOwnerId?: number | undefined;
+    attributeSearch?: AttributeSearchQuery[] | undefined;
     attributeOrder?: AttributeOrderQuery[] | undefined;
 
     constructor(data?: IAdvertisementQuery) {
@@ -1079,9 +1143,6 @@ export class AdvertisementQuery implements IAdvertisementQuery {
                 if (data.hasOwnProperty(property))
                     (<any>this)[property] = (<any>data)[property];
             }
-        }
-        if (!data) {
-            this.attributeSearch = [];
         }
     }
 
@@ -1102,6 +1163,7 @@ export class AdvertisementQuery implements IAdvertisementQuery {
                     this.columns!.push(TableColumn.fromJS(item));
             }
             this.categoryId = _data["categoryId"];
+            this.advertisementOwnerId = _data["advertisementOwnerId"];
             if (Array.isArray(_data["attributeSearch"])) {
                 this.attributeSearch = [] as any;
                 for (let item of _data["attributeSearch"])
@@ -1139,6 +1201,7 @@ export class AdvertisementQuery implements IAdvertisementQuery {
                 data["columns"].push(item.toJSON());
         }
         data["categoryId"] = this.categoryId;
+        data["advertisementOwnerId"] = this.advertisementOwnerId;
         if (Array.isArray(this.attributeSearch)) {
             data["attributeSearch"] = [];
             for (let item of this.attributeSearch)
@@ -1161,7 +1224,8 @@ export interface IAdvertisementQuery {
     order?: OrderQuery[] | undefined;
     columns?: TableColumn[] | undefined;
     categoryId?: number | undefined;
-    attributeSearch: AttributeSearchQuery[];
+    advertisementOwnerId?: number | undefined;
+    attributeSearch?: AttributeSearchQuery[] | undefined;
     attributeOrder?: AttributeOrderQuery[] | undefined;
 }
 
@@ -1979,6 +2043,62 @@ export interface IOrderQuery {
     direction?: string | undefined;
 }
 
+export class PublicUserInfoDto implements IPublicUserInfoDto {
+    id?: number;
+    userName?: string | undefined;
+    email?: string | undefined;
+    phoneNumber?: string | undefined;
+    linkToUserSite?: string | undefined;
+    profileImageUrl?: string | undefined;
+
+    constructor(data?: IPublicUserInfoDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.userName = _data["userName"];
+            this.email = _data["email"];
+            this.phoneNumber = _data["phoneNumber"];
+            this.linkToUserSite = _data["linkToUserSite"];
+            this.profileImageUrl = _data["profileImageUrl"];
+        }
+    }
+
+    static fromJS(data: any): PublicUserInfoDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new PublicUserInfoDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["userName"] = this.userName;
+        data["email"] = this.email;
+        data["phoneNumber"] = this.phoneNumber;
+        data["linkToUserSite"] = this.linkToUserSite;
+        data["profileImageUrl"] = this.profileImageUrl;
+        return data;
+    }
+}
+
+export interface IPublicUserInfoDto {
+    id?: number;
+    userName?: string | undefined;
+    email?: string | undefined;
+    phoneNumber?: string | undefined;
+    linkToUserSite?: string | undefined;
+    profileImageUrl?: string | undefined;
+}
+
 export class RegisterDto implements IRegisterDto {
     email!: string;
     isEmailPublic?: boolean;
@@ -2052,8 +2172,8 @@ export interface IRegisterDto {
 }
 
 export class ReportAdvertisementRequest implements IReportAdvertisementRequest {
-    description?: string | undefined;
-    reportedAdvertisementId?: number;
+    description!: string;
+    reportedAdvertisementId!: number;
 
     constructor(data?: IReportAdvertisementRequest) {
         if (data) {
@@ -2087,8 +2207,8 @@ export class ReportAdvertisementRequest implements IReportAdvertisementRequest {
 }
 
 export interface IReportAdvertisementRequest {
-    description?: string | undefined;
-    reportedAdvertisementId?: number;
+    description: string;
+    reportedAdvertisementId: number;
 }
 
 export class RequestExceptionResponse implements IRequestExceptionResponse {

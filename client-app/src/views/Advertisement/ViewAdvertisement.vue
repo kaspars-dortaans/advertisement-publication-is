@@ -46,7 +46,11 @@
       <h3 class="font-semibold text-2xl mb-2">{{ l.advertisements.contacts }}</h3>
       <div class="flex flex-row flex-wrap gap-10 items-baseline justify-center xl:justify-between">
         <div class="flex flex-wrap justify-center gap-2 basis-full md:basis-auto">
-          <Button @click="todo">{{ l.advertisements.viewProfile }}</Button>
+          <Button
+            :label="l.advertisements.viewProfile"
+            as="RouterLink"
+            :to="{ name: 'viewUser', params: { id: advertisement.ownerId } }"
+          ></Button>
           <Button @click="todo">{{ l.advertisements.sendMessage }}</Button>
         </div>
 
@@ -54,10 +58,11 @@
           v-if="advertisement.maskedAdvertiserEmail"
           class="flex flex-wrap justify-center gap-2 basis-full md:basis-auto"
         >
-          <InputText v-model="advertisement.maskedAdvertiserEmail"></InputText>
+          <InputText v-model="advertisement.maskedAdvertiserEmail" disabled></InputText>
           <Button
+            v-if="!revealedEmail"
             :loading="loadingEmail"
-            :label="l.advertisements.showPhoneNumber"
+            :label="l.advertisements.showEmail"
             @click="revealEmail"
           />
         </div>
@@ -66,8 +71,9 @@
           v-if="advertisement.maskedAdvertiserPhoneNumber"
           class="flex flex-wrap justify-center gap-2 basis-full md:basis-auto"
         >
-          <InputText v-model="advertisement.maskedAdvertiserPhoneNumber"></InputText>
+          <InputText v-model="advertisement.maskedAdvertiserPhoneNumber" disabled></InputText>
           <Button
+            v-if="!revealedPhone"
             :loading="loadingPhoneNumber"
             :label="l.advertisements.showPhoneNumber"
             @click="revealPhoneNumber"
@@ -119,6 +125,8 @@ const bookmarkIcon = computed(() => {
 const loadingEmail = ref(false)
 const loadingPhoneNumber = ref(false)
 const savingBookmark = ref(false)
+const revealedEmail = ref(false)
+const revealedPhone = ref(false)
 
 //Hooks
 onMounted(() => {
@@ -148,6 +156,7 @@ const revealPhoneNumber = async () => {
   loadingPhoneNumber.value = true
   advertisement.value.maskedAdvertiserPhoneNumber =
     await advertisementService.revealAdvertiserPhoneNumber(advertisementId)
+  revealedPhone.value = true
   loadingPhoneNumber.value = false
 }
 
@@ -155,6 +164,7 @@ const revealEmail = async () => {
   loadingEmail.value = true
   advertisement.value.maskedAdvertiserEmail =
     await advertisementService.revealAdvertiserEmail(advertisementId)
+  revealedEmail.value = true
   loadingEmail.value = false
 }
 

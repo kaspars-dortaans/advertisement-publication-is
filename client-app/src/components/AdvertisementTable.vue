@@ -1,106 +1,95 @@
 <template>
-  <div
-    class="flex flex-row justify-center items-center gap-3 h-full bg-primary p-2 flex-wrap lg:flex-nowrap overflow-y-auto"
+  <DataTable
+    :value="advertisements"
+    :loading="isLoading > 0"
+    :rows="DefaultPageSize"
+    :rowsPerPageOptions="PageSizeOptions"
+    :currentPageReportTemplate="pageReportTemplate"
+    :paginatorTemplate="paginatorTemplate"
+    :totalRecords="totalRecordCount"
+    :pt="dataTablePt"
+    sortMode="multiple"
+    class="flex-auto bg-white"
+    removableSort
+    paginator
+    lazy
+    @page="pageTable"
+    @sort="sortTable"
   >
-    <CategoryMenu
-      v-model="categoryId"
-      ref="categoryMenu"
-      class="flex-none w-full lg:w-64 max-h-[50%] lg:max-h-full"
-      @category-selected="handleSelectedCategory"
-    />
-
-    <DataTable
-      :value="advertisements"
-      :loading="isLoading > 0"
-      :rows="DefaultPageSize"
-      :rowsPerPageOptions="PageSizeOptions"
-      :currentPageReportTemplate="pageReportTemplate"
-      :paginatorTemplate="paginatorTemplate"
-      :totalRecords="totalRecordCount"
-      :pt="dataTablePt"
-      sortMode="multiple"
-      class="flex-auto bg-white"
-      removableSort
-      paginator
-      lazy
-      @page="pageTable"
-      @sort="sortTable"
-    >
-      <template #header>
-        <h3 class="font-semibold text-2xl mb-2">{{ categoryInfo.categoryName }}</h3>
-        <div class="flex flex-row gap-2 flex-wrap justify-center">
-          <div class="flex-auto flex flex-row justify-center flex-wrap gap-2">
-            <DynamicFilter
-              v-for="column in filterableColumns"
-              :key="column.id"
-              v-model="filter['' + column.id]"
-              :label="column.name"
-              :filterType="column.attributeFilterType!"
-              :valueType="column.attributeValueType!"
-              :valueList="valueLists[column.valueListId ?? 0]"
-              class="min-w-52"
-            />
-          </div>
-          <div class="space-x-2">
-            <Button
-              :disabled="!filterableColumns?.length"
-              severity="secondary"
-              @click="clearFilter"
-              >{{ l.actions.clear }}</Button
-            >
-            <Button severity="primary" @click="filterTable">{{ l.actions.search }}</Button>
-          </div>
+    <template #header>
+      <h3 class="font-semibold text-2xl mb-2">{{ categoryInfo.categoryName }}</h3>
+      <div v-if="filterableColumns?.length" class="flex flex-row gap-2 flex-wrap justify-center">
+        <div class="flex-auto flex flex-row justify-center flex-wrap gap-2">
+          <DynamicFilter
+            v-for="column in filterableColumns"
+            :key="column.id"
+            v-model="filter['' + column.id]"
+            :label="column.name"
+            :filterType="column.attributeFilterType!"
+            :valueType="column.attributeValueType!"
+            :valueList="valueLists[column.valueListId ?? 0]"
+            class="min-w-52"
+          />
         </div>
-      </template>
-      <Column field="id">
-        <template #body="slotProps">
-          <RouterLink :to="{ name: 'viewAdvertisement', params: { id: slotProps.data.id } }">
-            <Panel class="hover:brightness-95">
-              <div class="flex flex-row gap-2 items-center">
-                <img
-                  :src="slotProps.data.thumbnailImageUrl"
-                  class="flex-none"
-                  width="100"
-                  height="100"
-                />
-                <div class="flex flex-col gap-2">
-                  <h4>{{ slotProps.data.title }}</h4>
-                  <p class="line-clamp-2">{{ slotProps.data.advertisementText }}</p>
-                  <div class="flex flex-row flex-wrap gap-2">
-                    <span
-                      v-for="attribute in slotProps.data.attributeValues"
-                      :key="slotProps.data.id + '-' + attribute.attributeId"
-                      :title="attribute.attributeName"
-                    >
-                      {{ attribute.valueName ?? attribute.value }}</span
-                    >
-                  </div>
+        <div class="space-x-2">
+          <Button
+            :disabled="!filterableColumns?.length"
+            severity="secondary"
+            @click="clearFilter"
+            >{{ l.actions.clear }}</Button
+          >
+          <Button severity="primary" @click="filterTable">{{ l.actions.search }}</Button>
+        </div>
+      </div>
+    </template>
+    <Column field="id">
+      <template #body="slotProps">
+        <RouterLink :to="{ name: 'viewAdvertisement', params: { id: slotProps.data.id } }">
+          <Panel class="hover:brightness-95">
+            <div class="flex flex-row gap-2 items-center">
+              <img
+                :src="slotProps.data.thumbnailImageUrl"
+                class="flex-none"
+                width="100"
+                height="100"
+              />
+              <div class="flex flex-col gap-2">
+                <h4>{{ slotProps.data.title }}</h4>
+                <p class="line-clamp-2">{{ slotProps.data.advertisementText }}</p>
+                <div class="flex flex-row flex-wrap gap-2">
+                  <span
+                    v-for="attribute in slotProps.data.attributeValues"
+                    :key="slotProps.data.id + '-' + attribute.attributeId"
+                    :title="attribute.attributeName"
+                  >
+                    {{ attribute.valueName ?? attribute.value }}</span
+                  >
                 </div>
               </div>
-            </Panel>
-          </RouterLink>
-        </template>
-      </Column>
-      <Column
-        v-for="column in sortableColumns"
-        :key="column.id"
-        :field="'' + column.id"
-        :header="column.name"
-        sortable
-      >
-      </Column>
-    </DataTable>
-  </div>
+            </div>
+          </Panel>
+        </RouterLink>
+      </template>
+    </Column>
+    <Column
+      v-for="column in sortableColumns"
+      :key="column.id"
+      :field="'' + column.id"
+      :header="column.name"
+      sortable
+    >
+    </Column>
+  </DataTable>
 </template>
 
 <script setup lang="ts">
-import CategoryMenu from '@/components/CategoryMenu.vue'
 import DynamicFilter from '@/components/Filters/DynamicFilter.vue'
 import { Direction } from '@/constants/api/Direction'
 import { DefaultPageSize, PageSizeOptions } from '@/constants/data-table'
 import {
   AdvertisementClient,
   AdvertisementListItem,
+  AdvertisementListItemDataTableQueryResponse,
   AdvertisementQuery,
   AttributeOrderQuery,
   AttributeSearchQuery,
@@ -117,15 +106,20 @@ import {
   type DataTableSortEvent,
   type DataTableSortMeta
 } from 'primevue'
-import { computed, onMounted, ref, useTemplateRef, watch, type ComputedRef, type Ref } from 'vue'
+import { computed, onMounted, ref, watch, type ComputedRef, type Ref } from 'vue'
+
+const { categoryId, categoryNameSource, advertisementSource } = defineProps<{
+  advertisementSource: (
+    query: AdvertisementQuery
+  ) => Promise<AdvertisementListItemDataTableQueryResponse>
+  categoryId?: number | null | undefined
+  categoryNameSource?: () => Promise<string> | undefined
+}>()
 
 // Services
 const advertisementService = getClient(AdvertisementClient)
 const ls = LocaleService.get()
 const l = LocaleService.currentLocale
-
-// Refs
-const categoryMenu = useTemplateRef('categoryMenu')
 
 // Table Constants
 const paginatorTemplate =
@@ -151,7 +145,6 @@ const dataTablePt = {
 // Reactive data
 const isLoading = ref(0)
 const pageReportTemplate = ref('')
-const categoryId: Ref<number | null | undefined> = ref()
 const categoryInfo: Ref<CategoryInfo> = ref(new CategoryInfo())
 
 const attributeOrderQuery: Ref<AttributeOrderQuery[]> = ref([])
@@ -183,11 +176,7 @@ const valueLists: ComputedRef<{ [key: number]: AttributeValueItem }> = computed(
 
 // Hooks
 onMounted(() => {
-  categoryId.value = null
-  handleSelectedCategory(
-    categoryId.value,
-    categoryMenu.value?.getCategoryName(categoryId.value, LocaleService.currentLocaleName.value)
-  )
+  handleCategoryChange(categoryId, categoryNameSource?.())
 })
 
 // Watchers
@@ -204,16 +193,20 @@ watch(
   { immediate: true }
 )
 
-watch(LocaleService.currentLocaleName, async (newLocale) => {
-  handleSelectedCategory(
-    categoryId.value,
-    categoryMenu.value?.getCategoryName(categoryId.value, newLocale)
-  )
+watch(LocaleService.currentLocaleName, async () => {
+  handleCategoryChange(categoryId, categoryNameSource?.())
   loadAdvertisements()
 })
 
+watch(
+  () => categoryId,
+  (newId) => {
+    handleCategoryChange(newId, categoryNameSource?.())
+  }
+)
+
 //Methods
-const handleSelectedCategory = async (
+const handleCategoryChange = async (
   selectedCategoryId?: number | null,
   selectedCategoryName?: string | Promise<string | undefined>
 ) => {
@@ -223,7 +216,7 @@ const handleSelectedCategory = async (
     promises.push(loadCategoryInfo())
   } else {
     categoryInfo.value = new CategoryInfo({
-      categoryName: await Promise.resolve(selectedCategoryName),
+      categoryName: await Promise.resolve(selectedCategoryName ?? ''),
       attributeInfo: [],
       attributeValueLists: []
     })
@@ -233,18 +226,18 @@ const handleSelectedCategory = async (
 }
 
 const loadCategoryInfo = async () => {
-  if (!categoryId.value) {
+  if (!categoryId) {
     return
   }
-  categoryInfo.value = await advertisementService.getCategoryInfo(categoryId.value)
+  categoryInfo.value = await advertisementService.getCategoryInfo(categoryId)
 }
 
 const loadAdvertisements = async () => {
   isLoading.value++
 
-  const response = await advertisementService.getAdvertisements(
+  const response = await advertisementSource(
     new AdvertisementQuery({
-      categoryId: categoryId.value ?? undefined,
+      categoryId: categoryId ?? undefined,
       attributeOrder: attributeOrderQuery.value,
       attributeSearch: attributeFilterQuery.value,
       start: pageFirstRecord.value,

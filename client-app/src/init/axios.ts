@@ -18,6 +18,8 @@ export const initAxios = (router: Router) => {
       //If unauthorized redirect to login page
       if (response?.status === HttpStatusCode.Unauthorized) {
         router.push({ name: 'login', query: { redirect: 'true' } })
+      } else if (response?.status === HttpStatusCode.NotFound) {
+        router.push({ name: 'notFound' })
       }
 
       //If custom error codes where returned, localize them

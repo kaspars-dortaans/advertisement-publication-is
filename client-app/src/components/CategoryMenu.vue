@@ -96,24 +96,28 @@ const loadCategories = async () => {
 }
 
 // Watchers
-watch(model, (newValue) => {
-  let idStr: number | string | undefined
-  if (typeof newValue === 'number') {
-    idStr = '' + newValue
-  } else if (newValue === null) {
-    idStr = newCategoryKey
-  } else if (newValue === undefined || typeof newValue === 'string') {
-    idStr = newValue
-  } else {
-    return
-  }
+watch(
+  model,
+  (newValue) => {
+    let idStr: number | string | undefined
+    if (typeof newValue === 'number') {
+      idStr = '' + newValue
+    } else if (newValue === null) {
+      idStr = newCategoryKey
+    } else if (newValue === undefined || typeof newValue === 'string') {
+      idStr = newValue
+    } else {
+      return
+    }
 
-  const selectedKeys = Object.keys(selectedCategoryKeys.value)
-  const selectedIdStr = selectedKeys.length ? selectedKeys[0] : undefined
-  if (idStr !== selectedIdStr) {
-    selectedCategoryKeys.value = idStr !== undefined ? { [idStr]: true } : {}
-  }
-})
+    const selectedKeys = Object.keys(selectedCategoryKeys.value)
+    const selectedIdStr = selectedKeys.length ? selectedKeys[0] : undefined
+    if (idStr !== selectedIdStr) {
+      selectedCategoryKeys.value = idStr !== undefined ? { [idStr]: true } : {}
+    }
+  },
+  { immediate: true }
+)
 
 watch(LocaleService.currentLocaleName, async () => {
   await loadCategories()
@@ -203,26 +207,23 @@ const displayRootNodes = (categoryNode: TreeNode) => {
 }
 
 /** Get category name by id, if component is currently loading categories, response will be deferred */
-const getCategoryName = (id: number | string | null | undefined, locale: string) => {
-  const result = new Promise<string | undefined>((executor) => {
+const getCategoryName = (id: number | string | null, locale: string) => {
+  const result = new Promise<string>((resolve) => {
     let idStr = id
     if (typeof id === 'number') {
       idStr = '' + id
     } else if (id === null) {
       idStr = newCategoryKey
-    } else if (id === undefined) {
-      executor(undefined)
-      return
     }
 
-    const resolve = () => {
-      executor(categoryNodes.value.find((c) => c.key === idStr)?.label)
+    const resolver = () => {
+      resolve(categoryNodes.value.find((c) => c.key === idStr)?.label ?? '')
     }
 
     if (loadedCategoryLocale !== locale) {
-      getCategoryNameExecutors.push(resolve)
+      getCategoryNameExecutors.push(resolver)
     } else {
-      resolve()
+      resolver()
     }
   })
   return result
