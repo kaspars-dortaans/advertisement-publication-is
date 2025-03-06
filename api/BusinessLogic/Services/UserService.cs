@@ -24,12 +24,18 @@ public class UserService(
     /// </summary>
     /// <param name="registerDto"></param>
     /// <returns></returns>
-    public async Task Register(User user, string password, IFormFile? profileImage)
+    public async Task Register(User user, string password, IFormFile? profileImage, IEnumerable<string>? roles)
     {
         var createResult = await _userManager.CreateAsync(user, password);
 
         //Handle user creation errors
         HandleCreateUserResult(createResult);
+
+        if (roles is not null && roles.Any())
+        {
+            await _userManager.AddToRolesAsync(user ,roles);
+        }
+
         if (profileImage is not null)
         {
             //Save ProfileImage

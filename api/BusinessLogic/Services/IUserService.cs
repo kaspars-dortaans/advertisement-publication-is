@@ -5,5 +5,5 @@ namespace BusinessLogic.Services;
 
 public interface IUserService : IBaseService<User>
 {
-    public Task Register(User user, string password, IFormFile? profilePicture);
+    public Task Register(User user, string password, IFormFile? profilePicture, IEnumerable<string>? roles);
 }

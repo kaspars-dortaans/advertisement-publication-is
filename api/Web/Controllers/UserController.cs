@@ -41,7 +41,7 @@ public class UserController(
     public async Task<IActionResult> Register([FromForm] RegisterDto registerDto)
     {
         var user = _mapper.Map(registerDto, new User());
-        await _userService.Register(user, registerDto.Password, registerDto.ProfileImage);
+        await _userService.Register(user, registerDto.Password, registerDto.ProfileImage, [nameof(Roles.User)]);
         return Ok();
     }
 }
