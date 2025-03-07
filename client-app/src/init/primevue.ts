@@ -65,6 +65,7 @@ const customPassTrough = {
     root: 'flex flex-col flex-nowrap',
     tableContainer: 'flex-auto',
     table: 'h-full',
+    tbody: 'block',
     column: {
       bodyCell: ['align-top']
     },

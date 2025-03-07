@@ -108,12 +108,12 @@ import {
 } from 'primevue'
 import { computed, onMounted, ref, watch, type ComputedRef, type Ref } from 'vue'
 
-const { categoryId, categoryNameSource, advertisementSource } = defineProps<{
+const { categoryId, categoryName, advertisementSource } = defineProps<{
   advertisementSource: (
     query: AdvertisementQuery
   ) => Promise<AdvertisementListItemDataTableQueryResponse>
   categoryId?: number | null | undefined
-  categoryNameSource?: () => Promise<string> | undefined
+  categoryName?: string | undefined
 }>()
 
 // Services
@@ -176,7 +176,7 @@ const valueLists: ComputedRef<{ [key: number]: AttributeValueItem }> = computed(
 
 // Hooks
 onMounted(() => {
-  handleCategoryChange(categoryId, categoryNameSource?.())
+  handleCategoryChange(categoryId)
 })
 
 // Watchers
@@ -194,29 +194,33 @@ watch(
 )
 
 watch(LocaleService.currentLocaleName, async () => {
-  handleCategoryChange(categoryId, categoryNameSource?.())
+  handleCategoryChange(categoryId)
   loadAdvertisements()
 })
 
 watch(
   () => categoryId,
   (newId) => {
-    handleCategoryChange(newId, categoryNameSource?.())
+    handleCategoryChange(newId)
+  }
+)
+
+watch(
+  () => categoryName,
+  (newName) => {
+    categoryInfo.value.categoryName = newName
   }
 )
 
 //Methods
-const handleCategoryChange = async (
-  selectedCategoryId?: number | null,
-  selectedCategoryName?: string | Promise<string | undefined>
-) => {
+const handleCategoryChange = async (selectedCategoryId?: number | null) => {
   isLoading.value++
   const promises = [loadAdvertisements()]
   if (typeof selectedCategoryId === 'number' && selectedCategoryId > -1) {
     promises.push(loadCategoryInfo())
   } else {
     categoryInfo.value = new CategoryInfo({
-      categoryName: await Promise.resolve(selectedCategoryName ?? ''),
+      categoryName: categoryName,
       attributeInfo: [],
       attributeValueLists: []
     })

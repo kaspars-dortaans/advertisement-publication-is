@@ -66,15 +66,15 @@ const items = reactive([
         label: 'navigation.seeAdvertisements'
       },
       {
-        route: 'home',
+        route: 'home', //TODO: Change when view is completed
         label: 'navigation.savedAdvertisements'
       },
       {
-        route: 'home',
+        route: 'recentlyViewedAdvertisements',
         label: 'navigation.recentlyViewedAdvertisements'
       },
       {
-        route: 'home',
+        route: 'home', //TODO: Change when view is completed
         label: 'navigation.createAdvertisement'
       }
     ]
@@ -90,7 +90,7 @@ const items = reactive([
 ])
 
 const search = () => {
-  // TODO: Navigate to search page
+  // TODO: Navigate when view is completed
   alert('Not implemented')
 }
 

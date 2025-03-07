@@ -6,7 +6,7 @@ const router = createRouter({
     {
       path: '/',
       name: 'home',
-      component: () => import('../views/HomeView.vue')
+      component: () => import('../views/advertisements/ViewAdvertisements.vue')
     },
     {
       path: '/not-found',
@@ -29,6 +29,11 @@ const router = createRouter({
       name: 'viewUser',
       component: () => import('../views/User/ViewUser.vue'),
       props: (route) => ({ id: parseInt(firstParam(route.params.id)) })
+    },
+    {
+      path: '/recently-viewed-advertisements',
+      name: 'recentlyViewedAdvertisements',
+      component: () => import('../views/advertisements/RecentlyViewedAdvertisements.vue')
     },
     {
       path: '/advertisement/:id/',

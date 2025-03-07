@@ -38,6 +38,20 @@ public class AdvertisementController(
     }
 
     [AllowAnonymous]
+    [HttpPost]
+    public async Task<IEnumerable<AdvertisementListItem>> GetAdvertisementsByIds(List<int> ids)
+    {
+        var advertisements = _advertisementService
+            .GetActiveAdvertisements()
+            .Where(a => ids.Contains(a.Id));
+
+        var dto = (await _advertisementService.SelectListItemDto(advertisements).ToListAsync())
+                .OrderBy(a => ids.IndexOf(a.Id));
+
+        return _mapper.Map<IEnumerable<AdvertisementListItem>>(dto, o => o.Items[nameof(Url)] = Url);
+    }
+
+    [AllowAnonymous]
     [HttpGet]
     public async Task<Dto.Advertisement.AdvertisementDto> GetAdvertisement(int advertisementId)
     {
@@ -53,7 +67,7 @@ public class AdvertisementController(
     {
         var queryResult = await _advertisementService
             .Where(a => a.Id == advertisementId)
-            .Select(a => new { IsPublic = a.Owner.IsPhoneNumberPublic, a.Owner.PhoneNumber})
+            .Select(a => new { IsPublic = a.Owner.IsPhoneNumberPublic, a.Owner.PhoneNumber })
             .FirstAsync();
 
         if (!queryResult.IsPublic)
@@ -87,7 +101,7 @@ public class AdvertisementController(
     public async Task<IActionResult> BookmarkAdvertisement(BookmarkAdvertisementRequest request)
     {
         var userId = User.GetUserId();
-        if(userId is null)
+        if (userId is null)
         {
             return Unauthorized();
         }

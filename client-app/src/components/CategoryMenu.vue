@@ -21,21 +21,17 @@ import { nextTick, onMounted, ref, watch, type Ref } from 'vue'
 
 // Component output
 const model = defineModel()
-const emit = defineEmits(['category-selected'])
+const selectedCategoryNameModel = defineModel('selectedCategoryName')
 
 // Services
 const advertisementService = getClient(AdvertisementClient)
-const ls = LocaleService.get()
+const l = LocaleService.currentLocale
 
 // Reactive data
 const categoryNodes: Ref<TreeNode[]> = ref([])
 const displayedCategoryNodes: Ref<TreeNode[]> = ref([])
 const selectedCategoryKeys = ref({})
 const expandedCategoryKeys: Ref<{ [key: string]: boolean }> = ref({})
-
-// Data
-let getCategoryNameExecutors: (() => void)[] = []
-let loadedCategoryLocale = ''
 
 // Constants
 const newCategoryKey = 'new-category'
@@ -50,7 +46,7 @@ const loadCategories = async () => {
   categoryNodes.value = [
     {
       key: newCategoryKey,
-      label: ls.l('categoryMenu.new'),
+      label: l.value.categoryMenu.new,
       children: [],
       leaf: true,
       data: {
@@ -85,14 +81,15 @@ const loadCategories = async () => {
       }
     )
   ]
-  displayedCategoryNodes.value = categoryNodes.value
-  loadedCategoryLocale = LocaleService.currentLocaleName.value
 
-  //Resolve getCategoryName promises which were called in loading time
-  for (const executor of getCategoryNameExecutors) {
-    executor()
+  //Update selected category name v-model
+  const selectedKeys = Object.keys(selectedCategoryKeys.value)
+  if (selectedKeys.length) {
+    selectedCategoryNameModel.value = categoryNodes.value.find(
+      (n) => n.key === selectedKeys[0]
+    )?.label
   }
-  getCategoryNameExecutors = []
+  displayedCategoryNodes.value = categoryNodes.value
 }
 
 // Watchers
@@ -114,6 +111,9 @@ watch(
     const selectedIdStr = selectedKeys.length ? selectedKeys[0] : undefined
     if (idStr !== selectedIdStr) {
       selectedCategoryKeys.value = idStr !== undefined ? { [idStr]: true } : {}
+
+      //Update selected category name v-model
+      selectedCategoryNameModel.value = categoryNodes.value.find((n) => n.key == idStr)?.label
     }
   },
   { immediate: true }
@@ -132,7 +132,9 @@ const handleCategorySelection = (categoryNode: TreeNode) => {
         ? parseInt(categoryNode.key)
         : categoryNode.key
   model.value = id
-  emit('category-selected', id, categoryNode.label)
+
+  //Update selected category name v-model
+  selectedCategoryNameModel.value = categoryNode.label
 
   // Display selected node and its child nodes
   if (categoryNode.leaf === false) {
@@ -205,29 +207,4 @@ const displayRootNodes = (categoryNode: TreeNode) => {
     }
   }
 }
-
-/** Get category name by id, if component is currently loading categories, response will be deferred */
-const getCategoryName = (id: number | string | null, locale: string) => {
-  const result = new Promise<string>((resolve) => {
-    let idStr = id
-    if (typeof id === 'number') {
-      idStr = '' + id
-    } else if (id === null) {
-      idStr = newCategoryKey
-    }
-
-    const resolver = () => {
-      resolve(categoryNodes.value.find((c) => c.key === idStr)?.label ?? '')
-    }
-
-    if (loadedCategoryLocale !== locale) {
-      getCategoryNameExecutors.push(resolver)
-    } else {
-      resolver()
-    }
-  })
-  return result
-}
-
-defineExpose({ getCategoryName })
 </script>

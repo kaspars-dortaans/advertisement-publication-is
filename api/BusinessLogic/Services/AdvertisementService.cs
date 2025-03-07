@@ -17,7 +17,7 @@ public class AdvertisementService(
     CookieSettingsHelper cookieSettingHelper) : BaseService<Advertisement>(context), IAdvertisementService
 {
     private readonly ICategoryService _categoryService = categoryService;
-    private readonly IBaseService<AdvertisementBookmark> _advertisementBookmarkSerive = advertisementBookmarkService;
+    private readonly IBaseService<AdvertisementBookmark> _advertisementBookmarkService = advertisementBookmarkService;
     private readonly CookieSettingsHelper _cookieSettingHelper = cookieSettingHelper;
 
     public async Task<AdvertisementDto> FindActiveAdvertisement(int advertisementId, int? userId)
@@ -78,8 +78,7 @@ public class AdvertisementService(
     //TODO: Later check query performance and improve if necessary
     public async Task<DataTableQueryResponse<AdvertisementListItemDto>> GetActiveAdvertisementsByCategory(AdvertisementQuery request)
     {
-        var advertisementQuery = DbSet
-            .Where(a => a.ValidToDate > DateTime.UtcNow)
+        var advertisementQuery = GetActiveAdvertisements()
             .Filter(request.AdvertisementOwnerId, a => a.OwnerId == request.AdvertisementOwnerId);
 
         if (request.CategoryId is not null)
@@ -88,8 +87,23 @@ public class AdvertisementService(
             advertisementQuery = advertisementQuery.Where(a => a.CategoryId == request.CategoryId.Value || childCategoryIds.Contains(a.CategoryId));
         }
 
+        return await SelectListItemDto(advertisementQuery).ResolveDataTableQuery(request, new DataTableQueryConfig<AdvertisementListItemDto>()
+        {
+            AdditionalFilter = query => FilterByAttributes(query, request.AttributeSearch.ToList()),
+            AdditionalSort = (query, isSortApplied) => OrderByAttributes(query, isSortApplied, request.AttributeOrder.ToList())
+        });
+    }
+
+    public IQueryable<Advertisement> GetActiveAdvertisements()
+    {
+        return DbSet
+            .Where(a => a.ValidToDate > DateTime.UtcNow);
+    }
+
+    public IQueryable<AdvertisementListItemDto> SelectListItemDto(IQueryable<Advertisement> query)
+    {
         var locale = _cookieSettingHelper.Settings.NormalizedLocale;
-        var advertisementItemQuery = advertisementQuery
+        return query
             .Select(a => new AdvertisementListItemDto()
             {
                 Id = a.Id,
@@ -111,12 +125,6 @@ public class AdvertisementService(
                         : null
                     })
             });
-
-        return await advertisementItemQuery.ResolveDataTableQuery(request, new DataTableQueryConfig<AdvertisementListItemDto>()
-        {
-            AdditionalFilter = query => FilterByAttributes(query, request.AttributeSearch.ToList()),
-            AdditionalSort = (query, isSortApplied) => OrderByAttributes(query, isSortApplied, request.AttributeOrder.ToList())
-        });
     }
 
     private IQueryable<AdvertisementListItemDto> FilterByAttributes(IQueryable<AdvertisementListItemDto> query, List<AttributeSearchQuery> attributeSearch)
@@ -196,7 +204,7 @@ public class AdvertisementService(
     {
         if (addBookmark)
         {
-            await _advertisementBookmarkSerive.AddIfNotExistsAsync(new AdvertisementBookmark()
+            await _advertisementBookmarkService.AddIfNotExistsAsync(new AdvertisementBookmark()
             {
                 BookmarkedAdvertisementId = advertisementId,
                 BookmarkOwnerId = userId
@@ -204,7 +212,7 @@ public class AdvertisementService(
         }
         else
         {
-            await _advertisementBookmarkSerive
+            await _advertisementBookmarkService
                 .DeleteWhereAsync(ab => ab.BookmarkOwnerId == userId && ab.BookmarkedAdvertisementId == advertisementId);
         }
     }
