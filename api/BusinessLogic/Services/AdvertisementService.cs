@@ -17,7 +17,7 @@ public class AdvertisementService(
     CookieSettingsHelper cookieSettingHelper) : BaseService<Advertisement>(context), IAdvertisementService
 {
     private readonly ICategoryService _categoryService = categoryService;
-    private readonly IBaseService<AdvertisementBookmark> _advertisementBookmarkSerive = advertisementBookmarkService;
+    private readonly IBaseService<AdvertisementBookmark> _advertisementBookmarkService = advertisementBookmarkService;
     private readonly CookieSettingsHelper _cookieSettingHelper = cookieSettingHelper;
 
     public async Task<AdvertisementDto> FindActiveAdvertisement(int advertisementId, int? userId)
@@ -76,20 +76,31 @@ public class AdvertisementService(
     }
 
     //TODO: Later check query performance and improve if necessary
-    public async Task<DataTableQueryResponse<AdvertisementListItemDto>> GetActiveAdvertisementsByCategory(AdvertisementQuery request)
+    public Task<DataTableQueryResponse<AdvertisementListItemDto>> GetActiveAdvertisementsByCategory(AdvertisementQuery request)
     {
-        var advertisementQuery = DbSet
-            .Where(a => a.ValidToDate > DateTime.UtcNow)
-            .Filter(request.AdvertisementOwnerId, a => a.OwnerId == request.AdvertisementOwnerId);
+        var advertisementQuery = GetBaseFilteredAdvertisements(request);
+        return ResolveAdvertisementDataTableRequest(request, advertisementQuery);
+    }
 
-        if (request.CategoryId is not null)
-        {
-            var childCategoryIds = _categoryService.GetCategoryChildIds(request.CategoryId.Value);
-            advertisementQuery = advertisementQuery.Where(a => a.CategoryId == request.CategoryId.Value || childCategoryIds.Contains(a.CategoryId));
-        }
+    public IQueryable<int> GetCategoryListFromAdvertisementIds(IEnumerable<int> ids)
+    {
+        return GetActiveAdvertisements()
+            .Where(a => ids.Contains(a.Id))
+            .GroupBy(a => a.CategoryId)
+            .Select(g => g.Key);
+    }
 
+
+
+    /// <summary>
+    /// Select <see cref="AdvertisementListItemDto"/> from <see cref="Advertisement"/>
+    /// </summary>
+    /// <param name="query"></param>
+    /// <returns></returns>
+    public IQueryable<AdvertisementListItemDto> SelectListItemDto(IQueryable<Advertisement> query)
+    {
         var locale = _cookieSettingHelper.Settings.NormalizedLocale;
-        var advertisementItemQuery = advertisementQuery
+        return query
             .Select(a => new AdvertisementListItemDto()
             {
                 Id = a.Id,
@@ -111,12 +122,58 @@ public class AdvertisementService(
                         : null
                     })
             });
+    }
 
-        return await advertisementItemQuery.ResolveDataTableQuery(request, new DataTableQueryConfig<AdvertisementListItemDto>()
+    /// <summary>
+    /// Resolve advertisement data table request with provided advertisement query
+    /// </summary>
+    /// <param name="request"></param>
+    /// <param name="query"></param>
+    /// <returns></returns>
+    private async Task<DataTableQueryResponse<AdvertisementListItemDto>> ResolveAdvertisementDataTableRequest(AdvertisementQuery request, IQueryable<Advertisement> query)
+    {
+        var dto = await SelectListItemDto(query).ResolveDataTableQuery(request, new DataTableQueryConfig<AdvertisementListItemDto>()
         {
             AdditionalFilter = query => FilterByAttributes(query, request.AttributeSearch.ToList()),
             AdditionalSort = (query, isSortApplied) => OrderByAttributes(query, isSortApplied, request.AttributeOrder.ToList())
         });
+
+        //In memory sorting
+        if (request.AdvertisementIds is not null && !request.AttributeOrder.Any())
+        {
+            var ids = request.AdvertisementIds.ToList();
+            dto.Data = dto.Data.OrderBy(a => ids.IndexOf(a.Id));
+        }
+
+        return dto;
+    }
+
+    /// <summary>
+    /// Returns filtered advertisements which are allowed to be shown publicly
+    /// </summary>
+    /// <returns></returns>
+    private IQueryable<Advertisement> GetActiveAdvertisements()
+    {
+        return DbSet.Where(a => a.ValidToDate > DateTime.UtcNow);
+    }
+
+    /// <summary>
+    /// Get advertisements filtered by AdvertisementQuery basic filters
+    /// </summary>
+    /// <param name=""></param>
+    /// <returns></returns>
+    private IQueryable<Advertisement> GetBaseFilteredAdvertisements(AdvertisementQuery request)
+    {
+        var advertisementQuery = GetActiveAdvertisements()
+                    .Filter(request.AdvertisementOwnerId, a => a.OwnerId == request.AdvertisementOwnerId)
+                    .Filter(request.AdvertisementIds, a => request.AdvertisementIds!.Contains(a.Id));
+
+        if (request.CategoryId is not null)
+        {
+            var childCategoryIds = _categoryService.GetCategoryChildIds(request.CategoryId.Value);
+            advertisementQuery = advertisementQuery.Where(a => a.CategoryId == request.CategoryId.Value || childCategoryIds.Contains(a.CategoryId));
+        }
+        return advertisementQuery;
     }
 
     private IQueryable<AdvertisementListItemDto> FilterByAttributes(IQueryable<AdvertisementListItemDto> query, List<AttributeSearchQuery> attributeSearch)
@@ -196,7 +253,7 @@ public class AdvertisementService(
     {
         if (addBookmark)
         {
-            await _advertisementBookmarkSerive.AddIfNotExistsAsync(new AdvertisementBookmark()
+            await _advertisementBookmarkService.AddIfNotExistsAsync(new AdvertisementBookmark()
             {
                 BookmarkedAdvertisementId = advertisementId,
                 BookmarkOwnerId = userId
@@ -204,7 +261,7 @@ public class AdvertisementService(
         }
         else
         {
-            await _advertisementBookmarkSerive
+            await _advertisementBookmarkService
                 .DeleteWhereAsync(ab => ab.BookmarkOwnerId == userId && ab.BookmarkedAdvertisementId == advertisementId);
         }
     }

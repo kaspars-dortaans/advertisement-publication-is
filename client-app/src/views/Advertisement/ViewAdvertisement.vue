@@ -91,12 +91,18 @@
 <script setup lang="ts">
 import BackButton from '@/components/BackButton.vue'
 import {
+  AdvertisementHistoryStorageKey,
+  AdvertisementHistoryTimeSpanInMiliSeconds
+} from '@/constants/advertisement-history'
+import {
   AdvertisementClient,
   AdvertisementDto,
   BookmarkAdvertisementRequest
 } from '@/services/api-client'
 import { LocaleService } from '@/services/locale-service'
+import type { IAdvertisementHistoryRecord } from '@/types/advertisements/advertisement-history-record'
 import { getClient } from '@/utils/client-builder'
+import { updateStorageObject } from '@/utils/local-storage'
 import { computed, onMounted, ref, watch, type Ref } from 'vue'
 import { useRouter } from 'vue-router'
 
@@ -136,6 +142,29 @@ onMounted(() => {
   }
 
   loadAdvertisement()
+
+  //Add advertisement history record to local storage
+  updateStorageObject<IAdvertisementHistoryRecord[]>(
+    AdvertisementHistoryStorageKey,
+    (historyRecords) => {
+      //Delete old history
+      const filtered = historyRecords.filter(
+        (r) => Date.now() - r.timeStamp < AdvertisementHistoryTimeSpanInMiliSeconds
+      )
+      const existingRecord = filtered.find((r) => r.id === advertisementId)
+      if (existingRecord) {
+        existingRecord.timeStamp = Date.now()
+      } else {
+        filtered.push({
+          id: advertisementId,
+          timeStamp: Date.now()
+        })
+      }
+
+      return filtered
+    },
+    []
+  )
 })
 
 //Watchers

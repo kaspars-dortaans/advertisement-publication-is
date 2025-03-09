@@ -17,9 +17,20 @@
     @sort="sortTable"
   >
     <template #header>
-      <h3 class="font-semibold text-2xl mb-2">{{ categoryInfo.categoryName }}</h3>
-      <div v-if="filterableColumns?.length" class="flex flex-row gap-2 flex-wrap justify-center">
+      <h3 class="font-semibold text-2xl mb-2">{{ categoryName ?? categoryInfo.categoryName }}</h3>
+      <div
+        v-if="filterableColumns?.length || categoryFilterList.length"
+        class="flex flex-row gap-2 flex-wrap justify-center"
+      >
         <div class="flex-auto flex flex-row justify-center flex-wrap gap-2">
+          <Select
+            v-if="categoryFilterList.length"
+            v-model="categoryFilterModel"
+            :options="categoryFilterList"
+            :placeholder="l.advertisements.selectCategory"
+            optionLabel="value"
+            optionValue="key"
+          ></Select>
           <DynamicFilter
             v-for="column in filterableColumns"
             :key="column.id"
@@ -32,12 +43,7 @@
           />
         </div>
         <div class="space-x-2">
-          <Button
-            :disabled="!filterableColumns?.length"
-            severity="secondary"
-            @click="clearFilter"
-            >{{ l.actions.clear }}</Button
-          >
+          <Button severity="secondary" @click="clearFilter">{{ l.actions.clear }}</Button>
           <Button severity="primary" @click="filterTable">{{ l.actions.search }}</Button>
         </div>
       </div>
@@ -94,7 +100,8 @@ import {
   AttributeOrderQuery,
   AttributeSearchQuery,
   AttributeValueItem,
-  CategoryInfo
+  CategoryInfo,
+  Int32StringKeyValuePair
 } from '@/services/api-client'
 import { LocaleService } from '@/services/locale-service'
 import { getClient } from '@/utils/client-builder'
@@ -108,12 +115,18 @@ import {
 } from 'primevue'
 import { computed, onMounted, ref, watch, type ComputedRef, type Ref } from 'vue'
 
-const { categoryId, categoryNameSource, advertisementSource } = defineProps<{
+const {
+  advertisementSource,
+  categoryId,
+  categoryName,
+  categoryFilterList = []
+} = defineProps<{
   advertisementSource: (
     query: AdvertisementQuery
   ) => Promise<AdvertisementListItemDataTableQueryResponse>
   categoryId?: number | null | undefined
-  categoryNameSource?: () => Promise<string> | undefined
+  categoryName?: string | undefined
+  categoryFilterList?: Int32StringKeyValuePair[]
 }>()
 
 // Services
@@ -147,6 +160,14 @@ const isLoading = ref(0)
 const pageReportTemplate = ref('')
 const categoryInfo: Ref<CategoryInfo> = ref(new CategoryInfo())
 
+/** In data table filter selected category id */
+const categoryFilterModel: Ref<number | undefined> = ref()
+
+/** Resulting selected category id in filter or passed as prop */
+const selectedCategoryId = computed(() =>
+  categoryId !== undefined ? categoryId : categoryFilterModel.value
+)
+
 const attributeOrderQuery: Ref<AttributeOrderQuery[]> = ref([])
 const attributeFilterQuery: Ref<AttributeSearchQuery[]> = ref([])
 const pageFirstRecord = ref(0)
@@ -176,47 +197,33 @@ const valueLists: ComputedRef<{ [key: number]: AttributeValueItem }> = computed(
 
 // Hooks
 onMounted(() => {
-  handleCategoryChange(categoryId, categoryNameSource?.())
+  handleCategoryChange(selectedCategoryId.value)
+  updatePagingTemplate()
 })
 
 // Watchers
-watch(
-  LocaleService.currentLocaleName,
-  () => {
-    pageReportTemplate.value = ls.l(
-      'dataTable.pageReportTemplate',
-      '{first}',
-      '{last}',
-      '{totalRecords}'
-    )
-  },
-  { immediate: true }
-)
-
 watch(LocaleService.currentLocaleName, async () => {
-  handleCategoryChange(categoryId, categoryNameSource?.())
+  handleCategoryChange(selectedCategoryId.value)
   loadAdvertisements()
+  updatePagingTemplate()
 })
 
 watch(
-  () => categoryId,
+  () => selectedCategoryId.value,
   (newId) => {
-    handleCategoryChange(newId, categoryNameSource?.())
+    handleCategoryChange(newId)
   }
 )
 
 //Methods
-const handleCategoryChange = async (
-  selectedCategoryId?: number | null,
-  selectedCategoryName?: string | Promise<string | undefined>
-) => {
+const handleCategoryChange = async (selectedCategoryId?: number | null) => {
   isLoading.value++
   const promises = [loadAdvertisements()]
   if (typeof selectedCategoryId === 'number' && selectedCategoryId > -1) {
     promises.push(loadCategoryInfo())
   } else {
     categoryInfo.value = new CategoryInfo({
-      categoryName: await Promise.resolve(selectedCategoryName ?? ''),
+      categoryName: categoryName,
       attributeInfo: [],
       attributeValueLists: []
     })
@@ -226,10 +233,10 @@ const handleCategoryChange = async (
 }
 
 const loadCategoryInfo = async () => {
-  if (!categoryId) {
+  if (!selectedCategoryId.value) {
     return
   }
-  categoryInfo.value = await advertisementService.getCategoryInfo(categoryId)
+  categoryInfo.value = await advertisementService.getCategoryInfo(selectedCategoryId.value)
 }
 
 const loadAdvertisements = async () => {
@@ -237,7 +244,7 @@ const loadAdvertisements = async () => {
 
   const response = await advertisementSource(
     new AdvertisementQuery({
-      categoryId: categoryId ?? undefined,
+      categoryId: selectedCategoryId.value ?? undefined,
       attributeOrder: attributeOrderQuery.value,
       attributeSearch: attributeFilterQuery.value,
       start: pageFirstRecord.value,
@@ -298,6 +305,16 @@ const filterTable = () => {
 
 const clearFilter = () => {
   filter.value = {}
+  categoryFilterModel.value = undefined
   filterTable()
+}
+
+const updatePagingTemplate = () => {
+  pageReportTemplate.value = ls.l(
+    'dataTable.pageReportTemplate',
+    '{first}',
+    '{last}',
+    '{totalRecords}'
+  )
 }
 </script>

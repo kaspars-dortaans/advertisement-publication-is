@@ -6,6 +6,7 @@ public class AdvertisementQuery : DataTableQuery.DataTableQuery
 {
     public int? CategoryId { get; set; }
     public int? AdvertisementOwnerId { get; set; }
+    public IEnumerable<int>? AdvertisementIds { get; set; }
     public IEnumerable<AttributeSearchQuery> AttributeSearch { get; set; } = default!;
     public IEnumerable<AttributeOrderQuery> AttributeOrder { get; set; } = default!;
 

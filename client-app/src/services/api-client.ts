@@ -81,6 +81,62 @@ export class AdvertisementClient {
     }
 
     /**
+     * @param body (optional) 
+     * @return Success
+     */
+    getAdvertisementsByIds(body: AdvertisementQuery | undefined, cancelToken?: CancelToken): Promise<AdvertisementListItemDataTableQueryResponse> {
+        let url_ = this.baseUrl + "/api/Advertisement/GetAdvertisementsByIds";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_: AxiosRequestConfig = {
+            data: content_,
+            method: "POST",
+            url: url_,
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "text/plain"
+            },
+            cancelToken
+        };
+
+        return this.instance.request(options_).catch((_error: any) => {
+            if (isAxiosError(_error) && _error.response) {
+                return _error.response;
+            } else {
+                throw _error;
+            }
+        }).then((_response: AxiosResponse) => {
+            return this.processGetAdvertisementsByIds(_response);
+        });
+    }
+
+    protected processGetAdvertisementsByIds(response: AxiosResponse): Promise<AdvertisementListItemDataTableQueryResponse> {
+        const status = response.status;
+        let _headers: any = {};
+        if (response.headers && typeof response.headers === "object") {
+            for (const k in response.headers) {
+                if (response.headers.hasOwnProperty(k)) {
+                    _headers[k] = response.headers[k];
+                }
+            }
+        }
+        if (status === 200) {
+            const _responseText = response.data;
+            let result200: any = null;
+            let resultData200  = _responseText;
+            result200 = AdvertisementListItemDataTableQueryResponse.fromJS(resultData200);
+            return Promise.resolve<AdvertisementListItemDataTableQueryResponse>(result200);
+
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.data;
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Promise.resolve<AdvertisementListItemDataTableQueryResponse>(null as any);
+    }
+
+    /**
      * @param advertisementId (optional) 
      * @return Success
      */
@@ -428,6 +484,69 @@ export class AdvertisementClient {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
         }
         return Promise.resolve<CategoryInfo>(null as any);
+    }
+
+    /**
+     * @param body (optional) 
+     * @return Success
+     */
+    getCategoryListFromAdvertisementIds(body: number[] | undefined, cancelToken?: CancelToken): Promise<Int32StringKeyValuePair[]> {
+        let url_ = this.baseUrl + "/api/Advertisement/GetCategoryListFromAdvertisementIds";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_: AxiosRequestConfig = {
+            data: content_,
+            method: "POST",
+            url: url_,
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "text/plain"
+            },
+            cancelToken
+        };
+
+        return this.instance.request(options_).catch((_error: any) => {
+            if (isAxiosError(_error) && _error.response) {
+                return _error.response;
+            } else {
+                throw _error;
+            }
+        }).then((_response: AxiosResponse) => {
+            return this.processGetCategoryListFromAdvertisementIds(_response);
+        });
+    }
+
+    protected processGetCategoryListFromAdvertisementIds(response: AxiosResponse): Promise<Int32StringKeyValuePair[]> {
+        const status = response.status;
+        let _headers: any = {};
+        if (response.headers && typeof response.headers === "object") {
+            for (const k in response.headers) {
+                if (response.headers.hasOwnProperty(k)) {
+                    _headers[k] = response.headers[k];
+                }
+            }
+        }
+        if (status === 200) {
+            const _responseText = response.data;
+            let result200: any = null;
+            let resultData200  = _responseText;
+            if (Array.isArray(resultData200)) {
+                result200 = [] as any;
+                for (let item of resultData200)
+                    result200!.push(Int32StringKeyValuePair.fromJS(item));
+            }
+            else {
+                result200 = <any>null;
+            }
+            return Promise.resolve<Int32StringKeyValuePair[]>(result200);
+
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.data;
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Promise.resolve<Int32StringKeyValuePair[]>(null as any);
     }
 
     /**
@@ -1134,6 +1253,7 @@ export class AdvertisementQuery implements IAdvertisementQuery {
     columns?: TableColumn[] | undefined;
     categoryId?: number | undefined;
     advertisementOwnerId?: number | undefined;
+    advertisementIds?: number[] | undefined;
     attributeSearch?: AttributeSearchQuery[] | undefined;
     attributeOrder?: AttributeOrderQuery[] | undefined;
 
@@ -1164,6 +1284,11 @@ export class AdvertisementQuery implements IAdvertisementQuery {
             }
             this.categoryId = _data["categoryId"];
             this.advertisementOwnerId = _data["advertisementOwnerId"];
+            if (Array.isArray(_data["advertisementIds"])) {
+                this.advertisementIds = [] as any;
+                for (let item of _data["advertisementIds"])
+                    this.advertisementIds!.push(item);
+            }
             if (Array.isArray(_data["attributeSearch"])) {
                 this.attributeSearch = [] as any;
                 for (let item of _data["attributeSearch"])
@@ -1202,6 +1327,11 @@ export class AdvertisementQuery implements IAdvertisementQuery {
         }
         data["categoryId"] = this.categoryId;
         data["advertisementOwnerId"] = this.advertisementOwnerId;
+        if (Array.isArray(this.advertisementIds)) {
+            data["advertisementIds"] = [];
+            for (let item of this.advertisementIds)
+                data["advertisementIds"].push(item);
+        }
         if (Array.isArray(this.attributeSearch)) {
             data["attributeSearch"] = [];
             for (let item of this.attributeSearch)
@@ -1225,6 +1355,7 @@ export interface IAdvertisementQuery {
     columns?: TableColumn[] | undefined;
     categoryId?: number | undefined;
     advertisementOwnerId?: number | undefined;
+    advertisementIds?: number[] | undefined;
     attributeSearch?: AttributeSearchQuery[] | undefined;
     attributeOrder?: AttributeOrderQuery[] | undefined;
 }
@@ -1889,6 +2020,46 @@ export class ImageUrl implements IImageUrl {
 export interface IImageUrl {
     url?: string | undefined;
     thumbnailUrl?: string | undefined;
+}
+
+export class Int32StringKeyValuePair implements IInt32StringKeyValuePair {
+    key?: number;
+    value?: string | undefined;
+
+    constructor(data?: IInt32StringKeyValuePair) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.key = _data["key"];
+            this.value = _data["value"];
+        }
+    }
+
+    static fromJS(data: any): Int32StringKeyValuePair {
+        data = typeof data === 'object' ? data : {};
+        let result = new Int32StringKeyValuePair();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["key"] = this.key;
+        data["value"] = this.value;
+        return data;
+    }
+}
+
+export interface IInt32StringKeyValuePair {
+    key?: number;
+    value?: string | undefined;
 }
 
 export class LoginDto implements ILoginDto {

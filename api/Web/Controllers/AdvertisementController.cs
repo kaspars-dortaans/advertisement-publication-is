@@ -53,7 +53,7 @@ public class AdvertisementController(
     {
         var queryResult = await _advertisementService
             .Where(a => a.Id == advertisementId)
-            .Select(a => new { IsPublic = a.Owner.IsPhoneNumberPublic, a.Owner.PhoneNumber})
+            .Select(a => new { IsPublic = a.Owner.IsPhoneNumberPublic, a.Owner.PhoneNumber })
             .FirstAsync();
 
         if (!queryResult.IsPublic)
@@ -87,7 +87,7 @@ public class AdvertisementController(
     public async Task<IActionResult> BookmarkAdvertisement(BookmarkAdvertisementRequest request)
     {
         var userId = User.GetUserId();
-        if(userId is null)
+        if (userId is null)
         {
             return Unauthorized();
         }
@@ -152,6 +152,20 @@ public class AdvertisementController(
             .FirstAsync();
 
         return result;
+    }
+
+    [AllowAnonymous]
+    [HttpPost]
+    public async Task<IEnumerable<KeyValuePair<int, string>>> GetCategoryListFromAdvertisementIds(IEnumerable<int> advertisementIds)
+    {
+        var advertisementCategoryIds = _advertisementService.GetCategoryListFromAdvertisementIds(advertisementIds);
+        var locale = _cookieSettingsHelper.Settings.NormalizedLocale;
+        var categoryList = await _categoryService
+            .Where(c => advertisementCategoryIds.Contains(c.Id))
+            .Select(c => new KeyValuePair<int, string>(c.Id, c.LocalisedNames.Localise(locale)))
+            .ToListAsync();
+
+        return categoryList;
     }
 
     [AllowAnonymous]

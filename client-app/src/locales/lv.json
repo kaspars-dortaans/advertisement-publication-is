@@ -7,7 +7,7 @@
     "edit": "Rediģēt",
     "search": "Meklēt",
     "clear": "Tīrīt",
-    "report": "Todo: Translate"
+    "report": "Paziņot"
   },
   "dataTable": {
     "pageReportTemplate": "{1} līdz {2} no {3}",
@@ -23,9 +23,10 @@
     "sendMessage": "Sūtīt ziņu",
     "showPhoneNumber": "Parādīt tālruņa numuru",
     "showEmail": "Parādīt e-pastu",
-    "reportRuleViolation": "Paziņot par notiekumu pārkāpumu",
+    "reportRuleViolation": "Paziņot par noteikumu pārkāpumu",
     "bookmark": "Atzīmēt sludinājumu",
-    "description": "Todo: Translate"
+    "description": "Apraksts",
+    "selectCategory": "Izvēlēties kategoriju"
   },
   "form": {
     "doNotHaveAnAccountQuestion": "Don't have an account?",

@@ -75,7 +75,7 @@ const report = handleSubmit(async () => {
   try {
     await _advertisementService.reportAdvertisement(
       new ReportAdvertisementRequest({
-        description: values.description,
+        description: values.description!,
         reportedAdvertisementId: advertisementId
       })
     )

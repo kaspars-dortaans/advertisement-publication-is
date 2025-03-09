@@ -28,6 +28,7 @@ export const emptyLocale = {
     reportRuleViolation: "",
     bookmark: "",
     description: "",
+    selectCategory: "",
   },
   form: {
     doNotHaveAnAccountQuestion: "",

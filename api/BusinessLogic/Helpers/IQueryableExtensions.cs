@@ -14,10 +14,10 @@ public static class IQueryableExtensions
     /// <returns></returns>
     public static IQueryable<T> Filter<T>(this IQueryable<T> query, object? filterValue, Expression<Func<T, bool>> filterPredicate)
     {
-        if(filterValue is null)
+        if (filterValue is not null)
         {
-            return query;
+            return query.Where(filterPredicate);
         }
-        return query.Where(filterPredicate);
+        return query;
     }
 }
