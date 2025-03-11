@@ -1,5 +1,6 @@
 <template>
   <DataTable
+    v-model:expandedRowGroups="expandedRowGroups"
     :value="advertisements"
     :loading="isLoading > 0"
     :rows="DefaultPageSize"
@@ -8,6 +9,9 @@
     :paginatorTemplate="paginatorTemplate"
     :totalRecords="totalRecordCount"
     :pt="dataTablePt"
+    :rowGroupMode="groupByCategory ? 'subheader' : undefined"
+    :expandableRowGroups="groupByCategory"
+    groupRowsBy="categoryName"
     sortMode="multiple"
     class="flex-auto bg-white"
     removableSort
@@ -17,7 +21,9 @@
     @sort="sortTable"
   >
     <template #header>
-      <h3 class="font-semibold text-2xl mb-2">{{ categoryName ?? categoryInfo.categoryName }}</h3>
+      <slot name="title">
+        <h3 class="font-semibold text-2xl mb-2">{{ categoryName ?? categoryInfo.categoryName }}</h3>
+      </slot>
       <div
         v-if="filterableColumns?.length || categoryFilterList.length"
         class="flex flex-row gap-2 flex-wrap justify-center"
@@ -48,6 +54,13 @@
         </div>
       </div>
     </template>
+
+    <template #groupheader="slotProps">
+      <div class="inline-block ml-2">
+        <h3 class="text-xl mb-2">{{ slotProps.data.categoryName }}</h3>
+      </div>
+    </template>
+
     <Column field="id">
       <template #body="slotProps">
         <RouterLink :to="{ name: 'viewAdvertisement', params: { id: slotProps.data.id } }">
@@ -119,7 +132,8 @@ const {
   advertisementSource,
   categoryId,
   categoryName,
-  categoryFilterList = []
+  categoryFilterList = [],
+  groupByCategory = false
 } = defineProps<{
   advertisementSource: (
     query: AdvertisementQuery
@@ -127,6 +141,7 @@ const {
   categoryId?: number | null | undefined
   categoryName?: string | undefined
   categoryFilterList?: Int32StringKeyValuePair[]
+  groupByCategory?: boolean
 }>()
 
 // Services
@@ -167,6 +182,9 @@ const categoryFilterModel: Ref<number | undefined> = ref()
 const selectedCategoryId = computed(() =>
   categoryId !== undefined ? categoryId : categoryFilterModel.value
 )
+
+/** Data table expanded group v-model */
+const expandedRowGroups = ref()
 
 const attributeOrderQuery: Ref<AttributeOrderQuery[]> = ref([])
 const attributeFilterQuery: Ref<AttributeSearchQuery[]> = ref([])
@@ -242,6 +260,7 @@ const loadCategoryInfo = async () => {
 const loadAdvertisements = async () => {
   isLoading.value++
 
+  //Load advertisements
   const response = await advertisementSource(
     new AdvertisementQuery({
       categoryId: selectedCategoryId.value ?? undefined,
@@ -255,6 +274,13 @@ const loadAdvertisements = async () => {
   )
   advertisements.value = response.data ?? []
   totalRecordCount.value = response.recordsFiltered ?? 0
+
+  //Expand groups
+  if (groupByCategory) {
+    const allCategoryNames = [...new Set(advertisements.value.map((a) => a.categoryName))]
+    expandedRowGroups.value = allCategoryNames
+  }
+
   isLoading.value--
 }
 
@@ -317,4 +343,6 @@ const updatePagingTemplate = () => {
     '{totalRecords}'
   )
 }
+
+defineExpose({ refresh: loadAdvertisements })
 </script>

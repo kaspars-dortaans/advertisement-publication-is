@@ -26,7 +26,8 @@
     "reportRuleViolation": "Paziņot par noteikumu pārkāpumu",
     "bookmark": "Atzīmēt sludinājumu",
     "description": "Apraksts",
-    "selectCategory": "Izvēlēties kategoriju"
+    "selectCategory": "Izvēlēties kategoriju",
+    "search": "Meklēt"
   },
   "form": {
     "doNotHaveAnAccountQuestion": "Don't have an account?",

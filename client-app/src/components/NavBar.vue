@@ -40,7 +40,9 @@ import { reactive, ref } from 'vue'
 import { debounceFn } from '@/utils/debounce'
 
 import logoUrl from '@/assets/logo.svg'
+import { useRouter } from 'vue-router'
 
+const { push } = useRouter()
 const ls = LocaleService.get()
 const l = LocaleService.currentLocale
 
@@ -90,8 +92,8 @@ const items = reactive([
 ])
 
 const search = () => {
-  // TODO: Navigate when view is completed
-  alert('Not implemented')
+  push({ name: 'searchAdvertisements', query: { search: searchInput.value } })
+  searchInput.value = ''
 }
 
 const immediateSearch = () => {

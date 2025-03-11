@@ -7,7 +7,7 @@ namespace BusinessLogic.Helpers;
 public static class DataTableQueryResolver
 {
 
-    //Implement datatable query support per https://datatables.net/manual/server-side
+    //Implement data table query support per https://datatables.net/manual/server-side
     public static async Task<DataTableQueryResponse<Entity>> ResolveDataTableQuery<Entity>(this IQueryable<Entity> query, DataTableQuery request, DataTableQueryConfig<Entity>? config = null) where Entity : class
     {
         //Total record count
@@ -17,7 +17,7 @@ public static class DataTableQueryResolver
         var searchableColumns = request.Columns.Where(c => c.Searchable).ToList();
         if (!string.IsNullOrEmpty(request.Search?.Value) && searchableColumns.Count > 0)
         {
-            query = query.Where(ReflectionHelper.GetWhereSearchPredicate<Entity>(searchableColumns.Select(c => c.Name).ToList(), request.Search.Value));
+            query = query.Where(ReflectionHelper.GetWhereSearchPredicate<Entity>(searchableColumns.Select(c => c.Data).ToList(), request.Search.Value));
         }
 
         //Filter
@@ -26,7 +26,7 @@ public static class DataTableQueryResolver
         {
             foreach (var column in filteredColumns)
             {
-                query = query.Where(ReflectionHelper.GetWhereSearchPredicate<Entity>(new List<string>() { column.Name }, column.Search!.Value));
+                query = query.Where(ReflectionHelper.GetWhereSearchPredicate<Entity>(new List<string>() { column.Data }, column.Search!.Value));
             }
         }
         if (config?.AdditionalFilter is not null)

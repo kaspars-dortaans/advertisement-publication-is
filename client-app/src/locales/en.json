@@ -26,7 +26,8 @@
     "reportRuleViolation": "Report rule violation",
     "bookmark": "Bookmark",
     "description": "Description",
-    "selectCategory": "Select Category"
+    "selectCategory": "Select Category",
+    "search": "Search"
   },
   "form": {
     "doNotHaveAnAccountQuestion": "Don't have an account?",

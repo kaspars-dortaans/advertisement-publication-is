@@ -16,18 +16,18 @@ const router = createRouter({
     {
       path: '/login',
       name: 'login',
-      component: () => import('../views/User/LoginView.vue'),
+      component: () => import('../views/user/LoginView.vue'),
       props: (route) => ({ redirect: !!route.query.redirect })
     },
     {
       path: '/register',
       name: 'register',
-      component: () => import('../views/User/RegisterView.vue')
+      component: () => import('../views/user/RegisterView.vue')
     },
     {
       path: '/user/:id/',
       name: 'viewUser',
-      component: () => import('../views/User/ViewUser.vue'),
+      component: () => import('../views/user/ViewUser.vue'),
       props: (route) => ({ id: parseInt(firstParam(route.params.id)) })
     },
     {
@@ -36,19 +36,25 @@ const router = createRouter({
       component: () => import('../views/advertisements/RecentlyViewedAdvertisements.vue')
     },
     {
+      path: '/search',
+      name: 'searchAdvertisements',
+      component: () => import('../views/advertisements/SearchAdvertisement.vue'),
+      props: (route) => ({ search: route.query?.search })
+    },
+    {
       path: '/advertisement/:id/',
       redirect: (route) => ({ name: 'viewAdvertisement', params: route.params }),
       children: [
         {
           path: '/advertisement/:id/view',
           name: 'viewAdvertisement',
-          component: () => import('../views/Advertisement/ViewAdvertisement.vue'),
+          component: () => import('../views/advertisement/ViewAdvertisement.vue'),
           props: (route) => ({ id: parseInt(firstParam(route.params.id)) })
         },
         {
           path: '/advertisement/:id/report',
           name: 'reportAdvertisement',
-          component: () => import('../views/Advertisement/ReportAdvertisement.vue'),
+          component: () => import('../views/advertisement/ReportAdvertisement.vue'),
           props: (route) => ({ id: parseInt(firstParam(route.params.id)) })
         }
       ]

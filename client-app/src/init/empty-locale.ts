@@ -29,6 +29,7 @@ export const emptyLocale = {
     bookmark: "",
     description: "",
     selectCategory: "",
+    search: "",
   },
   form: {
     doNotHaveAnAccountQuestion: "",

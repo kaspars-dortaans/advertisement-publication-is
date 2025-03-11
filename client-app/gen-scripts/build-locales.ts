@@ -120,7 +120,7 @@ const matchOtherLocaleStructure = async (defaultLocale: object) => {
   for (const localePromise of localePromises) {
     const localeInfo = await localePromise
     const matchedLocale = matchObjectStructure(defaultLocale, localeInfo.locale)
-    const str = JSON.stringify(matchedLocale, null, 2)
+    const str = JSON.stringify(matchedLocale, null, 2) + '\n'
     saveLocalePromises.push(
       new Promise<void>((resolve) =>
         fs.writeFile(`${localePath}/${localeInfo.fileName}`, str, () => resolve())
