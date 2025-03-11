@@ -26,7 +26,7 @@ import { LocaleService } from '@/services/locale-service'
 import type { IAdvertisementHistoryRecord } from '@/types/advertisements/advertisement-history-record'
 import { getClient } from '@/utils/client-builder'
 import { updateStorageObject } from '@/utils/local-storage'
-import { onBeforeMount, ref, type Ref } from 'vue'
+import { onBeforeMount, ref, watch, type Ref } from 'vue'
 
 //Services
 const advertisementService = getClient(AdvertisementClient)
@@ -52,6 +52,13 @@ onBeforeMount(async () => {
     .sort((a, b) => (a.timeStamp > b.timeStamp ? -1 : 1)) //Sort descending
     .map((r) => r.id)
 
+  advertisementCategories.value = await advertisementService.getCategoryListFromAdvertisementIds(
+    advertisementIds.value
+  )
+})
+
+//watchers
+watch(LocaleService.currentLocale, async () => {
   advertisementCategories.value = await advertisementService.getCategoryListFromAdvertisementIds(
     advertisementIds.value
   )
