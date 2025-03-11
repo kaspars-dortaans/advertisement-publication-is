@@ -106,4 +106,17 @@ public class UserService(
         var fileReadStream = profileImage.OpenReadStream();
         await _storage.PutFile(filePath, fileReadStream);
     }
+
+    public IQueryable<Permission> GetUserPermissions(int userId)
+    {
+        var userRoleIds = DbContext.UserRoles
+            .Where(iur => iur.UserId == userId)
+            .Select(iur => iur.RoleId);
+
+        return DbContext.Roles
+            .Where(r => userRoleIds.Contains(r.Id))
+            .SelectMany(r => r.Permissions)
+            .GroupBy(p => p.Id)
+            .Select(g => g.First());
+    }
 }

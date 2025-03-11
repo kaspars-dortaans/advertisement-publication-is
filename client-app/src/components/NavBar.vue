@@ -1,5 +1,5 @@
 <template>
-  <MenuBar :model="items">
+  <MenuBar :model="navbarItems">
     <template #start>
       <div class="flex flex-row items-center gap-2 w-full">
         <RouterLink :to="{ name: 'home' }">
@@ -36,30 +36,56 @@
 
 <script setup lang="ts">
 import { LocaleService } from '@/services/locale-service'
-import { reactive, ref } from 'vue'
 import { debounceFn } from '@/utils/debounce'
+import { computed, ref, type ComputedRef } from 'vue'
 
 import logoUrl from '@/assets/logo.svg'
-import { useRouter } from 'vue-router'
+import { AuthService } from '@/services/auth-service'
+import type { INavbarItem } from '@/types/navbar/navbar-item'
+import { useRouter, type RouteRecordNormalized } from 'vue-router'
 
-const { push } = useRouter()
+const { push, getRoutes } = useRouter()
+
+//Services
 const ls = LocaleService.get()
 const l = LocaleService.currentLocale
 
-// TODO: Move to constant file?
-const inputDebounceTime = 3000
-
+//Reactive data
 const searchInput = ref('')
 
-const localeItems = ls.localeList.value.map((localeName) => ({
-  label: localeName,
-  command: () => {
-    ls.loadLocale(localeName)
+//Reactive data
+/** All navigation items */
+const navbarItems: ComputedRef<INavbarItem[]> = computed(() => [
+  ...allowedRouteItems.value,
+  {
+    label: LocaleService.currentLocaleName.value,
+    items: localeItems.value
+  },
+  {
+    route: 'login',
+    icon: 'pi pi-user'
   }
-}))
+])
 
-// TODO: filter items based on user permissions
-const items = reactive([
+/** Language select items */
+const localeItems = computed(() =>
+  ls.localeList.value.map((localeName) => ({
+    label: localeName,
+    command: () => {
+      ls.loadLocale(localeName)
+    }
+  }))
+)
+
+/** Navigation routes allowed for current user */
+const allowedRouteItems: ComputedRef<INavbarItem[]> = computed(() => {
+  const routes = getRoutes()
+  return filterRoutes(allRouteItems, routes)
+})
+
+//Constants
+/** All navigation routes */
+const allRouteItems: INavbarItem[] = [
   {
     label: 'navigation.advertisements',
     items: [
@@ -68,41 +94,57 @@ const items = reactive([
         label: 'navigation.seeAdvertisements'
       },
       {
-        route: 'home', //TODO: Change when view is completed
-        label: 'navigation.savedAdvertisements'
-      },
-      {
         route: 'recentlyViewedAdvertisements',
         label: 'navigation.recentlyViewedAdvertisements'
-      },
-      {
-        route: 'home', //TODO: Change when view is completed
-        label: 'navigation.createAdvertisement'
       }
+      // TODO: Uncomment when view is completed
+      // {
+      //   route: 'bookmarkedAdvertisements',
+      //   label: 'navigation.savedAdvertisements'
+      // }
+      //TODO: Uncomment when view is completed
+      // {
+      //   route: 'createAdvertisement',
+      //   label: 'navigation.createAdvertisement'
+      // }
     ]
-  },
-  {
-    label: LocaleService.currentLocaleName,
-    items: localeItems
-  },
-  {
-    route: 'login',
-    icon: 'pi pi-user'
   }
-])
+]
 
+//Methods
 const search = () => {
   push({ name: 'searchAdvertisements', query: { search: searchInput.value } })
   searchInput.value = ''
 }
+const { debounce: debouncedSearch, clear: clearDebounceSearch } = debounceFn(search)
 
 const immediateSearch = () => {
   clearDebounceSearch()
   search()
 }
 
-const { debounce: debouncedSearch, clear: clearDebounceSearch } = debounceFn(
-  search,
-  inputDebounceTime
-)
+/** Filter route items for which current user does not have a permission to navigate */
+const filterRoutes = (items: INavbarItem[], routes: RouteRecordNormalized[]): INavbarItem[] => {
+  return items
+    .map((i) => {
+      const route = routes.find((r) => r.name === i.route)
+      const requiredPermission = route?.meta.requiredPermission
+      const hasPermission =
+        typeof requiredPermission === 'string'
+          ? AuthService.hasPermission(requiredPermission)
+          : true
+
+      if (hasPermission) {
+        return {
+          label: i.label,
+          route: i.route,
+          icon: i.icon,
+          items: i.items?.length ? filterRoutes(i.items, routes) : i.items
+        } as INavbarItem
+      } else {
+        return null
+      }
+    })
+    .filter((i) => i != null)
+}
 </script>

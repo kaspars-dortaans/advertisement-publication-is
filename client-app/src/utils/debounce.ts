@@ -1,4 +1,4 @@
-export const debounceFn = (callback: Function, debounceTime: number) => {
+export const debounceFn = (callback: Function, debounceTime: number = 3000) => {
   let timeoutId: number | undefined = undefined
 
   const clear = () => {

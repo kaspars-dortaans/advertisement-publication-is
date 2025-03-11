@@ -66,7 +66,7 @@ const props = defineProps<{ redirect: boolean }>()
 const router = useRouter()
 
 //Services
-const authService = new AuthService()
+const authService = AuthService.get()
 const l = LocaleService.currentLocale
 
 //Form

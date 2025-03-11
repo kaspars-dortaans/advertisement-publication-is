@@ -1,3 +1,5 @@
+import { Permissions } from '@/constants/api/Permissions'
+import { AuthService } from '@/services/auth-service'
 import { createRouter, createWebHistory } from 'vue-router'
 
 const router = createRouter({
@@ -60,6 +62,19 @@ const router = createRouter({
       ]
     }
   ]
+})
+
+//Add route permission guard
+router.beforeEach(async (to, _, next) => {
+  const requiredPermission = to.meta?.requiredPermission
+  if (
+    typeof requiredPermission !== 'string' ||
+    (await AuthService.hasPermission(requiredPermission))
+  ) {
+    next()
+  } else {
+    next({ name: 'notFound' })
+  }
 })
 
 const firstParam = (p: string | string[]) => {

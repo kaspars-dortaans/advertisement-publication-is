@@ -14,7 +14,7 @@ export const initServices = (app: App, router: Router) => {
   Settings.get()
 
   //Authorization
-  new AuthService() //Load jwt token from storage
+  AuthService.get() //Load jwt token from storage
 
   //App navigation history
   AppNavigation.get(router)

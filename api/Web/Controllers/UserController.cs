@@ -1,14 +1,21 @@
 ﻿using AutoMapper;
+using BusinessLogic.Authentication;
+using BusinessLogic.Authentication.Jwt;
 using BusinessLogic.Authorization;
+using BusinessLogic.Constants;
 using BusinessLogic.Dto;
 using BusinessLogic.Dto.DataTableQuery;
 using BusinessLogic.Entities;
+using BusinessLogic.Exceptions;
 using BusinessLogic.Helpers;
 using BusinessLogic.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Web.Dto.Login;
 using Web.Dto.User;
+using Web.Helpers;
 
 namespace Web.Controllers;
 
@@ -18,13 +25,32 @@ namespace Web.Controllers;
 public class UserController(
     IUserService userService,
     UserManager<User> userManager,
-    IMapper mapper) : ControllerBase
+    IMapper mapper,
+    IJwtProvider jwtProvider) : ControllerBase
 {
     private readonly IUserService _userService = userService;
     private readonly UserManager<User> _userManager = userManager;
     private readonly IMapper _mapper = mapper;
+    private readonly IJwtProvider _jwtProvider = jwtProvider;
 
-    [HasPermission(BusinessLogic.Authorization.Permission.ViewUsers)]
+    [AllowAnonymous]
+    [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(RequestExceptionResponse), StatusCodes.Status400BadRequest)]
+    [HttpPost]
+    public async Task<string> Authenticate(LoginDto request)
+    {
+        try
+        {
+            var token = await _jwtProvider.GetJwtToken(request.Email, request.Password);
+            return token;
+        }
+        catch (InvalidCredentialException)
+        {
+            throw new ApiException([CustomErrorCodes.InvalidLoginCredentials]);
+        }
+    }
+
+    [HasPermission(Permissions.ViewUsers)]
     [HttpPost]
     public async Task<DataTableQueryResponse<UserListItem>> GetUserList(DataTableQuery query)
     {
@@ -67,5 +93,23 @@ public class UserController(
 
         var res = _mapper.Map<PublicUserInfoDto>(user, o => o.Items[nameof(Url)] = Url);
         return Ok(res);
+    }
+
+    [ProducesResponseType<IEnumerable<string>>(StatusCodes.Status200OK)]
+    [ProducesResponseType<ForbidResult>(StatusCodes.Status403Forbidden)]
+    [HttpGet]
+    public async Task<IActionResult> GetCurrentUserPermissions()
+    {
+        var userId = User.GetUserId();
+        if (userId is null)
+        {
+            return Forbid();
+        }
+
+        var permissionNames = await _userService.GetUserPermissions(userId.Value)
+            .Select(p => p.Name)
+            .ToListAsync();
+
+        return Ok(permissionNames);
     }
 }

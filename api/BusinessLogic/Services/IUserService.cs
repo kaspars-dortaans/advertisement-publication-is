@@ -6,4 +6,5 @@ namespace BusinessLogic.Services;
 public interface IUserService : IBaseService<User>
 {
     public Task Register(User user, string password, IFormFile? profilePicture, IEnumerable<string>? roles);
+    public IQueryable<Permission> GetUserPermissions(int userId);
 }

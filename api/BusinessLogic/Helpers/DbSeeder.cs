@@ -15,15 +15,14 @@ public class DbSeeder(Context context, UserManager<User> userManager, RoleManage
     public async Task Seed()
     {
         //Add permissions
-        var permissions = ((IEnumerable<Authorization.Permission>)Enum.GetValues(typeof(Authorization.Permission)))
-            .Select(p => new Entities.Permission
+        var permissions = ((IEnumerable<Permissions>)Enum.GetValues(typeof(Permissions)))
+            .Select(p => new Permission
             {
-                Id = (int)p,
                 Name = Enum.GetName(p)!
             });
         AddIfNotExistsMultiple(permissions, (pConst) => p => p.Name == pConst.Name);
 
-        //Add 
+        //Add roles
         var roles = Enum.GetValues<Roles>();
         foreach (var role in roles)
         {
@@ -42,14 +41,14 @@ public class DbSeeder(Context context, UserManager<User> userManager, RoleManage
 
         //Add all permissions to admin role
         var adminRole = _context.Roles.First(r => r.Name == nameof(Roles.Admin));
-        var adminPermissions = _context.Permissions.Select(p => new RolePermission()
+        var adminRolePermissions = _context.Permissions.Select(p => new RolePermission()
         {
             PermissionId = p.Id,
             RoleId = adminRole.Id
         }).ToList();
 
         AddIfNotExistsMultiple(
-            adminPermissions,
+            adminRolePermissions,
             pConst => p => pConst.RoleId == p.RoleId && pConst.PermissionId == p.PermissionId);
 
         //Seed admin user

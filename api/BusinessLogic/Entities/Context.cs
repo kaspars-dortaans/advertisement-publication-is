@@ -67,6 +67,11 @@ public class Context(DbContextOptions<Context> options) : IdentityDbContext<User
             .HasOne(a => a.Owner)
             .WithMany(u => u.OwnedAdvertisements);
 
+        modelBuilder.Entity<Role>()
+            .HasMany(r => r.Permissions)
+            .WithMany(p => p.AddedToRoles)
+            .UsingEntity<RolePermission>();
+
         // Functions
         modelBuilder
             .HasDbFunction(() => GetCategoryChildIds(default))
