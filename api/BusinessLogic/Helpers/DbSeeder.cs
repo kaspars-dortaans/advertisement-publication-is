@@ -216,8 +216,8 @@ public class DbSeeder(Context context, UserManager<User> userManager, RoleManage
                 Searchable = true,
                 Sortable = true,
                 ValueType = Enums.ValueTypes.Integer,
-                AttributeNameLocales = new List<AttributeNameLocaleText>()
-                {
+                AttributeNameLocales =
+                [
                     new()
                     {
                         Id = 13,
@@ -232,15 +232,15 @@ public class DbSeeder(Context context, UserManager<User> userManager, RoleManage
                         Locale = "LV",
                         Text = "Platums"
                     }
-                },
-                CategoryAttributes = new List<CategoryAttribute>()
-                {
+                ],
+                CategoryAttributes =
+                [
                     new()
                     {
                         AttributeId = 2,
                         CategoryId = 1
                     }
-                }
+                ]
             },
             new()
             {
@@ -248,8 +248,8 @@ public class DbSeeder(Context context, UserManager<User> userManager, RoleManage
                 Searchable = false,
                 Sortable = false,
                 ValueType = Enums.ValueTypes.ValueListEntry,
-                AttributeNameLocales = new List<AttributeNameLocaleText>()
-                {
+                AttributeNameLocales =
+                [
                     new()
                     {
                         Id = 15,
@@ -264,20 +264,20 @@ public class DbSeeder(Context context, UserManager<User> userManager, RoleManage
                         Locale = "LV",
                         Text = "Ražotājs"
                     }
-                },
-                CategoryAttributes = new List<CategoryAttribute>()
-                {
+                ],
+                CategoryAttributes =
+                [
                     new()
                     {
                         AttributeId = 3,
                         CategoryId = 1
                     }
-                },
+                ],
                 AttributeValueList = new AttributeValueList()
                 {
                     Id = 1,
-                    LocalisedNames = new List<AttributeValueListLocaleText>()
-                    {
+                    LocalisedNames =
+                    [
                         new()
                         {
                             Id = 17,
@@ -292,14 +292,14 @@ public class DbSeeder(Context context, UserManager<User> userManager, RoleManage
                             Text = "Tālruņu ražotāju saraksts",
                             AttributeValueListId = 1
                         }
-                    },
-                    ListEntries = new List<AttributeValueListEntry>()
-                    {
+                    ],
+                    ListEntries =
+                    [
                         new()
                         {
                             Id = 1,
-                            LocalisedNames = new List<AttributeValueListEntryLocaleText>()
-                            {
+                            LocalisedNames =
+                            [
                                 new()
                                 {
                                     Id = 19,
@@ -312,13 +312,13 @@ public class DbSeeder(Context context, UserManager<User> userManager, RoleManage
                                     Locale = "LV",
                                     Text = "LG"
                                 },
-                            }
+                            ]
                         },
                         new()
                         {
                             Id = 2,
-                            LocalisedNames = new List<AttributeValueListEntryLocaleText>()
-                            {
+                            LocalisedNames =
+                            [
                                 new()
                                 {
                                     Id = 21,
@@ -331,9 +331,9 @@ public class DbSeeder(Context context, UserManager<User> userManager, RoleManage
                                     Locale = "LV",
                                     Text = "SAMSUNG"
                                 }
-                            }
+                            ]
                         }
-                    }
+                    ]
                 }
             }
         };
@@ -353,8 +353,8 @@ public class DbSeeder(Context context, UserManager<User> userManager, RoleManage
                 PostedDate = DateTime.UtcNow,
                 ValidToDate = DateTime.UtcNow.AddMonths(1),
                 ViewCount = 0,
-                AttributeValues = new List<AdvertisementAttributeValue>()
-                {
+                AttributeValues =
+                [
                     new()
                     {
                         Id = 1,
@@ -367,7 +367,7 @@ public class DbSeeder(Context context, UserManager<User> userManager, RoleManage
                         AttributeId = 3,
                         Value = "1"
                     }
-                }
+                ]
             },
             new()
             {
@@ -379,8 +379,8 @@ public class DbSeeder(Context context, UserManager<User> userManager, RoleManage
                 PostedDate = DateTime.UtcNow,
                 ValidToDate = DateTime.UtcNow.AddMonths(1),
                 ViewCount = 0,
-                AttributeValues = new List<AdvertisementAttributeValue>()
-                {
+                AttributeValues =
+                [
                     new()
                     {
                         Id = 3,
@@ -393,7 +393,7 @@ public class DbSeeder(Context context, UserManager<User> userManager, RoleManage
                         AttributeId = 3,
                         Value = "2"
                     }
-                }
+                ]
             },
         };
 

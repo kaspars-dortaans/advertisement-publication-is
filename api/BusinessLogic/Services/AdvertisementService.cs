@@ -47,12 +47,8 @@ public class AdvertisementService(
                 }),
                 IsBookmarked = userId == null ? null : a.BookmarksOwners.Any(o => o.Id == userId)
             })
-            .FirstOrDefaultAsync(a => a.Id == advertisementId);
-
-        if (result is null)
-        {
-            throw new ApiException([CustomErrorCodes.NotFound]);
-        }
+            .FirstOrDefaultAsync(a => a.Id == advertisementId)
+            ?? throw new ApiException([CustomErrorCodes.NotFound]);
 
         //Mask email
         if (result.MaskedAdvertiserEmail is not null)

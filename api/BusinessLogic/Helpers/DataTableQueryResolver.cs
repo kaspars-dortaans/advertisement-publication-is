@@ -26,7 +26,7 @@ public static class DataTableQueryResolver
         {
             foreach (var column in filteredColumns)
             {
-                query = query.Where(ReflectionHelper.GetWhereSearchPredicate<Entity>(new List<string>() { column.Data }, column.Search!.Value));
+                query = query.Where(ReflectionHelper.GetWhereSearchPredicate<Entity>([column.Name], column.Search!.Value));
             }
         }
         if (config?.AdditionalFilter is not null)
@@ -148,24 +148,24 @@ public static class DataTableQueryResolver
                 return false;
             }
 
-            var keySelectorType = typeof(Func<,>).MakeGenericType(new Type[] { typeof(Entity), columnType });
+            var keySelectorType = typeof(Func<,>).MakeGenericType([typeof(Entity), columnType]);
             var keySelectorExpressionType = typeof(Expression<>).MakeGenericType(keySelectorType);
             var methodName = order.Direction == Direction.Ascending ? orderAscendingMethodName : orderDescendingMethodName;
 
             var keySelectorLambda = ReflectionHelper.InvokeGenericMethode<Expression>(
                 typeof(ReflectionHelper),
                 nameof(ReflectionHelper.GetKeySelectorLambda),
-                new Type[] { typeof(string) },
-                new Type[] { typeof(Entity), columnType },
-                new object[] { columnName });
+                [typeof(string)],
+                [typeof(Entity), columnType],
+                [columnName]);
 
 
             query = ReflectionHelper.InvokeGenericMethode<IOrderedQueryable<Entity>>(
                 typeof(Queryable),
                 methodName,
-                new Type[] { typeof(IQueryable<Entity>), keySelectorExpressionType },
-                new Type[] { typeof(Entity), columnType },
-                new object[] { query, keySelectorLambda });
+                [typeof(IQueryable<Entity>), keySelectorExpressionType],
+                [typeof(Entity), columnType],
+                [query, keySelectorLambda]);
 
             return true;
         }

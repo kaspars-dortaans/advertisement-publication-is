@@ -5,8 +5,7 @@ namespace BusinessLogic.Authorization;
 
 public class HasPermission : AuthorizeAttribute
 {
-    public HasPermission(Permission permission) : base(permission.ToString()) {
+    public HasPermission(Permissions permission) : base(permission.ToString()) {
         AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme;
-        
     }
 }
