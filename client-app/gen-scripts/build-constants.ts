@@ -7,7 +7,8 @@ type Constant = {
   value: string
 }
 
-type Class = {
+type ConstantCollection = {
+  type: 'class' | 'enum'
   name: string
   constants: Constant[]
   codeBlockStartIndex: number
@@ -32,6 +33,9 @@ type GenerateConstantsConfig = {
 
   /** Required keywords for field to be allowed to generate for */
   requiredFieldKeywords: string[]
+
+  /** Required keywords for enums */
+  requiredEnumKeywords: string[]
 }
 
 /** Wrap fs.readDir in new promise */
@@ -87,24 +91,61 @@ const getDirectoryFilesRecursive = async (
   return fileList
 }
 
-/** Extract public classes with declared and assigned public constants */
+/** Extract types with declared and assigned public constants */
 const extractConstants = async (
   filePath: string,
   requiredClassKeywords: string[],
-  requiredFieldKeywords: string[]
+  requiredFieldKeywords: string[],
+  requiredEnumKeywords: string[]
 ) => {
   //Result array
-  const classesWithConstants: Class[] = []
+  const collectionsWithConstants: ConstantCollection[] = []
 
   const code = await readFile(filePath)
-  //Last list element represents for which class current statement belong. Previous elements are parent classes for nested classes.
-  const classStack: Class[] = []
+  //Last list element represents for which constantCollection current statement belong. Previous elements are parent collections for nested collections.
+  const collectionStack: ConstantCollection[] = []
   const codeBlockStartIndexStack: number[] = []
+  const assignmentRegex = /[a-zA-Z0-9\s]=[a-zA-Z0-9\s'"]/
 
   let insideString = false
   //Holds " or ' if currently in string or char value respectively
   let stringChar = ''
   let lastStatementEndIndex = -1
+
+  //Methods to add new constants to different type collection types
+  const addClassConstant = (i: number) => {
+    //Plus one to not include previous statement last char, e.g. ; or }
+    const statement = code.slice(lastStatementEndIndex + 1, i).trim()
+    //Regex is used to not split on arrow functions
+    const assignment = statement.split(assignmentRegex)
+
+    //Skip if current statement is not declaration & assignment statement
+    if (assignment.length > 1) {
+      const tokens = assignment[0].split(/\s/)
+
+      if (
+        tokens.length >= requiredFieldKeywords.length + 1 && //plus field name
+        requiredFieldKeywords.every((keyword) => tokens.some((t) => t === keyword))
+      ) {
+        collectionStack[collectionStack.length - 1].constants.push({
+          name: tokens[tokens.length - 1],
+          //statement is used to preserve value if it was also split by regex
+          value: statement.slice(assignment[0].length + 3) //plus regex match length
+        })
+      }
+    }
+  }
+
+  const addEnumConstant = (i: number) => {
+    const assignment = code.slice(lastStatementEndIndex + 1, i).split(assignmentRegex)
+    if (assignment.length) {
+      collectionStack[collectionStack.length - 1].constants.push({
+        name: assignment[0].trim(),
+        value: assignment[1]?.trim()
+      } as Constant)
+    }
+    lastStatementEndIndex = i
+  }
 
   //Walk through file and extract classes and its constants
   for (let i = 0; i < code.length; i++) {
@@ -116,33 +157,22 @@ const extractConstants = async (
 
         //If currently not in class scope skip (function scope is skipped)
         if (
-          classStack.length &&
-          codeBlockStartIndexStack.length === classStack[classStack.length - 1].codeBlockLevel
+          collectionStack.length &&
+          codeBlockStartIndexStack.length ===
+            collectionStack[collectionStack.length - 1].codeBlockLevel
         ) {
-          //Plus one to not include previous statement last char, e.g. ; or }
-          const statement = code.slice(lastStatementEndIndex + 1, i).trim()
-          //Regex is used to not split on arrow functions
-          const assignment = statement.split(/[a-zA-Z0-9\s]=[a-zA-Z0-9\s'"]/)
-
-          //Skip if current statement is not declaration & assignment statement
-          if (assignment.length > 1) {
-            const tokens = assignment[0].split(/\s/)
-
-            if (
-              tokens.length >= requiredFieldKeywords.length + 1 && //plus field name
-              requiredFieldKeywords.every((keyword) => tokens.some((t) => t === keyword))
-            ) {
-              classStack[classStack.length - 1].constants.push({
-                name: tokens[tokens.length - 1],
-                //statement is used to preserve value if it was also split by regex
-                value: statement.slice(assignment[0].length + 3) //plus regex match length
-              })
-            }
-          }
+          addClassConstant(i)
         }
 
         lastStatementEndIndex = i
         break
+
+      case ',': {
+        if (collectionStack.length && collectionStack[collectionStack.length - 1].type === 'enum') {
+          addEnumConstant(i)
+        }
+        break
+      }
 
       case '{': {
         if (insideString) {
@@ -161,13 +191,28 @@ const extractConstants = async (
             requiredClassKeywords.every((keyword) => tokens.some((t) => t === keyword))
           ) {
             const classKeywordIndex = tokens.indexOf('class')
-            const foundClass: Class = {
+            const foundCollection: ConstantCollection = {
+              type: 'class',
               name: tokens[classKeywordIndex + 1],
               constants: [],
               codeBlockStartIndex: i,
               codeBlockLevel: codeBlockStartIndexStack.length
             }
-            classStack.push(foundClass)
+            collectionStack.push(foundCollection)
+
+            //Check if statement up until code block matches enum declaration with required keywords
+          } else if (
+            tokens.length >= requiredEnumKeywords.length &&
+            requiredEnumKeywords.every((keyword) => tokens.some((t) => t === keyword))
+          ) {
+            const foundCollection: ConstantCollection = {
+              type: 'enum',
+              name: tokens[tokens.length - 1],
+              constants: [],
+              codeBlockStartIndex: i,
+              codeBlockLevel: codeBlockStartIndexStack.length
+            }
+            collectionStack.push(foundCollection)
           }
         }
         lastStatementEndIndex = i
@@ -180,15 +225,23 @@ const extractConstants = async (
         }
 
         const codeBlockStartIndex = codeBlockStartIndexStack.pop()
-        //Skip if not currently in class || current class start block index is not equal current code block start index
+        //Skip if not currently in constant collection || current constant collection start block index is not equal current code block start index
         if (
-          classStack.length &&
-          classStack[classStack.length - 1].codeBlockStartIndex === codeBlockStartIndex
+          collectionStack.length &&
+          collectionStack[collectionStack.length - 1].codeBlockStartIndex === codeBlockStartIndex
         ) {
-          //If class had constants found add it to result array
-          const closedClass = classStack.pop()
-          if (closedClass?.constants.length) {
-            classesWithConstants.push(closedClass)
+          //If in enum add last enum value
+          if (
+            collectionStack.length &&
+            collectionStack[collectionStack.length - 1].type === 'enum'
+          ) {
+            addEnumConstant(i)
+          }
+
+          //If constant collection had constants found add it to result array
+          const closedCollection = collectionStack.pop()
+          if (closedCollection?.constants.length) {
+            collectionsWithConstants.push(closedCollection)
           }
         }
         lastStatementEndIndex = i
@@ -216,15 +269,29 @@ const extractConstants = async (
         break
     }
   }
-  return classesWithConstants
+  return collectionsWithConstants
 }
 
-/** Generate Ts file which contains class with constants */
-const generateConstantTsClassFile = async (destinationPath: string, c: Class) => {
-  const fields = c.constants.map((c) => {
-    return `  static readonly ${c.name} = ${c.value}`
-  })
-  const fileContents = 'export class ' + c.name + ' {\n' + fields.join('\n') + '\n}'
+/** Generate Ts file which contains constants */
+const generateConstantTsFile = async (destinationPath: string, c: ConstantCollection) => {
+  let fields: string[] = []
+  let joinString = ''
+  switch (c.type) {
+    case 'class':
+      fields = c.constants.map((c) => {
+        return `  static readonly ${c.name} = ${c.value}`
+      })
+      joinString = '\n'
+      break
+    case 'enum':
+      fields = c.constants.map((c) => {
+        return `  ${c.name}${c.value !== undefined ? ` = ${c.value}` : ''}`
+      })
+      joinString = ',\n'
+      break
+  }
+
+  const fileContents = `export ${c.type} ${c.name} {\n${fields.join(joinString)}\n}`
 
   return new Promise<void>((resolve) =>
     fs.writeFile(path.join(destinationPath, c.name + '.ts'), fileContents, () => resolve())
@@ -242,14 +309,19 @@ const generateConstants = async (c: GenerateConstantsConfig) => {
 
   //Extract class and their constant data
   const constantPromises = cSharpFilePaths.map((filePath) =>
-    extractConstants(filePath, c.requiredClassKeywords, c.requiredFieldKeywords)
+    extractConstants(
+      filePath,
+      c.requiredClassKeywords,
+      c.requiredFieldKeywords,
+      c.requiredEnumKeywords
+    )
   )
   const classesWithConstants = (await Promise.all(constantPromises)).flatMap((c) => c)
 
   //Generate Ts file from extracted data
   const generationPromises: Promise<void>[] = []
   for (const constantClass of classesWithConstants) {
-    generationPromises.push(generateConstantTsClassFile(c.destinationFolder, constantClass))
+    generationPromises.push(generateConstantTsFile(c.destinationFolder, constantClass))
   }
   await Promise.all(generationPromises)
 }
@@ -260,7 +332,8 @@ const config: GenerateConstantsConfig = {
   excludeFolders: ['.vs', 'bin', 'obj'],
   allowedExtensions: ['.cs'],
   requiredClassKeywords: ['public', 'class'],
-  requiredFieldKeywords: ['public', 'const']
+  requiredFieldKeywords: ['public', 'const'],
+  requiredEnumKeywords: ['public', 'enum']
 }
 
 generateConstants(config)
