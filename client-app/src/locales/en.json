@@ -7,7 +7,8 @@
     "edit": "Edit",
     "search": "Search",
     "clear": "Clear",
-    "report": "Report"
+    "report": "Report",
+    "remove": "Remove"
   },
   "dataTable": {
     "pageReportTemplate": "{1} to {2} of {3}",
@@ -48,7 +49,7 @@
     "register": "Register",
     "advertisements": "Advertisements",
     "seeAdvertisements": "See advertisements",
-    "savedAdvertisements": "Saved advertisements",
+    "savedAdvertisements": "Advertisement bookmarks",
     "recentlyViewedAdvertisements": "Recently viewed advertisements",
     "createAdvertisement": "Create advertisements",
     "siteLogo": "Site logo"

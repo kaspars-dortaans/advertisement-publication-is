@@ -81,6 +81,62 @@ export class AdvertisementClient {
     }
 
     /**
+     * @param body (optional) 
+     * @return Success
+     */
+    getBookmarkedAdvertisements(body: AdvertisementQuery | undefined, cancelToken?: CancelToken): Promise<AdvertisementListItemDataTableQueryResponse> {
+        let url_ = this.baseUrl + "/api/Advertisement/GetBookmarkedAdvertisements";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_: AxiosRequestConfig = {
+            data: content_,
+            method: "POST",
+            url: url_,
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "text/plain"
+            },
+            cancelToken
+        };
+
+        return this.instance.request(options_).catch((_error: any) => {
+            if (isAxiosError(_error) && _error.response) {
+                return _error.response;
+            } else {
+                throw _error;
+            }
+        }).then((_response: AxiosResponse) => {
+            return this.processGetBookmarkedAdvertisements(_response);
+        });
+    }
+
+    protected processGetBookmarkedAdvertisements(response: AxiosResponse): Promise<AdvertisementListItemDataTableQueryResponse> {
+        const status = response.status;
+        let _headers: any = {};
+        if (response.headers && typeof response.headers === "object") {
+            for (const k in response.headers) {
+                if (response.headers.hasOwnProperty(k)) {
+                    _headers[k] = response.headers[k];
+                }
+            }
+        }
+        if (status === 200) {
+            const _responseText = response.data;
+            let result200: any = null;
+            let resultData200  = _responseText;
+            result200 = AdvertisementListItemDataTableQueryResponse.fromJS(resultData200);
+            return Promise.resolve<AdvertisementListItemDataTableQueryResponse>(result200);
+
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.data;
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Promise.resolve<AdvertisementListItemDataTableQueryResponse>(null as any);
+    }
+
+    /**
      * @param advertisementId (optional) 
      * @return Success
      */
@@ -317,6 +373,58 @@ export class AdvertisementClient {
     }
 
     /**
+     * @param body (optional) 
+     * @return Success
+     */
+    removeAdvertisementBookmarks(body: number[] | undefined, cancelToken?: CancelToken): Promise<void> {
+        let url_ = this.baseUrl + "/api/Advertisement/RemoveAdvertisementBookmarks";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_: AxiosRequestConfig = {
+            data: content_,
+            method: "POST",
+            url: url_,
+            headers: {
+                "Content-Type": "application/json",
+            },
+            cancelToken
+        };
+
+        return this.instance.request(options_).catch((_error: any) => {
+            if (isAxiosError(_error) && _error.response) {
+                return _error.response;
+            } else {
+                throw _error;
+            }
+        }).then((_response: AxiosResponse) => {
+            return this.processRemoveAdvertisementBookmarks(_response);
+        });
+    }
+
+    protected processRemoveAdvertisementBookmarks(response: AxiosResponse): Promise<void> {
+        const status = response.status;
+        let _headers: any = {};
+        if (response.headers && typeof response.headers === "object") {
+            for (const k in response.headers) {
+                if (response.headers.hasOwnProperty(k)) {
+                    _headers[k] = response.headers[k];
+                }
+            }
+        }
+        if (status === 200) {
+            const _responseText = response.data;
+            return Promise.resolve<void>(null as any);
+
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.data;
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Promise.resolve<void>(null as any);
+    }
+
+    /**
      * @return Success
      */
     getCategories( cancelToken?: CancelToken): Promise<CategoryItem[]> {
@@ -463,6 +571,64 @@ export class AdvertisementClient {
     }
 
     protected processGetCategoryListFromAdvertisementIds(response: AxiosResponse): Promise<Int32StringKeyValuePair[]> {
+        const status = response.status;
+        let _headers: any = {};
+        if (response.headers && typeof response.headers === "object") {
+            for (const k in response.headers) {
+                if (response.headers.hasOwnProperty(k)) {
+                    _headers[k] = response.headers[k];
+                }
+            }
+        }
+        if (status === 200) {
+            const _responseText = response.data;
+            let result200: any = null;
+            let resultData200  = _responseText;
+            if (Array.isArray(resultData200)) {
+                result200 = [] as any;
+                for (let item of resultData200)
+                    result200!.push(Int32StringKeyValuePair.fromJS(item));
+            }
+            else {
+                result200 = <any>null;
+            }
+            return Promise.resolve<Int32StringKeyValuePair[]>(result200);
+
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.data;
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Promise.resolve<Int32StringKeyValuePair[]>(null as any);
+    }
+
+    /**
+     * @return Success
+     */
+    getBookmarkedAdvertisementCategoryList( cancelToken?: CancelToken): Promise<Int32StringKeyValuePair[]> {
+        let url_ = this.baseUrl + "/api/Advertisement/GetBookmarkedAdvertisementCategoryList";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: AxiosRequestConfig = {
+            method: "GET",
+            url: url_,
+            headers: {
+                "Accept": "text/plain"
+            },
+            cancelToken
+        };
+
+        return this.instance.request(options_).catch((_error: any) => {
+            if (isAxiosError(_error) && _error.response) {
+                return _error.response;
+            } else {
+                throw _error;
+            }
+        }).then((_response: AxiosResponse) => {
+            return this.processGetBookmarkedAdvertisementCategoryList(_response);
+        });
+    }
+
+    protected processGetBookmarkedAdvertisementCategoryList(response: AxiosResponse): Promise<Int32StringKeyValuePair[]> {
         const status = response.status;
         let _headers: any = {};
         if (response.headers && typeof response.headers === "object") {

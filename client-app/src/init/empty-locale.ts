@@ -10,6 +10,7 @@ export const emptyLocale = {
     search: "",
     clear: "",
     report: "",
+    remove: "",
   },
   dataTable: {
     pageReportTemplate: "",

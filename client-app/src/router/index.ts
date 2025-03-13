@@ -60,6 +60,14 @@ const router = createRouter({
           props: (route) => ({ id: parseInt(firstParam(route.params.id)) })
         }
       ]
+    },
+    {
+      path: '/bookmarked-advertisements',
+      name: 'bookmarkedAdvertisements',
+      component: () => import('../views/advertisements/BookmarkedAdvertisements.vue'),
+      meta: {
+        requiredPermission: Permissions[Permissions.ViewAdvertisementBookmarks]
+      }
     }
   ]
 })

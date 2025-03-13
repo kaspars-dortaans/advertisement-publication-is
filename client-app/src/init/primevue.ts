@@ -30,7 +30,7 @@ import Select from 'primevue/select'
 
 //Data
 import Column from 'primevue/column'
-import DataTable from 'primevue/datatable'
+import DataTable, { type DataTablePassThroughMethodOptions } from 'primevue/datatable'
 import Tree from 'primevue/tree'
 
 //Panel
@@ -64,6 +64,20 @@ const customPassTrough = {
   dataTable: {
     root: 'flex flex-col flex-nowrap',
     tableContainer: 'flex-auto',
+    //Incorrect colspan fix
+    rowGroupHeaderCell: (opts: DataTablePassThroughMethodOptions) => {
+      const columnCount =
+        opts?.props &&
+        'columns' in opts.props &&
+        typeof opts.props.columns === 'object' &&
+        opts.props.columns &&
+        'length' in opts.props.columns
+          ? opts.props.columns.length
+          : 1
+      return {
+        colspan: columnCount
+      }
+    },
     pcPaginator: {
       content: {
         class: 'flex flex-row items-center justify-center w-full'

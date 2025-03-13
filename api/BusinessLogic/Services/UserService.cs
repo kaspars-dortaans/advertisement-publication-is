@@ -116,7 +116,6 @@ public class UserService(
         return DbContext.Roles
             .Where(r => userRoleIds.Contains(r.Id))
             .SelectMany(r => r.Permissions)
-            .GroupBy(p => p.Id)
-            .Select(g => g.First());
+            .Distinct();
     }
 }

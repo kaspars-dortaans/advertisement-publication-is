@@ -78,6 +78,14 @@ public class AdvertisementService(
         return ResolveAdvertisementDataTableRequest(request, advertisementQuery);
     }
 
+    public Task<DataTableQueryResponse<AdvertisementListItemDto>> GetBookmarkedAdvertisements(AdvertisementQuery request, int currentUserId)
+    {
+        var advertisementQuery = GetBaseFilteredAdvertisements(request)
+            .Where(a => a.BookmarksOwners.Any(o => o.Id == currentUserId));
+
+        return ResolveAdvertisementDataTableRequest(request, advertisementQuery);
+    }
+
     public IQueryable<int> GetCategoryListFromAdvertisementIds(IEnumerable<int> ids)
     {
         return GetActiveAdvertisements()
@@ -85,8 +93,6 @@ public class AdvertisementService(
             .GroupBy(a => a.CategoryId)
             .Select(g => g.Key);
     }
-
-
 
     /// <summary>
     /// Select <see cref="AdvertisementListItemDto"/> from <see cref="Advertisement"/>

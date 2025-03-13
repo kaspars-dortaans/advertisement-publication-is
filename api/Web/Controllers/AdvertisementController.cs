@@ -21,12 +21,14 @@ public class AdvertisementController(
     IBaseService<Category> categoryService,
     IAdvertisementService advertisementService,
     IBaseService<RuleViolationReport> ruleViolationService,
+    IBaseService<AdvertisementBookmark> advertisementBookmarkService,
     CookieSettingsHelper cookieSettingsHelper) : ControllerBase
 {
     private readonly IMapper _mapper = mapper;
     private readonly IBaseService<Category> _categoryService = categoryService;
     private readonly IAdvertisementService _advertisementService = advertisementService;
     private readonly IBaseService<RuleViolationReport> _ruleViolationService = ruleViolationService;
+    private readonly IBaseService<AdvertisementBookmark> _advertisementBookmarkService = advertisementBookmarkService;
     private readonly CookieSettingsHelper _cookieSettingsHelper = cookieSettingsHelper;
 
     [AllowAnonymous]
@@ -34,6 +36,13 @@ public class AdvertisementController(
     public async Task<DataTableQueryResponse<AdvertisementListItem>> GetAdvertisements(AdvertisementQuery request)
     {
         var result = await _advertisementService.GetActiveAdvertisementsByCategory(request);
+        return result.MapDataTableResponse<AdvertisementListItemDto, AdvertisementListItem>(_mapper, opts => opts.Items[nameof(Url)] = Url);
+    }
+
+    [HttpPost]
+    public async Task<DataTableQueryResponse<AdvertisementListItem>> GetBookmarkedAdvertisements(AdvertisementQuery request)
+    {
+        var result = await _advertisementService.GetBookmarkedAdvertisements(request, User.GetUserId()!.Value);
         return result.MapDataTableResponse<AdvertisementListItemDto, AdvertisementListItem>(_mapper, opts => opts.Items[nameof(Url)] = Url);
     }
 
@@ -84,15 +93,17 @@ public class AdvertisementController(
     }
 
     [HttpPost]
-    public async Task<IActionResult> BookmarkAdvertisement(BookmarkAdvertisementRequest request)
+    public async Task BookmarkAdvertisement(BookmarkAdvertisementRequest request)
+    {
+        var userId = User.GetUserId()!;
+        await _advertisementService.BookmarkAdvertisement(request.AdvertisementId, userId.Value, request.AddBookmark);
+    }
+
+    [HttpPost]
+    public async Task RemoveAdvertisementBookmarks(IEnumerable<int> ids)
     {
         var userId = User.GetUserId();
-        if (userId is null)
-        {
-            return Unauthorized();
-        }
-        await _advertisementService.BookmarkAdvertisement(request.AdvertisementId, userId.Value, request.AddBookmark);
-        return Ok();
+        await _advertisementBookmarkService.DeleteWhereAsync(ab => ab.BookmarkOwnerId == userId && ids.Contains(ab.BookmarkedAdvertisementId));
     }
 
     [AllowAnonymous]
@@ -162,6 +173,21 @@ public class AdvertisementController(
         var locale = _cookieSettingsHelper.Settings.NormalizedLocale;
         var categoryList = await _categoryService
             .Where(c => advertisementCategoryIds.Contains(c.Id))
+            .Select(c => new KeyValuePair<int, string>(c.Id, c.LocalisedNames.Localise(locale)))
+            .ToListAsync();
+
+        return categoryList;
+    }
+
+    [HttpGet]
+    public async Task<IEnumerable<KeyValuePair<int, string>>> GetBookmarkedAdvertisementCategoryList()
+    {
+        var userId = User.GetUserId();
+        var locale = _cookieSettingsHelper.Settings.Locale;
+        var categoryList = await _advertisementService
+            .Where(a => a.BookmarksOwners.Any(bo => bo.Id == userId))
+            .Select(a => a.Category)
+            .Distinct()
             .Select(c => new KeyValuePair<int, string>(c.Id, c.LocalisedNames.Localise(locale)))
             .ToListAsync();
 

@@ -7,7 +7,8 @@
     "edit": "Rediģēt",
     "search": "Meklēt",
     "clear": "Tīrīt",
-    "report": "Paziņot"
+    "report": "Paziņot",
+    "remove": "Izdzēst"
   },
   "dataTable": {
     "pageReportTemplate": "{1} līdz {2} no {3}",

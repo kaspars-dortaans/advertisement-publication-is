@@ -39,7 +39,7 @@ export class AuthService {
     this._updateToken(localStorage.getItem(TokenStorageKey))
     if (this.jwtToken) {
       AuthService.isAuthenticated.value = true
-      AuthService.permissions.value = this.userService.getCurrentUserPermissions()
+      await this._loadPermissions()
     }
   }
 

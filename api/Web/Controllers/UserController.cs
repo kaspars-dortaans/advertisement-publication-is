@@ -100,12 +100,7 @@ public class UserController(
     [HttpGet]
     public async Task<IActionResult> GetCurrentUserPermissions()
     {
-        var userId = User.GetUserId();
-        if (userId is null)
-        {
-            return Forbid();
-        }
-
+        var userId = User.GetUserId()!;
         var permissionNames = await _userService.GetUserPermissions(userId.Value)
             .Select(p => p.Name)
             .ToListAsync();

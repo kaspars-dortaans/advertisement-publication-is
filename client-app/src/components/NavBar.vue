@@ -96,12 +96,11 @@ const allRouteItems: INavbarItem[] = [
       {
         route: 'recentlyViewedAdvertisements',
         label: 'navigation.recentlyViewedAdvertisements'
+      },
+      {
+        route: 'bookmarkedAdvertisements',
+        label: 'navigation.savedAdvertisements'
       }
-      // TODO: Uncomment when view is completed
-      // {
-      //   route: 'bookmarkedAdvertisements',
-      //   label: 'navigation.savedAdvertisements'
-      // }
       //TODO: Uncomment when view is completed
       // {
       //   route: 'createAdvertisement',

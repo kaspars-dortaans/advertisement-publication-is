@@ -1,8 +1,9 @@
 <template>
   <DataTable
     v-model:expandedRowGroups="expandedRowGroups"
+    v-model:selection="selectedRows"
     :value="advertisements"
-    :loading="isLoading > 0"
+    :loading="loadCount > 0"
     :rows="DefaultPageSize"
     :rowsPerPageOptions="PageSizeOptions"
     :currentPageReportTemplate="pageReportTemplate"
@@ -49,6 +50,12 @@
           />
         </div>
         <div class="space-x-2">
+          <slot
+            name="actionButtons"
+            :selectedRows="selectedRows"
+            :setLoading="setLoading"
+            :refresh="loadAdvertisements"
+          ></slot>
           <Button severity="secondary" @click="clearFilter">{{ l.actions.clear }}</Button>
           <Button severity="primary" @click="filterTable">{{ l.actions.search }}</Button>
         </div>
@@ -61,7 +68,9 @@
       </div>
     </template>
 
-    <Column field="id">
+    <Column v-if="multiRowSelect" selectionMode="multiple" headerStyle="width: 3rem"></Column>
+
+    <Column :field="advertisementColumnField">
       <template #body="slotProps">
         <RouterLink :to="{ name: 'viewAdvertisement', params: { id: slotProps.data.id } }">
           <Panel class="hover:brightness-95">
@@ -133,7 +142,8 @@ const {
   categoryId,
   categoryName,
   categoryFilterList = [],
-  groupByCategory = false
+  groupByCategory = false,
+  multiRowSelect = false
 } = defineProps<{
   advertisementSource: (
     query: AdvertisementQuery
@@ -142,6 +152,7 @@ const {
   categoryName?: string | undefined
   categoryFilterList?: Int32StringKeyValuePair[]
   groupByCategory?: boolean
+  multiRowSelect?: boolean
 }>()
 
 // Services
@@ -154,25 +165,39 @@ const paginatorTemplate =
   'FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown CurrentPageReport'
 
 const dataTablePt = {
+  //Hide empty advertisement attribute column body cells and advertisement header cell
   column: (columnOptions: ColumnPassThroughMethodOptions) => {
-    const index = columnOptions?.context?.index
-    const hasIndex = typeof index === 'number' && !isNaN(index)
+    const field = columnOptions?.props?.field
+    const hasFieldProp = field != null
+    const isAdvertisementColumn = field === advertisementColumnField
 
     return {
       bodyCell: {
-        class: [{ hidden: hasIndex && index > 0 }],
-        colspan: hasIndex && index > 0 ? 0 : (sortableColumns.value?.length ?? 0) + 1
+        class: [{ hidden: hasFieldProp && !isAdvertisementColumn }],
+        colspan: !hasFieldProp
+          ? 1
+          : isAdvertisementColumn
+            ? (sortableColumns.value?.length ?? 0) + 1
+            : 0
       },
       headerCell: {
-        class: [{ hidden: hasIndex && index === 0 }]
+        class: [{ hidden: hasFieldProp && isAdvertisementColumn }],
+        colspan: !hasFieldProp ? 2 : isAdvertisementColumn ? 0 : 1
       }
     } as ColumnPassThroughOptions
   }
 } as DataTablePassThroughOptions
 
+const advertisementColumnField = 'id'
+
 // Reactive data
-const isLoading = ref(0)
+/** When value is bigger than 0, it indicates that data is being loaded and data table input should be blocked.  */
+const loadCount = ref(0)
+
+/** Pagination message template, should be updated on language change */
 const pageReportTemplate = ref('')
+
+/** Holds data for selected category, if any */
 const categoryInfo: Ref<CategoryInfo> = ref(new CategoryInfo())
 
 /** In data table filter selected category id */
@@ -186,19 +211,39 @@ const selectedCategoryId = computed(() =>
 /** Data table expanded group v-model */
 const expandedRowGroups = ref()
 
+/** Data table selected row model */
+const selectedRows = ref()
+
+/** Sorting query for api request */
 const attributeOrderQuery: Ref<AttributeOrderQuery[]> = ref([])
+
+/** Filter query for api request */
 const attributeFilterQuery: Ref<AttributeSearchQuery[]> = ref([])
+
+/** Index for first record on page for api request */
 const pageFirstRecord = ref(0)
+
+/** Record count to fetch from api */
 const pageRecordCount = ref(DefaultPageSize)
+
+/** Total record count in Db for request */
 const totalRecordCount = ref(0)
+
+/** Data table category filter models */
 const filter: Ref<{ [key: string]: (string | number)[] }> = ref({})
+
+/** Loaded advertisements from api */
 const advertisements: Ref<AdvertisementListItem[]> = ref([])
 
+/** Columns with sortable flag */
 const sortableColumns = computed(() => categoryInfo.value.attributeInfo?.filter((a) => a.sortable))
+
+/** Columns with filterable flag */
 const filterableColumns = computed(() =>
   categoryInfo.value.attributeInfo?.filter((a) => a.searchable)
 )
 
+/** Current category select filter value lists */
 const valueLists: ComputedRef<{ [key: number]: AttributeValueItem }> = computed(() => {
   const result: { [key: number]: AttributeValueItem } = {}
   if (!categoryInfo.value.attributeValueLists) {
@@ -235,7 +280,7 @@ watch(
 
 //Methods
 const handleCategoryChange = async (selectedCategoryId?: number | null) => {
-  isLoading.value++
+  setLoading(true)
   const promises = [loadAdvertisements()]
   if (typeof selectedCategoryId === 'number' && selectedCategoryId > -1) {
     promises.push(loadCategoryInfo())
@@ -247,7 +292,7 @@ const handleCategoryChange = async (selectedCategoryId?: number | null) => {
     })
   }
   await Promise.all(promises)
-  isLoading.value--
+  setLoading(false)
 }
 
 const loadCategoryInfo = async () => {
@@ -258,7 +303,7 @@ const loadCategoryInfo = async () => {
 }
 
 const loadAdvertisements = async () => {
-  isLoading.value++
+  setLoading(true)
 
   //Load advertisements
   const response = await advertisementSource(
@@ -281,7 +326,7 @@ const loadAdvertisements = async () => {
     expandedRowGroups.value = allCategoryNames
   }
 
-  isLoading.value--
+  setLoading(false)
 }
 
 const pageTable = (event: DataTablePageEvent) => {
@@ -342,6 +387,11 @@ const updatePagingTemplate = () => {
     '{last}',
     '{totalRecords}'
   )
+}
+
+/** Set data table loading state */
+const setLoading = (isLoading: boolean) => {
+  loadCount.value = Math.max(0, isLoading ? loadCount.value + 1 : loadCount.value - 1)
 }
 
 defineExpose({ refresh: loadAdvertisements })
