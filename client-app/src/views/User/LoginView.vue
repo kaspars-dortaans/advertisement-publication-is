@@ -1,6 +1,6 @@
 <template>
-  <div class="flex items-center justify-center flex-1 bg-primary">
-    <Panel class="m-2">
+  <ResponsiveLayout>
+    <Panel class="my-auto mx-2">
       <template #header>
         <span class="text-2xl">{{ l.navigation.login }}</span>
       </template>
@@ -45,10 +45,11 @@
         </p>
       </form>
     </Panel>
-  </div>
+  </ResponsiveLayout>
 </template>
 
 <script setup lang="ts">
+import ResponsiveLayout from '@/components/Common/ResponsiveLayout.vue'
 import FieldError from '@/components/Form/FieldError.vue'
 import { LoginDto, type ILoginDto } from '@/services/api-client'
 import { AuthService } from '@/services/auth-service'

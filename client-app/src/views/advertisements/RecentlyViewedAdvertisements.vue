@@ -1,18 +1,17 @@
 <template>
-  <div
-    class="flex flex-col justify-center items-center h-full bg-primary overflow-y-auto lg:p-2 lg:flex-row"
-  >
+  <ResponsiveLayout>
     <AdvertisementTable
       :categoryName="l.navigation.recentlyViewedAdvertisements"
       :advertisementSource="loadAdvertisements"
       :categoryFilterList="advertisementCategories"
       class="flex-1"
     ></AdvertisementTable>
-  </div>
+  </ResponsiveLayout>
 </template>
 
 <script setup lang="ts">
 import AdvertisementTable from '@/components/AdvertisementTable.vue'
+import ResponsiveLayout from '@/components/Common/ResponsiveLayout.vue'
 import {
   AdvertisementHistoryStorageKey,
   AdvertisementHistoryTimeSpanInMiliSeconds

@@ -1,11 +1,10 @@
 <template>
-  <div
-    class="flex flex-col justify-center items-center h-full bg-primary overflow-y-auto lg:p-2 lg:flex-row"
-  >
+  <ResponsiveLayout>
     <AdvertisementTable
       :advertisementSource="(q) => loadAdvertisements(q)"
       :groupByCategory="true"
       ref="advertisementTable"
+      class="flex-1"
     >
       <template #title>
         <div class="flex flex-row gap-4 items-baseline">
@@ -14,12 +13,13 @@
         </div>
       </template>
     </AdvertisementTable>
-  </div>
+  </ResponsiveLayout>
 </template>
 
 <script setup lang="ts">
 import AdvertisementTable from '@/components/AdvertisementTable.vue'
 import BackButton from '@/components/BackButton.vue'
+import ResponsiveLayout from '@/components/Common/ResponsiveLayout.vue'
 import {
   AdvertisementClient,
   SearchQuery,

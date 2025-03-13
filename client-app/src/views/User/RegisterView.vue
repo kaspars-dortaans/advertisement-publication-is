@@ -1,12 +1,12 @@
 <template>
-  <div class="flex items-center justify-center flex-1 bg-primary">
-    <Panel class="m-2">
+  <ResponsiveLayout>
+    <Panel>
       <template #header>
         <span class="text-2xl">{{ l.navigation.register }}</span>
       </template>
-      <form class="flex flex-col gap-3 items-center bg-white" @submit="onSubmit">
-        <div class="flex gap-5 items-center">
-          <div class="flex flex-col gap-2 min-w-80">
+      <form class="flex flex-col gap-3 lg:items-center bg-white" @submit="onSubmit">
+        <div class="flex flex-col gap-5 lg:items-center lg:flex-row">
+          <div class="flex flex-col gap-2 min-w-full md:min-w-80">
             <Message v-if="fieldHelper.hasFormErrors.value" severity="error">{{
               fieldHelper.formErrors
             }}</Message>
@@ -115,10 +115,11 @@
         </p>
       </form>
     </Panel>
-  </div>
+  </ResponsiveLayout>
 </template>
 
 <script setup lang="ts">
+import ResponsiveLayout from '@/components/Common/ResponsiveLayout.vue'
 import FieldError from '@/components/Form/FieldError.vue'
 import ImageUpload from '@/components/Form/ImageUpload.vue'
 import { ProfileImageConstants } from '@/constants/api/ProfileImageConstants'

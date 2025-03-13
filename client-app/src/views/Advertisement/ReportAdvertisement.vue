@@ -1,6 +1,6 @@
 <template>
-  <div class="h-full bg-primary flex items-center justify-center p-2">
-    <Panel class="max-w-96 w-96">
+  <ResponsiveLayout>
+    <Panel class="my-auto sm:min-w-96">
       <template #header>
         <h3 class="text-2xl">{{ l.advertisements.reportRuleViolation }}</h3>
       </template>
@@ -30,11 +30,12 @@
         </div>
       </form>
     </Panel>
-  </div>
+  </ResponsiveLayout>
 </template>
 
 <script setup lang="ts">
 import BackButton from '@/components/BackButton.vue'
+import ResponsiveLayout from '@/components/Common/ResponsiveLayout.vue'
 import FieldError from '@/components/Form/FieldError.vue'
 import { AdvertisementClient, ReportAdvertisementRequest } from '@/services/api-client'
 import { AppNavigation } from '@/services/app-navigation'

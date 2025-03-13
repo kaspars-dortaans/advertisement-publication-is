@@ -1,11 +1,6 @@
 <template>
-  <div
-    class="flex-1 flex flex-col justify-center items-center bg-primary overflow-y-auto lg:flex-row lg:gap-3 lg:p-2"
-  >
-    <BlockUI
-      :blocked="loadingInfo"
-      class="flex-grow basis-auto min-w-60 w-full lg:max-w-60 xl:max-w-80"
-    >
+  <ResponsiveLayout>
+    <BlockUI :blocked="loadingInfo" class="flex-none min-w-60 w-full lg:max-w-60 xl:max-w-80">
       <ComponentSpinner :show="loadingInfo" />
 
       <Panel class="bg-white rounded-none lg:rounded-md">
@@ -52,15 +47,16 @@
     <AdvertisementTable
       :advertisementSource="loadUserAdvertisements"
       :categoryNameSource="getCategoryName"
-      class="flex-grow flex-shrink basis-full rounded-none lg:rounded-md"
+      class="flex-1 rounded-none lg:rounded-md"
     ></AdvertisementTable>
-  </div>
+  </ResponsiveLayout>
 </template>
 
 <script setup lang="ts">
 import AdvertisementTable from '@/components/AdvertisementTable.vue'
 import BackButton from '@/components/BackButton.vue'
 import ComponentSpinner from '@/components/Common/ComponentSpinner.vue'
+import ResponsiveLayout from '@/components/Common/ResponsiveLayout.vue'
 import {
   AdvertisementClient,
   AdvertisementQuery,

@@ -64,11 +64,6 @@ const customPassTrough = {
   dataTable: {
     root: 'flex flex-col flex-nowrap',
     tableContainer: 'flex-auto',
-    table: 'h-full',
-    tbody: 'block',
-    column: {
-      bodyCell: ['align-top']
-    },
     pcPaginator: {
       content: {
         class: 'flex flex-row items-center justify-center w-full'
