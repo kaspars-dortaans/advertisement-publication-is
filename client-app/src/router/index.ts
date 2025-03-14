@@ -11,15 +11,25 @@ const router = createRouter({
       component: () => import('../views/advertisements/ViewAdvertisements.vue')
     },
     {
-      path: '/not-found',
-      name: 'notFound',
-      component: () => import('../views/NotFound.vue')
-    },
-    {
       path: '/login',
       name: 'login',
       component: () => import('../views/user/LoginView.vue'),
       props: (route) => ({ redirect: !!route.query.redirect })
+    },
+    {
+      path: '/logout',
+      name: 'logout',
+      beforeEnter: (_, from, next) => {
+        AuthService.get().logout()
+
+        if (from.meta.requiresPermission) {
+          next({ name: 'home' })
+        } else {
+          next(from.fullPath)
+        }
+      },
+      //Component is not displayed, guard always redirects to another page. Component is used to make this a valid route.
+      component: () => import('../views/NotFound.vue')
     },
     {
       path: '/register',
@@ -66,22 +76,35 @@ const router = createRouter({
       name: 'bookmarkedAdvertisements',
       component: () => import('../views/advertisements/BookmarkedAdvertisements.vue'),
       meta: {
-        requiredPermission: Permissions[Permissions.ViewAdvertisementBookmarks]
+        requiresPermission: Permissions[Permissions.ViewAdvertisementBookmarks]
       }
+    },
+    {
+      path: '/not-found',
+      name: 'notFound',
+      component: () => import('../views/NotFound.vue')
+    },
+    {
+      path: '/:all(.*)',
+      redirect: { name: 'notFound' }
     }
   ]
 })
 
 //Add route permission guard
 router.beforeEach(async (to, _, next) => {
-  const requiredPermission = to.meta?.requiredPermission
+  const requiresPermission = to.meta?.requiresPermission
   if (
-    typeof requiredPermission !== 'string' ||
-    (await AuthService.hasPermission(requiredPermission))
+    typeof requiresPermission !== 'string' ||
+    (await AuthService.hasPermission(requiresPermission))
   ) {
     next()
   } else {
-    next({ name: 'notFound' })
+    if (AuthService.isAuthenticated.value) {
+      next({ name: 'notFound' })
+    } else {
+      next({ name: 'login', query: { redirect: 'true' } })
+    }
   }
 })
 

@@ -1,4 +1,4 @@
-using AutoMapper;
+﻿using AutoMapper;
 using BusinessLogic.Authentication;
 using BusinessLogic.Authentication.Jwt;
 using BusinessLogic.Authorization;
@@ -95,8 +95,21 @@ public class UserController(
         return Ok(res);
     }
 
-    [ProducesResponseType<IEnumerable<string>>(StatusCodes.Status200OK)]
-    [ProducesResponseType<ForbidResult>(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType<UserInfo>(StatusCodes.Status200OK)]
+    [ProducesResponseType<NotFoundResult>(StatusCodes.Status404NotFound)]
+    [HttpGet]
+    public async Task<IActionResult> GetUserInfo()
+    {
+        var userId = User.GetUserId()!;
+        var user = await _userManager.FindByIdAsync("" + userId.Value);
+        if (user is null)
+        {
+            return NotFound();
+        }
+
+        return Ok(_mapper.Map<UserInfo>(user, opt => opt.Items[nameof(Url)] = Url));
+    }
+
     [HttpGet]
     public async Task<IEnumerable<string>> GetCurrentUserPermissions()
     {

@@ -1,6 +1,5 @@
-export interface INavbarItem {
-  label?: string
-  icon?: string
-  route?: string
-  items?: INavbarItem[]
+import type { MenuItem } from 'primevue/menuitem'
+
+export interface INavbarItem extends MenuItem {
+  avatar?: boolean
 }

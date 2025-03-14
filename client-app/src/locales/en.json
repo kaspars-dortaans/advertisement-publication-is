@@ -46,7 +46,9 @@
   },
   "navigation": {
     "login": "Login",
+    "logout": "Logout",
     "register": "Register",
+    "profileInfo": "Profile info",
     "advertisements": "Advertisements",
     "seeAdvertisements": "See advertisements",
     "savedAdvertisements": "Advertisement bookmarks",

@@ -48,7 +48,9 @@ export const emptyLocale = {
   },
   navigation: {
     login: "",
+    logout: "",
     register: "",
+    profileInfo: "",
     advertisements: "",
     seeAdvertisements: "",
     savedAdvertisements: "",

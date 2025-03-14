@@ -10,7 +10,7 @@ import PrimeVue from 'primevue/config'
 import FileUpload from 'primevue/fileupload'
 
 //Menu
-import MenuBar from 'primevue/menubar'
+import MenuBar, { type MenubarPassThroughMethodOptions } from 'primevue/menubar'
 
 //Button
 import Button from 'primevue/button'
@@ -23,10 +23,10 @@ import InputGroupAddon from 'primevue/inputgroupaddon'
 import InputIcon from 'primevue/inputicon'
 import InputNumber from 'primevue/inputnumber'
 import InputText from 'primevue/inputtext'
-import Textarea from 'primevue/textarea'
 import { usePassThrough } from 'primevue/passthrough'
 import Password from 'primevue/password'
 import Select from 'primevue/select'
+import Textarea from 'primevue/textarea'
 
 //Data
 import Column from 'primevue/column'
@@ -45,6 +45,7 @@ import Galleria from 'primevue/galleria'
 import Image from 'primevue/image'
 
 //Misc
+import Avatar from 'primevue/avatar'
 import BlockUI from 'primevue/blockui'
 
 const customPassTrough = {
@@ -58,22 +59,49 @@ const customPassTrough = {
       }
     }
   },
+
   menubar: {
-    start: 'flex-1'
+    start: 'flex-1',
+    submenu: (opts: MenubarPassThroughMethodOptions) => {
+      //Fix submenu going out of screen
+      const isSubmenuActive =
+        opts?.instance?.items?.[0]?.parent?.parent &&
+        opts.instance.isItemActive(opts.instance.items[0].parent)
+
+      if (!isSubmenuActive) {
+        return
+      }
+
+      const htmlEl = opts.instance.$el as HTMLElement
+      const parentPosition = htmlEl?.parentElement?.getClientRects()
+      if (!parentPosition?.length) {
+        return
+      }
+
+      let elPosition = htmlEl.getClientRects()
+      //If submenu is still hidden, temporary display it and get its position and size
+      if (!elPosition.length) {
+        const originalStyle = htmlEl.style + ''
+        htmlEl.style = 'display: flex; visibility: hidden'
+        elPosition = htmlEl.getClientRects()
+        htmlEl.style = originalStyle
+      }
+
+      //If submenu is going to overflow page, set right to 0, it is in absolute position
+      if (elPosition.length) {
+        if (parentPosition[0].left + elPosition[0].width > window.innerWidth) {
+          return 'right-0'
+        }
+      }
+    }
   },
+
   dataTable: {
     root: 'flex flex-col flex-nowrap',
     tableContainer: 'flex-auto',
     //Incorrect colspan fix
     rowGroupHeaderCell: (opts: DataTablePassThroughMethodOptions) => {
-      const columnCount =
-        opts?.props &&
-        'columns' in opts.props &&
-        typeof opts.props.columns === 'object' &&
-        opts.props.columns &&
-        'length' in opts.props.columns
-          ? opts.props.columns.length
-          : 1
+      const columnCount = opts?.instance?.columns?.length ? opts.instance.columns.length : 1
       return {
         colspan: columnCount
       }
@@ -89,6 +117,7 @@ const customPassTrough = {
       }
     }
   },
+
   galleria: {
     content: {
       class: 'max-h-full'
@@ -154,4 +183,5 @@ export function initPrimeVue(app: App<Element>) {
 
   //Misc
   app.component('BlockUI', BlockUI)
+  app.component('Avatar', Avatar)
 }

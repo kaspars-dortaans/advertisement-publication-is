@@ -1114,6 +1114,64 @@ export class UserClient {
     /**
      * @return Success
      */
+    getUserInfo( cancelToken?: CancelToken): Promise<UserInfo> {
+        let url_ = this.baseUrl + "/api/User/GetUserInfo";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: AxiosRequestConfig = {
+            method: "GET",
+            url: url_,
+            headers: {
+                "Accept": "text/plain"
+            },
+            cancelToken
+        };
+
+        return this.instance.request(options_).catch((_error: any) => {
+            if (isAxiosError(_error) && _error.response) {
+                return _error.response;
+            } else {
+                throw _error;
+            }
+        }).then((_response: AxiosResponse) => {
+            return this.processGetUserInfo(_response);
+        });
+    }
+
+    protected processGetUserInfo(response: AxiosResponse): Promise<UserInfo> {
+        const status = response.status;
+        let _headers: any = {};
+        if (response.headers && typeof response.headers === "object") {
+            for (const k in response.headers) {
+                if (response.headers.hasOwnProperty(k)) {
+                    _headers[k] = response.headers[k];
+                }
+            }
+        }
+        if (status === 200) {
+            const _responseText = response.data;
+            let result200: any = null;
+            let resultData200  = _responseText;
+            result200 = UserInfo.fromJS(resultData200);
+            return Promise.resolve<UserInfo>(result200);
+
+        } else if (status === 404) {
+            const _responseText = response.data;
+            let result404: any = null;
+            let resultData404  = _responseText;
+            result404 = NotFoundResult.fromJS(resultData404);
+            return throwException("Not Found", status, _responseText, _headers, result404);
+
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.data;
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Promise.resolve<UserInfo>(null as any);
+    }
+
+    /**
+     * @return Success
+     */
     getCurrentUserPermissions( cancelToken?: CancelToken): Promise<string[]> {
         let url_ = this.baseUrl + "/api/User/GetCurrentUserPermissions";
         url_ = url_.replace(/[?&]$/, "");
@@ -1161,13 +1219,6 @@ export class UserClient {
                 result200 = <any>null;
             }
             return Promise.resolve<string[]>(result200);
-
-        } else if (status === 403) {
-            const _responseText = response.data;
-            let result403: any = null;
-            let resultData403  = _responseText;
-            result403 = ForbidResult.fromJS(resultData403);
-            return throwException("Forbidden", status, _responseText, _headers, result403);
 
         } else if (status !== 200 && status !== 204) {
             const _responseText = response.data;
@@ -2725,6 +2776,70 @@ export interface ITableColumn {
     searchable?: boolean;
     orderable?: boolean;
     search?: SearchQuery;
+}
+
+export class UserInfo implements IUserInfo {
+    firstName?: string | undefined;
+    lastName?: string | undefined;
+    isPhoneNumberPublic?: boolean;
+    phoneNumber?: string | undefined;
+    isEmailPublic?: boolean;
+    email?: string | undefined;
+    linkToUserSite?: string | undefined;
+    profileImageUrl?: string | undefined;
+
+    constructor(data?: IUserInfo) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.firstName = _data["firstName"];
+            this.lastName = _data["lastName"];
+            this.isPhoneNumberPublic = _data["isPhoneNumberPublic"];
+            this.phoneNumber = _data["phoneNumber"];
+            this.isEmailPublic = _data["isEmailPublic"];
+            this.email = _data["email"];
+            this.linkToUserSite = _data["linkToUserSite"];
+            this.profileImageUrl = _data["profileImageUrl"];
+        }
+    }
+
+    static fromJS(data: any): UserInfo {
+        data = typeof data === 'object' ? data : {};
+        let result = new UserInfo();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["firstName"] = this.firstName;
+        data["lastName"] = this.lastName;
+        data["isPhoneNumberPublic"] = this.isPhoneNumberPublic;
+        data["phoneNumber"] = this.phoneNumber;
+        data["isEmailPublic"] = this.isEmailPublic;
+        data["email"] = this.email;
+        data["linkToUserSite"] = this.linkToUserSite;
+        data["profileImageUrl"] = this.profileImageUrl;
+        return data;
+    }
+}
+
+export interface IUserInfo {
+    firstName?: string | undefined;
+    lastName?: string | undefined;
+    isPhoneNumberPublic?: boolean;
+    phoneNumber?: string | undefined;
+    isEmailPublic?: boolean;
+    email?: string | undefined;
+    linkToUserSite?: string | undefined;
+    profileImageUrl?: string | undefined;
 }
 
 export class UserListItem implements IUserListItem {

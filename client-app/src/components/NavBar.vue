@@ -25,6 +25,7 @@
           <span v-if="item.label">{{ ls.l(item.label) }}</span>
         </a>
       </router-link>
+      <Avatar v-else-if="item.avatar" :image="item.url" shape="circle" />
       <a v-else :href="item.url" :target="item.target" v-bind="props.action">
         <i v-if="item.icon" class="mr-2" :class="item.icon" />
         <span v-if="item.label">{{ ls.l(item.label) }}</span>
@@ -35,13 +36,14 @@
 </template>
 
 <script setup lang="ts">
-import { LocaleService } from '@/services/locale-service'
-import { debounceFn } from '@/utils/debounce'
-import { computed, ref, type ComputedRef } from 'vue'
-
-import logoUrl from '@/assets/logo.svg'
+import defaultProfileImageUrl from '@/assets/images/default-profile-image.svg'
+import logoUrl from '@/assets/images/logo.svg'
+import { UserInfo } from '@/services/api-client'
 import { AuthService } from '@/services/auth-service'
+import { LocaleService } from '@/services/locale-service'
 import type { INavbarItem } from '@/types/navbar/navbar-item'
+import { debounceFn } from '@/utils/debounce'
+import { computed, ref, watch, type ComputedRef, type Ref } from 'vue'
 import { useRouter, type RouteRecordNormalized } from 'vue-router'
 
 const { push, getRoutes } = useRouter()
@@ -49,39 +51,6 @@ const { push, getRoutes } = useRouter()
 //Services
 const ls = LocaleService.get()
 const l = LocaleService.currentLocale
-
-//Reactive data
-const searchInput = ref('')
-
-//Reactive data
-/** All navigation items */
-const navbarItems: ComputedRef<INavbarItem[]> = computed(() => [
-  ...allowedRouteItems.value,
-  {
-    label: LocaleService.currentLocaleName.value,
-    items: localeItems.value
-  },
-  {
-    route: 'login',
-    icon: 'pi pi-user'
-  }
-])
-
-/** Language select items */
-const localeItems = computed(() =>
-  ls.localeList.value.map((localeName) => ({
-    label: localeName,
-    command: () => {
-      ls.loadLocale(localeName)
-    }
-  }))
-)
-
-/** Navigation routes allowed for current user */
-const allowedRouteItems: ComputedRef<INavbarItem[]> = computed(() => {
-  const routes = getRoutes()
-  return filterRoutes(allRouteItems, routes)
-})
 
 //Constants
 /** All navigation routes */
@@ -110,6 +79,73 @@ const allRouteItems: INavbarItem[] = [
   }
 ]
 
+//Reactive data
+const profileInfo: Ref<UserInfo | null> = ref(null)
+const searchInput = ref('')
+
+/** All navigation items */
+const navbarItems: ComputedRef<INavbarItem[]> = computed(() => [
+  ...allowedRouteItems.value,
+  {
+    label: LocaleService.currentLocaleName.value,
+    items: localeItems.value
+  },
+  ...profileRoutes.value
+])
+
+/** Language select items */
+const localeItems = computed(() =>
+  ls.localeList.value.map((localeName) => ({
+    label: localeName,
+    command: () => {
+      ls.loadLocale(localeName)
+    }
+  }))
+)
+
+/** Navigation routes allowed for current user */
+const allowedRouteItems: ComputedRef<INavbarItem[]> = computed(() => {
+  const routes = getRoutes()
+  return filterRoutes(allRouteItems, routes)
+})
+
+const profileRoutes = computed(() => {
+  if (!AuthService.isAuthenticated.value) {
+    return [
+      {
+        route: 'login',
+        icon: 'pi pi-user'
+      }
+    ] as INavbarItem[]
+  }
+
+  return [
+    {
+      avatar: true,
+      url: profileInfo.value?.profileImageUrl ?? defaultProfileImageUrl,
+      items: [
+        {
+          label: 'navigation.profileInfo',
+          route: 'profileInfo'
+        },
+        {
+          label: 'navigation.logout',
+          route: 'logout'
+        }
+      ]
+    }
+  ] as INavbarItem[]
+})
+
+//watchers
+watch(
+  AuthService.profileInfo,
+  async (newValue) => {
+    profileInfo.value = await newValue
+  },
+  { immediate: true }
+)
+
 //Methods
 const search = () => {
   push({ name: 'searchAdvertisements', query: { search: searchInput.value } })
@@ -127,10 +163,10 @@ const filterRoutes = (items: INavbarItem[], routes: RouteRecordNormalized[]): IN
   return items
     .map((i) => {
       const route = routes.find((r) => r.name === i.route)
-      const requiredPermission = route?.meta.requiredPermission
+      const requiresPermission = route?.meta.requiresPermission
       const hasPermission =
-        typeof requiredPermission === 'string'
-          ? AuthService.hasPermission(requiredPermission)
+        typeof requiresPermission === 'string'
+          ? AuthService.hasPermission(requiresPermission)
           : true
 
       if (hasPermission) {

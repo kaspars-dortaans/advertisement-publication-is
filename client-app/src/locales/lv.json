@@ -46,7 +46,9 @@
   },
   "navigation": {
     "login": "Ienākt",
+    "logout": "Iziet",
     "register": "Reģistrēties",
+    "profileInfo": "Profila informācija",
     "advertisements": "Sludinājumi",
     "seeAdvertisements": "Skatīt sludinājumus",
     "savedAdvertisements": "Atzīmētie sludinājumi",

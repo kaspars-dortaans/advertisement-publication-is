@@ -52,23 +52,26 @@
 import ResponsiveLayout from '@/components/Common/ResponsiveLayout.vue'
 import FieldError from '@/components/Form/FieldError.vue'
 import { LoginDto, type ILoginDto } from '@/services/api-client'
+import { AppNavigation } from '@/services/app-navigation'
 import { AuthService } from '@/services/auth-service'
 import { LocaleService } from '@/services/locale-service'
 import { FieldHelper } from '@/utils/field-helper'
 import { toTypedSchema } from '@vee-validate/yup'
 import { useForm } from 'vee-validate'
-import { useRouter } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { object, string } from 'yup'
 
 //Props
-const props = defineProps<{ redirect: boolean }>()
+const { redirect } = defineProps<{ redirect: boolean }>()
 
 //Route
-const router = useRouter()
+const { push } = useRouter()
+const { redirectedFrom } = useRoute()
 
 //Services
 const authService = AuthService.get()
 const l = LocaleService.currentLocale
+const navigation = AppNavigation.get()
 
 //Form
 const form = useForm({
@@ -88,10 +91,16 @@ const tryLogin = handleSubmit(async () => {
   const loginDto = new LoginDto(values)
   try {
     await authService.login(loginDto)
-    if (props.redirect) {
-      router.back()
+
+    if (redirect && redirectedFrom) {
+      //If redirected to login when trying access route which requires permissions while unauthorized
+      push(redirectedFrom.fullPath)
+    } else if (redirect && navigation.hasPrevious()) {
+      //If redirected to login when api request returned unauthorized code
+      push(navigation.getPreviousFullPath)
     } else {
-      router.push({ name: 'home' })
+      //Fall back to home page
+      push({ name: 'home' })
     }
   } catch (error) {
     fieldHelper.handleErrors(error)

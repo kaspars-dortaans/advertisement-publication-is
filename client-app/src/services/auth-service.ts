@@ -2,7 +2,7 @@ import { AuthHeaderName, TokenStorageKey } from '@/constants/auth'
 import { axiosInstance } from '@/init/axios'
 import { getClient } from '@/utils/client-builder'
 import { ref, type Ref } from 'vue'
-import { UserClient, type LoginDto } from './api-client'
+import { UserClient, UserInfo, type LoginDto } from './api-client'
 
 export class AuthService {
   /** Singleton instance */
@@ -10,6 +10,9 @@ export class AuthService {
 
   /** Current user id */
   public static readonly permissions: Ref<Promise<string[]>> = ref(Promise.resolve([]))
+
+  /** Basic user info */
+  public static readonly profileInfo: Ref<Promise<UserInfo | null>> = ref(Promise.resolve(null))
 
   /** Is user authenticated flag */
   public static readonly isAuthenticated: Ref<boolean> = ref(false)
@@ -39,7 +42,7 @@ export class AuthService {
     this._updateToken(localStorage.getItem(TokenStorageKey))
     if (this.jwtToken) {
       AuthService.isAuthenticated.value = true
-      await this._loadPermissions()
+      await this._loadProfileData()
     }
   }
 
@@ -67,18 +70,24 @@ export class AuthService {
       : undefined
   }
 
-  private async _loadPermissions() {
-    AuthService.permissions.value = this.userService.getCurrentUserPermissions()
+  private async _loadProfileData() {
+    try {
+      AuthService.permissions.value = this.userService.getCurrentUserPermissions()
+      AuthService.profileInfo.value = this.userService.getUserInfo()
+      await AuthService.permissions.value
+      await AuthService.profileInfo.value
+    } catch (e) {
+      //TODO: Implement token refresh & try to refresh token
+      this.logout()
+    }
   }
 
   /** Attempt to login, via sending login request to Api */
   async login(loginDto: LoginDto) {
-    const newTokenPromise = this.userService.authenticate(loginDto)
-    const loadPermissionPromise = this._loadPermissions()
+    const newToken = await this.userService.authenticate(loginDto)
+    this._updateToken(newToken)
 
-    this._updateToken(await newTokenPromise)
-    await loadPermissionPromise
-
+    await this._loadProfileData()
     AuthService.isAuthenticated.value = true
   }
 
@@ -89,14 +98,14 @@ export class AuthService {
     AuthService.isAuthenticated.value = false
   }
 
-  static async hasPermission(requiredPermission: string) {
+  static async hasPermission(requiresPermission: string) {
     const permissions = await AuthService.permissions.value
-    if (!requiredPermission) {
+    if (!requiresPermission) {
       return true
     } else if (!AuthService.isAuthenticated.value) {
       return false
     } else {
-      return permissions.some((p) => p === requiredPermission)
+      return permissions.some((p) => p === requiresPermission)
     }
   }
 }
