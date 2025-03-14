@@ -56,8 +56,8 @@ public class AdvertisementController(
 
     [AllowAnonymous]
     [HttpGet]
-    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(string))]
-    [ProducesResponseType(StatusCodes.Status403Forbidden, Type = typeof(ForbidResult))]
+    [ProducesResponseType<string>(StatusCodes.Status200OK)]
+    [ProducesResponseType<ForbidResult>(StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> RevealAdvertiserPhoneNumber(int advertisementId)
     {
         var queryResult = await _advertisementService
@@ -75,8 +75,8 @@ public class AdvertisementController(
 
     [AllowAnonymous]
     [HttpGet]
-    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(string))]
-    [ProducesResponseType(StatusCodes.Status403Forbidden, Type = typeof(ForbidResult))]
+    [ProducesResponseType<string>(StatusCodes.Status200OK)]
+    [ProducesResponseType<ForbidResult>(StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> RevealAdvertiserEmail(int advertisementId)
     {
         var queryResult = await _advertisementService

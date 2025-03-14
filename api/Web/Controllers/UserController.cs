@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using BusinessLogic.Authentication;
 using BusinessLogic.Authentication.Jwt;
 using BusinessLogic.Authorization;
@@ -34,8 +34,8 @@ public class UserController(
     private readonly IJwtProvider _jwtProvider = jwtProvider;
 
     [AllowAnonymous]
-    [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(RequestExceptionResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType<string>(StatusCodes.Status200OK)]
+    [ProducesResponseType<RequestExceptionResponse>(StatusCodes.Status400BadRequest)]
     [HttpPost]
     public async Task<string> Authenticate(LoginDto request)
     {
@@ -62,8 +62,8 @@ public class UserController(
     }
 
     [AllowAnonymous]
-    [ProducesResponseType(typeof(OkResult), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(RequestExceptionResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType<OkResult>(StatusCodes.Status200OK)]
+    [ProducesResponseType<RequestExceptionResponse>(StatusCodes.Status400BadRequest)]
     [HttpPost]
     public async Task<IActionResult> Register([FromForm] RegisterDto registerDto)
     {
@@ -73,8 +73,8 @@ public class UserController(
     }
 
     [AllowAnonymous]
-    [ProducesResponseType(typeof(PublicUserInfoDto), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(RequestExceptionResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType<PublicUserInfoDto>(StatusCodes.Status200OK)]
+    [ProducesResponseType<RequestExceptionResponse>(StatusCodes.Status400BadRequest)]
     [HttpGet]
     public async Task<IActionResult> GetPublicUserInfo(int userId)
     {
@@ -98,13 +98,13 @@ public class UserController(
     [ProducesResponseType<IEnumerable<string>>(StatusCodes.Status200OK)]
     [ProducesResponseType<ForbidResult>(StatusCodes.Status403Forbidden)]
     [HttpGet]
-    public async Task<IActionResult> GetCurrentUserPermissions()
+    public async Task<IEnumerable<string>> GetCurrentUserPermissions()
     {
         var userId = User.GetUserId()!;
         var permissionNames = await _userService.GetUserPermissions(userId.Value)
             .Select(p => p.Name)
             .ToListAsync();
 
-        return Ok(permissionNames);
+        return permissionNames;
     }
 }
