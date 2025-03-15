@@ -23,7 +23,7 @@
   >
     <template #header>
       <slot name="title">
-        <h3 class="font-semibold text-2xl mb-2">{{ categoryName ?? categoryInfo.categoryName }}</h3>
+        <h3 class="page-title mb-2">{{ categoryName ?? categoryInfo.categoryName }}</h3>
       </slot>
       <div
         v-if="filterableColumns?.length || categoryFilterList.length"

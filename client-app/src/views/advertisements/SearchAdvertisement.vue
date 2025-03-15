@@ -7,9 +7,9 @@
       class="flex-1"
     >
       <template #title>
-        <div class="flex flex-row gap-4 items-baseline">
+        <div class="panel-title-container">
           <BackButton :defaultTo="{ name: 'home' }" />
-          <h3 class="font-semibold text-2xl mb-2">{{ title }}</h3>
+          <h3 class="page-title mb-2">{{ title }}</h3>
         </div>
       </template>
     </AdvertisementTable>

@@ -2,7 +2,7 @@
   <ResponsiveLayout>
     <Panel class="my-auto sm:min-w-96">
       <template #header>
-        <h3 class="text-2xl">{{ l.advertisements.reportRuleViolation }}</h3>
+        <h3 class="page-title">{{ l.advertisements.reportRuleViolation }}</h3>
       </template>
       <form class="flex flex-col gap-4 min-h-80">
         <label for="report-text-area">{{ l.advertisements.description }}</label>

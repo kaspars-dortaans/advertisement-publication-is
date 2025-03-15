@@ -16,7 +16,7 @@
     <template #empty>
       <div class="flex items-center justify-center flex-col">
         <i class="pi pi-cloud-upload !border-2 !rounded-full !p-8 !text-4xl !text-muted-color" />
-        <p class="mt-6 mb-0">{{ l.form.dragAndDropToUpload }}</p>
+        <p class="mt-6 mb-0">{{ l.form.common.dragAndDropToUpload }}</p>
       </div>
     </template>
 

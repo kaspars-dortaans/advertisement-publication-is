@@ -2781,6 +2781,7 @@ export interface ITableColumn {
 export class UserInfo implements IUserInfo {
     firstName?: string | undefined;
     lastName?: string | undefined;
+    userName?: string | undefined;
     isPhoneNumberPublic?: boolean;
     phoneNumber?: string | undefined;
     isEmailPublic?: boolean;
@@ -2801,6 +2802,7 @@ export class UserInfo implements IUserInfo {
         if (_data) {
             this.firstName = _data["firstName"];
             this.lastName = _data["lastName"];
+            this.userName = _data["userName"];
             this.isPhoneNumberPublic = _data["isPhoneNumberPublic"];
             this.phoneNumber = _data["phoneNumber"];
             this.isEmailPublic = _data["isEmailPublic"];
@@ -2821,6 +2823,7 @@ export class UserInfo implements IUserInfo {
         data = typeof data === 'object' ? data : {};
         data["firstName"] = this.firstName;
         data["lastName"] = this.lastName;
+        data["userName"] = this.userName;
         data["isPhoneNumberPublic"] = this.isPhoneNumberPublic;
         data["phoneNumber"] = this.phoneNumber;
         data["isEmailPublic"] = this.isEmailPublic;
@@ -2834,6 +2837,7 @@ export class UserInfo implements IUserInfo {
 export interface IUserInfo {
     firstName?: string | undefined;
     lastName?: string | undefined;
+    userName?: string | undefined;
     isPhoneNumberPublic?: boolean;
     phoneNumber?: string | undefined;
     isEmailPublic?: boolean;

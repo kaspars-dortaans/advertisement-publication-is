@@ -1,4 +1,6 @@
 {
+  "true": "Yes",
+  "false": "No",
   "actions": {
     "choose": "Choose",
     "cancel": "Cancel",
@@ -31,18 +33,36 @@
     "search": "Search"
   },
   "form": {
-    "doNotHaveAnAccountQuestion": "Don't have an account?",
-    "alreadyHaveAnAccount": "Already have an account?",
-    "email": "E-mail",
-    "password": "Password",
-    "confirmPassword": "Confirm password",
-    "firstName": "First name",
-    "lastName": "Last name",
-    "username": "Username",
-    "publiclyDisplayEmail": "Publicly display e-mail",
-    "phoneNumber": "Phone number",
-    "publiclyDisplayPhoneNumber": "Publicly display phone number",
-    "dragAndDropToUpload": "Drag and drop here to upload"
+    "common": {
+      "dragAndDropToUpload": "Drag and drop here to upload"
+    },
+    "login": {
+      "email": "E-mail",
+      "password": "Password",
+      "doNotHaveAnAccountQuestion": "Don't have an account?"
+    },
+    "register": {
+      "alreadyHaveAnAccount": "Already have an account?",
+      "email": "E-mail",
+      "password": "Password",
+      "confirmPassword": "Confirm password",
+      "firstName": "First name",
+      "lastName": "Last name",
+      "username": "Username",
+      "publiclyDisplayEmail": "Publicly display e-mail",
+      "phoneNumber": "Phone number",
+      "publiclyDisplayPhoneNumber": "Publicly display phone number"
+    },
+    "profileInfo": {
+      "firstName": "First name",
+      "lastName": "Last name",
+      "userName": "Username",
+      "email": "E-mail",
+      "publiclyDisplayEmail": "Publicly display e-mail",
+      "phoneNumber": "Phone number",
+      "publiclyDisplayPhoneNumber": "Publicly display phone number",
+      "changePassword": "Change Password"
+    }
   },
   "navigation": {
     "login": "Login",

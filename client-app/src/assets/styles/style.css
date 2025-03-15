@@ -1,11 +1,12 @@
 /* Tailwind base & Primevue */
 @import 'tailwindcss/base';
 @import 'tailwindcss/components';
-@import './primevue/tailwind.css';
+@import '../primevue/tailwind.css';
 @import 'tailwindcss/utilities';
 
 /* Custom */
 @import './galleria.css';
+@import './text.css';
 
 /* Primary and Surface Palettes */
 :root {

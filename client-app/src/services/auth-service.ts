@@ -42,7 +42,7 @@ export class AuthService {
     this._updateToken(localStorage.getItem(TokenStorageKey))
     if (this.jwtToken) {
       AuthService.isAuthenticated.value = true
-      await this._loadProfileData()
+      await this.refreshProfileData()
     }
   }
 
@@ -70,7 +70,7 @@ export class AuthService {
       : undefined
   }
 
-  private async _loadProfileData() {
+  public async refreshProfileData() {
     try {
       AuthService.permissions.value = this.userService.getCurrentUserPermissions()
       AuthService.profileInfo.value = this.userService.getUserInfo()
@@ -87,12 +87,12 @@ export class AuthService {
     const newToken = await this.userService.authenticate(loginDto)
     this._updateToken(newToken)
 
-    await this._loadProfileData()
+    await this.refreshProfileData()
     AuthService.isAuthenticated.value = true
   }
 
   /** Logout by deleting authorization jwt token */
-  logout() {
+  public logout() {
     this._updateToken(null)
     AuthService.permissions.value = Promise.resolve([])
     AuthService.isAuthenticated.value = false

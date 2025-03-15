@@ -11,7 +11,11 @@ export class LocaleService {
 
   /** Object for locale loading */
   private _localeFiles: { [key: string]: () => Promise<unknown> } = import.meta.glob(
-    '@/locales/*.json'
+    '@/locales/*.json',
+    //For some reason when importing json already converted to js object
+    //Conversion did not work for top level properties which are not object type
+    //Therefore import raw json and parse it on client
+    { as: 'raw' }
   )
 
   /** map Locale name -> locale file promise key*/
@@ -114,7 +118,8 @@ export class LocaleService {
     }
 
     const filePath = this._localeMap.get(nameNormalized)!
-    const locale = await this._localeFiles[filePath]()
+    const localeJson = (await this._localeFiles[filePath]()) as string
+    const locale = JSON.parse(localeJson)
     this.primevue.config.locale = locale as PrimeVueLocaleOptions
 
     this._settings.userSettingCookieValue.locale = nameNormalized
@@ -128,7 +133,7 @@ export class LocaleService {
   }
 
   /** Localize and format string */
-  l(keyString: string, ...params: (string | number)[]) {
+  l(keyString: string | undefined, ...params: (string | number)[]) {
     if (!keyString) {
       return ''
     }
@@ -146,7 +151,7 @@ export class LocaleService {
   }
 
   /** Format string */
-  private f(str: string, params: (string | number)[]) {
+  f(str: string, params: (string | number)[]) {
     if (!params.length) {
       return str
     }

@@ -2,9 +2,9 @@
   <!-- Gallery, title, text, attributes, contacts -->
   <Panel :pt="panelPt">
     <template #header>
-      <div class="flex flex-row items-center gap-5 w-full">
+      <div class="panel-title-container">
         <BackButton :defaultTo="{ name: 'home' }" />
-        <h3 class="font-semibold text-2xl mr-auto">{{ advertisement.title }}</h3>
+        <h3 class="page-title">{{ advertisement.title }}</h3>
         <Button
           :icon="bookmarkIcon"
           :label="l.advertisements.bookmark"
@@ -43,7 +43,7 @@
     </div>
 
     <template #footer>
-      <h3 class="font-semibold text-2xl mb-2">{{ l.advertisements.contacts }}</h3>
+      <h3 class="text-2xl mb-2">{{ l.advertisements.contacts }}</h3>
       <div class="flex flex-row flex-wrap gap-10 items-baseline justify-center xl:justify-between">
         <div class="flex flex-wrap justify-center gap-2 basis-full md:basis-auto">
           <Button

@@ -5,15 +5,15 @@
 
       <Panel class="bg-white rounded-none lg:rounded-md">
         <template #header>
-          <div class="flex flex-row gap-5">
+          <div class="panel-title-container">
             <BackButton :defaultTo="{ name: 'home' }"></BackButton>
-            <h3 class="font-semibold text-2xl">{{ userInfo?.userName }}</h3>
+            <h3 class="page-title">{{ userInfo?.userName }}</h3>
           </div>
         </template>
 
         <img :src="userInfo?.profileImageUrl" class="max-w-52 max-h-52 mx-auto" />
 
-        <h3 class="font-semibold text-2xl my-2">{{ l.advertisements.contacts }}</h3>
+        <h3 class="text-2xl my-2">{{ l.advertisements.contacts }}</h3>
 
         <div class="flex flex-col gap-4">
           <InputGroup v-if="userInfo?.email">

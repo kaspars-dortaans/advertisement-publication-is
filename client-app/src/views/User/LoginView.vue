@@ -16,7 +16,7 @@
           <InputText
             v-model="fields.email!.value"
             v-bind="fields.email?.attributes"
-            :placeholder="l.form.email"
+            :placeholder="l.form.login.email"
             :invalid="fields.email?.hasError"
           />
         </InputGroup>
@@ -29,7 +29,7 @@
           <Password
             v-model="fields.password!.value"
             v-bind="fields.password?.attributes"
-            :placeholder="l.form.password"
+            :placeholder="l.form.login.password"
             :feedback="false"
             :invalid="fields.email?.hasError"
           />
@@ -38,7 +38,7 @@
 
         <Button class="mt-1" :label="l.navigation.login" @click="tryLogin" />
         <p>
-          <span>{{ l.form.doNotHaveAnAccountQuestion }}</span>
+          <span>{{ l.form.login.doNotHaveAnAccountQuestion }}</span>
           <RouterLink class="ml-1 link" :to="{ name: 'register' }">{{
             l.navigation.register
           }}</RouterLink>

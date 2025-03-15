@@ -1,6 +1,8 @@
 /** This is auto generated file
 * Assign empty locale to prevent errors when trying to localize while real locale is not loaded */
 export const emptyLocale = {
+  false: "",
+  true: "",
   actions: {
     choose: "",
     cancel: "",
@@ -33,18 +35,36 @@ export const emptyLocale = {
     search: "",
   },
   form: {
-    doNotHaveAnAccountQuestion: "",
-    alreadyHaveAnAccount: "",
-    email: "",
-    password: "",
-    confirmPassword: "",
-    firstName: "",
-    lastName: "",
-    username: "",
-    publiclyDisplayEmail: "",
-    phoneNumber: "",
-    publiclyDisplayPhoneNumber: "",
-    dragAndDropToUpload: "",
+    profileInfo: {
+      firstName: "",
+      lastName: "",
+      userName: "",
+      email: "",
+      publiclyDisplayEmail: "",
+      phoneNumber: "",
+      publiclyDisplayPhoneNumber: "",
+      changePassword: "",
+    },
+    register: {
+      alreadyHaveAnAccount: "",
+      email: "",
+      password: "",
+      confirmPassword: "",
+      firstName: "",
+      lastName: "",
+      username: "",
+      publiclyDisplayEmail: "",
+      phoneNumber: "",
+      publiclyDisplayPhoneNumber: "",
+    },
+    login: {
+      email: "",
+      password: "",
+      doNotHaveAnAccountQuestion: "",
+    },
+    common: {
+      dragAndDropToUpload: "",
+    },
   },
   navigation: {
     login: "",

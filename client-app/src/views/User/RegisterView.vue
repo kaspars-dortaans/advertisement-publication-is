@@ -14,7 +14,7 @@
             <InputText
               v-model="fields.firstName!.value"
               v-bind="fields.firstName?.attributes"
-              :placeholder="l.form.firstName"
+              :placeholder="l.form.register.firstName"
               :invalid="fields.firstName!.hasError"
             />
             <FieldError :field="fields.firstName" />
@@ -22,7 +22,7 @@
             <InputText
               v-model="fields.lastName!.value"
               v-bind="fields.lastName?.attributes"
-              :placeholder="l.form.lastName"
+              :placeholder="l.form.register.lastName"
               :invalid="fields.lastName!.hasError"
             />
             <FieldError :field="fields.lastName" />
@@ -30,7 +30,7 @@
             <InputText
               v-model="fields.userName!.value"
               v-bind="fields.userName?.attributes"
-              :placeholder="l.form.username"
+              :placeholder="l.form.register.username"
               :invalid="fields.userName!.hasError"
             />
             <FieldError :field="fields.userName" />
@@ -38,7 +38,7 @@
             <InputText
               v-model="fields.email!.value"
               v-bind="fields.email!.attributes"
-              :placeholder="l.form.email"
+              :placeholder="l.form.register.email"
               :invalid="fields.email!.hasError"
             />
             <FieldError :field="fields.email" />
@@ -52,7 +52,7 @@
                 inputId="register.isEmailPublic"
               />
               <label class="ml-2" for="register.isEmailPublic">{{
-                l.form.publiclyDisplayEmail
+                l.form.register.publiclyDisplayEmail
               }}</label>
             </div>
             <FieldError :field="fields.isEmailPublic" />
@@ -60,7 +60,7 @@
             <InputText
               v-model="fields.phoneNumber!.value"
               v-bind="fields.phoneNumber?.attributes"
-              :placeholder="l.form.phoneNumber"
+              :placeholder="l.form.register.phoneNumber"
               :invalid="fields.phoneNumber!.hasError"
             />
             <FieldError :field="fields.phoneNumber" />
@@ -74,7 +74,7 @@
                 inputId="register.isPhonePublic"
               />
               <label class="ml-2" for="register.isPhonePublic">{{
-                l.form.publiclyDisplayPhoneNumber
+                l.form.register.publiclyDisplayPhoneNumber
               }}</label>
             </div>
             <FieldError :field="fields.isPhoneNumberPublic" />
@@ -82,7 +82,7 @@
             <Password
               v-model="fields.password!.value"
               v-bind="fields.password?.attributes"
-              :placeholder="l.form.password"
+              :placeholder="l.form.register.password"
               :invalid="fields.password!.hasError"
             />
             <FieldError :field="fields.password" />
@@ -90,7 +90,7 @@
             <Password
               v-model="fields.passwordConfirmation!.value"
               v-bind="fields.passwordConfirmation?.attributes"
-              :placeholder="l.form.confirmPassword"
+              :placeholder="l.form.register.confirmPassword"
               :feedback="false"
               :invalid="fields.passwordConfirmation!.hasError"
             />
@@ -108,7 +108,7 @@
 
         <Button type="submit" :label="l.navigation.register" :loading="isSubmitting" />
         <p>
-          <span>{{ l.form.alreadyHaveAnAccount }}</span>
+          <span>{{ l.form.register.alreadyHaveAnAccount }}</span>
           <RouterLink class="ml-1 link" :to="{ name: 'login' }">{{
             l.navigation.login
           }}</RouterLink>
@@ -166,7 +166,7 @@ const fields = fieldHelper.defineMultipleFields([
   'passwordConfirmation',
   'profileImage'
 ])
-const { values, handleSubmit, validate, setFieldError, isSubmitting } = form
+const { values, handleSubmit, validate, isSubmitting } = form
 
 const onSubmit = handleSubmit(async () => {
   fieldHelper.clearErrors()

@@ -1,4 +1,6 @@
 {
+  "true": "Jā",
+  "false": "Nē",
   "actions": {
     "choose": "Izvēlēties",
     "cancel": "Atcelt",
@@ -31,18 +33,35 @@
     "search": "Meklēt"
   },
   "form": {
-    "doNotHaveAnAccountQuestion": "Vai tev vēl nav konta?",
-    "alreadyHaveAnAccount": "Vai tev jau ir konts?",
-    "email": "E-pasts",
-    "password": "Parole",
-    "confirmPassword": "Apstiprināt paroli",
-    "firstName": "Vārds",
-    "lastName": "Uzvārds",
-    "username": "Lietotājvārds",
-    "publiclyDisplayEmail": "Publiski attēlot e-pastu",
-    "phoneNumber": "Tālruņa numurs",
-    "publiclyDisplayPhoneNumber": "Publiski attēlot tālruņa numuru",
-    "dragAndDropToUpload": "Velc un met šeit lai Augšupielādētu"
+    "common": {
+      "dragAndDropToUpload": "Velc un met šeit lai Augšupielādētu"
+    },
+    "login": {
+      "email": "E-pasts",
+      "password": "Parole",
+      "doNotHaveAnAccountQuestion": "Vai tev vēl nav konta?"
+    },
+    "register": {
+      "alreadyHaveAnAccount": "Vai tev jau ir konts?",
+      "email": "E-pasts",
+      "password": "Parole",
+      "confirmPassword": "Apstiprināt paroli",
+      "firstName": "Vārds",
+      "lastName": "Uzvārds",
+      "username": "Lietotājvārds",
+      "publiclyDisplayEmail": "Publiski attēlot e-pastu",
+      "phoneNumber": "Tālruņa numurs",
+      "publiclyDisplayPhoneNumber": "Publiski attēlot tālruņa numuru"
+    },
+    "profileInfo": {
+      "firstName": "Vārds",
+      "lastName": "Uzvārds",
+      "username": "Lietotājvārds",
+      "publiclyDisplayEmail": "Publiski attēlot e-pastu",
+      "phoneNumber": "Tālruņa numurs",
+      "publiclyDisplayPhoneNumber": "Publiski attēlot tālruņa numuru",
+      "changePassword": "Mainīt paroli"
+    }
   },
   "navigation": {
     "login": "Ienākt",

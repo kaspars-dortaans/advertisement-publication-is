@@ -1,0 +1,7 @@
+.page-title {
+  @apply font-semibold text-2xl;
+}
+
+.panel-title-container {
+  @apply flex flex-row items-center gap-5;
+}

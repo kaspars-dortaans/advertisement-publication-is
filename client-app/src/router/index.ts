@@ -80,6 +80,23 @@ const router = createRouter({
       }
     },
     {
+      path: '/profile-info',
+      name: 'profileInfo',
+      component: () => import('../views/user/ProfileInfo.vue')
+    },
+    {
+      path: '/edit-profile-info',
+      name: 'editProfileInfo',
+      //TODO: Replace when view is completed
+      component: () => import('../views/NotFound.vue')
+    },
+    {
+      path: '/change-password',
+      name: 'changePassword',
+      //TODO: Replace when view is completed
+      component: () => import('../views/NotFound.vue')
+    },
+    {
       path: '/not-found',
       name: 'notFound',
       component: () => import('../views/NotFound.vue')
