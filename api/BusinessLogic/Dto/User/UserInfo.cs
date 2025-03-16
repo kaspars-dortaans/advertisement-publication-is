@@ -1,4 +1,6 @@
-﻿namespace Web.Dto.User;
+﻿using BusinessLogic.Dto.Image;
+
+namespace BusinessLogic.Dto.User;
 
 public class UserInfo
 {
@@ -10,5 +12,5 @@ public class UserInfo
     public bool IsEmailPublic { get; set; }
     public string Email { get; set; } = default!;
     public string? LinkToUserSite { get; set; }
-    public string? ProfileImageUrl { get; set; } = default!;
+    public ImageUrl ProfileImageUrl { get; set; } = default!;
 }

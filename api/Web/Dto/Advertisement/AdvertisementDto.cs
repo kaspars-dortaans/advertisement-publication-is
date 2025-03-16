@@ -1,5 +1,5 @@
 ﻿using BusinessLogic.Dto.Advertisement;
-using Web.Dto.Image;
+using BusinessLogic.Dto.Image;
 
 namespace Web.Dto.Advertisement;
 

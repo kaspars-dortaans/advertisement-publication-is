@@ -13,6 +13,7 @@ export const emptyLocale = {
     clear: "",
     report: "",
     remove: "",
+    save: "",
   },
   dataTable: {
     pageReportTemplate: "",
@@ -71,6 +72,7 @@ export const emptyLocale = {
     logout: "",
     register: "",
     profileInfo: "",
+    editProfileInfo: "",
     advertisements: "",
     seeAdvertisements: "",
     savedAdvertisements: "",

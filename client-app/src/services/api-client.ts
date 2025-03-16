@@ -1155,18 +1155,97 @@ export class UserClient {
             result200 = UserInfo.fromJS(resultData200);
             return Promise.resolve<UserInfo>(result200);
 
-        } else if (status === 404) {
-            const _responseText = response.data;
-            let result404: any = null;
-            let resultData404  = _responseText;
-            result404 = NotFoundResult.fromJS(resultData404);
-            return throwException("Not Found", status, _responseText, _headers, result404);
-
         } else if (status !== 200 && status !== 204) {
             const _responseText = response.data;
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
         }
         return Promise.resolve<UserInfo>(null as any);
+    }
+
+    /**
+     * @param firstName (optional) 
+     * @param lastName (optional) 
+     * @param userName (optional) 
+     * @param isPhoneNumberPublic (optional) 
+     * @param phoneNumber (optional) 
+     * @param isEmailPublic (optional) 
+     * @param email (optional) 
+     * @param linkToUserSite (optional) 
+     * @param profileImageChanged (optional) 
+     * @param profileImage (optional) 
+     * @return Success
+     */
+    updateUserInfo(firstName: string | null | undefined, lastName: string | null | undefined, userName: string | null | undefined, isPhoneNumberPublic: boolean | undefined, phoneNumber: string | null | undefined, isEmailPublic: boolean | undefined, email: string | null | undefined, linkToUserSite: string | null | undefined, profileImageChanged: boolean | undefined, profileImage: FileParameter | null | undefined, cancelToken?: CancelToken): Promise<void> {
+        let url_ = this.baseUrl + "/api/User/UpdateUserInfo";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = new FormData();
+        if (firstName !== null && firstName !== undefined)
+            content_.append("firstName", firstName.toString());
+        if (lastName !== null && lastName !== undefined)
+            content_.append("lastName", lastName.toString());
+        if (userName !== null && userName !== undefined)
+            content_.append("userName", userName.toString());
+        if (isPhoneNumberPublic === null || isPhoneNumberPublic === undefined)
+            throw new Error("The parameter 'isPhoneNumberPublic' cannot be null.");
+        else
+            content_.append("isPhoneNumberPublic", isPhoneNumberPublic.toString());
+        if (phoneNumber !== null && phoneNumber !== undefined)
+            content_.append("phoneNumber", phoneNumber.toString());
+        if (isEmailPublic === null || isEmailPublic === undefined)
+            throw new Error("The parameter 'isEmailPublic' cannot be null.");
+        else
+            content_.append("isEmailPublic", isEmailPublic.toString());
+        if (email !== null && email !== undefined)
+            content_.append("email", email.toString());
+        if (linkToUserSite !== null && linkToUserSite !== undefined)
+            content_.append("linkToUserSite", linkToUserSite.toString());
+        if (profileImageChanged === null || profileImageChanged === undefined)
+            throw new Error("The parameter 'profileImageChanged' cannot be null.");
+        else
+            content_.append("profileImageChanged", profileImageChanged.toString());
+        if (profileImage !== null && profileImage !== undefined)
+            content_.append("profileImage", profileImage.data, profileImage.fileName ? profileImage.fileName : "profileImage");
+
+        let options_: AxiosRequestConfig = {
+            data: content_,
+            method: "POST",
+            url: url_,
+            headers: {
+            },
+            cancelToken
+        };
+
+        return this.instance.request(options_).catch((_error: any) => {
+            if (isAxiosError(_error) && _error.response) {
+                return _error.response;
+            } else {
+                throw _error;
+            }
+        }).then((_response: AxiosResponse) => {
+            return this.processUpdateUserInfo(_response);
+        });
+    }
+
+    protected processUpdateUserInfo(response: AxiosResponse): Promise<void> {
+        const status = response.status;
+        let _headers: any = {};
+        if (response.headers && typeof response.headers === "object") {
+            for (const k in response.headers) {
+                if (response.headers.hasOwnProperty(k)) {
+                    _headers[k] = response.headers[k];
+                }
+            }
+        }
+        if (status === 200) {
+            const _responseText = response.data;
+            return Promise.resolve<void>(null as any);
+
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.data;
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Promise.resolve<void>(null as any);
     }
 
     /**
@@ -2140,6 +2219,78 @@ export interface IDataTableQuery {
     columns?: TableColumn[] | undefined;
 }
 
+export class EditUserInfo implements IEditUserInfo {
+    firstName?: string | undefined;
+    lastName?: string | undefined;
+    userName?: string | undefined;
+    isPhoneNumberPublic?: boolean;
+    phoneNumber?: string | undefined;
+    isEmailPublic?: boolean;
+    email?: string | undefined;
+    linkToUserSite?: string | undefined;
+    profileImageChanged?: boolean;
+    profileImage?: any | undefined;
+
+    constructor(data?: IEditUserInfo) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.firstName = _data["firstName"];
+            this.lastName = _data["lastName"];
+            this.userName = _data["userName"];
+            this.isPhoneNumberPublic = _data["isPhoneNumberPublic"];
+            this.phoneNumber = _data["phoneNumber"];
+            this.isEmailPublic = _data["isEmailPublic"];
+            this.email = _data["email"];
+            this.linkToUserSite = _data["linkToUserSite"];
+            this.profileImageChanged = _data["profileImageChanged"];
+            this.profileImage = _data["profileImage"];
+        }
+    }
+
+    static fromJS(data: any): EditUserInfo {
+        data = typeof data === 'object' ? data : {};
+        let result = new EditUserInfo();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["firstName"] = this.firstName;
+        data["lastName"] = this.lastName;
+        data["userName"] = this.userName;
+        data["isPhoneNumberPublic"] = this.isPhoneNumberPublic;
+        data["phoneNumber"] = this.phoneNumber;
+        data["isEmailPublic"] = this.isEmailPublic;
+        data["email"] = this.email;
+        data["linkToUserSite"] = this.linkToUserSite;
+        data["profileImageChanged"] = this.profileImageChanged;
+        data["profileImage"] = this.profileImage;
+        return data;
+    }
+}
+
+export interface IEditUserInfo {
+    firstName?: string | undefined;
+    lastName?: string | undefined;
+    userName?: string | undefined;
+    isPhoneNumberPublic?: boolean;
+    phoneNumber?: string | undefined;
+    isEmailPublic?: boolean;
+    email?: string | undefined;
+    linkToUserSite?: string | undefined;
+    profileImageChanged?: boolean;
+    profileImage?: any | undefined;
+}
+
 export enum FilterType {
     Search = "Search",
     FromTo = "FromTo",
@@ -2787,7 +2938,7 @@ export class UserInfo implements IUserInfo {
     isEmailPublic?: boolean;
     email?: string | undefined;
     linkToUserSite?: string | undefined;
-    profileImageUrl?: string | undefined;
+    profileImageUrl?: ImageUrl;
 
     constructor(data?: IUserInfo) {
         if (data) {
@@ -2808,7 +2959,7 @@ export class UserInfo implements IUserInfo {
             this.isEmailPublic = _data["isEmailPublic"];
             this.email = _data["email"];
             this.linkToUserSite = _data["linkToUserSite"];
-            this.profileImageUrl = _data["profileImageUrl"];
+            this.profileImageUrl = _data["profileImageUrl"] ? ImageUrl.fromJS(_data["profileImageUrl"]) : <any>undefined;
         }
     }
 
@@ -2829,7 +2980,7 @@ export class UserInfo implements IUserInfo {
         data["isEmailPublic"] = this.isEmailPublic;
         data["email"] = this.email;
         data["linkToUserSite"] = this.linkToUserSite;
-        data["profileImageUrl"] = this.profileImageUrl;
+        data["profileImageUrl"] = this.profileImageUrl ? this.profileImageUrl.toJSON() : <any>undefined;
         return data;
     }
 }
@@ -2843,7 +2994,7 @@ export interface IUserInfo {
     isEmailPublic?: boolean;
     email?: string | undefined;
     linkToUserSite?: string | undefined;
-    profileImageUrl?: string | undefined;
+    profileImageUrl?: ImageUrl;
 }
 
 export class UserListItem implements IUserListItem {

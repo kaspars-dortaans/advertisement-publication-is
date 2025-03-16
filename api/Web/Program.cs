@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.Net.Http.Headers;
 using Microsoft.OpenApi.Models;
 using System.Reflection;
 using System.Text;
@@ -31,7 +32,8 @@ builder.Services.AddCors(options =>
             policy.WithOrigins("https://localhost:5173", "http://localhost:5173")
                 .AllowAnyHeader()
                 .AllowAnyMethod()
-                .AllowCredentials();
+                .AllowCredentials()
+                .WithExposedHeaders([HeaderNames.ContentDisposition]);
         });
 });
 

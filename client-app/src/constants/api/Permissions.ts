@@ -1,6 +1,10 @@
 export enum Permissions {
-  ViewUsers = 0,
-  BookmarkAdvertisement,
+  BookmarkAdvertisement = 0,
   ViewAdvertisementBookmarks,
-  RemoveAdvertisementBookmark
+  EditAdvertisementBookmark,
+  ViewProfileInfo,
+  EditProfileInfo,
+  ChangePassword,
+  ViewUsers,
+  
 }

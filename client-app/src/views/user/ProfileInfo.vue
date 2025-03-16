@@ -32,7 +32,7 @@
           <dd>{{ ls.l(profileInfo.isPhoneNumberPublic?.toString()) }}</dd>
         </dl>
 
-        <img :src="profileInfo.profileImageUrl ?? defaultProfileImageUrl" class="w-56 h-56" />
+        <img :src="profileInfo.profileImageUrl?.url ?? defaultProfileImageUrl" class="w-56 h-56" />
       </div>
 
       <div class="flex gap-2 justify-center mt-5">

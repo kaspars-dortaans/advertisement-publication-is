@@ -1,4 +1,6 @@
 ﻿using AutoMapper;
+using BusinessLogic.Dto.Image;
+using BusinessLogic.Dto.User;
 using Web.Helpers;
 
 namespace Web.Dto.User;
@@ -17,6 +19,12 @@ public class UserMapperProfile : Profile
 
         CreateMap<BusinessLogic.Entities.User, UserInfo>()
             .ForMember(dto => dto.ProfileImageUrl, o => o
-                .MapFrom((u, _, _, context) => FileUrlHelper.MapperGetThumbnailUrl(context, u.ProfileImageFileId)));
+                .MapFrom((u, _, _, context) => new ImageUrl()
+                    {
+                        Url = FileUrlHelper.MapperGetFileUrl(context, u.ProfileImageFileId)!,
+                        ThumbnailUrl = FileUrlHelper.MapperGetThumbnailUrl(context, u.ProfileImageFileId)!
+                    }));
+
+        CreateMap<EditUserInfo, BusinessLogic.Entities.User>();
     }
 }

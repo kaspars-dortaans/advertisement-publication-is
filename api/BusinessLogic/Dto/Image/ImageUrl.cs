@@ -1,4 +1,4 @@
-﻿namespace Web.Dto.Image;
+﻿namespace BusinessLogic.Dto.Image;
 
 public class ImageUrl
 {

@@ -1,4 +1,5 @@
 using AutoMapper;
+using BusinessLogic.Authorization;
 using BusinessLogic.Dto.Advertisement;
 using BusinessLogic.Dto.DataTableQuery;
 using BusinessLogic.Entities;
@@ -39,6 +40,7 @@ public class AdvertisementController(
         return result.MapDataTableResponse<AdvertisementListItemDto, AdvertisementListItem>(_mapper, opts => opts.Items[nameof(Url)] = Url);
     }
 
+    [HasPermission(Permissions.ViewAdvertisementBookmarks)]
     [HttpPost]
     public async Task<DataTableQueryResponse<AdvertisementListItem>> GetBookmarkedAdvertisements(AdvertisementQuery request)
     {
@@ -92,6 +94,7 @@ public class AdvertisementController(
         return new OkObjectResult(queryResult.Email);
     }
 
+    [HasPermission(Permissions.EditAdvertisementBookmark)]
     [HttpPost]
     public async Task BookmarkAdvertisement(BookmarkAdvertisementRequest request)
     {
@@ -99,6 +102,7 @@ public class AdvertisementController(
         await _advertisementService.BookmarkAdvertisement(request.AdvertisementId, userId.Value, request.AddBookmark);
     }
 
+    [HasPermission(Permissions.ViewAdvertisementBookmarks)]
     [HttpPost]
     public async Task RemoveAdvertisementBookmarks(IEnumerable<int> ids)
     {
@@ -179,6 +183,7 @@ public class AdvertisementController(
         return categoryList;
     }
 
+    [HasPermission(Permissions.ViewAdvertisementBookmarks)]
     [HttpGet]
     public async Task<IEnumerable<KeyValuePair<int, string>>> GetBookmarkedAdvertisementCategoryList()
     {

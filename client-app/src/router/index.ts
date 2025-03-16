@@ -82,13 +82,18 @@ const router = createRouter({
     {
       path: '/profile-info',
       name: 'profileInfo',
-      component: () => import('../views/user/ProfileInfo.vue')
+      component: () => import('../views/user/ProfileInfo.vue'),
+      meta: {
+        requiresPermission: Permissions[Permissions.ViewProfileInfo]
+      }
     },
     {
       path: '/edit-profile-info',
       name: 'editProfileInfo',
-      //TODO: Replace when view is completed
-      component: () => import('../views/NotFound.vue')
+      component: () => import('../views/user/EditProfileInfo.vue'),
+      meta: {
+        requiresPermission: Permissions[Permissions.EditProfileInfo]
+      }
     },
     {
       path: '/change-password',

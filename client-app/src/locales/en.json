@@ -10,7 +10,8 @@
     "search": "Search",
     "clear": "Clear",
     "report": "Report",
-    "remove": "Remove"
+    "remove": "Remove",
+    "save": "Save"
   },
   "dataTable": {
     "pageReportTemplate": "{1} to {2} of {3}",
@@ -69,6 +70,7 @@
     "logout": "Logout",
     "register": "Register",
     "profileInfo": "Profile info",
+    "editProfileInfo": "Edit profile info",
     "advertisements": "Advertisements",
     "seeAdvertisements": "See advertisements",
     "savedAdvertisements": "Advertisement bookmarks",

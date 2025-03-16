@@ -11,6 +11,7 @@ public interface IBaseService<Entity> where Entity : class
     public Task<bool> ExistsAsync(Expression<Func<Entity, bool>> predicate);
     public Task<Entity> AddAsync(Entity entity);
     public Task<Entity> UpdateAsync(Entity entity);
+    public Task<Entity> RemoveAsync(Entity entity);
     public Task<Entity?> FirstOrDefaultAsync(Expression<Func<Entity, bool>> predicate);
     public IQueryable<Entity> Where(Expression<Func<Entity, bool>> predicate);
     public Task DeleteWhereAsync(Expression<Func<Entity, bool>> predicate);

@@ -5,6 +5,7 @@ using BusinessLogic.Authorization;
 using BusinessLogic.Constants;
 using BusinessLogic.Dto;
 using BusinessLogic.Dto.DataTableQuery;
+using BusinessLogic.Dto.User;
 using BusinessLogic.Entities;
 using BusinessLogic.Exceptions;
 using BusinessLogic.Helpers;
@@ -95,19 +96,23 @@ public class UserController(
         return Ok(res);
     }
 
-    [ProducesResponseType<UserInfo>(StatusCodes.Status200OK)]
-    [ProducesResponseType<NotFoundResult>(StatusCodes.Status404NotFound)]
+    [HasPermission(Permissions.ViewProfileInfo)]
     [HttpGet]
-    public async Task<IActionResult> GetUserInfo()
+    public async Task<UserInfo> GetUserInfo()
     {
         var userId = User.GetUserId()!;
-        var user = await _userManager.FindByIdAsync("" + userId.Value);
-        if (user is null)
-        {
-            return NotFound();
-        }
+        var user = await _userManager
+            .FindByIdAsync("" + userId.Value)
+            ?? throw new ApiException([CustomErrorCodes.UserNotFound]);
 
-        return Ok(_mapper.Map<UserInfo>(user, opt => opt.Items[nameof(Url)] = Url));
+        return _mapper.Map<UserInfo>(user, opt => opt.Items[nameof(Url)] = Url);
+    }
+
+    [HasPermission(Permissions.EditProfileInfo)]
+    [HttpPost]
+    public async Task UpdateUserInfo([FromForm] EditUserInfo request)
+    {
+        await _userService.UpdateUserInfo(request, User.GetUserId()!.Value);
     }
 
     [HttpGet]

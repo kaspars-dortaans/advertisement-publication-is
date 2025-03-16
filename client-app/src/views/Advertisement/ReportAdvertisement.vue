@@ -17,9 +17,9 @@
 
         <div class="flex flex-row gap-4 justify-center">
           <BackButton
-            icon=""
             :label="l.actions.cancel"
             :defaultTo="{ name: 'viewAdvertisement' }"
+            noIcon
           ></BackButton>
           <Button
             type="button"

@@ -122,7 +122,7 @@ const profileRoutes = computed(() => {
   return [
     {
       avatar: true,
-      url: profileInfo.value?.profileImageUrl ?? defaultProfileImageUrl,
+      url: profileInfo.value?.profileImageUrl?.thumbnailUrl ?? defaultProfileImageUrl,
       items: [
         {
           label: 'navigation.profileInfo',

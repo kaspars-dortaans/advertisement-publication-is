@@ -2,7 +2,7 @@
 using BusinessLogic.Entities;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
-using Web.Dto.Image;
+using BusinessLogic.Dto.Image;
 using Web.Helpers;
 
 namespace Web.Dto.Advertisement;

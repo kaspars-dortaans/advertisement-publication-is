@@ -14,7 +14,7 @@
     @clear="cancel()"
   >
     <template #empty>
-      <div class="flex items-center justify-center flex-col">
+      <div v-if="!resultImage && !editingImage" class="flex items-center justify-center flex-col">
         <i class="pi pi-cloud-upload !border-2 !rounded-full !p-8 !text-4xl !text-muted-color" />
         <p class="mt-6 mb-0">{{ l.form.common.dragAndDropToUpload }}</p>
       </div>
@@ -26,21 +26,20 @@
           <Button :label="l.actions.choose" @click="chooseCallback" icon="pi pi-plus"></Button>
           <Button
             v-if="editingImage"
-            :disabled="!files || files.length === 0"
             :label="l.actions.accept"
             icon="pi pi-check"
             severity="success"
-            @click="acceptEdit(files)"
+            @click="acceptEdit()"
           ></Button>
           <Button
             v-else
-            :disabled="!files || files.length === 0"
+            :disabled="files?.length === 0 && !resultImage"
             :label="l.actions.edit"
             icon="pi pi-pencil"
-            @click="editAcceptedImage()"
+            @click="editImage(resultImage!)"
           ></Button>
           <Button
-            :disabled="!files || files.length === 0"
+            :disabled="files?.length === 0 && !resultImage && !editingImage"
             :label="l.actions.cancel"
             icon="pi pi-times"
             severity="danger"
@@ -51,7 +50,7 @@
     </template>
 
     <template #content="{ removeFileCallback, files, messages }">
-      <div class="w-96 h-96">
+      <div class="w-96 h-96 max-w-full">
         <Cropper
           v-if="editingImage"
           ref="cropper"
@@ -80,7 +79,7 @@
 import { LocaleService } from '@/services/locale-service'
 import { getImageMimeType } from '@/utils/image-mime-type'
 import type { FileUploadSelectEvent } from 'primevue/fileupload'
-import { onMounted, reactive, ref, useTemplateRef } from 'vue'
+import { onUnmounted, reactive, ref, useTemplateRef, watch } from 'vue'
 import { CircleStencil, Cropper } from 'vue-advanced-cropper'
 import 'vue-advanced-cropper/dist/style.css'
 import FieldError from './FieldError.vue'
@@ -91,7 +90,9 @@ const { maxFileSize, allowedFileTypes } = defineProps<{
   allowedFileTypes: string
 }>()
 
+//Output
 const emit = defineEmits(['selectedInvalidFile'])
+const resultImage = defineModel<File | undefined>()
 
 //Services
 const l = LocaleService.currentLocale
@@ -99,13 +100,8 @@ const l = LocaleService.currentLocale
 //Refs
 const cropper = useTemplateRef('cropper')
 
-//Child props
+//Constants
 const stencilSize = 128
-
-const cropperSource = reactive({
-  img: '',
-  type: ''
-})
 const pt = {
   root: {
     class: ['flex', 'flex-col']
@@ -172,21 +168,46 @@ const pt = {
   }
 }
 
-//Flags
+//Reactive data
 const editingImage = ref(false)
+const cropperSource = reactive({
+  img: '',
+  type: '',
+  name: ''
+})
 
-//Values
-const resultImage = defineModel<Blob | undefined>()
+/** Local url to result image */
 const resultImageUrl = ref('')
 
+/** Holds last user selected and cropped image */
+const lastUserResult = ref<File | undefined>()
+
 //Hooks
-onMounted(() => {
-  clearCropperSource()
-  clearResult()
+onUnmounted(() => {
+  if (resultImageUrl.value) {
+    URL.revokeObjectURL(resultImageUrl.value)
+  }
+})
+
+//Watch
+watch(resultImage, (newImage) => {
+  //If resultImage was changed from this component, return
+  if (lastUserResult.value === newImage) {
+    return
+  }
+
+  if (newImage) {
+    if (resultImageUrl.value) {
+      URL.revokeObjectURL(resultImageUrl.value)
+    }
+    resultImageUrl.value = URL.createObjectURL(newImage)
+    editingImage.value = false
+  } else {
+    cancel()
+  }
 })
 
 //Methods
-
 const handleSelectImage = (e: FileUploadSelectEvent) => {
   const file = e.files.length ? e.files[e.files.length - 1] : null
   if (!file) {
@@ -203,15 +224,11 @@ const editImage = async (imgFile: File) => {
   clearCropperSource()
 
   cropperSource.img = URL.createObjectURL(imgFile)
-  cropperSource.type = await getImageMimeType(imgFile, imgFile.type)
-  editingImage.value = true
-  clearResult()
-}
-
-/**
- * Switch to edit mode and crop currently selected file
- */
-const editAcceptedImage = async () => {
+  cropperSource.type = await getImageMimeType(
+    imgFile,
+    imgFile.type ?? imgFile.name.slice(imgFile.name.lastIndexOf('.'))
+  )
+  cropperSource.name = imgFile.name
   editingImage.value = true
   clearResult()
 }
@@ -219,22 +236,23 @@ const editAcceptedImage = async () => {
 /**
  * Switch to display mode, display {@link Cropper} result
  */
-const acceptEdit = async (files: File[]) => {
+const acceptEdit = async () => {
   const croppedImage = await new Promise<File | null>((resolve) =>
     cropper.value?.getResult().canvas?.toBlob((blob: Blob | null) => {
-      resolve(new File([blob!], files[0].name))
+      resolve(new File([blob!], cropperSource.name))
     }, cropperSource.type)
   )
 
   if (croppedImage) {
     resultImage.value = croppedImage
+    lastUserResult.value = croppedImage
     resultImageUrl.value = URL.createObjectURL(croppedImage)
     editingImage.value = false
   }
 }
 
 /**
- * Removes previosly selected files
+ * Removes previously selected files
  * @param removeFilesCallback
  * @param fileCount
  */
@@ -257,9 +275,10 @@ const cancel = () => {
 const clearCropperSource = () => {
   if (cropperSource.img) {
     URL.revokeObjectURL(cropperSource.img)
-    cropperSource.img = ''
-    cropperSource.type = ''
   }
+  cropperSource.img = ''
+  cropperSource.type = ''
+  cropperSource.name = ''
 }
 
 /**
@@ -271,5 +290,6 @@ const clearResult = () => {
     resultImageUrl.value = ''
   }
   resultImage.value = undefined
+  lastUserResult.value = undefined
 }
 </script>
