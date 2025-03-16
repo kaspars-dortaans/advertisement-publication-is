@@ -5,9 +5,7 @@
         <span class="text-2xl">{{ l.navigation.login }}</span>
       </template>
       <form class="flex-none flex flex-col items-center gap-2 min-w-80 bg-white" @submit="tryLogin">
-        <Message v-if="fieldHelper.formErrors.value" severity="error">{{
-          fieldHelper.formErrors
-        }}</Message>
+        <Message v-if="formErrors" severity="error">{{ formErrors }}</Message>
 
         <InputGroup>
           <InputGroupAddon>
@@ -74,7 +72,7 @@ const l = LocaleService.currentLocale
 const navigation = AppNavigation.get()
 
 //Form
-const form = useForm({
+const form = useForm<ILoginDto>({
   validationSchema: toTypedSchema(
     object({
       email: string().required().email(),
@@ -83,9 +81,8 @@ const form = useForm({
   )
 })
 const { values, handleSubmit } = form
-const fieldHelper = new FieldHelper<ILoginDto>(form)
-fieldHelper.defineMultipleFields(['email', 'password'])
-const fields = fieldHelper.fields
+const { fields, formErrors, defineMultipleFields, handleErrors } = new FieldHelper(form)
+defineMultipleFields(['email', 'password'])
 
 const tryLogin = handleSubmit(async () => {
   const loginDto = new LoginDto(values)
@@ -103,7 +100,7 @@ const tryLogin = handleSubmit(async () => {
       push({ name: 'home' })
     }
   } catch (error) {
-    fieldHelper.handleErrors(error)
+    handleErrors(error)
   }
 })
 </script>

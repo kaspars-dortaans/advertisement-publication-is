@@ -185,12 +185,12 @@ onBeforeMount(async () => {
 
   setValues(
     new EditUserInfo({
-      userName: userInfo?.userName,
-      firstName: userInfo?.firstName,
-      lastName: userInfo?.lastName,
-      email: userInfo?.email,
+      userName: userInfo?.userName!,
+      firstName: userInfo?.firstName!,
+      lastName: userInfo?.lastName!,
+      email: userInfo?.email!,
       isEmailPublic: userInfo?.isEmailPublic,
-      phoneNumber: userInfo?.phoneNumber,
+      phoneNumber: userInfo?.phoneNumber!,
       isPhoneNumberPublic: userInfo?.isPhoneNumberPublic,
       linkToUserSite: userInfo?.linkToUserSite,
       profileImage: profileImage
@@ -212,13 +212,13 @@ const onSubmit = handleSubmit(async () => {
         : undefined
 
     await userService.updateUserInfo(
+      values.email,
+      values.isEmailPublic,
       values.firstName,
       values.lastName,
       values.userName,
-      values.isPhoneNumberPublic,
       values.phoneNumber,
-      values.isEmailPublic,
-      values.email,
+      values.isPhoneNumberPublic,
       values.linkToUserSite,
       profileImageChanged,
       profileImage

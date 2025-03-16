@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using BusinessLogic.Constants;
-using BusinessLogic.Dto.User;
 using BusinessLogic.Entities;
 using BusinessLogic.Exceptions;
 using BusinessLogic.Helpers;
@@ -139,25 +138,25 @@ public class UserService(
             .Distinct();
     }
 
-    public async Task UpdateUserInfo(EditUserInfo info, int id)
+    /// <summary>
+    /// If profile image needs to be changed, user entity must have loaded profileImageFile relational entity
+    /// </summary>
+    /// <param name="user"></param>
+    /// <param name="updateProfileImage"></param>
+    /// <param name="profileImage"></param>
+    /// <returns></returns>
+    public async Task UpdateUserInfo(User user, bool updateProfileImage, IFormFile? profileImage)
     {
         //Update user
-        var user = await DbSet
-            .Include(u => u.ProfileImageFile)
-            .FirstOrDefaultAsync(u => u.Id == id)
-            ?? throw new ApiException([CustomErrorCodes.UserNotFound]);
-
-        _mapper.Map(info, user);
         var existingProfileImage = user.ProfileImageFile;
-
-        if (info.ProfileImageChanged)
+        if (updateProfileImage)
         {
             user.ProfileImageFileId = null;
         }
 
         HandleIdentityUserResult(await _userManager.UpdateAsync(user));
 
-        if (info.ProfileImageChanged)
+        if (updateProfileImage)
         {
             //Delete existing profile image
             if (existingProfileImage is not null)
@@ -174,10 +173,12 @@ public class UserService(
             }
 
             //Save new profile image
-            if (info.ProfileImage is not null)
+            if (profileImage is not null)
             {
-                await SaveProfileImage(info.Email, info.ProfileImage);
+                await SaveProfileImage(user.Email!, profileImage);
             }
+            }
+
         }
 
     }

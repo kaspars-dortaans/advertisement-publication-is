@@ -1,6 +1,6 @@
 ﻿using BusinessLogic.Dto.Image;
 
-namespace BusinessLogic.Dto.User;
+namespace Web.Dto.User;
 
 public class UserInfo
 {

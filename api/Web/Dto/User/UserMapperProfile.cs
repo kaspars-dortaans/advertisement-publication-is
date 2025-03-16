@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using BusinessLogic.Dto.Image;
-using BusinessLogic.Dto.User;
 using Web.Helpers;
 
 namespace Web.Dto.User;

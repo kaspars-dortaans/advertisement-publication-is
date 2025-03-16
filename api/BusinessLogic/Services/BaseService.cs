@@ -96,4 +96,9 @@ public class BaseService<Entity> : IBaseService<Entity> where Entity : class
             throw;
         }
     }
+
+    public IQueryable<Entity> Include<TProperty>(Expression<Func<Entity, TProperty>> navigationPropertyPath)
+    {
+        return DbSet.Include(navigationPropertyPath);
+    }
 }

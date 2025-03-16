@@ -22,4 +22,5 @@ public interface IBaseService<Entity> where Entity : class
     /// <param name="entity"></param>
     /// <returns>If entity was added</returns>
     public Task<bool> AddIfNotExistsAsync(Entity entity);
+    public IQueryable<Entity> Include<TProperty>(Expression<Func<Entity, TProperty>> navigationPropertyPath);
 }

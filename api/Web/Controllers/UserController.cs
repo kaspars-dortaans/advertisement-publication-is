@@ -5,7 +5,6 @@ using BusinessLogic.Authorization;
 using BusinessLogic.Constants;
 using BusinessLogic.Dto;
 using BusinessLogic.Dto.DataTableQuery;
-using BusinessLogic.Dto.User;
 using BusinessLogic.Entities;
 using BusinessLogic.Exceptions;
 using BusinessLogic.Helpers;
@@ -112,7 +111,16 @@ public class UserController(
     [HttpPost]
     public async Task UpdateUserInfo([FromForm] EditUserInfo request)
     {
-        await _userService.UpdateUserInfo(request, User.GetUserId()!.Value);
+        var userId = User.GetUserId()!.Value;
+
+        var user = await _userService
+            .Include(u => u.ProfileImageFile)
+            .FirstOrDefaultAsync(u => u.Id == userId)
+            ?? throw new ApiException([CustomErrorCodes.UserNotFound]);
+
+        _mapper.Map(request, user);
+
+        await _userService.UpdateUserInfo(user, request.ProfileImageChanged, request.ProfileImage);
     }
 
     [HttpGet]

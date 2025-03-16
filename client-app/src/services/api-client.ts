@@ -1163,41 +1163,51 @@ export class UserClient {
     }
 
     /**
+     * @param email (optional) 
+     * @param isEmailPublic (optional) 
      * @param firstName (optional) 
      * @param lastName (optional) 
      * @param userName (optional) 
-     * @param isPhoneNumberPublic (optional) 
      * @param phoneNumber (optional) 
-     * @param isEmailPublic (optional) 
-     * @param email (optional) 
+     * @param isPhoneNumberPublic (optional) 
      * @param linkToUserSite (optional) 
      * @param profileImageChanged (optional) 
      * @param profileImage (optional) 
      * @return Success
      */
-    updateUserInfo(firstName: string | null | undefined, lastName: string | null | undefined, userName: string | null | undefined, isPhoneNumberPublic: boolean | undefined, phoneNumber: string | null | undefined, isEmailPublic: boolean | undefined, email: string | null | undefined, linkToUserSite: string | null | undefined, profileImageChanged: boolean | undefined, profileImage: FileParameter | null | undefined, cancelToken?: CancelToken): Promise<void> {
+    updateUserInfo(email: string | undefined, isEmailPublic: boolean | undefined, firstName: string | undefined, lastName: string | undefined, userName: string | undefined, phoneNumber: string | undefined, isPhoneNumberPublic: boolean | undefined, linkToUserSite: string | null | undefined, profileImageChanged: boolean | undefined, profileImage: FileParameter | null | undefined, cancelToken?: CancelToken): Promise<void> {
         let url_ = this.baseUrl + "/api/User/UpdateUserInfo";
         url_ = url_.replace(/[?&]$/, "");
 
         const content_ = new FormData();
-        if (firstName !== null && firstName !== undefined)
-            content_.append("firstName", firstName.toString());
-        if (lastName !== null && lastName !== undefined)
-            content_.append("lastName", lastName.toString());
-        if (userName !== null && userName !== undefined)
-            content_.append("userName", userName.toString());
-        if (isPhoneNumberPublic === null || isPhoneNumberPublic === undefined)
-            throw new Error("The parameter 'isPhoneNumberPublic' cannot be null.");
+        if (email === null || email === undefined)
+            throw new Error("The parameter 'email' cannot be null.");
         else
-            content_.append("isPhoneNumberPublic", isPhoneNumberPublic.toString());
-        if (phoneNumber !== null && phoneNumber !== undefined)
-            content_.append("phoneNumber", phoneNumber.toString());
+            content_.append("email", email.toString());
         if (isEmailPublic === null || isEmailPublic === undefined)
             throw new Error("The parameter 'isEmailPublic' cannot be null.");
         else
             content_.append("isEmailPublic", isEmailPublic.toString());
-        if (email !== null && email !== undefined)
-            content_.append("email", email.toString());
+        if (firstName === null || firstName === undefined)
+            throw new Error("The parameter 'firstName' cannot be null.");
+        else
+            content_.append("firstName", firstName.toString());
+        if (lastName === null || lastName === undefined)
+            throw new Error("The parameter 'lastName' cannot be null.");
+        else
+            content_.append("lastName", lastName.toString());
+        if (userName === null || userName === undefined)
+            throw new Error("The parameter 'userName' cannot be null.");
+        else
+            content_.append("userName", userName.toString());
+        if (phoneNumber === null || phoneNumber === undefined)
+            throw new Error("The parameter 'phoneNumber' cannot be null.");
+        else
+            content_.append("phoneNumber", phoneNumber.toString());
+        if (isPhoneNumberPublic === null || isPhoneNumberPublic === undefined)
+            throw new Error("The parameter 'isPhoneNumberPublic' cannot be null.");
+        else
+            content_.append("isPhoneNumberPublic", isPhoneNumberPublic.toString());
         if (linkToUserSite !== null && linkToUserSite !== undefined)
             content_.append("linkToUserSite", linkToUserSite.toString());
         if (profileImageChanged === null || profileImageChanged === undefined)
@@ -1928,8 +1938,8 @@ export interface IAuthenticationProperties {
 }
 
 export class BookmarkAdvertisementRequest implements IBookmarkAdvertisementRequest {
-    advertisementId?: number;
-    addBookmark?: boolean;
+    advertisementId!: number;
+    addBookmark!: boolean;
 
     constructor(data?: IBookmarkAdvertisementRequest) {
         if (data) {
@@ -1963,8 +1973,8 @@ export class BookmarkAdvertisementRequest implements IBookmarkAdvertisementReque
 }
 
 export interface IBookmarkAdvertisementRequest {
-    advertisementId?: number;
-    addBookmark?: boolean;
+    advertisementId: number;
+    addBookmark: boolean;
 }
 
 export class CategoryAttributeInfo implements ICategoryAttributeInfo {
@@ -2096,9 +2106,9 @@ export interface ICategoryInfo {
 }
 
 export class CategoryItem implements ICategoryItem {
-    id!: number;
-    name!: string;
-    canContainAdvertisements!: boolean;
+    id?: number;
+    name?: string | undefined;
+    canContainAdvertisements?: boolean;
     parentCategoryId?: number | undefined;
     advertisementCount?: number | undefined;
 
@@ -2140,9 +2150,9 @@ export class CategoryItem implements ICategoryItem {
 }
 
 export interface ICategoryItem {
-    id: number;
-    name: string;
-    canContainAdvertisements: boolean;
+    id?: number;
+    name?: string | undefined;
+    canContainAdvertisements?: boolean;
     parentCategoryId?: number | undefined;
     advertisementCount?: number | undefined;
 }
@@ -2220,13 +2230,13 @@ export interface IDataTableQuery {
 }
 
 export class EditUserInfo implements IEditUserInfo {
-    firstName?: string | undefined;
-    lastName?: string | undefined;
-    userName?: string | undefined;
-    isPhoneNumberPublic?: boolean;
-    phoneNumber?: string | undefined;
+    email!: string;
     isEmailPublic?: boolean;
-    email?: string | undefined;
+    firstName!: string;
+    lastName!: string;
+    userName!: string;
+    phoneNumber!: string;
+    isPhoneNumberPublic?: boolean;
     linkToUserSite?: string | undefined;
     profileImageChanged?: boolean;
     profileImage?: any | undefined;
@@ -2242,13 +2252,13 @@ export class EditUserInfo implements IEditUserInfo {
 
     init(_data?: any) {
         if (_data) {
+            this.email = _data["email"];
+            this.isEmailPublic = _data["isEmailPublic"];
             this.firstName = _data["firstName"];
             this.lastName = _data["lastName"];
             this.userName = _data["userName"];
-            this.isPhoneNumberPublic = _data["isPhoneNumberPublic"];
             this.phoneNumber = _data["phoneNumber"];
-            this.isEmailPublic = _data["isEmailPublic"];
-            this.email = _data["email"];
+            this.isPhoneNumberPublic = _data["isPhoneNumberPublic"];
             this.linkToUserSite = _data["linkToUserSite"];
             this.profileImageChanged = _data["profileImageChanged"];
             this.profileImage = _data["profileImage"];
@@ -2264,13 +2274,13 @@ export class EditUserInfo implements IEditUserInfo {
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
+        data["email"] = this.email;
+        data["isEmailPublic"] = this.isEmailPublic;
         data["firstName"] = this.firstName;
         data["lastName"] = this.lastName;
         data["userName"] = this.userName;
-        data["isPhoneNumberPublic"] = this.isPhoneNumberPublic;
         data["phoneNumber"] = this.phoneNumber;
-        data["isEmailPublic"] = this.isEmailPublic;
-        data["email"] = this.email;
+        data["isPhoneNumberPublic"] = this.isPhoneNumberPublic;
         data["linkToUserSite"] = this.linkToUserSite;
         data["profileImageChanged"] = this.profileImageChanged;
         data["profileImage"] = this.profileImage;
@@ -2279,13 +2289,13 @@ export class EditUserInfo implements IEditUserInfo {
 }
 
 export interface IEditUserInfo {
-    firstName?: string | undefined;
-    lastName?: string | undefined;
-    userName?: string | undefined;
-    isPhoneNumberPublic?: boolean;
-    phoneNumber?: string | undefined;
+    email: string;
     isEmailPublic?: boolean;
-    email?: string | undefined;
+    firstName: string;
+    lastName: string;
+    userName: string;
+    phoneNumber: string;
+    isPhoneNumberPublic?: boolean;
     linkToUserSite?: string | undefined;
     profileImageChanged?: boolean;
     profileImage?: any | undefined;
@@ -2426,8 +2436,8 @@ export interface IInt32StringKeyValuePair {
 }
 
 export class LoginDto implements ILoginDto {
-    email?: string | undefined;
-    password?: string | undefined;
+    email!: string;
+    password!: string;
 
     constructor(data?: ILoginDto) {
         if (data) {
@@ -2461,8 +2471,8 @@ export class LoginDto implements ILoginDto {
 }
 
 export interface ILoginDto {
-    email?: string | undefined;
-    password?: string | undefined;
+    email: string;
+    password: string;
 }
 
 export class NotFoundResult implements INotFoundResult {

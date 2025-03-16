@@ -201,7 +201,7 @@ const bookmarkAdvertisement = async () => {
   savingBookmark.value = true
   await advertisementService.bookmarkAdvertisement(
     new BookmarkAdvertisementRequest({
-      advertisementId: advertisement.value.id,
+      advertisementId: advertisement.value.id!,
       addBookmark: !advertisement.value.isBookmarked
     })
   )
