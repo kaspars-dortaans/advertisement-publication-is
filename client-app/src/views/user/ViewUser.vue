@@ -1,8 +1,9 @@
 <template>
   <ResponsiveLayout>
-    <BlockUI :blocked="loadingInfo" class="flex-none min-w-60 w-full lg:max-w-60 xl:max-w-80">
-      <ComponentSpinner :show="loadingInfo" />
-
+    <BlockWithSpinner
+      :loading="loadingInfo"
+      class="flex-none min-w-60 w-full lg:max-w-60 xl:max-w-80"
+    >
       <Panel class="bg-white rounded-none lg:rounded-md">
         <template #header>
           <div class="panel-title-container">
@@ -42,7 +43,7 @@
           </InputGroup>
         </div>
       </Panel>
-    </BlockUI>
+    </BlockWithSpinner>
 
     <AdvertisementTable
       :advertisementSource="loadUserAdvertisements"
@@ -55,7 +56,7 @@
 <script setup lang="ts">
 import AdvertisementTable from '@/components/AdvertisementTable.vue'
 import BackButton from '@/components/BackButton.vue'
-import ComponentSpinner from '@/components/Common/ComponentSpinner.vue'
+import BlockWithSpinner from '@/components/Common/BlockWithSpinner.vue'
 import ResponsiveLayout from '@/components/Common/ResponsiveLayout.vue'
 import {
   AdvertisementClient,

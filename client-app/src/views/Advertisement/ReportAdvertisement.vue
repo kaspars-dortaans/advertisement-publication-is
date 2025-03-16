@@ -22,7 +22,7 @@
             noIcon
           ></BackButton>
           <Button
-            type="button"
+            type="submit"
             :label="l.actions.report"
             :loading="isSubmitting"
             @click="report"

@@ -1,116 +1,119 @@
 <template>
   <ResponsiveLayout>
-    <Panel>
-      <template #header>
-        <div class="panel-title-container">
-          <BackButton :default-to="{ name: 'profileInfo' }" />
-          <h3 class="page-title">{{ l.navigation.editProfileInfo }}</h3>
-        </div>
-      </template>
-      <form class="flex flex-col gap-3 md:items-center bg-white" @submit="onSubmit">
-        <div class="flex flex-col gap-5 items-center lg:flex-row">
-          <div class="flex flex-col gap-2 min-w-full md:min-w-80">
-            <Message v-if="hasFormErrors" severity="error">{{ formErrors }}</Message>
+    <BlockWithSpinner :loading="loading">
+      <Panel>
+        <template #header>
+          <div class="panel-title-container">
+            <BackButton :default-to="{ name: 'profileInfo' }" />
+            <h3 class="page-title">{{ l.navigation.editProfileInfo }}</h3>
+          </div>
+        </template>
+        <form class="flex flex-col gap-3 md:items-center bg-white" @submit="onSubmit">
+          <div class="flex flex-col gap-5 items-center lg:flex-row">
+            <div class="flex flex-col gap-2 min-w-full md:min-w-80">
+              <Message v-if="hasFormErrors" severity="error">{{ formErrors }}</Message>
 
-            <InputText
-              v-model="fields.firstName!.value"
-              v-bind="fields.firstName?.attributes"
-              :placeholder="l.form.register.firstName"
-              :invalid="fields.firstName!.hasError"
-            />
-            <FieldError :field="fields.firstName" />
-
-            <InputText
-              v-model="fields.lastName!.value"
-              v-bind="fields.lastName?.attributes"
-              :placeholder="l.form.register.lastName"
-              :invalid="fields.lastName!.hasError"
-            />
-            <FieldError :field="fields.lastName" />
-
-            <InputText
-              v-model="fields.userName!.value"
-              v-bind="fields.userName?.attributes"
-              :placeholder="l.form.register.username"
-              :invalid="fields.userName!.hasError"
-            />
-            <FieldError :field="fields.userName" />
-
-            <InputText
-              v-model="fields.email!.value"
-              v-bind="fields.email!.attributes"
-              :placeholder="l.form.register.email"
-              :invalid="fields.email!.hasError"
-            />
-            <FieldError :field="fields.email" />
-
-            <div class="flex items-center">
-              <Checkbox
-                v-model="fields.isEmailPublic!.value"
-                v-bind="fields.isEmailPublic?.attributes"
-                :invalid="fields.isEmailPublic!.hasError"
-                :binary="true"
-                inputId="register.isEmailPublic"
+              <InputText
+                v-model="fields.firstName!.value"
+                v-bind="fields.firstName?.attributes"
+                :placeholder="l.form.register.firstName"
+                :invalid="fields.firstName!.hasError"
               />
-              <label class="ml-2" for="register.isEmailPublic">{{
-                l.form.register.publiclyDisplayEmail
-              }}</label>
-            </div>
-            <FieldError :field="fields.isEmailPublic" />
+              <FieldError :field="fields.firstName" />
 
-            <InputText
-              v-model="fields.phoneNumber!.value"
-              v-bind="fields.phoneNumber?.attributes"
-              :placeholder="l.form.register.phoneNumber"
-              :invalid="fields.phoneNumber!.hasError"
-            />
-            <FieldError :field="fields.phoneNumber" />
-
-            <div class="flex items-center">
-              <Checkbox
-                v-model="fields.isPhoneNumberPublic!.value"
-                v-bind="fields.isPhoneNumberPublic?.attributes"
-                :invalid="!!fields.isPhoneNumberPublic!.hasError"
-                :binary="true"
-                inputId="register.isPhonePublic"
+              <InputText
+                v-model="fields.lastName!.value"
+                v-bind="fields.lastName?.attributes"
+                :placeholder="l.form.register.lastName"
+                :invalid="fields.lastName!.hasError"
               />
-              <label class="ml-2" for="register.isPhonePublic">{{
-                l.form.register.publiclyDisplayPhoneNumber
-              }}</label>
+              <FieldError :field="fields.lastName" />
+
+              <InputText
+                v-model="fields.userName!.value"
+                v-bind="fields.userName?.attributes"
+                :placeholder="l.form.register.username"
+                :invalid="fields.userName!.hasError"
+              />
+              <FieldError :field="fields.userName" />
+
+              <InputText
+                v-model="fields.email!.value"
+                v-bind="fields.email!.attributes"
+                :placeholder="l.form.register.email"
+                :invalid="fields.email!.hasError"
+              />
+              <FieldError :field="fields.email" />
+
+              <div class="flex items-center">
+                <Checkbox
+                  v-model="fields.isEmailPublic!.value"
+                  v-bind="fields.isEmailPublic?.attributes"
+                  :invalid="fields.isEmailPublic!.hasError"
+                  :binary="true"
+                  inputId="register.isEmailPublic"
+                />
+                <label class="ml-2" for="register.isEmailPublic">{{
+                  l.form.register.publiclyDisplayEmail
+                }}</label>
+              </div>
+              <FieldError :field="fields.isEmailPublic" />
+
+              <InputText
+                v-model="fields.phoneNumber!.value"
+                v-bind="fields.phoneNumber?.attributes"
+                :placeholder="l.form.register.phoneNumber"
+                :invalid="fields.phoneNumber!.hasError"
+              />
+              <FieldError :field="fields.phoneNumber" />
+
+              <div class="flex items-center">
+                <Checkbox
+                  v-model="fields.isPhoneNumberPublic!.value"
+                  v-bind="fields.isPhoneNumberPublic?.attributes"
+                  :invalid="!!fields.isPhoneNumberPublic!.hasError"
+                  :binary="true"
+                  inputId="register.isPhonePublic"
+                />
+                <label class="ml-2" for="register.isPhonePublic">{{
+                  l.form.register.publiclyDisplayPhoneNumber
+                }}</label>
+              </div>
+              <FieldError :field="fields.isPhoneNumberPublic" />
             </div>
-            <FieldError :field="fields.isPhoneNumberPublic" />
+
+            <ImageUpload
+              v-model="fields.profileImage!.value"
+              v-bind="fields.profileImage?.attributes"
+              :invalid="fields.profileImage?.hasError"
+              :maxFileSize="ProfileImageConstants.MaxFileSizeInBytes"
+              :allowedFileTypes="ProfileImageConstants.AllowedFileTypes"
+            />
           </div>
 
-          <ImageUpload
-            v-model="fields.profileImage!.value"
-            v-bind="fields.profileImage?.attributes"
-            :invalid="fields.profileImage?.hasError"
-            :maxFileSize="ProfileImageConstants.MaxFileSizeInBytes"
-            :allowedFileTypes="ProfileImageConstants.AllowedFileTypes"
-          />
-        </div>
-
-        <div class="flex flex-wrap gap-2">
-          <BackButton
-            :default-to="{ name: 'profileInfo' }"
-            :label="l.actions.cancel"
-            class="flex-auto lg:flex-none"
-            noIcon
-          />
-          <Button
-            type="submit"
-            :label="l.actions.save"
-            :loading="isSubmitting"
-            class="flex-auto lg:flex-none"
-          />
-        </div>
-      </form>
-    </Panel>
+          <div class="flex flex-wrap gap-2">
+            <BackButton
+              :default-to="{ name: 'profileInfo' }"
+              :label="l.actions.cancel"
+              class="flex-auto lg:flex-none"
+              noIcon
+            />
+            <Button
+              type="submit"
+              :label="l.actions.save"
+              :loading="isSubmitting"
+              class="flex-auto lg:flex-none"
+            />
+          </div>
+        </form>
+      </Panel>
+    </BlockWithSpinner>
   </ResponsiveLayout>
 </template>
 
 <script setup lang="ts">
 import BackButton from '@/components/BackButton.vue'
+import BlockWithSpinner from '@/components/Common/BlockWithSpinner.vue'
 import ResponsiveLayout from '@/components/Common/ResponsiveLayout.vue'
 import FieldError from '@/components/Form/FieldError.vue'
 import ImageUpload from '@/components/Form/ImageUpload.vue'
@@ -166,9 +169,11 @@ defineMultipleFields([
 
 //Reactive data
 const originalProfileImage = ref<File | undefined>()
+const loading = ref(false)
 
 //Hooks
 onBeforeMount(async () => {
+  loading.value = true
   await authService.refreshProfileData()
   const userInfo = await AuthService.profileInfo.value
 
@@ -191,6 +196,7 @@ onBeforeMount(async () => {
       profileImage: profileImage
     })
   )
+  loading.value = false
 })
 
 //Methods

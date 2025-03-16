@@ -36,7 +36,7 @@
         </InputGroup>
         <FieldError :field="fields.password" />
 
-        <Button class="mt-1" :label="l.navigation.login" @click="tryLogin" />
+        <Button class="mt-1" :label="l.navigation.login" type="submit" @click="tryLogin" />
         <p>
           <span>{{ l.form.login.doNotHaveAnAccountQuestion }}</span>
           <RouterLink class="ml-1 link" :to="{ name: 'register' }">{{
