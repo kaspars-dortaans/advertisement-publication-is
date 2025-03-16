@@ -103,7 +103,7 @@ import { LocaleService } from '@/services/locale-service'
 import type { IAdvertisementHistoryRecord } from '@/types/advertisements/advertisement-history-record'
 import { getClient } from '@/utils/client-builder'
 import { updateStorageObject } from '@/utils/local-storage'
-import { computed, onMounted, ref, watch, type Ref } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 
 //Props
@@ -124,7 +124,7 @@ const panelPt = {
 }
 
 //Reactive data
-const advertisement: Ref<AdvertisementDto> = ref(new AdvertisementDto())
+const advertisement = ref<AdvertisementDto>(new AdvertisementDto())
 const bookmarkIcon = computed(() => {
   return 'pi pi-bookmark' + (advertisement.value.isBookmarked ? '-fill' : '')
 })

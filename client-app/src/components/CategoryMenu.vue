@@ -17,7 +17,7 @@ import { LocaleService } from '@/services/locale-service'
 import { buildNodeHierarchy } from '@/utils/build-node-hierarchy'
 import { getClient } from '@/utils/client-builder'
 import type { TreeNode } from 'primevue/treenode'
-import { nextTick, onMounted, ref, watch, type Ref } from 'vue'
+import { nextTick, onMounted, ref, watch } from 'vue'
 
 // Component output
 const model = defineModel()
@@ -28,10 +28,10 @@ const advertisementService = getClient(AdvertisementClient)
 const l = LocaleService.currentLocale
 
 // Reactive data
-const categoryNodes: Ref<TreeNode[]> = ref([])
-const displayedCategoryNodes: Ref<TreeNode[]> = ref([])
+const categoryNodes = ref<TreeNode[]>([])
+const displayedCategoryNodes = ref<TreeNode[]>([])
 const selectedCategoryKeys = ref({})
-const expandedCategoryKeys: Ref<{ [key: string]: boolean }> = ref({})
+const expandedCategoryKeys = ref<{ [key: string]: boolean }>({})
 
 // Constants
 const newCategoryKey = 'new-category'

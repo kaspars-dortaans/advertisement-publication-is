@@ -25,15 +25,15 @@ import { LocaleService } from '@/services/locale-service'
 import type { IAdvertisementHistoryRecord } from '@/types/advertisements/advertisement-history-record'
 import { getClient } from '@/utils/client-builder'
 import { updateStorageObject } from '@/utils/local-storage'
-import { onBeforeMount, ref, watch, type Ref } from 'vue'
+import { onBeforeMount, ref, watch } from 'vue'
 
 //Services
 const advertisementService = getClient(AdvertisementClient)
 const l = LocaleService.currentLocale
 
 //Reactive data
-const advertisementIds: Ref<number[]> = ref([])
-const advertisementCategories: Ref<Int32StringKeyValuePair[]> = ref([])
+const advertisementIds = ref<number[]>([])
+const advertisementCategories = ref<Int32StringKeyValuePair[]>([])
 
 //Hooks
 onBeforeMount(async () => {

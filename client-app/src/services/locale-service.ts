@@ -1,8 +1,8 @@
 import { DefaultLocaleName } from '@/constants/default-locale'
-import { usePrimeVue, type PrimeVueLocaleOptions } from 'primevue/config'
-import { ref, type Ref } from 'vue'
-import { Settings } from './settings'
 import { emptyLocale } from '@/init/empty-locale'
+import { usePrimeVue, type PrimeVueLocaleOptions } from 'primevue/config'
+import { ref } from 'vue'
+import { Settings } from './settings'
 
 export class LocaleService {
   private static _instance: LocaleService
@@ -15,20 +15,20 @@ export class LocaleService {
     //For some reason when importing json already converted to js object
     //Conversion did not work for top level properties which are not object type
     //Therefore import raw json and parse it on client
-    { as: 'raw' }
+    { query: '?raw', import: 'default' }
   )
 
   /** map Locale name -> locale file promise key*/
   private _localeMap: Map<string, string>
 
   /** List with available locales */
-  readonly localeList: Ref<string[]> = ref([])
+  readonly localeList = ref<string[]>([])
 
   /** Currently selected locale name */
   static readonly currentLocaleName = ref('')
 
   /** Currently selected locale */
-  static readonly currentLocale: Ref<any> = ref({})
+  static readonly currentLocale = ref<any>({})
 
   /** Static method to get singleton instance */
   public static get(primevue?: ReturnType<typeof usePrimeVue>) {

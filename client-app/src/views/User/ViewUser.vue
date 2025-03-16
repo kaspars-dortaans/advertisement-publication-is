@@ -65,7 +65,7 @@ import {
 } from '@/services/api-client'
 import { LocaleService } from '@/services/locale-service'
 import { getClient } from '@/utils/client-builder'
-import { onMounted, ref, type Ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 
 //Props
@@ -80,7 +80,7 @@ const userService = getClient(UserClient)
 const l = LocaleService.currentLocale
 
 //Reactive data
-const userInfo: Ref<PublicUserInfoDto | undefined> = ref()
+const userInfo = ref<PublicUserInfoDto | undefined>()
 const loadingInfo = ref(false)
 
 onMounted(() => {

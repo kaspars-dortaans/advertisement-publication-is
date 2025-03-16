@@ -21,12 +21,12 @@ import CategoryMenu from '@/components/CategoryMenu.vue'
 import ResponsiveLayout from '@/components/Common/ResponsiveLayout.vue'
 import { AdvertisementClient } from '@/services/api-client'
 import { getClient } from '@/utils/client-builder'
-import { ref, type Ref } from 'vue'
+import { ref } from 'vue'
 
 //Services
 const advertisementService = getClient(AdvertisementClient)
 
 //Reactive data
-const categoryId: Ref<number | null> = ref(null)
-const selectedCategoryName: Ref<string> = ref('')
+const categoryId = ref<number | null>(null)
+const selectedCategoryName = ref<string>('')
 </script>

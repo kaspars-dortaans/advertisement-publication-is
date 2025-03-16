@@ -1,7 +1,7 @@
 import { AuthHeaderName, TokenStorageKey } from '@/constants/auth'
 import { axiosInstance } from '@/init/axios'
 import { getClient } from '@/utils/client-builder'
-import { ref, type Ref } from 'vue'
+import { ref } from 'vue'
 import { UserClient, UserInfo, type LoginDto } from './api-client'
 
 export class AuthService {
@@ -9,13 +9,13 @@ export class AuthService {
   private static _instance: AuthService
 
   /** Current user id */
-  public static readonly permissions: Ref<Promise<string[]>> = ref(Promise.resolve([]))
+  public static readonly permissions = ref<Promise<string[]>>(Promise.resolve([]))
 
   /** Basic user info */
-  public static readonly profileInfo: Ref<Promise<UserInfo | null>> = ref(Promise.resolve(null))
+  public static readonly profileInfo = ref<Promise<UserInfo | null>>(Promise.resolve(null))
 
   /** Is user authenticated flag */
-  public static readonly isAuthenticated: Ref<boolean> = ref(false)
+  public static readonly isAuthenticated = ref<boolean>(false)
 
   /** Api user service */
   private readonly userService = getClient(UserClient)

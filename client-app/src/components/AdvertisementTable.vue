@@ -135,7 +135,7 @@ import {
   type DataTableSortEvent,
   type DataTableSortMeta
 } from 'primevue'
-import { computed, onMounted, ref, watch, type ComputedRef, type Ref } from 'vue'
+import { computed, onMounted, ref, watch, type ComputedRef } from 'vue'
 
 const {
   advertisementSource,
@@ -198,10 +198,10 @@ const loadCount = ref(0)
 const pageReportTemplate = ref('')
 
 /** Holds data for selected category, if any */
-const categoryInfo: Ref<CategoryInfo> = ref(new CategoryInfo())
+const categoryInfo = ref<CategoryInfo>(new CategoryInfo())
 
 /** In data table filter selected category id */
-const categoryFilterModel: Ref<number | undefined> = ref()
+const categoryFilterModel = ref<number | undefined>()
 
 /** Resulting selected category id in filter or passed as prop */
 const selectedCategoryId = computed(() =>
@@ -215,10 +215,10 @@ const expandedRowGroups = ref()
 const selectedRows = ref()
 
 /** Sorting query for api request */
-const attributeOrderQuery: Ref<AttributeOrderQuery[]> = ref([])
+const attributeOrderQuery = ref<AttributeOrderQuery[]>([])
 
 /** Filter query for api request */
-const attributeFilterQuery: Ref<AttributeSearchQuery[]> = ref([])
+const attributeFilterQuery = ref<AttributeSearchQuery[]>([])
 
 /** Index for first record on page for api request */
 const pageFirstRecord = ref(0)
@@ -230,10 +230,10 @@ const pageRecordCount = ref(DefaultPageSize)
 const totalRecordCount = ref(0)
 
 /** Data table category filter models */
-const filter: Ref<{ [key: string]: (string | number)[] }> = ref({})
+const filter = ref<{ [key: string]: (string | number)[] }>({})
 
 /** Loaded advertisements from api */
-const advertisements: Ref<AdvertisementListItem[]> = ref([])
+const advertisements = ref<AdvertisementListItem[]>([])
 
 /** Columns with sortable flag */
 const sortableColumns = computed(() => categoryInfo.value.attributeInfo?.filter((a) => a.sortable))

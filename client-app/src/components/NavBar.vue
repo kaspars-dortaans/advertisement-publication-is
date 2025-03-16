@@ -43,7 +43,7 @@ import { AuthService } from '@/services/auth-service'
 import { LocaleService } from '@/services/locale-service'
 import type { INavbarItem } from '@/types/navbar/navbar-item'
 import { debounceFn } from '@/utils/debounce'
-import { computed, ref, watch, type ComputedRef, type Ref } from 'vue'
+import { computed, ref, watch, type ComputedRef } from 'vue'
 import { useRouter, type RouteRecordNormalized } from 'vue-router'
 
 const { push, getRoutes } = useRouter()
@@ -80,7 +80,7 @@ const allRouteItems: INavbarItem[] = [
 ]
 
 //Reactive data
-const profileInfo: Ref<UserInfo | null> = ref(null)
+const profileInfo = ref<UserInfo | null>(null)
 const searchInput = ref('')
 
 /** All navigation items */

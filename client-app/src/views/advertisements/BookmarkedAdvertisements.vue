@@ -30,14 +30,14 @@ import {
 } from '@/services/api-client'
 import { LocaleService } from '@/services/locale-service'
 import { getClient } from '@/utils/client-builder'
-import { onBeforeMount, ref, type Ref } from 'vue'
+import { onBeforeMount, ref } from 'vue'
 
 //Services
 const l = LocaleService.currentLocale
 const advertisementService = getClient(AdvertisementClient)
 
 //Reactive data
-const advertisementCategories: Ref<Int32StringKeyValuePair[]> = ref([])
+const advertisementCategories = ref<Int32StringKeyValuePair[]>([])
 
 //Hooks
 onBeforeMount(() => {
