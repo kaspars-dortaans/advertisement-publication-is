@@ -62,7 +62,8 @@
       "publiclyDisplayEmail": "Publicly display e-mail",
       "phoneNumber": "Phone number",
       "publiclyDisplayPhoneNumber": "Publicly display phone number",
-      "changePassword": "Change Password"
+      "changePassword": "Change Password",
+      "linkToUserSite": "Link to user site"
     }
   },
   "navigation": {
@@ -92,6 +93,7 @@
     "DuplicateEmail": "This email is already taken",
     "InvalidFileType": "{0}: Invalid file type.'",
     "InvalidFileSize": "Invalid file size, file size should be smaller than {1}.",
-    "InvalidFileLimit": "Maximum number of files to be uploaded is {0}."
+    "InvalidFileLimit": "Maximum number of files to be uploaded is {0}.",
+    "NotAUrl": "Field must contain a valid URL."
   }
 }

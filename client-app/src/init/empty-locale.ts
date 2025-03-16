@@ -45,6 +45,7 @@ export const emptyLocale = {
       phoneNumber: "",
       publiclyDisplayPhoneNumber: "",
       changePassword: "",
+      linkToUserSite: "",
     },
     register: {
       alreadyHaveAnAccount: "",
@@ -95,5 +96,6 @@ export const emptyLocale = {
     InvalidFileType: "",
     InvalidFileSize: "",
     InvalidFileLimit: "",
+    NotAUrl: "",
   }
 }

@@ -27,6 +27,7 @@ public class EditUserInfo
 
     public bool IsPhoneNumberPublic { get; set; }
 
+    [Url(ErrorMessage = CustomErrorCodes.NotAUrl)]
     public string? LinkToUserSite { get; set; }
 
     public bool ProfileImageChanged { get; set; }

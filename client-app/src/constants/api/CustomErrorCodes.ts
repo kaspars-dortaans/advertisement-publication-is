@@ -4,6 +4,7 @@ export class CustomErrorCodes {
   static readonly MissingRequired = "Required"
   static readonly NotAnEmail = "NotAnEmail"
   static readonly NotAPhoneNumber = "NotAPhoneNumber"
+  static readonly NotAUrl = "NotAUrl"
   static readonly PropertyWasNotFound = "PropertyWasNotFound"
   static readonly ComparablePropertyDidNotMatch = "ComparablePropertyDidNotMatch"
   static readonly InvalidFile = "InvalidFile"

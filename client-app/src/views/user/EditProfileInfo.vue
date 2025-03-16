@@ -80,6 +80,14 @@
                 }}</label>
               </div>
               <FieldError :field="fields.isPhoneNumberPublic" />
+
+              <InputText
+                v-model="fields.linkToUserSite!.value"
+                v-bind="fields.linkToUserSite?.attributes"
+                :placeholder="l.form.register.linkToUserSite"
+                :invalid="fields.linkToUserSite!.hasError"
+              />
+              <FieldError :field="fields.linkToUserSite" />
             </div>
 
             <ImageUpload
@@ -147,7 +155,8 @@ const form = useForm<EditUserInfo>({
       email: string().required().email(),
       isEmailPublic: boolean().default(false),
       phoneNumber: string().required(),
-      isPhoneNumberPublic: boolean().default(false)
+      isPhoneNumberPublic: boolean().default(false),
+      linkToUserSite: string().url().nullable()
     })
   )
 })
@@ -164,7 +173,8 @@ defineMultipleFields([
   'isEmailPublic',
   'phoneNumber',
   'isPhoneNumberPublic',
-  'profileImage'
+  'profileImage',
+  'linkToUserSite'
 ])
 
 //Reactive data

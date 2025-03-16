@@ -31,6 +31,9 @@
 
             <dt>{{ l.form.profileInfo.publiclyDisplayPhoneNumber }}</dt>
             <dd>{{ ls.l(profileInfo.isPhoneNumberPublic?.toString()) }}</dd>
+
+            <dt>{{ l.form.profileInfo.linkToUserSite }}</dt>
+            <dd>{{ profileInfo.linkToUserSite }}</dd>
           </dl>
 
           <img

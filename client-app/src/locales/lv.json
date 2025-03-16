@@ -62,7 +62,8 @@
       "publiclyDisplayEmail": "Publiski attēlot e-pastu",
       "phoneNumber": "Tālruņa numurs",
       "publiclyDisplayPhoneNumber": "Publiski attēlot tālruņa numuru",
-      "changePassword": "Mainīt paroli"
+      "changePassword": "Mainīt paroli",
+      "linkToUserSite": "Saite uz lietotāja mājaslapu"
     }
   },
   "navigation": {
@@ -92,6 +93,7 @@
     "DuplicateEmail": "Šis e-pasts jau ir aizņemts",
     "InvalidFileType": "{0}: Nederīgs faila tips.",
     "InvalidFileSize": "Nederīgs faila lielums, faila izmēram jābūt mazākam par {1}.",
-    "InvalidFileLimit": "Maksimālais augšupielādējamo failu skaits ir {0}."
+    "InvalidFileLimit": "Maksimālais augšupielādējamo failu skaits ir {0}.",
+    "NotAUrl": "Laukam ir jāsatur derīgu URL."
   }
 }
