@@ -3,6 +3,7 @@ using BusinessLogic.Constants;
 using BusinessLogic.Dto.User;
 using BusinessLogic.Entities;
 using BusinessLogic.Exceptions;
+using BusinessLogic.Helpers;
 using BusinessLogic.Helpers.FilePathResolver;
 using BusinessLogic.Helpers.Storage;
 using Microsoft.AspNetCore.Http;
@@ -90,7 +91,6 @@ public class UserService(
     /// <returns></returns>
     public async Task SaveProfileImage(string userEmail, IFormFile profileImage)
     {
-        //TODO: Create thumbnail
         //Get created user
         var user = await _userManager
             .FindByEmailAsync(userEmail)
@@ -98,10 +98,12 @@ public class UserService(
 
         //Add file entity
         var filePath = _filePathResolver.GenerateUniqueFilePath(FileFolderConstants.ProfileImageFolder, profileImage.FileName);
+        var thumbnailPath = _filePathResolver.GenerateUniqueFilePath(FileFolderConstants.ProfileImageFolder, ProfileImageConstants.ThumbnailPrefix + profileImage.FileName);
         var file = await _fileService.AddAsync(new Entities.Files.UserImage()
         {
             OwnerUserId = user.Id,
             Path = filePath,
+            ThumbnailPath = thumbnailPath,
             IsPublic = true
         });
 
@@ -109,9 +111,20 @@ public class UserService(
         user.ProfileImageFileId = file.Id;
         await _userManager.UpdateAsync(user);
 
-        //Save file data in storage
-        var fileReadStream = profileImage.OpenReadStream();
-        await _storage.PutFile(filePath, fileReadStream);
+        //Make thumbnail
+        var imageStream = profileImage.OpenReadStream();
+        var thumbnailStream = await ImageHelper.MakeImageThumbnail(imageStream, ProfileImageConstants.ThumbnailSize, ProfileImageConstants.ThumbnailSize);
+        
+        //Reset streams
+        imageStream.Seek(0, SeekOrigin.Begin);
+        thumbnailStream.Seek(0, SeekOrigin.Begin);
+        
+        //Save file in storage
+        await _storage.PutFiles([
+            new (filePath, imageStream),
+            new (thumbnailPath, thumbnailStream)
+        ]);
+
     }
 
     public IQueryable<Permission> GetUserPermissions(int userId)

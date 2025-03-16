@@ -37,6 +37,12 @@ public class LocalFileStorage : IStorage
         }
     }
 
+    public Task PutFiles(IEnumerable<KeyValuePair<string, Stream>> files)
+    {
+        var tasks = files.Select(f => PutFile(f.Key, f.Value));
+        return Task.WhenAll(tasks);
+    }
+
     protected string FullPath(string filePath)
     {
         EnsureDirectoryExists(_storageOptions.Value.LocalFolderPath);
