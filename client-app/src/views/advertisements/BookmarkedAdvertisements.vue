@@ -61,7 +61,7 @@ const removeBookmarks = async (
 ) => {
   setLoading(true)
 
-  const ids = selectedRows.map((r) => r.id).filter((id) => typeof id === 'number')
+  const ids = selectedRows.map((r) => r.id).filter((id) => typeof id === 'number') as number[]
   await advertisementService.removeAdvertisementBookmarks(ids)
 
   refresh()

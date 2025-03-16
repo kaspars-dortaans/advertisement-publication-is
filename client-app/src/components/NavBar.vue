@@ -180,6 +180,6 @@ const filterRoutes = (items: INavbarItem[], routes: RouteRecordNormalized[]): IN
         return null
       }
     })
-    .filter((i) => i != null)
+    .filter((i) => i != null) as INavbarItem[]
 }
 </script>

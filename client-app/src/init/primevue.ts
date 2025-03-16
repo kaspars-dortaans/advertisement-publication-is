@@ -82,9 +82,9 @@ const customPassTrough = {
       //If submenu is still hidden, temporary display it and get its position and size
       if (!elPosition.length) {
         const originalStyle = htmlEl.style + ''
-        htmlEl.style = 'display: flex; visibility: hidden'
+        htmlEl.setAttribute('style', 'display: flex; visibility: hidden')
         elPosition = htmlEl.getClientRects()
-        htmlEl.style = originalStyle
+        htmlEl.setAttribute('style', originalStyle)
       }
 
       //If submenu is going to overflow page, set right to 0, it is in absolute position
