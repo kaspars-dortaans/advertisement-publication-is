@@ -62,8 +62,12 @@
       "publiclyDisplayEmail": "Publiski attēlot e-pastu",
       "phoneNumber": "Tālruņa numurs",
       "publiclyDisplayPhoneNumber": "Publiski attēlot tālruņa numuru",
-      "changePassword": "Mainīt paroli",
       "linkToUserSite": "Saite uz lietotāja mājaslapu"
+    },
+    "changePassword": {
+      "currentPassword": "Pašreizējā parole",
+      "newPassword": "Jaunā parole",
+      "confirmNewPassword": "Apstiprināt jauno paroli"
     }
   },
   "navigation": {
@@ -72,6 +76,7 @@
     "register": "Reģistrēties",
     "profileInfo": "Profila informācija",
     "editProfileInfo": "Rediģēt profila informāciju",
+    "changePassword": "Nomainīt paroli",
     "advertisements": "Sludinājumi",
     "seeAdvertisements": "Skatīt sludinājumus",
     "savedAdvertisements": "Atzīmētie sludinājumi",
@@ -85,6 +90,7 @@
     "NotAnEmail": "Šim laukam ir jāsatur derīgu e-pasta adresi",
     "NotAPhoneNumber": "Šim laukam ir jāsatur derīgu tālruņa numuru",
     "InvalidLoginCredentials": "Ievadītais e-pasts vai parole nav pareiza",
+    "PasswordMismatch": "Parole nav pareiza.",
     "PasswordTooShort": "Parole ir pārāk īsa",
     "PasswordRequiresNonAlphanumeric": "Parolei ir jāsatur simboli, kas nav cipari vai burti",
     "PasswordRequiresLower": "Parolei ir jāsatur mazie burti",

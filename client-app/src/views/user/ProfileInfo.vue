@@ -1,7 +1,7 @@
 <template>
   <ResponsiveLayout>
-    <BlockWithSpinner :loading="loading">
-      <Panel class="flex-1 lg:flex-none">
+    <BlockWithSpinner :loading="loading" class="flex-1 lg:flex-none flex flex-col">
+      <Panel class="flex-1">
         <template #header>
           <div class="panel-title-container">
             <BackButton :defaultTo="{ name: 'home' }"></BackButton>
@@ -50,7 +50,7 @@
             class="flex-auto lg:flex-none"
           />
           <Button
-            :label="l.form.profileInfo.changePassword"
+            :label="l.navigation.changePassword"
             as="RouterLink"
             :to="{ name: 'changePassword' }"
             class="flex-auto lg:flex-none"

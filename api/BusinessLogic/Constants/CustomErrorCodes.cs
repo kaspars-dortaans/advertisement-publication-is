@@ -7,6 +7,7 @@ public static class CustomErrorCodes
     public const string MissingRequired = "Required";
     public const string NotAnEmail = "NotAnEmail";
     public const string NotAPhoneNumber = "NotAPhoneNumber";
+    public const string NotAUrl = "NotAUrl";
     public const string PropertyWasNotFound = "PropertyWasNotFound";
     public const string ComparablePropertyDidNotMatch = "ComparablePropertyDidNotMatch";
     public const string InvalidFile = "InvalidFile";

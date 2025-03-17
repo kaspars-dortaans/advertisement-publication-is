@@ -324,7 +324,7 @@ export class AdvertisementClient {
      * @param body (optional) 
      * @return Success
      */
-    bookmarkAdvertisement(body: BookmarkAdvertisementRequest | undefined, cancelToken?: CancelToken): Promise<void> {
+    bookmarkAdvertisement(body: BookmarkAdvertisementRequest | undefined, cancelToken?: CancelToken): Promise<PublicUserInfoDto> {
         let url_ = this.baseUrl + "/api/Advertisement/BookmarkAdvertisement";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -336,6 +336,7 @@ export class AdvertisementClient {
             url: url_,
             headers: {
                 "Content-Type": "application/json",
+                "Accept": "text/plain"
             },
             cancelToken
         };
@@ -351,7 +352,7 @@ export class AdvertisementClient {
         });
     }
 
-    protected processBookmarkAdvertisement(response: AxiosResponse): Promise<void> {
+    protected processBookmarkAdvertisement(response: AxiosResponse): Promise<PublicUserInfoDto> {
         const status = response.status;
         let _headers: any = {};
         if (response.headers && typeof response.headers === "object") {
@@ -363,13 +364,23 @@ export class AdvertisementClient {
         }
         if (status === 200) {
             const _responseText = response.data;
-            return Promise.resolve<void>(null as any);
+            let result200: any = null;
+            let resultData200  = _responseText;
+            result200 = PublicUserInfoDto.fromJS(resultData200);
+            return Promise.resolve<PublicUserInfoDto>(result200);
+
+        } else if (status === 400) {
+            const _responseText = response.data;
+            let result400: any = null;
+            let resultData400  = _responseText;
+            result400 = RequestExceptionResponse.fromJS(resultData400);
+            return throwException("Bad Request", status, _responseText, _headers, result400);
 
         } else if (status !== 200 && status !== 204) {
             const _responseText = response.data;
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
         }
-        return Promise.resolve<void>(null as any);
+        return Promise.resolve<PublicUserInfoDto>(null as any);
     }
 
     /**
@@ -663,7 +674,7 @@ export class AdvertisementClient {
      * @param body (optional) 
      * @return Success
      */
-    reportAdvertisement(body: ReportAdvertisementRequest | undefined, cancelToken?: CancelToken): Promise<void> {
+    reportAdvertisement(body: ReportAdvertisementRequest | undefined, cancelToken?: CancelToken): Promise<PublicUserInfoDto> {
         let url_ = this.baseUrl + "/api/Advertisement/ReportAdvertisement";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -675,6 +686,7 @@ export class AdvertisementClient {
             url: url_,
             headers: {
                 "Content-Type": "application/json",
+                "Accept": "text/plain"
             },
             cancelToken
         };
@@ -690,7 +702,7 @@ export class AdvertisementClient {
         });
     }
 
-    protected processReportAdvertisement(response: AxiosResponse): Promise<void> {
+    protected processReportAdvertisement(response: AxiosResponse): Promise<PublicUserInfoDto> {
         const status = response.status;
         let _headers: any = {};
         if (response.headers && typeof response.headers === "object") {
@@ -702,13 +714,23 @@ export class AdvertisementClient {
         }
         if (status === 200) {
             const _responseText = response.data;
-            return Promise.resolve<void>(null as any);
+            let result200: any = null;
+            let resultData200  = _responseText;
+            result200 = PublicUserInfoDto.fromJS(resultData200);
+            return Promise.resolve<PublicUserInfoDto>(result200);
+
+        } else if (status === 400) {
+            const _responseText = response.data;
+            let result400: any = null;
+            let resultData400  = _responseText;
+            result400 = RequestExceptionResponse.fromJS(resultData400);
+            return throwException("Bad Request", status, _responseText, _headers, result400);
 
         } else if (status !== 200 && status !== 204) {
             const _responseText = response.data;
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
         }
-        return Promise.resolve<void>(null as any);
+        return Promise.resolve<PublicUserInfoDto>(null as any);
     }
 }
 
@@ -1175,7 +1197,7 @@ export class UserClient {
      * @param profileImage (optional) 
      * @return Success
      */
-    updateUserInfo(email: string | undefined, isEmailPublic: boolean | undefined, firstName: string | undefined, lastName: string | undefined, userName: string | undefined, phoneNumber: string | undefined, isPhoneNumberPublic: boolean | undefined, linkToUserSite: string | null | undefined, profileImageChanged: boolean | undefined, profileImage: FileParameter | null | undefined, cancelToken?: CancelToken): Promise<void> {
+    updateUserInfo(email: string | undefined, isEmailPublic: boolean | undefined, firstName: string | undefined, lastName: string | undefined, userName: string | undefined, phoneNumber: string | undefined, isPhoneNumberPublic: boolean | undefined, linkToUserSite: string | null | undefined, profileImageChanged: boolean | undefined, profileImage: FileParameter | null | undefined, cancelToken?: CancelToken): Promise<OkResult> {
         let url_ = this.baseUrl + "/api/User/UpdateUserInfo";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -1222,6 +1244,7 @@ export class UserClient {
             method: "POST",
             url: url_,
             headers: {
+                "Accept": "text/plain"
             },
             cancelToken
         };
@@ -1237,7 +1260,7 @@ export class UserClient {
         });
     }
 
-    protected processUpdateUserInfo(response: AxiosResponse): Promise<void> {
+    protected processUpdateUserInfo(response: AxiosResponse): Promise<OkResult> {
         const status = response.status;
         let _headers: any = {};
         if (response.headers && typeof response.headers === "object") {
@@ -1249,13 +1272,23 @@ export class UserClient {
         }
         if (status === 200) {
             const _responseText = response.data;
-            return Promise.resolve<void>(null as any);
+            let result200: any = null;
+            let resultData200  = _responseText;
+            result200 = OkResult.fromJS(resultData200);
+            return Promise.resolve<OkResult>(result200);
+
+        } else if (status === 400) {
+            const _responseText = response.data;
+            let result400: any = null;
+            let resultData400  = _responseText;
+            result400 = RequestExceptionResponse.fromJS(resultData400);
+            return throwException("Bad Request", status, _responseText, _headers, result400);
 
         } else if (status !== 200 && status !== 204) {
             const _responseText = response.data;
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
         }
-        return Promise.resolve<void>(null as any);
+        return Promise.resolve<OkResult>(null as any);
     }
 
     /**
@@ -1314,6 +1347,69 @@ export class UserClient {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
         }
         return Promise.resolve<string[]>(null as any);
+    }
+
+    /**
+     * @param body (optional) 
+     * @return Success
+     */
+    changePassword(body: ChangePasswordRequest | undefined, cancelToken?: CancelToken): Promise<OkResult> {
+        let url_ = this.baseUrl + "/api/User/ChangePassword";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_: AxiosRequestConfig = {
+            data: content_,
+            method: "POST",
+            url: url_,
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "text/plain"
+            },
+            cancelToken
+        };
+
+        return this.instance.request(options_).catch((_error: any) => {
+            if (isAxiosError(_error) && _error.response) {
+                return _error.response;
+            } else {
+                throw _error;
+            }
+        }).then((_response: AxiosResponse) => {
+            return this.processChangePassword(_response);
+        });
+    }
+
+    protected processChangePassword(response: AxiosResponse): Promise<OkResult> {
+        const status = response.status;
+        let _headers: any = {};
+        if (response.headers && typeof response.headers === "object") {
+            for (const k in response.headers) {
+                if (response.headers.hasOwnProperty(k)) {
+                    _headers[k] = response.headers[k];
+                }
+            }
+        }
+        if (status === 200) {
+            const _responseText = response.data;
+            let result200: any = null;
+            let resultData200  = _responseText;
+            result200 = OkResult.fromJS(resultData200);
+            return Promise.resolve<OkResult>(result200);
+
+        } else if (status === 400) {
+            const _responseText = response.data;
+            let result400: any = null;
+            let resultData400  = _responseText;
+            result400 = RequestExceptionResponse.fromJS(resultData400);
+            return throwException("Bad Request", status, _responseText, _headers, result400);
+
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.data;
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Promise.resolve<OkResult>(null as any);
     }
 }
 
@@ -2155,6 +2251,50 @@ export interface ICategoryItem {
     canContainAdvertisements?: boolean;
     parentCategoryId?: number | undefined;
     advertisementCount?: number | undefined;
+}
+
+export class ChangePasswordRequest implements IChangePasswordRequest {
+    currentPassword!: string;
+    password!: string;
+    confirmPassword!: string;
+
+    constructor(data?: IChangePasswordRequest) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.currentPassword = _data["currentPassword"];
+            this.password = _data["password"];
+            this.confirmPassword = _data["confirmPassword"];
+        }
+    }
+
+    static fromJS(data: any): ChangePasswordRequest {
+        data = typeof data === 'object' ? data : {};
+        let result = new ChangePasswordRequest();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["currentPassword"] = this.currentPassword;
+        data["password"] = this.password;
+        data["confirmPassword"] = this.confirmPassword;
+        return data;
+    }
+}
+
+export interface IChangePasswordRequest {
+    currentPassword: string;
+    password: string;
+    confirmPassword: string;
 }
 
 export class DataTableQuery implements IDataTableQuery {

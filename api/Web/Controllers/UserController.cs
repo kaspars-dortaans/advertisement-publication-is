@@ -108,6 +108,8 @@ public class UserController(
     }
 
     [HasPermission(Permissions.EditProfileInfo)]
+    [ProducesResponseType<OkResult>(StatusCodes.Status200OK)]
+    [ProducesResponseType<RequestExceptionResponse>(StatusCodes.Status400BadRequest)]
     [HttpPost]
     public async Task UpdateUserInfo([FromForm] EditUserInfo request)
     {
@@ -119,7 +121,6 @@ public class UserController(
             ?? throw new ApiException([CustomErrorCodes.UserNotFound]);
 
         _mapper.Map(request, user);
-
         await _userService.UpdateUserInfo(user, request.ProfileImageChanged, request.ProfileImage);
     }
 
@@ -132,5 +133,14 @@ public class UserController(
             .ToListAsync();
 
         return permissionNames;
+    }
+
+    [HasPermission(Permissions.ChangePassword)]
+    [ProducesResponseType<OkResult>(StatusCodes.Status200OK)]
+    [ProducesResponseType<RequestExceptionResponse>(StatusCodes.Status400BadRequest)]
+    [HttpPost]
+    public async Task ChangePassword(ChangePasswordRequest request)
+    {
+        await _userService.ChangePassword(User.GetUserId()!.Value, request.CurrentPassword, request.Password);
     }
 }

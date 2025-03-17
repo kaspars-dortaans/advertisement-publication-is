@@ -36,6 +36,11 @@ export const emptyLocale = {
     search: "",
   },
   form: {
+    changePassword: {
+      currentPassword: "",
+      newPassword: "",
+      confirmNewPassword: "",
+    },
     profileInfo: {
       firstName: "",
       lastName: "",
@@ -44,7 +49,6 @@ export const emptyLocale = {
       publiclyDisplayEmail: "",
       phoneNumber: "",
       publiclyDisplayPhoneNumber: "",
-      changePassword: "",
       linkToUserSite: "",
     },
     register: {
@@ -74,6 +78,7 @@ export const emptyLocale = {
     register: "",
     profileInfo: "",
     editProfileInfo: "",
+    changePassword: "",
     advertisements: "",
     seeAdvertisements: "",
     savedAdvertisements: "",
@@ -87,6 +92,7 @@ export const emptyLocale = {
     NotAnEmail: "",
     NotAPhoneNumber: "",
     InvalidLoginCredentials: "",
+    PasswordMismatch: "",
     PasswordTooShort: "",
     PasswordRequiresNonAlphanumeric: "",
     PasswordRequiresLower: "",

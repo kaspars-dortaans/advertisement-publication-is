@@ -71,6 +71,8 @@ const router = createRouter({
         }
       ]
     },
+
+    //Authorized user
     {
       path: '/bookmarked-advertisements',
       name: 'bookmarkedAdvertisements',
@@ -98,9 +100,13 @@ const router = createRouter({
     {
       path: '/change-password',
       name: 'changePassword',
-      //TODO: Replace when view is completed
-      component: () => import('../views/NotFound.vue')
+      component: () => import('../views/user/ChangePassword.vue'),
+      meta: {
+        requiresPermission: Permissions[Permissions.ChangePassword]
+      }
     },
+
+    //Not found
     {
       path: '/not-found',
       name: 'notFound',

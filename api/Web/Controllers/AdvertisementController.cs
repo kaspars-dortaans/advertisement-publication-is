@@ -1,5 +1,6 @@
 using AutoMapper;
 using BusinessLogic.Authorization;
+using BusinessLogic.Dto;
 using BusinessLogic.Dto.Advertisement;
 using BusinessLogic.Dto.DataTableQuery;
 using BusinessLogic.Entities;
@@ -10,6 +11,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Web.Dto.Advertisement;
+using Web.Dto.User;
 using Web.Helpers;
 
 namespace Web.Controllers;
@@ -95,6 +97,8 @@ public class AdvertisementController(
     }
 
     [HasPermission(Permissions.EditAdvertisementBookmark)]
+    [ProducesResponseType<PublicUserInfoDto>(StatusCodes.Status200OK)]
+    [ProducesResponseType<RequestExceptionResponse>(StatusCodes.Status400BadRequest)]
     [HttpPost]
     public async Task BookmarkAdvertisement(BookmarkAdvertisementRequest request)
     {
@@ -200,6 +204,8 @@ public class AdvertisementController(
     }
 
     [AllowAnonymous]
+    [ProducesResponseType<PublicUserInfoDto>(StatusCodes.Status200OK)]
+    [ProducesResponseType<RequestExceptionResponse>(StatusCodes.Status400BadRequest)]
     [HttpPost]
     public async Task ReportAdvertisement(ReportAdvertisementRequest request)
     {

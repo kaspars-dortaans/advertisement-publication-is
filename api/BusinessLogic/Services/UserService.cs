@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using BusinessLogic.Constants;
+﻿using BusinessLogic.Constants;
 using BusinessLogic.Entities;
 using BusinessLogic.Exceptions;
 using BusinessLogic.Helpers;
@@ -15,14 +14,12 @@ public class UserService(
     UserManager<User> userManager,
     IStorage storage,
     IFilePathResolver filePathResolver,
-    IBaseService<Entities.Files.File> fileService,
-    IMapper mapper) : BaseService<User>(context), IUserService
+    IBaseService<Entities.Files.File> fileService) : BaseService<User>(context), IUserService
 {
     private readonly UserManager<User> _userManager = userManager;
     private readonly IStorage _storage = storage;
     private readonly IFilePathResolver _filePathResolver = filePathResolver;
     private readonly IBaseService<Entities.Files.File> _fileService = fileService;
-    private readonly IMapper _mapper = mapper;
 
     /// <summary>
     /// Register new user
@@ -60,7 +57,11 @@ public class UserService(
             var apiException = new ApiException();
             foreach (var error in createResult.Errors)
             {
-                if (error.Code.StartsWith("Password"))
+                if(error.Code == "PasswordMismatch")
+                {
+                    apiException.AddValidationError("CurrentPassword", error.Code);
+                }
+                else if (error.Code.StartsWith("Password"))
                 {
                     apiException.AddValidationError("Password", error.Code);
                 }
@@ -113,11 +114,11 @@ public class UserService(
         //Make thumbnail
         var imageStream = profileImage.OpenReadStream();
         var thumbnailStream = await ImageHelper.MakeImageThumbnail(imageStream, ProfileImageConstants.ThumbnailSize, ProfileImageConstants.ThumbnailSize);
-        
+
         //Reset streams
         imageStream.Seek(0, SeekOrigin.Begin);
         thumbnailStream.Seek(0, SeekOrigin.Begin);
-        
+
         //Save file in storage
         await _storage.PutFiles([
             new (filePath, imageStream),
@@ -177,9 +178,16 @@ public class UserService(
             {
                 await SaveProfileImage(user.Email!, profileImage);
             }
-            }
-
         }
 
+    }
+
+    public async Task ChangePassword(int userId, string currentPassword, string newPassword)
+    {
+        var user = await _userManager.FindByIdAsync("" + userId)
+            ?? throw new ApiException([CustomErrorCodes.UserNotFound]);
+
+        var identityResult = await _userManager.ChangePasswordAsync(user, currentPassword, newPassword);
+        HandleIdentityUserResult(identityResult);
     }
 }

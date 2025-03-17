@@ -3,14 +3,9 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Web.Validators;
 
-public class EqualToProperty : ValidationAttribute
+public class EqualToProperty(string propertyName) : ValidationAttribute()
 {
-    private readonly string comparablePropertyName;
-
-    public EqualToProperty(string propertyName) : base()
-    {
-        comparablePropertyName = propertyName;
-    }
+    private readonly string comparablePropertyName = propertyName;
 
     protected override ValidationResult? IsValid(object? value, ValidationContext ctx)
     {
@@ -19,7 +14,7 @@ public class EqualToProperty : ValidationAttribute
 
         if (comparableProperty == null)
         {
-            return new ValidationResult(CustomErrorCodes.PropertyWasNotFound, new List<string> { comparablePropertyName });
+            return new ValidationResult(CustomErrorCodes.PropertyWasNotFound, [comparablePropertyName]);
         }
 
         var comparableValue = comparableProperty.GetValue(ctx.ObjectInstance);
@@ -28,6 +23,6 @@ public class EqualToProperty : ValidationAttribute
             return ValidationResult.Success;
         }
 
-        return new ValidationResult(CustomErrorCodes.ComparablePropertyDidNotMatch, new List<string> { ctx.MemberName ?? "", comparablePropertyName });
+        return new ValidationResult(CustomErrorCodes.ComparablePropertyDidNotMatch, [ctx.MemberName ?? "", comparablePropertyName]);
     }
 }
