@@ -345,10 +345,11 @@ public class DbSeeder(Context context, UserManager<User> userManager, RoleManage
             new()
             {
                 Id = 1,
+                IsActive = true,
                 Title = "Advertisement 1",
                 AdvertisementText = "Text body",
                 CategoryId = 1,
-                OwnerId = 1,
+                OwnerId = adminUser.Id,
                 PostedDate = DateTime.UtcNow,
                 ValidToDate = DateTime.UtcNow.AddMonths(1),
                 ViewCount = 0,
@@ -371,10 +372,11 @@ public class DbSeeder(Context context, UserManager<User> userManager, RoleManage
             new()
             {
                 Id = 2,
+                IsActive = true,
                 Title = "Advertisement 2",
                 AdvertisementText = "Text body 2",
                 CategoryId = 1,
-                OwnerId = 1,
+                OwnerId = adminUser.Id,
                 PostedDate = DateTime.UtcNow,
                 ValidToDate = DateTime.UtcNow.AddMonths(1),
                 ViewCount = 0,

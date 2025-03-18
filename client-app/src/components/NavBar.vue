@@ -38,12 +38,11 @@
 <script setup lang="ts">
 import defaultProfileImageUrl from '@/assets/images/default-profile-image.svg'
 import logoUrl from '@/assets/images/logo.svg'
-import { UserInfo } from '@/services/api-client'
 import { AuthService } from '@/services/auth-service'
 import { LocaleService } from '@/services/locale-service'
 import type { INavbarItem } from '@/types/navbar/navbar-item'
 import { debounceFn } from '@/utils/debounce'
-import { computed, ref, watch, type ComputedRef } from 'vue'
+import { computed, ref, type ComputedRef } from 'vue'
 import { useRouter, type RouteRecordNormalized } from 'vue-router'
 
 const { push, getRoutes } = useRouter()
@@ -68,19 +67,24 @@ const allRouteItems: INavbarItem[] = [
       },
       {
         route: 'bookmarkedAdvertisements',
-        label: 'navigation.savedAdvertisements'
-      }
+        label: 'navigation.savedAdvertisements',
+        showWithoutPermission: true
+      },
       //TODO: Uncomment when view is completed
       // {
       //   route: 'createAdvertisement',
-      //   label: 'navigation.createAdvertisement'
+      //   label: 'navigation.createAdvertisement',
+      //   showWithoutPermission: true
       // }
+      {
+        route: 'manageAdvertisements',
+        label: 'navigation.myAdvertisements'
+      }
     ]
   }
 ]
 
 //Reactive data
-const profileInfo = ref<UserInfo | null>(null)
 const searchInput = ref('')
 
 /** All navigation items */
@@ -106,7 +110,7 @@ const localeItems = computed(() =>
 /** Navigation routes allowed for current user */
 const allowedRouteItems: ComputedRef<INavbarItem[]> = computed(() => {
   const routes = getRoutes()
-  return filterRoutes(allRouteItems, routes)
+  return filterRoutes(allRouteItems, routes, AuthService.permissions.value)
 })
 
 const profileRoutes = computed(() => {
@@ -122,7 +126,7 @@ const profileRoutes = computed(() => {
   return [
     {
       avatar: true,
-      url: profileInfo.value?.profileImageUrl?.thumbnailUrl ?? defaultProfileImageUrl,
+      url: AuthService.profileInfo.value?.profileImageUrl?.thumbnailUrl ?? defaultProfileImageUrl,
       items: [
         {
           label: 'navigation.profileInfo',
@@ -137,15 +141,6 @@ const profileRoutes = computed(() => {
   ] as INavbarItem[]
 })
 
-//watchers
-watch(
-  AuthService.profileInfo,
-  async (newValue) => {
-    profileInfo.value = await newValue
-  },
-  { immediate: true }
-)
-
 //Methods
 const search = () => {
   push({ name: 'searchAdvertisements', query: { search: searchInput.value } })
@@ -159,22 +154,26 @@ const immediateSearch = () => {
 }
 
 /** Filter route items for which current user does not have a permission to navigate */
-const filterRoutes = (items: INavbarItem[], routes: RouteRecordNormalized[]): INavbarItem[] => {
+const filterRoutes = (
+  items: INavbarItem[],
+  routes: RouteRecordNormalized[],
+  userPermissions: string[]
+): INavbarItem[] => {
   return items
     .map((i) => {
       const route = routes.find((r) => r.name === i.route)
       const requiresPermission = route?.meta.requiresPermission
       const hasPermission =
         typeof requiresPermission === 'string'
-          ? AuthService.hasPermission(requiresPermission)
+          ? userPermissions.some((p) => p === requiresPermission)
           : true
 
-      if (hasPermission) {
+      if (hasPermission || i.showWithoutPermission) {
         return {
           label: i.label,
           route: i.route,
           icon: i.icon,
-          items: i.items?.length ? filterRoutes(i.items, routes) : i.items
+          items: i.items?.length ? filterRoutes(i.items, routes, userPermissions) : i.items
         } as INavbarItem
       } else {
         return null

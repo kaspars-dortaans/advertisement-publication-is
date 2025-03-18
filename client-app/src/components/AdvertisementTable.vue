@@ -7,7 +7,7 @@
     :rows="DefaultPageSize"
     :rowsPerPageOptions="PageSizeOptions"
     :currentPageReportTemplate="pageReportTemplate"
-    :paginatorTemplate="paginatorTemplate"
+    :paginatorTemplate="PaginatorTemplate"
     :totalRecords="totalRecordCount"
     :pt="dataTablePt"
     :rowGroupMode="groupByCategory ? 'subheader' : undefined"
@@ -113,7 +113,7 @@
 <script setup lang="ts">
 import DynamicFilter from '@/components/Filters/DynamicFilter.vue'
 import { Direction } from '@/constants/api/Direction'
-import { DefaultPageSize, PageSizeOptions } from '@/constants/data-table'
+import { DefaultPageSize, PageSizeOptions, PaginatorTemplate } from '@/constants/data-table'
 import {
   AdvertisementClient,
   AdvertisementListItem,
@@ -127,6 +127,7 @@ import {
 } from '@/services/api-client'
 import { LocaleService } from '@/services/locale-service'
 import { getClient } from '@/utils/client-builder'
+import { getPageReportTemplate } from '@/utils/data-table'
 import {
   type ColumnPassThroughMethodOptions,
   type ColumnPassThroughOptions,
@@ -157,13 +158,9 @@ const {
 
 // Services
 const advertisementService = getClient(AdvertisementClient)
-const ls = LocaleService.get()
 const l = LocaleService.currentLocale
 
 // Table Constants
-const paginatorTemplate =
-  'FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown CurrentPageReport'
-
 const dataTablePt = {
   //Hide empty advertisement attribute column body cells and advertisement header cell
   column: (columnOptions: ColumnPassThroughMethodOptions) => {
@@ -261,14 +258,14 @@ const valueLists: ComputedRef<{ [key: number]: AttributeValueItem }> = computed(
 // Hooks
 onMounted(() => {
   handleCategoryChange(selectedCategoryId.value)
-  updatePagingTemplate()
+  pageReportTemplate.value = getPageReportTemplate()
 })
 
 // Watchers
 watch(LocaleService.currentLocaleName, async () => {
   handleCategoryChange(selectedCategoryId.value)
   loadAdvertisements()
-  updatePagingTemplate()
+  pageReportTemplate.value = getPageReportTemplate()
 })
 
 watch(
@@ -378,15 +375,6 @@ const clearFilter = () => {
   filter.value = {}
   categoryFilterModel.value = undefined
   filterTable()
-}
-
-const updatePagingTemplate = () => {
-  pageReportTemplate.value = ls.l(
-    'dataTable.pageReportTemplate',
-    '{first}',
-    '{last}',
-    '{totalRecords}'
-  )
 }
 
 /** Set data table loading state */

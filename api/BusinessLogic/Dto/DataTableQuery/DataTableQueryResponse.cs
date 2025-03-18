@@ -1,5 +1,8 @@
-﻿namespace BusinessLogic.Dto.DataTableQuery;
+﻿using BusinessLogic.Helpers;
 
+namespace BusinessLogic.Dto.DataTableQuery;
+
+[IncludeInOpenApi]
 public class DataTableQueryResponse<T>
 {
     public int Draw { get; set; }

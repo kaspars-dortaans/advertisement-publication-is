@@ -19,11 +19,11 @@ public class AdvertisementService(
     private readonly ICategoryService _categoryService = categoryService;
     private readonly IBaseService<AdvertisementBookmark> _advertisementBookmarkService = advertisementBookmarkService;
     private readonly CookieSettingsHelper _cookieSettingHelper = cookieSettingHelper;
-
-    public async Task<AdvertisementDto> FindActiveAdvertisement(int advertisementId, int? userId)
+    
+    public async Task<AdvertisementDto> FindOwnedOrActiveAdvertisement(int advertisementId, int? userId)
     {
         var locale = _cookieSettingHelper.Settings.NormalizedLocale;
-        var result = await Where(a => a.ValidToDate > DateTime.UtcNow)
+        var result = await Where(a => a.OwnerId == userId || (a.ValidToDate > DateTime.UtcNow && a.IsActive))
             .Select(a => new AdvertisementDto()
             {
                 Id = a.Id,
@@ -156,7 +156,7 @@ public class AdvertisementService(
     /// <returns></returns>
     private IQueryable<Advertisement> GetActiveAdvertisements()
     {
-        return DbSet.Where(a => a.ValidToDate > DateTime.UtcNow);
+        return DbSet.Where(a => a.ValidToDate > DateTime.UtcNow && a.IsActive);
     }
 
     /// <summary>
@@ -266,5 +266,29 @@ public class AdvertisementService(
             await _advertisementBookmarkService
                 .DeleteWhereAsync(ab => ab.BookmarkOwnerId == userId && ab.BookmarkedAdvertisementId == advertisementId);
         }
+    }
+
+    /// <summary>
+    /// Returns all advertisement info which owner id is equal to passed userId
+    /// </summary>
+    /// <param name="tableQuery"></param>
+    /// <param name="userId"></param>
+    /// <returns></returns>
+    public async Task<DataTableQueryResponse<AdvertisementInfo>> GetAdvertisementInfo(DataTableQuery tableQuery, int? userId)
+    {
+        var locale = _cookieSettingHelper.Settings.Locale;
+        var advertisementInfoQuery = DbSet
+            .Filter(userId, a => a.OwnerId == userId)
+            .Select(a => new AdvertisementInfo()
+            {
+                Id = a.Id,
+                Title = a.Title,
+                CategoryName = a.Category.LocalisedNames.Localise(locale),
+                IsActive = a.IsActive,
+                ValidTo = a.ValidToDate,
+                CreatedAt = a.PostedDate
+            });
+
+       return await advertisementInfoQuery.ResolveDataTableQuery(tableQuery);
     }
 }

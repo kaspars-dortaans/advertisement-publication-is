@@ -1,10 +1,18 @@
 export enum Permissions {
-  BookmarkAdvertisement = 0,
-  ViewAdvertisementBookmarks,
-  EditAdvertisementBookmark,
-  ViewProfileInfo,
+  //User profile
+    ViewProfileInfo = 0,
   EditProfileInfo,
   ChangePassword,
-  ViewUsers,
+  //Advertisement bookmarks
+    ViewAdvertisementBookmarks,
+  BookmarkAdvertisement,
+  EditAdvertisementBookmark,
+  //Advertisement
+    CreateAdvertisement,
+  ViewOwnedAdvertisements,
+  EditOwnedAdvertisement,
+  DeleteOwnedAdvertisement,
+  //Manage all users
+    ViewUsers,
   
 }

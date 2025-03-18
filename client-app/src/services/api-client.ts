@@ -732,6 +732,171 @@ export class AdvertisementClient {
         }
         return Promise.resolve<PublicUserInfoDto>(null as any);
     }
+
+    /**
+     * @param body (optional) 
+     * @return Success
+     */
+    getOwnedAdvertisements(body: DataTableQuery | undefined, cancelToken?: CancelToken): Promise<AdvertisementInfoDataTableQueryResponse> {
+        let url_ = this.baseUrl + "/api/Advertisement/GetOwnedAdvertisements";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_: AxiosRequestConfig = {
+            data: content_,
+            method: "POST",
+            url: url_,
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "text/plain"
+            },
+            cancelToken
+        };
+
+        return this.instance.request(options_).catch((_error: any) => {
+            if (isAxiosError(_error) && _error.response) {
+                return _error.response;
+            } else {
+                throw _error;
+            }
+        }).then((_response: AxiosResponse) => {
+            return this.processGetOwnedAdvertisements(_response);
+        });
+    }
+
+    protected processGetOwnedAdvertisements(response: AxiosResponse): Promise<AdvertisementInfoDataTableQueryResponse> {
+        const status = response.status;
+        let _headers: any = {};
+        if (response.headers && typeof response.headers === "object") {
+            for (const k in response.headers) {
+                if (response.headers.hasOwnProperty(k)) {
+                    _headers[k] = response.headers[k];
+                }
+            }
+        }
+        if (status === 200) {
+            const _responseText = response.data;
+            let result200: any = null;
+            let resultData200  = _responseText;
+            result200 = AdvertisementInfoDataTableQueryResponse.fromJS(resultData200);
+            return Promise.resolve<AdvertisementInfoDataTableQueryResponse>(result200);
+
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.data;
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Promise.resolve<AdvertisementInfoDataTableQueryResponse>(null as any);
+    }
+
+    /**
+     * @param isActive (optional) 
+     * @param body (optional) 
+     * @return Success
+     */
+    setIsActiveAdvertisements(isActive: boolean | undefined, body: number[] | undefined, cancelToken?: CancelToken): Promise<void> {
+        let url_ = this.baseUrl + "/api/Advertisement/SetIsActiveAdvertisements?";
+        if (isActive === null)
+            throw new Error("The parameter 'isActive' cannot be null.");
+        else if (isActive !== undefined)
+            url_ += "isActive=" + encodeURIComponent("" + isActive) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_: AxiosRequestConfig = {
+            data: content_,
+            method: "POST",
+            url: url_,
+            headers: {
+                "Content-Type": "application/json",
+            },
+            cancelToken
+        };
+
+        return this.instance.request(options_).catch((_error: any) => {
+            if (isAxiosError(_error) && _error.response) {
+                return _error.response;
+            } else {
+                throw _error;
+            }
+        }).then((_response: AxiosResponse) => {
+            return this.processSetIsActiveAdvertisements(_response);
+        });
+    }
+
+    protected processSetIsActiveAdvertisements(response: AxiosResponse): Promise<void> {
+        const status = response.status;
+        let _headers: any = {};
+        if (response.headers && typeof response.headers === "object") {
+            for (const k in response.headers) {
+                if (response.headers.hasOwnProperty(k)) {
+                    _headers[k] = response.headers[k];
+                }
+            }
+        }
+        if (status === 200) {
+            const _responseText = response.data;
+            return Promise.resolve<void>(null as any);
+
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.data;
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Promise.resolve<void>(null as any);
+    }
+
+    /**
+     * @param body (optional) 
+     * @return Success
+     */
+    deleteAdvertisements(body: number[] | undefined, cancelToken?: CancelToken): Promise<void> {
+        let url_ = this.baseUrl + "/api/Advertisement/DeleteAdvertisements";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_: AxiosRequestConfig = {
+            data: content_,
+            method: "POST",
+            url: url_,
+            headers: {
+                "Content-Type": "application/json",
+            },
+            cancelToken
+        };
+
+        return this.instance.request(options_).catch((_error: any) => {
+            if (isAxiosError(_error) && _error.response) {
+                return _error.response;
+            } else {
+                throw _error;
+            }
+        }).then((_response: AxiosResponse) => {
+            return this.processDeleteAdvertisements(_response);
+        });
+    }
+
+    protected processDeleteAdvertisements(response: AxiosResponse): Promise<void> {
+        const status = response.status;
+        let _headers: any = {};
+        if (response.headers && typeof response.headers === "object") {
+            for (const k in response.headers) {
+                if (response.headers.hasOwnProperty(k)) {
+                    _headers[k] = response.headers[k];
+                }
+            }
+        }
+        if (status === 200) {
+            const _responseText = response.data;
+            return Promise.resolve<void>(null as any);
+
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.data;
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Promise.resolve<void>(null as any);
+    }
 }
 
 export class FileClient {
@@ -1507,6 +1672,122 @@ export interface IAdvertisementDto {
     ownerId?: number;
     maskedAdvertiserPhoneNumber?: string | undefined;
     maskedAdvertiserEmail?: string | undefined;
+}
+
+export class AdvertisementInfo implements IAdvertisementInfo {
+    id?: number;
+    title?: string | undefined;
+    categoryName?: string | undefined;
+    isActive?: boolean;
+    validTo?: Date;
+    createdAt?: Date;
+
+    constructor(data?: IAdvertisementInfo) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.title = _data["title"];
+            this.categoryName = _data["categoryName"];
+            this.isActive = _data["isActive"];
+            this.validTo = _data["validTo"] ? new Date(_data["validTo"].toString()) : <any>undefined;
+            this.createdAt = _data["createdAt"] ? new Date(_data["createdAt"].toString()) : <any>undefined;
+        }
+    }
+
+    static fromJS(data: any): AdvertisementInfo {
+        data = typeof data === 'object' ? data : {};
+        let result = new AdvertisementInfo();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["title"] = this.title;
+        data["categoryName"] = this.categoryName;
+        data["isActive"] = this.isActive;
+        data["validTo"] = this.validTo ? this.validTo.toISOString() : <any>undefined;
+        data["createdAt"] = this.createdAt ? this.createdAt.toISOString() : <any>undefined;
+        return data;
+    }
+}
+
+export interface IAdvertisementInfo {
+    id?: number;
+    title?: string | undefined;
+    categoryName?: string | undefined;
+    isActive?: boolean;
+    validTo?: Date;
+    createdAt?: Date;
+}
+
+export class AdvertisementInfoDataTableQueryResponse implements IAdvertisementInfoDataTableQueryResponse {
+    draw?: number;
+    recordsTotal?: number;
+    recordsFiltered?: number;
+    data?: AdvertisementInfo[] | undefined;
+    error?: string | undefined;
+
+    constructor(data?: IAdvertisementInfoDataTableQueryResponse) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.draw = _data["draw"];
+            this.recordsTotal = _data["recordsTotal"];
+            this.recordsFiltered = _data["recordsFiltered"];
+            if (Array.isArray(_data["data"])) {
+                this.data = [] as any;
+                for (let item of _data["data"])
+                    this.data!.push(AdvertisementInfo.fromJS(item));
+            }
+            this.error = _data["error"];
+        }
+    }
+
+    static fromJS(data: any): AdvertisementInfoDataTableQueryResponse {
+        data = typeof data === 'object' ? data : {};
+        let result = new AdvertisementInfoDataTableQueryResponse();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["draw"] = this.draw;
+        data["recordsTotal"] = this.recordsTotal;
+        data["recordsFiltered"] = this.recordsFiltered;
+        if (Array.isArray(this.data)) {
+            data["data"] = [];
+            for (let item of this.data)
+                data["data"].push(item.toJSON());
+        }
+        data["error"] = this.error;
+        return data;
+    }
+}
+
+export interface IAdvertisementInfoDataTableQueryResponse {
+    draw?: number;
+    recordsTotal?: number;
+    recordsFiltered?: number;
+    data?: AdvertisementInfo[] | undefined;
+    error?: string | undefined;
 }
 
 export class AdvertisementListItem implements IAdvertisementListItem {
@@ -2369,6 +2650,66 @@ export interface IDataTableQuery {
     columns?: TableColumn[] | undefined;
 }
 
+export class DataTableQueryResponse_1 implements IDataTableQueryResponse_1 {
+    draw?: number;
+    recordsTotal?: number;
+    recordsFiltered?: number;
+    data?: T[] | undefined;
+    error?: string | undefined;
+
+    constructor(data?: IDataTableQueryResponse_1) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.draw = _data["draw"];
+            this.recordsTotal = _data["recordsTotal"];
+            this.recordsFiltered = _data["recordsFiltered"];
+            if (Array.isArray(_data["data"])) {
+                this.data = [] as any;
+                for (let item of _data["data"])
+                    this.data!.push(T.fromJS(item));
+            }
+            this.error = _data["error"];
+        }
+    }
+
+    static fromJS(data: any): DataTableQueryResponse_1 {
+        data = typeof data === 'object' ? data : {};
+        let result = new DataTableQueryResponse_1();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["draw"] = this.draw;
+        data["recordsTotal"] = this.recordsTotal;
+        data["recordsFiltered"] = this.recordsFiltered;
+        if (Array.isArray(this.data)) {
+            data["data"] = [];
+            for (let item of this.data)
+                data["data"].push(item.toJSON());
+        }
+        data["error"] = this.error;
+        return data;
+    }
+}
+
+export interface IDataTableQueryResponse_1 {
+    draw?: number;
+    recordsTotal?: number;
+    recordsFiltered?: number;
+    data?: T[] | undefined;
+    error?: string | undefined;
+}
+
 export class EditUserInfo implements IEditUserInfo {
     email!: string;
     isEmailPublic?: boolean;
@@ -3027,6 +3368,36 @@ export interface ISearchQuery {
     regex?: boolean;
 }
 
+export class T implements IT {
+
+    constructor(data?: IT) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+    }
+
+    static fromJS(data: any): T {
+        data = typeof data === 'object' ? data : {};
+        let result = new T();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        return data;
+    }
+}
+
+export interface IT {
+}
+
 export class TableColumn implements ITableColumn {
     data?: string | undefined;
     name?: string | undefined;
@@ -3080,6 +3451,7 @@ export interface ITableColumn {
 }
 
 export class UserInfo implements IUserInfo {
+    id?: number;
     firstName?: string | undefined;
     lastName?: string | undefined;
     userName?: string | undefined;
@@ -3101,6 +3473,7 @@ export class UserInfo implements IUserInfo {
 
     init(_data?: any) {
         if (_data) {
+            this.id = _data["id"];
             this.firstName = _data["firstName"];
             this.lastName = _data["lastName"];
             this.userName = _data["userName"];
@@ -3122,6 +3495,7 @@ export class UserInfo implements IUserInfo {
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
         data["firstName"] = this.firstName;
         data["lastName"] = this.lastName;
         data["userName"] = this.userName;
@@ -3136,6 +3510,7 @@ export class UserInfo implements IUserInfo {
 }
 
 export interface IUserInfo {
+    id?: number;
     firstName?: string | undefined;
     lastName?: string | undefined;
     userName?: string | undefined;

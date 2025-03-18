@@ -12,6 +12,14 @@
           severity="secondary"
           @click="bookmarkAdvertisement"
         />
+        <Button
+          v-if="userOwnedAdvertisement"
+          icon="pi pi-pencil"
+          :label="l.actions.edit"
+          severity="secondary"
+          as="RouterLink"
+          :to="{ name: 'editAdvertisement' }"
+        />
       </div>
     </template>
 
@@ -51,7 +59,9 @@
             as="RouterLink"
             :to="{ name: 'viewUser', params: { id: advertisement.ownerId } }"
           ></Button>
-          <Button @click="todo">{{ l.advertisements.sendMessage }}</Button>
+          <Button :disabled="userOwnedAdvertisement" @click="todo">{{
+            l.advertisements.sendMessage
+          }}</Button>
         </div>
 
         <div
@@ -80,9 +90,13 @@
           />
         </div>
 
-        <Button severity="danger" as="RouterLink" :to="{ name: 'reportAdvertisement' }">{{
-          l.advertisements.reportRuleViolation
-        }}</Button>
+        <Button
+          severity="danger"
+          :disabled="userOwnedAdvertisement"
+          :as="userOwnedAdvertisement ? 'button' : 'RouterLink'"
+          :to="{ name: 'reportAdvertisement' }"
+          >{{ l.advertisements.reportRuleViolation }}</Button
+        >
       </div>
     </template>
   </Panel>
@@ -105,6 +119,7 @@ import { getClient } from '@/utils/client-builder'
 import { updateStorageObject } from '@/utils/local-storage'
 import { computed, onMounted, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
+import { AuthService } from '@/services/auth-service'
 
 //Props
 const { id: advertisementId } = defineProps<{ id: number }>()
@@ -133,6 +148,13 @@ const loadingPhoneNumber = ref(false)
 const savingBookmark = ref(false)
 const revealedEmail = ref(false)
 const revealedPhone = ref(false)
+const userOwnedAdvertisement = computed(() => {
+  return (
+    typeof advertisement.value.ownerId === 'number' &&
+    AuthService.isAuthenticated.value &&
+    AuthService.profileInfo.value?.id === advertisement.value.ownerId
+  )
+})
 
 //Hooks
 onMounted(() => {

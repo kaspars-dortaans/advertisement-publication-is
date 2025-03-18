@@ -1,9 +1,11 @@
 using AutoMapper;
 using BusinessLogic.Authorization;
+using BusinessLogic.Constants;
 using BusinessLogic.Dto;
 using BusinessLogic.Dto.Advertisement;
 using BusinessLogic.Dto.DataTableQuery;
 using BusinessLogic.Entities;
+using BusinessLogic.Exceptions;
 using BusinessLogic.Helpers;
 using BusinessLogic.Helpers.CookieSettings;
 using BusinessLogic.Services;
@@ -54,7 +56,7 @@ public class AdvertisementController(
     [HttpGet]
     public async Task<Dto.Advertisement.AdvertisementDto> GetAdvertisement(int advertisementId)
     {
-        var dto = await _advertisementService.FindActiveAdvertisement(advertisementId, User.GetUserId());
+        var dto = await _advertisementService.FindOwnedOrActiveAdvertisement(advertisementId, User.GetUserId());
         return _mapper.Map<Dto.Advertisement.AdvertisementDto>(dto, opts => opts.Items[nameof(Url)] = Url);
     }
 
@@ -211,5 +213,31 @@ public class AdvertisementController(
     {
         var report = _mapper.Map<RuleViolationReport>(request, o => o.Items[nameof(User)] = User);
         await _ruleViolationService.AddAsync(report);
+    }
+
+    [HasPermission(Permissions.ViewOwnedAdvertisements)]
+    [HttpPost]
+    public async Task<DataTableQueryResponse<AdvertisementInfo>> GetOwnedAdvertisements(DataTableQuery query)
+    {
+        var userId = User.GetUserId() ?? throw new ApiException([CustomErrorCodes.UserNotFound]);
+        return await _advertisementService.GetAdvertisementInfo(query, userId);
+    }
+
+    [HasPermission(Permissions.EditOwnedAdvertisement)]
+    [HttpPost]
+    public async Task SetIsActiveAdvertisements(IEnumerable<int> advertisementIds, bool isActive)
+    {
+        var userId = User.GetUserId() ?? throw new ApiException([CustomErrorCodes.UserNotFound]);
+        await _advertisementService
+            .Where(a => a.OwnerId == userId && advertisementIds.Contains(a.Id))
+            .UpdateFromQueryAsync(a => new Advertisement() { IsActive = isActive});
+    }
+
+    [HasPermission(Permissions.DeleteOwnedAdvertisement)]
+    [HttpPost]
+    public async Task DeleteAdvertisements(IEnumerable<int> advertisementIds)
+    {
+        var userId = User.GetUserId() ?? throw new ApiException([CustomErrorCodes.UserNotFound]);
+        await _advertisementService.DeleteWhereAsync(a => a.OwnerId == userId && advertisementIds.Contains(a.Id));
     }
 }

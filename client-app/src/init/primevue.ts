@@ -47,6 +47,7 @@ import Image from 'primevue/image'
 //Misc
 import Avatar from 'primevue/avatar'
 import BlockUI from 'primevue/blockui'
+import Badge from 'primevue/badge'
 
 const customPassTrough = {
   password: {
@@ -184,4 +185,5 @@ export function initPrimeVue(app: App<Element>) {
   //Misc
   app.component('BlockUI', BlockUI)
   app.component('Avatar', Avatar)
+  app.component('Badge', Badge)
 }

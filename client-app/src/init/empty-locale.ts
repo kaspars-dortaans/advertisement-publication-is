@@ -14,6 +14,12 @@ export const emptyLocale = {
     report: "",
     remove: "",
     save: "",
+    create: "",
+    delete: "",
+    extend: "",
+    activate: "",
+    deactivate: "",
+    view: "",
   },
   dataTable: {
     pageReportTemplate: "",
@@ -34,6 +40,13 @@ export const emptyLocale = {
     description: "",
     selectCategory: "",
     search: "",
+  },
+  manageAdvertisements: {
+    title: "",
+    categoryName: "",
+    isActive: "",
+    validTo: "",
+    createdAt: "",
   },
   form: {
     changePassword: {
@@ -85,6 +98,8 @@ export const emptyLocale = {
     recentlyViewedAdvertisements: "",
     createAdvertisement: "",
     siteLogo: "",
+    myAdvertisements: "",
+    editAdvertisement: "",
   },
   errors: {
     Required: "",

@@ -68,19 +68,16 @@ const router = createRouter({
           name: 'reportAdvertisement',
           component: () => import('../views/advertisement/ReportAdvertisement.vue'),
           props: (route) => ({ id: parseInt(firstParam(route.params.id)) })
+        },
+        {
+          path: '/advertisement/:id/edit',
+          name: 'editAdvertisement',
+          component: () => import('../views/advertisement/EditAdvertisement.vue'),
+          props: (route) => ({ id: parseInt(firstParam(route.params.id)) })
         }
       ]
     },
 
-    //Authorized user
-    {
-      path: '/bookmarked-advertisements',
-      name: 'bookmarkedAdvertisements',
-      component: () => import('../views/advertisements/BookmarkedAdvertisements.vue'),
-      meta: {
-        requiresPermission: Permissions[Permissions.ViewAdvertisementBookmarks]
-      }
-    },
     {
       path: '/profile-info',
       name: 'profileInfo',
@@ -103,6 +100,22 @@ const router = createRouter({
       component: () => import('../views/user/ChangePassword.vue'),
       meta: {
         requiresPermission: Permissions[Permissions.ChangePassword]
+      }
+    },
+    {
+      path: '/bookmarked-advertisements',
+      name: 'bookmarkedAdvertisements',
+      component: () => import('../views/advertisements/BookmarkedAdvertisements.vue'),
+      meta: {
+        requiresPermission: Permissions[Permissions.ViewAdvertisementBookmarks]
+      }
+    },
+    {
+      path: '/manage-advertisements',
+      name: 'manageAdvertisements',
+      component: () => import('../views/user/ManageUserAdvertisements.vue'),
+      meta: {
+        requiresPermission: Permissions[Permissions.ViewOwnedAdvertisements]
       }
     },
 

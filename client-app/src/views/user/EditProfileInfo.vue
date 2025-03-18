@@ -185,7 +185,7 @@ const loading = ref(false)
 onBeforeMount(async () => {
   loading.value = true
   await authService.refreshProfileData()
-  const userInfo = await AuthService.profileInfo.value
+  const userInfo = await AuthService.profileInfoPromise.value
 
   let profileImage
   if (userInfo?.profileImageUrl?.url) {

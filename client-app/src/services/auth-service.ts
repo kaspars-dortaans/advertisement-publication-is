@@ -8,11 +8,13 @@ export class AuthService {
   /** Singleton instance */
   private static _instance: AuthService
 
-  /** Current user id */
-  public static readonly permissions = ref<Promise<string[]>>(Promise.resolve([]))
+  /** Current user permissions */
+  public static readonly permissionsPromise = ref<Promise<string[]>>(Promise.resolve([]))
+  public static readonly permissions = ref<string[]>([])
 
   /** Basic user info */
-  public static readonly profileInfo = ref<Promise<UserInfo | null>>(Promise.resolve(null))
+  public static readonly profileInfoPromise = ref<Promise<UserInfo | null>>(Promise.resolve(null))
+  public static readonly profileInfo = ref<UserInfo | null>(null)
 
   /** Is user authenticated flag */
   public static readonly isAuthenticated = ref<boolean>(false)
@@ -72,10 +74,10 @@ export class AuthService {
 
   public async refreshProfileData() {
     try {
-      AuthService.permissions.value = this.userService.getCurrentUserPermissions()
-      AuthService.profileInfo.value = this.userService.getUserInfo()
-      await AuthService.permissions.value
-      await AuthService.profileInfo.value
+      AuthService.permissionsPromise.value = this.userService.getCurrentUserPermissions()
+      AuthService.profileInfoPromise.value = this.userService.getUserInfo()
+      AuthService.permissions.value = await AuthService.permissionsPromise.value
+      AuthService.profileInfo.value = await AuthService.profileInfoPromise.value
     } catch (e) {
       //TODO: Implement token refresh & try to refresh token
       this.logout()
@@ -94,12 +96,13 @@ export class AuthService {
   /** Logout by deleting authorization jwt token */
   public logout() {
     this._updateToken(null)
-    AuthService.permissions.value = Promise.resolve([])
+    AuthService.permissionsPromise.value = Promise.resolve([])
+    AuthService.permissions.value = []
     AuthService.isAuthenticated.value = false
   }
 
   static async hasPermission(requiresPermission: string) {
-    const permissions = await AuthService.permissions.value
+    const permissions = await AuthService.permissionsPromise.value
     if (!requiresPermission) {
       return true
     } else if (!AuthService.isAuthenticated.value) {

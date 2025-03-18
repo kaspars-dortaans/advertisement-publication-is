@@ -11,7 +11,13 @@
     "clear": "Clear",
     "report": "Report",
     "remove": "Remove",
-    "save": "Save"
+    "save": "Save",
+    "create": "Create",
+    "delete": "Delete",
+    "extend": "Extend",
+    "activate": "Activate",
+    "deactivate": "Deactivate",
+    "view": "View"
   },
   "dataTable": {
     "pageReportTemplate": "{1} to {2} of {3}",
@@ -32,6 +38,13 @@
     "description": "Description",
     "selectCategory": "Select Category",
     "search": "Search"
+  },
+  "manageAdvertisements": {
+    "title": "Title",
+    "categoryName": "Category",
+    "isActive": "Active",
+    "validTo": "Valid to",
+    "createdAt": "Created at"
   },
   "form": {
     "common": {
@@ -82,7 +95,9 @@
     "savedAdvertisements": "Advertisement bookmarks",
     "recentlyViewedAdvertisements": "Recently viewed advertisements",
     "createAdvertisement": "Create advertisements",
-    "siteLogo": "Site logo"
+    "siteLogo": "Site logo",
+    "myAdvertisements": "My advertisements",
+    "editAdvertisement": "Edit advertisement"
   },
   "errors": {
     "Required": "This field is required",

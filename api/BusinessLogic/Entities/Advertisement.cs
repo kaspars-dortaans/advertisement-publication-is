@@ -10,6 +10,7 @@ public class Advertisement
     public string Title { get; set; } = default!;
     public string AdvertisementText { get; set; } = default!;
     public int ViewCount { get; set; }
+    public bool IsActive { get; set; }
 
     public int OwnerId { get; set; }
     public User Owner { get; set; } = default!;
