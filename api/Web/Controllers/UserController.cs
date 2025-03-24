@@ -100,8 +100,8 @@ public class UserController(
     public async Task<UserInfo> GetUserInfo()
     {
         var userId = User.GetUserId()!;
-        var user = await _userManager
-            .FindByIdAsync("" + userId.Value)
+        var user = await _userService.Include(u => u.ProfileImageFile)
+            .FirstOrDefaultAsync(u => u.Id == userId)
             ?? throw new ApiException([CustomErrorCodes.UserNotFound]);
 
         return _mapper.Map<UserInfo>(user, opt => opt.Items[nameof(Url)] = Url);

@@ -2836,6 +2836,50 @@ export interface IForbidResult {
     properties?: AuthenticationProperties;
 }
 
+export class ImageDto implements IImageDto {
+    id?: number;
+    imageURLs?: ImageUrl;
+    hash?: string | undefined;
+
+    constructor(data?: IImageDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.imageURLs = _data["imageURLs"] ? ImageUrl.fromJS(_data["imageURLs"]) : <any>undefined;
+            this.hash = _data["hash"];
+        }
+    }
+
+    static fromJS(data: any): ImageDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new ImageDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["imageURLs"] = this.imageURLs ? this.imageURLs.toJSON() : <any>undefined;
+        data["hash"] = this.hash;
+        return data;
+    }
+}
+
+export interface IImageDto {
+    id?: number;
+    imageURLs?: ImageUrl;
+    hash?: string | undefined;
+}
+
 export class ImageUrl implements IImageUrl {
     url?: string | undefined;
     thumbnailUrl?: string | undefined;
@@ -3460,7 +3504,7 @@ export class UserInfo implements IUserInfo {
     isEmailPublic?: boolean;
     email?: string | undefined;
     linkToUserSite?: string | undefined;
-    profileImageUrl?: ImageUrl;
+    profileImage?: ImageDto;
 
     constructor(data?: IUserInfo) {
         if (data) {
@@ -3482,7 +3526,7 @@ export class UserInfo implements IUserInfo {
             this.isEmailPublic = _data["isEmailPublic"];
             this.email = _data["email"];
             this.linkToUserSite = _data["linkToUserSite"];
-            this.profileImageUrl = _data["profileImageUrl"] ? ImageUrl.fromJS(_data["profileImageUrl"]) : <any>undefined;
+            this.profileImage = _data["profileImage"] ? ImageDto.fromJS(_data["profileImage"]) : <any>undefined;
         }
     }
 
@@ -3504,7 +3548,7 @@ export class UserInfo implements IUserInfo {
         data["isEmailPublic"] = this.isEmailPublic;
         data["email"] = this.email;
         data["linkToUserSite"] = this.linkToUserSite;
-        data["profileImageUrl"] = this.profileImageUrl ? this.profileImageUrl.toJSON() : <any>undefined;
+        data["profileImage"] = this.profileImage ? this.profileImage.toJSON() : <any>undefined;
         return data;
     }
 }
@@ -3519,7 +3563,7 @@ export interface IUserInfo {
     isEmailPublic?: boolean;
     email?: string | undefined;
     linkToUserSite?: string | undefined;
-    profileImageUrl?: ImageUrl;
+    profileImage?: ImageDto;
 }
 
 export class UserListItem implements IUserListItem {

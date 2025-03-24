@@ -17,12 +17,19 @@ public class UserMapperProfile : Profile
             .ForMember(dto => dto.PhoneNumber, o => o.MapFrom(u => u.IsPhoneNumberPublic ? u.PhoneNumber : null));
 
         CreateMap<BusinessLogic.Entities.User, UserInfo>()
-            .ForMember(dto => dto.ProfileImageUrl, o => o
-                .MapFrom((u, _, _, context) => new ImageUrl()
+            .ForMember(dto => dto.ProfileImage, o => o
+                .MapFrom((u, _, _, context) => u.ProfileImageFile is not null
+                ? new ImageDto()
+                {
+                    Id = u.ProfileImageFile.Id,
+                    Hash = u.ProfileImageFile.Hash,
+                    ImageURLs = new ImageUrl()
                     {
                         Url = FileUrlHelper.MapperGetFileUrl(context, u.ProfileImageFileId)!,
                         ThumbnailUrl = FileUrlHelper.MapperGetThumbnailUrl(context, u.ProfileImageFileId)!
-                    }));
+                    }
+                }
+                : null));
 
         CreateMap<EditUserInfo, BusinessLogic.Entities.User>();
     }

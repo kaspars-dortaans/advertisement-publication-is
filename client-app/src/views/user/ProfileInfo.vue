@@ -37,7 +37,7 @@
           </dl>
 
           <img
-            :src="profileInfo?.profileImageUrl?.url ?? defaultProfileImageUrl"
+            :src="profileInfo?.profileImage?.imageURLs?.url ?? defaultProfileImageUrl"
             class="w-56 h-56"
           />
         </div>

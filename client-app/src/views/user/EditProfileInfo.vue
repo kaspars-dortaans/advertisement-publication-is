@@ -131,7 +131,7 @@ import { AuthService } from '@/services/auth-service'
 import { LocaleService } from '@/services/locale-service'
 import { getClient } from '@/utils/client-builder'
 import { FieldHelper } from '@/utils/field-helper'
-import { downloadFile } from '@/utils/file-helper'
+import { downloadFile, hashFile } from '@/utils/file-helper'
 import { toTypedSchema } from '@vee-validate/yup'
 import { useForm } from 'vee-validate'
 import { onBeforeMount, ref } from 'vue'
@@ -188,8 +188,8 @@ onBeforeMount(async () => {
   const userInfo = await AuthService.profileInfoPromise.value
 
   let profileImage
-  if (userInfo?.profileImageUrl?.url) {
-    profileImage = await downloadFile(userInfo.profileImageUrl.url)
+  if (userInfo?.profileImage?.imageURLs?.url) {
+    profileImage = await downloadFile(userInfo.profileImage.imageURLs.url)
     originalProfileImage.value = profileImage
   }
 
@@ -212,7 +212,8 @@ onBeforeMount(async () => {
 //Methods
 const onSubmit = handleSubmit(async () => {
   try {
-    const profileImageChanged = values.profileImage !== originalProfileImage.value
+    const fileHash = values.profileImage ? await hashFile(values.profileImage) : undefined
+    const profileImageChanged = fileHash !== AuthService.profileInfo.value?.profileImage?.hash
     const profileImage =
       profileImageChanged && values.profileImage
         ? ({

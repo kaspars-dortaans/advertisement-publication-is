@@ -126,7 +126,9 @@ const profileRoutes = computed(() => {
   return [
     {
       avatar: true,
-      url: AuthService.profileInfo.value?.profileImageUrl?.thumbnailUrl ?? defaultProfileImageUrl,
+      url:
+        AuthService.profileInfo.value?.profileImage?.imageURLs?.thumbnailUrl ??
+        defaultProfileImageUrl,
       items: [
         {
           label: 'navigation.profileInfo',

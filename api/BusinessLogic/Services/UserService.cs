@@ -7,6 +7,7 @@ using BusinessLogic.Helpers.Storage;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Cryptography;
 namespace BusinessLogic.Services;
 
 public class UserService(
@@ -57,7 +58,7 @@ public class UserService(
             var apiException = new ApiException();
             foreach (var error in createResult.Errors)
             {
-                if(error.Code == "PasswordMismatch")
+                if (error.Code == "PasswordMismatch")
                 {
                     apiException.AddValidationError("CurrentPassword", error.Code);
                 }
@@ -89,12 +90,50 @@ public class UserService(
     /// <param name="userEmail"></param>
     /// <param name="profileImage"></param>
     /// <returns></returns>
-    public async Task SaveProfileImage(string userEmail, IFormFile profileImage)
+    public async Task SaveProfileImage(string userEmail, IFormFile? profileImage)
     {
-        //Get created user
-        var user = await _userManager
-            .FindByEmailAsync(userEmail)
+        //Get user
+        var user = await DbSet
+            .Include(u => u.ProfileImageFile)
+            .Where(u => u.Email == userEmail)
+            .FirstOrDefaultAsync()
             ?? throw new ApiException([CustomErrorCodes.UserNotFound]);
+
+        //Compute file hash
+        var profileImageStream = profileImage?.OpenReadStream();
+        string? profileImageHexHash = null;
+        if (profileImageStream is not null)
+        {
+            var sha256 = SHA256.Create();
+            var profileImageHash = await sha256.ComputeHashAsync(profileImageStream);
+            profileImageHexHash = BitConverter.ToString(profileImageHash).Replace("-", "");
+        }
+
+        //If trying to save already existing image return
+        if (user.ProfileImageFile?.Hash == profileImageHexHash)
+        {
+            return;
+        }
+
+        //Delete existing profile image, if any
+        if (user.ProfileImageFile is not null)
+        {
+            if (!string.IsNullOrEmpty(user.ProfileImageFile.Path))
+            {
+                await _storage.DeleteFile(user.ProfileImageFile.Path);
+            }
+            if (!string.IsNullOrEmpty(user.ProfileImageFile.ThumbnailPath))
+            {
+                await _storage.DeleteFile(user.ProfileImageFile.ThumbnailPath);
+            }
+            await _fileService.RemoveAsync(user.ProfileImageFile);
+        }
+
+        //If no new profile image to save return
+        if (profileImage is null)
+        {
+            return;
+        }
 
         //Add file entity
         var filePath = _filePathResolver.GenerateUniqueFilePath(FileFolderConstants.ProfileImageFolder, profileImage.FileName);
@@ -104,7 +143,8 @@ public class UserService(
             OwnerUserId = user.Id,
             Path = filePath,
             ThumbnailPath = thumbnailPath,
-            IsPublic = true
+            IsPublic = true,
+            Hash = profileImageHexHash!
         });
 
         //Update user profile image reference
@@ -112,16 +152,14 @@ public class UserService(
         await _userManager.UpdateAsync(user);
 
         //Make thumbnail
-        var imageStream = profileImage.OpenReadStream();
-        var thumbnailStream = await ImageHelper.MakeImageThumbnail(imageStream, ProfileImageConstants.ThumbnailSize, ProfileImageConstants.ThumbnailSize);
+        profileImageStream!.Seek(0, SeekOrigin.Begin);
+        var thumbnailStream = await ImageHelper.MakeImageThumbnail(profileImageStream, ProfileImageConstants.ThumbnailSize, ProfileImageConstants.ThumbnailSize);
 
-        //Reset streams
-        imageStream.Seek(0, SeekOrigin.Begin);
+        //Save files in storage
+        profileImageStream.Seek(0, SeekOrigin.Begin);
         thumbnailStream.Seek(0, SeekOrigin.Begin);
-
-        //Save file in storage
         await _storage.PutFiles([
-            new (filePath, imageStream),
+            new (filePath, profileImageStream),
             new (thumbnailPath, thumbnailStream)
         ]);
 
@@ -148,38 +186,11 @@ public class UserService(
     /// <returns></returns>
     public async Task UpdateUserInfo(User user, bool updateProfileImage, IFormFile? profileImage)
     {
-        //Update user
-        var existingProfileImage = user.ProfileImageFile;
-        if (updateProfileImage)
-        {
-            user.ProfileImageFileId = null;
-        }
-
         HandleIdentityUserResult(await _userManager.UpdateAsync(user));
-
         if (updateProfileImage)
         {
-            //Delete existing profile image
-            if (existingProfileImage is not null)
-            {
-                if (!string.IsNullOrEmpty(existingProfileImage.Path))
-                {
-                    await _storage.DeleteFile(existingProfileImage.Path);
-                }
-                if (!string.IsNullOrEmpty(existingProfileImage.ThumbnailPath))
-                {
-                    await _storage.DeleteFile(existingProfileImage.ThumbnailPath);
-                }
-                await _fileService.RemoveAsync(existingProfileImage);
-            }
-
-            //Save new profile image
-            if (profileImage is not null)
-            {
-                await SaveProfileImage(user.Email!, profileImage);
-            }
+            await SaveProfileImage(user.Email!, profileImage);
         }
-
     }
 
     public async Task ChangePassword(int userId, string currentPassword, string newPassword)
