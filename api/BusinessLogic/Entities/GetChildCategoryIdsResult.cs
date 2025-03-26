@@ -1,8 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿namespace BusinessLogic.Entities;
 
-namespace BusinessLogic.Entities;
-
-public class GetChildCategoryIdsResult
+public class CategoryIdsResult
 {
     public int Id { get; set; }
 }

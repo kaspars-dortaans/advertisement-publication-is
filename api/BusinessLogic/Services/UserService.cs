@@ -7,7 +7,6 @@ using BusinessLogic.Helpers.Storage;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using System.Security.Cryptography;
 namespace BusinessLogic.Services;
 
 public class UserService(
@@ -15,12 +14,16 @@ public class UserService(
     UserManager<User> userManager,
     IStorage storage,
     IFilePathResolver filePathResolver,
-    IBaseService<Entities.Files.File> fileService) : BaseService<User>(context), IUserService
+    FileHelper fileHelper,
+    IBaseService<Entities.Files.File> fileService,
+    ImageHelper imageHelper) : BaseService<User>(context), IUserService
 {
     private readonly UserManager<User> _userManager = userManager;
     private readonly IStorage _storage = storage;
     private readonly IFilePathResolver _filePathResolver = filePathResolver;
     private readonly IBaseService<Entities.Files.File> _fileService = fileService;
+    private readonly FileHelper _fileHelper = fileHelper;
+    private readonly ImageHelper _imageHelper = imageHelper;
 
     /// <summary>
     /// Register new user
@@ -100,14 +103,8 @@ public class UserService(
             ?? throw new ApiException([CustomErrorCodes.UserNotFound]);
 
         //Compute file hash
-        var profileImageStream = profileImage?.OpenReadStream();
-        string? profileImageHexHash = null;
-        if (profileImageStream is not null)
-        {
-            var sha256 = SHA256.Create();
-            var profileImageHash = await sha256.ComputeHashAsync(profileImageStream);
-            profileImageHexHash = BitConverter.ToString(profileImageHash).Replace("-", "");
-        }
+        using var profileImageStream = profileImage?.OpenReadStream();
+        string? profileImageHexHash = profileImageStream is not null ? await _fileHelper.GetFileHash(profileImageStream) : null;
 
         //If trying to save already existing image return
         if (user.ProfileImageFile?.Hash == profileImageHexHash)
@@ -130,14 +127,14 @@ public class UserService(
         }
 
         //If no new profile image to save return
-        if (profileImage is null)
+        if (profileImage is null || profileImageStream is null)
         {
             return;
         }
 
         //Add file entity
         var filePath = _filePathResolver.GenerateUniqueFilePath(FileFolderConstants.ProfileImageFolder, profileImage.FileName);
-        var thumbnailPath = _filePathResolver.GenerateUniqueFilePath(FileFolderConstants.ProfileImageFolder, ProfileImageConstants.ThumbnailPrefix + profileImage.FileName);
+        var thumbnailPath = _filePathResolver.GenerateUniqueFilePath(FileFolderConstants.ProfileImageFolder, ImageConstants.ThumbnailPrefix + profileImage.FileName);
         var file = await _fileService.AddAsync(new Entities.Files.UserImage()
         {
             OwnerUserId = user.Id,
@@ -151,18 +148,8 @@ public class UserService(
         user.ProfileImageFileId = file.Id;
         await _userManager.UpdateAsync(user);
 
-        //Make thumbnail
-        profileImageStream!.Seek(0, SeekOrigin.Begin);
-        var thumbnailStream = await ImageHelper.MakeImageThumbnail(profileImageStream, ProfileImageConstants.ThumbnailSize, ProfileImageConstants.ThumbnailSize);
-
-        //Save files in storage
-        profileImageStream.Seek(0, SeekOrigin.Begin);
-        thumbnailStream.Seek(0, SeekOrigin.Begin);
-        await _storage.PutFiles([
-            new (filePath, profileImageStream),
-            new (thumbnailPath, thumbnailStream)
-        ]);
-
+        //Save image in storage
+        await _imageHelper.StoreImageWithThumbnail(profileImageStream, filePath, thumbnailPath);
     }
 
     public IQueryable<Permission> GetUserPermissions(int userId)

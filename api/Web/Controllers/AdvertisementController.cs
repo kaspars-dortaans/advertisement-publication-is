@@ -23,14 +23,14 @@ namespace Web.Controllers;
 [Route("api/[controller]/[action]")]
 public class AdvertisementController(
     IMapper mapper,
-    IBaseService<Category> categoryService,
+    ICategoryService categoryService,
     IAdvertisementService advertisementService,
     IBaseService<RuleViolationReport> ruleViolationService,
     IBaseService<AdvertisementBookmark> advertisementBookmarkService,
     CookieSettingsHelper cookieSettingsHelper) : ControllerBase
 {
     private readonly IMapper _mapper = mapper;
-    private readonly IBaseService<Category> _categoryService = categoryService;
+    private readonly ICategoryService _categoryService = categoryService;
     private readonly IAdvertisementService _advertisementService = advertisementService;
     private readonly IBaseService<RuleViolationReport> _ruleViolationService = ruleViolationService;
     private readonly IBaseService<AdvertisementBookmark> _advertisementBookmarkService = advertisementBookmarkService;
@@ -138,12 +138,13 @@ public class AdvertisementController(
     public async Task<CategoryInfo> GetCategoryInfo(int categoryId)
     {
         var locale = _cookieSettingsHelper.Settings.NormalizedLocale;
+        var categoryAttributes = _categoryService.GetCategoryAndParentAttributes(categoryId);
         var result = await _categoryService
             .Where(c => c.Id == categoryId)
             .Select(c => new CategoryInfo()
             {
                 CategoryName = c.LocalisedNames.Localise(locale),
-                AttributeInfo = c.CategoryAttributes
+                AttributeInfo = categoryAttributes
                     .OrderBy(ca => ca.AttributeOrder)
                     .Select(ca => new CategoryAttributeInfo()
                     {
@@ -155,8 +156,9 @@ public class AdvertisementController(
                         AttributeFilterType = ca.Attribute.FilterType,
                         AttributeValueType = ca.Attribute.ValueType,
                         IconUrl = ca.Attribute.Icon != null ? ca.Attribute.Icon.Path : null
-                    }),
-                AttributeValueLists = c.Attributes
+                    }).ToList(),
+                AttributeValueLists = categoryAttributes
+                    .Select(ca => ca.Attribute)
                     .Where(a => a.AttributeValueList != null)
                     .Select(a => new AttributeValueListItem()
                     {
@@ -169,6 +171,7 @@ public class AdvertisementController(
                             OrderIndex = e.OrderIndex
                         }),
                     })
+                    .ToList()
             })
             .FirstAsync();
 
@@ -230,7 +233,7 @@ public class AdvertisementController(
         var userId = User.GetUserId() ?? throw new ApiException([CustomErrorCodes.UserNotFound]);
         await _advertisementService
             .Where(a => a.OwnerId == userId && advertisementIds.Contains(a.Id))
-            .UpdateFromQueryAsync(a => new Advertisement() { IsActive = isActive});
+            .UpdateFromQueryAsync(a => new Advertisement() { IsActive = isActive });
     }
 
     [HasPermission(Permissions.DeleteOwnedAdvertisement)]

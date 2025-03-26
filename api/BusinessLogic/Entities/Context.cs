@@ -77,7 +77,11 @@ public class Context(DbContextOptions<Context> options) : IdentityDbContext<User
             .HasDbFunction(() => GetCategoryChildIds(default))
             .HasName("get_child_category_ids");
 
-        modelBuilder.Entity<GetChildCategoryIdsResult>().ToTable("_", t => t.ExcludeFromMigrations());
+        modelBuilder
+            .HasDbFunction(() => GetCategoryParentIds(default))
+            .HasName("get_parent_category_ids");
+
+        modelBuilder.Entity<CategoryIdsResult>().ToTable("_", t => t.ExcludeFromMigrations());
     }
 
     /// <summary>
@@ -85,5 +89,12 @@ public class Context(DbContextOptions<Context> options) : IdentityDbContext<User
     /// </summary>
     /// <param name="categoryId"></param>
     /// <returns></returns>
-    public IQueryable<GetChildCategoryIdsResult> GetCategoryChildIds(int categoryId) => FromExpression(() => GetCategoryChildIds(categoryId));
+    public IQueryable<CategoryIdsResult> GetCategoryChildIds(int categoryId) => FromExpression(() => GetCategoryChildIds(categoryId));
+
+    /// <summary>
+    /// Return ids of all parent categories
+    /// </summary>
+    /// <param name="categoryId"></param>
+    /// <returns></returns>
+    public IQueryable<CategoryIdsResult> GetCategoryParentIds(int categoryId) => FromExpression(() => GetCategoryParentIds(categoryId));
 }
