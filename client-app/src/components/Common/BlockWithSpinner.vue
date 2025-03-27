@@ -6,7 +6,7 @@
 </template>
 
 <script setup lang="ts">
-import ComponentSpinner from './ComponentSpinner.vue'
+import ComponentSpinner from '@/components/common/ComponentSpinner.vue'
 
 const { loading } = defineProps<{ loading: boolean }>()
 </script>

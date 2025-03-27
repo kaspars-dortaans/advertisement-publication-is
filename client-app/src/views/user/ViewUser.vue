@@ -56,8 +56,8 @@
 <script setup lang="ts">
 import AdvertisementTable from '@/components/AdvertisementTable.vue'
 import BackButton from '@/components/BackButton.vue'
-import BlockWithSpinner from '@/components/Common/BlockWithSpinner.vue'
-import ResponsiveLayout from '@/components/Common/ResponsiveLayout.vue'
+import BlockWithSpinner from '@/components/common/BlockWithSpinner.vue'
+import ResponsiveLayout from '@/components/common/ResponsiveLayout.vue'
 import {
   AdvertisementClient,
   AdvertisementQuery,

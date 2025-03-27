@@ -121,10 +121,10 @@
 
 <script setup lang="ts">
 import BackButton from '@/components/BackButton.vue'
-import BlockWithSpinner from '@/components/Common/BlockWithSpinner.vue'
-import ResponsiveLayout from '@/components/Common/ResponsiveLayout.vue'
-import FieldError from '@/components/Form/FieldError.vue'
-import ImageUpload from '@/components/Form/ImageUpload.vue'
+import BlockWithSpinner from '@/components/common/BlockWithSpinner.vue'
+import ResponsiveLayout from '@/components/common/ResponsiveLayout.vue'
+import FieldError from '@/components/form/FieldError.vue'
+import ImageUpload from '@/components/form/ImageUpload.vue'
 import { ProfileImageConstants } from '@/constants/api/ProfileImageConstants'
 import { EditUserInfo, UserClient, type FileParameter } from '@/services/api-client'
 import { AuthService } from '@/services/auth-service'

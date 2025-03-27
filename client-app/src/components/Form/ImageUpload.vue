@@ -82,7 +82,7 @@ import type { FileUploadSelectEvent } from 'primevue/fileupload'
 import { onUnmounted, reactive, ref, useTemplateRef, watch } from 'vue'
 import { CircleStencil, Cropper } from 'vue-advanced-cropper'
 import 'vue-advanced-cropper/dist/style.css'
-import FieldError from './FieldError.vue'
+import FieldError from '@/components/form/FieldError.vue'
 
 //Props & emits
 const { maxFileSize, allowedFileTypes } = defineProps<{

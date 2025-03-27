@@ -11,7 +11,7 @@
 
 <script setup lang="ts">
 import AdvertisementTable from '@/components/AdvertisementTable.vue'
-import ResponsiveLayout from '@/components/Common/ResponsiveLayout.vue'
+import ResponsiveLayout from '@/components/common/ResponsiveLayout.vue'
 import {
   AdvertisementHistoryStorageKey,
   AdvertisementHistoryTimeSpanInMiliSeconds

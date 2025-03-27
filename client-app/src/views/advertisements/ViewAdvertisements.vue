@@ -18,7 +18,7 @@
 <script setup lang="ts">
 import AdvertisementTable from '@/components/AdvertisementTable.vue'
 import CategoryMenu from '@/components/CategoryMenu.vue'
-import ResponsiveLayout from '@/components/Common/ResponsiveLayout.vue'
+import ResponsiveLayout from '@/components/common/ResponsiveLayout.vue'
 import { AdvertisementClient } from '@/services/api-client'
 import { getClient } from '@/utils/client-builder'
 import { ref } from 'vue'

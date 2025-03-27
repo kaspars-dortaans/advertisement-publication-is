@@ -27,7 +27,7 @@
 </template>
 
 <script setup lang="ts" generic="T extends object">
-import ResponsiveLayout from '@/components/Common/ResponsiveLayout.vue'
+import ResponsiveLayout from '@/components/common/ResponsiveLayout.vue'
 import { Direction } from '@/constants/api/Direction'
 import { DefaultPageSize, PageSizeOptions, PaginatorTemplate } from '@/constants/data-table'
 import {

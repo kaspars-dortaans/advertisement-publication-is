@@ -19,7 +19,7 @@
 <script setup lang="ts">
 import AdvertisementTable from '@/components/AdvertisementTable.vue'
 import BackButton from '@/components/BackButton.vue'
-import ResponsiveLayout from '@/components/Common/ResponsiveLayout.vue'
+import ResponsiveLayout from '@/components/common/ResponsiveLayout.vue'
 import {
   AdvertisementClient,
   SearchQuery,

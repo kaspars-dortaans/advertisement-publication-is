@@ -119,9 +119,9 @@
 </template>
 
 <script setup lang="ts">
-import ResponsiveLayout from '@/components/Common/ResponsiveLayout.vue'
-import FieldError from '@/components/Form/FieldError.vue'
-import ImageUpload from '@/components/Form/ImageUpload.vue'
+import ResponsiveLayout from '@/components/common/ResponsiveLayout.vue'
+import FieldError from '@/components/form/FieldError.vue'
+import ImageUpload from '@/components/form/ImageUpload.vue'
 import { ProfileImageConstants } from '@/constants/api/ProfileImageConstants'
 import { UserClient, type FileParameter, type IRegisterDto } from '@/services/api-client'
 import { LocaleService } from '@/services/locale-service'

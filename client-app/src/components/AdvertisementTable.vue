@@ -111,7 +111,7 @@
 </template>
 
 <script setup lang="ts">
-import DynamicFilter from '@/components/Filters/DynamicFilter.vue'
+import DynamicFilter from '@/components/filters/DynamicFilter.vue'
 import { Direction } from '@/constants/api/Direction'
 import { DefaultPageSize, PageSizeOptions, PaginatorTemplate } from '@/constants/data-table'
 import {

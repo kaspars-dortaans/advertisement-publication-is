@@ -64,8 +64,8 @@
 <script setup lang="ts">
 import defaultProfileImageUrl from '@/assets/images/default-profile-image.svg'
 import BackButton from '@/components/BackButton.vue'
-import BlockWithSpinner from '@/components/Common/BlockWithSpinner.vue'
-import ResponsiveLayout from '@/components/Common/ResponsiveLayout.vue'
+import BlockWithSpinner from '@/components/common/BlockWithSpinner.vue'
+import ResponsiveLayout from '@/components/common/ResponsiveLayout.vue'
 import { AuthService } from '@/services/auth-service'
 import { LocaleService } from '@/services/locale-service'
 import { onBeforeMount, ref } from 'vue'

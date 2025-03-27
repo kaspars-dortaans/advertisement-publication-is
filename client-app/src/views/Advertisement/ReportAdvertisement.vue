@@ -35,8 +35,8 @@
 
 <script setup lang="ts">
 import BackButton from '@/components/BackButton.vue'
-import ResponsiveLayout from '@/components/Common/ResponsiveLayout.vue'
-import FieldError from '@/components/Form/FieldError.vue'
+import ResponsiveLayout from '@/components/common/ResponsiveLayout.vue'
+import FieldError from '@/components/form/FieldError.vue'
 import { AdvertisementClient, ReportAdvertisementRequest } from '@/services/api-client'
 import { AppNavigation } from '@/services/app-navigation'
 import { LocaleService } from '@/services/locale-service'

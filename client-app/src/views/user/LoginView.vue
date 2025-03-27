@@ -47,8 +47,8 @@
 </template>
 
 <script setup lang="ts">
-import ResponsiveLayout from '@/components/Common/ResponsiveLayout.vue'
-import FieldError from '@/components/Form/FieldError.vue'
+import ResponsiveLayout from '@/components/common/ResponsiveLayout.vue'
+import FieldError from '@/components/form/FieldError.vue'
 import { LoginDto, type ILoginDto } from '@/services/api-client'
 import { AppNavigation } from '@/services/app-navigation'
 import { AuthService } from '@/services/auth-service'

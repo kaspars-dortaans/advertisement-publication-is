@@ -59,7 +59,7 @@
 </template>
 
 <script setup lang="ts">
-import ResponsiveLayout from '@/components/Common/ResponsiveLayout.vue'
+import ResponsiveLayout from '@/components/common/ResponsiveLayout.vue'
 import { LocaleService } from '@/services/locale-service'
 import { useForm } from 'vee-validate'
 import { ChangePasswordRequest, UserClient } from '@/services/api-client'
@@ -68,7 +68,7 @@ import { object, string } from 'yup'
 import { FieldHelper } from '@/utils/field-helper'
 import { getClient } from '@/utils/client-builder'
 import BackButton from '@/components/BackButton.vue'
-import FieldError from '@/components/Form/FieldError.vue'
+import FieldError from '@/components/form/FieldError.vue'
 import { useRouter } from 'vue-router'
 
 const { push } = useRouter()
