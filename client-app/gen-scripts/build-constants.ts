@@ -1,4 +1,4 @@
-import fs from 'fs'
+import fs, { RmDirOptions } from 'fs'
 import path from 'path'
 
 /** Types to store information about found classes and its constants */
@@ -48,6 +48,16 @@ const readFile = (filePath: string) => {
   return new Promise<string>((resolve) =>
     fs.readFile(filePath, 'utf-8', (_, data) => resolve(data))
   )
+}
+
+/** Wrap fs.rmD in new promise */
+const rm = (path: string, options: RmDirOptions = {}) => {
+  return new Promise<void>((resolve) => fs.rm(path, options, () => resolve()))
+}
+
+/** Wrap fs.mkdir in new promise */
+const mkdir = (path: string) => {
+  return new Promise<void>((resolve) => fs.mkdir(path, () => resolve()))
 }
 
 /** Get list of all file in directory and its subdirectories */
@@ -317,6 +327,12 @@ const generateConstants = async (c: GenerateConstantsConfig) => {
     )
   )
   const classesWithConstants = (await Promise.all(constantPromises)).flatMap((c) => c)
+
+  //Remove old files
+  await rm(c.destinationFolder, { recursive: true })
+
+  //Recreate directory
+  await mkdir(c.destinationFolder)
 
   //Generate Ts file from extracted data
   const generationPromises: Promise<void>[] = []
