@@ -63,7 +63,7 @@
       "inlineNamedDictionaries": false,
       "inlineNamedAny": false,
       "includeHttpContext": false,
-      "templateDirectory": null,
+      "templateDirectory": "./custom-templates",
       "serviceHost": null,
       "serviceSchemes": null,
       "output": "../../src/services/api-client.ts",
