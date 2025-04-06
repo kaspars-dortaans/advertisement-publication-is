@@ -359,9 +359,7 @@ const submit = handleSubmit(async () => {
     data: image.file,
     fileName: image.file!.name
   }))
-
-  const thumbnailImageHash =
-    values.imagesToAdd.length && values.imagesToAdd[0] ? values.imagesToAdd[0].hash : undefined
+  const imageOrder = values.imagesToAdd.filter((image) => image?.hash).map((image) => image.hash!)
 
   if (isEdit.value) {
     //TODO: Call Api
@@ -377,9 +375,8 @@ const submit = handleSubmit(async () => {
         values.postTime,
         values.title,
         values.description,
-        thumbnailImageHash,
         imagesToAddFileParameter,
-        undefined
+        imageOrder
       )
       push({ name: 'manageAdvertisements' })
     } catch (e) {

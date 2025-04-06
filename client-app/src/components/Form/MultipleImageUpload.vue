@@ -4,37 +4,57 @@
       <p>{{ ls.l('imageUpload.imagesUploaded', images?.length ?? 0, maxImageCount) }}</p>
     </template>
 
-    <div class="flex flex-row flex-wrap gap-2">
-      <div
-        v-for="(url, i) in imageUrls"
-        :key="url"
-        class="relative border-primary border rounded-lg overflow-hidden"
-        :class="{ 'p-invalid': imageFields[i]?.hasError }"
-      >
-        <img :src="url" class="w-40 h-40 object-contain" />
-        <Button
-          class="absolute top-0 right-0"
-          icon="pi pi-times"
-          severity="danger"
-          @click="removeImage(url, i)"
-        />
-      </div>
-      <div v-if="imageUrls.length < maxImageCount">
-        <Button class="w-40 h-40" variant="outlined" @click="openUploadDialog()">
-          <i class="pi pi-plus" />
-          <span>{{ l.imageUpload.uploadImages }}</span>
-        </Button>
-      </div>
-      <input
-        ref="uploadInput"
-        type="file"
-        :multiple="acceptMultipleImages"
-        :accept="accept"
-        class="hidden"
-        @input="selectImagesForUpload"
-      />
-      <FieldError :messages="allErrors" />
-    </div>
+    <draggable
+      v-model="images"
+      :disabled="false"
+      itemKey="url"
+      class="flex flex-row flex-wrap gap-2"
+    >
+      <template #item="{ element, index }">
+        <div
+          class="relative border-primary border rounded-lg overflow-hidden"
+          :class="{ 'p-invalid': imageFields[index]?.hasError }"
+        >
+          <img :src="element.url" class="w-40 h-40 object-contain" />
+          <div
+            class="absolute top-0 left-0 w-10 h-10 py-1.5 rounded-lg text-white text-center font-semibold bg-black opacity-85"
+          >
+            {{ index + 1 }}
+          </div>
+          <div
+            v-if="index == 0"
+            class="absolute bottom-0 w-full h-10 py-1.5 rounded-b-lg text-white text-center font-semibold bg-primary opacity-85"
+          >
+            {{ l.imageUpload.thumbnail }}
+          </div>
+
+          <Button
+            class="absolute top-0 right-0 opacity-85"
+            icon="pi pi-times"
+            severity="danger"
+            @click="removeImage(element.url, index)"
+          />
+        </div>
+      </template>
+      <template #footer>
+        <div v-if="imageUrls.length < maxImageCount">
+          <Button class="w-40 h-40" variant="outlined" @click="openUploadDialog()">
+            <i class="pi pi-plus" />
+            <span>{{ l.imageUpload.uploadImages }}</span>
+          </Button>
+        </div>
+      </template>
+    </draggable>
+
+    <FieldError :messages="allErrors" />
+    <input
+      ref="uploadInput"
+      type="file"
+      :multiple="acceptMultipleImages"
+      :accept="accept"
+      class="hidden"
+      @input="selectImagesForUpload"
+    />
   </Panel>
 </template>
 
@@ -47,6 +67,7 @@ import { fileSize, fileType, uniqueFile } from '@/validators/custom-validators'
 import { computed, onBeforeUnmount, ref, useTemplateRef, watch } from 'vue'
 import { mixed, ValidationError } from 'yup'
 import FieldError from './FieldError.vue'
+import draggable from 'vuedraggable'
 
 //Props and model
 const images = defineModel<IImageUploadDto[]>()

@@ -95,6 +95,7 @@ export const emptyLocale = {
   imageUpload: {
     uploadImages: "",
     imagesUploaded: "",
+    thumbnail: "",
   },
   navigation: {
     login: "",

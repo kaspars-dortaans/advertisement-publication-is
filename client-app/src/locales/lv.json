@@ -92,7 +92,8 @@
   },
   "imageUpload": {
     "uploadImages": "Augšupielādēt",
-    "imagesUploaded": "Attēli augšupielādēti {0} / {1}"
+    "imagesUploaded": "Attēli augšupielādēti {0} / {1}",
+    "thumbnail": "Sīktēls"
   },
   "navigation": {
     "login": "Ienākt",

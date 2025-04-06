@@ -7,6 +7,7 @@ using BusinessLogic.Exceptions;
 using BusinessLogic.Helpers;
 using BusinessLogic.Helpers.CookieSettings;
 using BusinessLogic.Helpers.FilePathResolver;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 using System.Text.RegularExpressions;
@@ -42,7 +43,7 @@ public class AdvertisementService(
                 MaskedAdvertiserEmail = a.Owner.IsEmailPublic ? a.Owner.Email : null,
                 MaskedAdvertiserPhoneNumber = a.Owner.IsPhoneNumberPublic ? a.Owner.PhoneNumber : null,
                 OwnerId = a.OwnerId,
-                ImageIds = a.Images.Select(i => i.Id),
+                ImageIds = a.Images.OrderBy(i => i.Order).Select(i => i.Id),
                 Attributes = a.AttributeValues.Select(v => new AttributeValueItem
                 {
                     AttributeId = v.AttributeId,
@@ -301,8 +302,43 @@ public class AdvertisementService(
 
     public async Task CreateAdvertisement(CreateOrEditAdvertisementDto dto, int userId)
     {
-        //Validate selected category
-        var canAddToCategory = await DbContext.Categories.AnyAsync(c => c.Id == dto.CategoryId && c.CanContainAdvertisements);
+        //Validate
+        await ValidateAttributeCategory(dto.CategoryId);
+        var advertisementAttributeValues = await ValidateAdvertisementAttributeValues(dto.AttributeValues, dto.CategoryId);
+
+        //Add advertisement
+        var advertisement = new Advertisement()
+        {
+            Title = dto.Title,
+            AdvertisementText = dto.Description,
+            CategoryId = dto.CategoryId,
+            OwnerId = userId,
+            AttributeValues = advertisementAttributeValues,
+            PostedDate = DateTime.UtcNow,
+            ValidToDate = DateTime.UtcNow + new TimeSpan(dto.PostTime.Months * 30 + dto.PostTime.Weeks * 7 + dto.PostTime.Days, 0, 0, 0),
+            ViewCount = 0,
+            IsActive = true
+        };
+        await AddAsync(advertisement);
+
+        //Add and store images after successful advertisement creation
+        if (dto.ImagesToAdd is not null && dto.ImagesToAdd.Any() && dto.ImageOrder is not null)
+        {
+            var imageOrder = dto.ImageOrder.ToList();
+            await UploadAdvertisementImages(advertisement.Id, dto.ImagesToAdd, imageOrder);
+        }
+
+        //Set thumbnail image
+        var thumbnailImageHash = dto.ImageOrder?.FirstOrDefault();
+        if (thumbnailImageHash is not null)
+        {
+            await UpdateAdvertisementThumbnailImage(advertisement.Id, thumbnailImageHash);
+        }
+    }
+
+    private async Task ValidateAttributeCategory(int categoryId)
+    {
+        var canAddToCategory = await DbContext.Categories.AnyAsync(c => c.Id == categoryId && c.CanContainAdvertisements);
         if (!canAddToCategory)
         {
             throw new ApiException([], new Dictionary<string, IList<string>>
@@ -310,11 +346,13 @@ public class AdvertisementService(
                 { nameof(CreateOrEditAdvertisementDto.CategoryId), [CustomErrorCodes.CategoryCanNotContainAdvertisements] }
             });
         }
+    }
 
-        //Validate attribute values (in memory)
-        var submittedAttributeIds = dto.AttributeValues.Select(av => av.Key).ToList();
+    private async Task<List<AdvertisementAttributeValue>> ValidateAdvertisementAttributeValues(IEnumerable<KeyValuePair<int, string>> attributeValues, int categoryId)
+    {
+        var submittedAttributeIds = attributeValues.Select(av => av.Key).ToList();
         var attributes = await DbContext.Attributes
-            .Where(a => a.UsedInCategories.Any(c => c.Id == dto.CategoryId) && submittedAttributeIds.Contains(a.Id))
+            .Where(a => a.UsedInCategories.Any(c => c.Id == categoryId) && submittedAttributeIds.Contains(a.Id))
             .Select(a => new
             {
                 a.Id,
@@ -324,10 +362,10 @@ public class AdvertisementService(
             }).ToListAsync();
 
         List<KeyValuePair<int, string>> invalidAttributes = [];
-        var attributeValues = dto.AttributeValues.ToArray();
-        for (var i = 0; i < attributeValues.Length; i++)
+        var attributeValueArray = attributeValues.ToArray();
+        for (var i = 0; i < attributeValueArray.Length; i++)
         {
-            var attribute = attributes.FirstOrDefault(a => a.Id == attributeValues[i].Key);
+            var attribute = attributes.FirstOrDefault(a => a.Id == attributeValueArray[i].Key);
             if (attribute is null)
             {
                 continue;
@@ -337,7 +375,7 @@ public class AdvertisementService(
             if (attribute.ValueType == Enums.ValueTypes.ValueListEntry && attribute.ValueListEntryIds is not null)
             {
                 //Validate value list selection
-                if (attribute.ValueListEntryIds.All(id => id != attributeValues[i].Value))
+                if (attribute.ValueListEntryIds.All(id => id != attributeValueArray[i].Value))
                 {
                     invalidAttributes.Add(new(i, CustomErrorCodes.OptionNotFound));
                 }
@@ -345,7 +383,7 @@ public class AdvertisementService(
             else if (!string.IsNullOrEmpty(attribute.ValueValidationRegex))
             {
                 //Validate with regex if present
-                if (!Regex.IsMatch(attributeValues[i].Value, attribute.ValueValidationRegex))
+                if (!Regex.IsMatch(attributeValueArray[i].Value, attribute.ValueValidationRegex))
                 {
                     invalidAttributes.Add(new(i, CustomErrorCodes.InvalidValue));
                 }
@@ -363,64 +401,53 @@ public class AdvertisementService(
             throw new ApiException([], validationErrors);
         }
 
-        var advertisementAttributeValues = dto.AttributeValues
+        return attributeValues
             .Select(av => new AdvertisementAttributeValue()
             {
                 AttributeId = av.Key,
                 Value = av.Value
             })
             .ToList();
+    }
 
-        var newAdvertisement = new Advertisement()
-        {
-            Title = dto.Title,
-            AdvertisementText = dto.Description,
-            CategoryId = dto.CategoryId,
-            OwnerId = userId,
-            AttributeValues = advertisementAttributeValues,
-            PostedDate = DateTime.UtcNow,
-            ValidToDate = DateTime.UtcNow + new TimeSpan(dto.PostTime.Months * 30 + dto.PostTime.Weeks * 7 + dto.PostTime.Days, 0, 0, 0),
-            ViewCount = 0,
-            IsActive = true
-        };
-
-        var entityEntry = await DbSet.AddAsync(newAdvertisement);
-        await DbContext.SaveChangesAsync();
-
-        //Add and store images after successful advertisement creation
-        if (dto.ImagesToAdd is not null && dto.ImagesToAdd.Any())
-        {
-            var imageTasks = dto.ImagesToAdd
-                .Select(async (formImage) =>
-                {
-                    using var imageStream = formImage.OpenReadStream();
-                    var imageHash = await FileHelper.GetFileHash(imageStream);
-                    var imagePath = _filePathResolver.GenerateUniqueFilePath(FileFolderConstants.AdvertisementImageFolder, formImage.FileName);
-                    var thumbnailPath = _filePathResolver.GenerateUniqueFilePath(FileFolderConstants.AdvertisementImageFolder, ImageConstants.ThumbnailPrefix + formImage.FileName);
-
-                    await _imageHelper.StoreImageWithThumbnail(imageStream, imagePath, thumbnailPath);
-
-                    return new AdvertisementImage()
-                    {
-                        AdvertisementId = entityEntry.Entity.Id,
-                        IsPublic = true,
-                        Path = imagePath,
-                        ThumbnailPath = thumbnailPath,
-                        Hash = imageHash
-                    };
-                })
-                .ToArray();
-
-            var images = await Task.WhenAll(imageTasks);
-            await DbContext.AdvertisementImages.AddRangeAsync(images);
-            await DbContext.SaveChangesAsync();
-
-            //Set thumbnail image
-            var thumbnailImage = images.FirstOrDefault(i => i.Hash == dto.ThumbnailImageHash);
-            if (thumbnailImage is not null)
+    private async Task UploadAdvertisementImages(int advertisementId, IEnumerable<IFormFile> imageFiles, List<string> imageOrder)
+    {
+        var imageTasks = imageFiles
+            .Select(async (formImage) =>
             {
-                await DbSet.Where(a => a.Id == newAdvertisement.Id).UpdateFromQueryAsync(a => new Advertisement() { ThumbnailImageId = thumbnailImage.Id });
-            }
-        }
+                using var imageStream = formImage.OpenReadStream();
+                var imageHash = await FileHelper.GetFileHash(imageStream);
+                var order = imageOrder.FindIndex(h => h == imageHash);
+                var imagePath = _filePathResolver.GenerateUniqueFilePath(FileFolderConstants.AdvertisementImageFolder, formImage.FileName);
+                var thumbnailPath = _filePathResolver.GenerateUniqueFilePath(FileFolderConstants.AdvertisementImageFolder, ImageConstants.ThumbnailPrefix + formImage.FileName);
+
+                await _imageHelper.StoreImageWithThumbnail(imageStream, imagePath, thumbnailPath);
+
+                return new AdvertisementImage()
+                {
+                    AdvertisementId = advertisementId,
+                    IsPublic = true,
+                    Path = imagePath,
+                    ThumbnailPath = thumbnailPath,
+                    Hash = imageHash,
+                    Order = order < 0 ? int.MaxValue : order
+                };
+            })
+            .ToArray();
+
+        var images = await Task.WhenAll(imageTasks);
+        await DbContext.AdvertisementImages.AddRangeAsync(images);
+        await DbContext.SaveChangesAsync();
+    }
+
+    private async Task UpdateAdvertisementThumbnailImage(int advertisementId, string thumbnailHash)
+    {
+        await DbSet
+            .Where(a => a.Id == advertisementId)
+            .UpdateFromQueryAsync(a => new Advertisement()
+            {
+                ThumbnailImageId = DbContext.AdvertisementImages
+                    .First(ai => ai.AdvertisementId == advertisementId && ai.Hash == thumbnailHash).Id
+            });
     }
 }

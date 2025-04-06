@@ -905,12 +905,11 @@ export class AdvertisementClient {
      * @param postTime (optional) 
      * @param title (optional) 
      * @param description (optional) 
-     * @param thumbnailImageHash (optional) 
      * @param imagesToAdd (optional) 
-     * @param imageIdsToDelete (optional) 
+     * @param imageOrder (optional) 
      * @return Success
      */
-    createAdvertisement(id: number | null | undefined, categoryId: number | undefined, attributeValues: Int32StringKeyValuePair[] | null | undefined, postTime: PostTimeDto | undefined, title: string | undefined, description: string | undefined, thumbnailImageHash: string | null | undefined, imagesToAdd: FileParameter[] | null | undefined, imageIdsToDelete: number[] | null | undefined, cancelToken?: CancelToken): Promise<PublicUserInfoDto> {
+    createAdvertisement(id: number | null | undefined, categoryId: number | undefined, attributeValues: Int32StringKeyValuePair[] | null | undefined, postTime: PostTimeDto | undefined, title: string | undefined, description: string | undefined, imagesToAdd: FileParameter[] | null | undefined, imageOrder: string[] | null | undefined, cancelToken?: CancelToken): Promise<PublicUserInfoDto> {
         let url_ = this.baseUrl + "/api/Advertisement/CreateAdvertisement";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -929,7 +928,14 @@ export class AdvertisementClient {
         if (postTime === null || postTime === undefined)
             throw new Error("The parameter 'postTime' cannot be null.");
         else
-            content_.append("postTime", JSON.stringify(postTime));
+        {
+            if(postTime.days != null)
+                content_.append("postTime.days", "" + postTime.days)
+            if(postTime.weeks != null)
+                content_.append("postTime.weeks", "" + postTime.weeks)
+            if(postTime.months != null)
+                content_.append("postTime.months", "" + postTime.months)
+        }
         if (title === null || title === undefined)
             throw new Error("The parameter 'title' cannot be null.");
         else
@@ -938,12 +944,10 @@ export class AdvertisementClient {
             throw new Error("The parameter 'description' cannot be null.");
         else
             content_.append("description", description.toString());
-        if (thumbnailImageHash !== null && thumbnailImageHash !== undefined)
-            content_.append("thumbnailImageHash", thumbnailImageHash.toString());
         if (imagesToAdd !== null && imagesToAdd !== undefined)
             imagesToAdd.forEach(item_ => content_.append("imagesToAdd", item_.data, item_.fileName ? item_.fileName : "imagesToAdd") );
-        if (imageIdsToDelete !== null && imageIdsToDelete !== undefined)
-            imageIdsToDelete.forEach(item_ => content_.append("imageIdsToDelete", item_.toString()));
+        if (imageOrder !== null && imageOrder !== undefined)
+            imageOrder.forEach(item_ => content_.append("imageOrder", item_.toString()));
 
         let options_: AxiosRequestConfig = {
             data: content_,
@@ -2856,9 +2860,8 @@ export class CreateOrEditAdvertisementRequest implements ICreateOrEditAdvertisem
     postTime!: PostTimeDto;
     title!: string;
     description!: string;
-    thumbnailImageHash?: string | undefined;
     imagesToAdd?: any[] | undefined;
-    imageIdsToDelete?: number[] | undefined;
+    imageOrder?: string[] | undefined;
 
     constructor(data?: ICreateOrEditAdvertisementRequest) {
         if (data) {
@@ -2884,16 +2887,15 @@ export class CreateOrEditAdvertisementRequest implements ICreateOrEditAdvertisem
             this.postTime = _data["postTime"] ? PostTimeDto.fromJS(_data["postTime"]) : new PostTimeDto();
             this.title = _data["title"];
             this.description = _data["description"];
-            this.thumbnailImageHash = _data["thumbnailImageHash"];
             if (Array.isArray(_data["imagesToAdd"])) {
                 this.imagesToAdd = [] as any;
                 for (let item of _data["imagesToAdd"])
                     this.imagesToAdd!.push(item);
             }
-            if (Array.isArray(_data["imageIdsToDelete"])) {
-                this.imageIdsToDelete = [] as any;
-                for (let item of _data["imageIdsToDelete"])
-                    this.imageIdsToDelete!.push(item);
+            if (Array.isArray(_data["imageOrder"])) {
+                this.imageOrder = [] as any;
+                for (let item of _data["imageOrder"])
+                    this.imageOrder!.push(item);
             }
         }
     }
@@ -2917,16 +2919,15 @@ export class CreateOrEditAdvertisementRequest implements ICreateOrEditAdvertisem
         data["postTime"] = this.postTime ? this.postTime.toJSON() : <any>undefined;
         data["title"] = this.title;
         data["description"] = this.description;
-        data["thumbnailImageHash"] = this.thumbnailImageHash;
         if (Array.isArray(this.imagesToAdd)) {
             data["imagesToAdd"] = [];
             for (let item of this.imagesToAdd)
                 data["imagesToAdd"].push(item);
         }
-        if (Array.isArray(this.imageIdsToDelete)) {
-            data["imageIdsToDelete"] = [];
-            for (let item of this.imageIdsToDelete)
-                data["imageIdsToDelete"].push(item);
+        if (Array.isArray(this.imageOrder)) {
+            data["imageOrder"] = [];
+            for (let item of this.imageOrder)
+                data["imageOrder"].push(item);
         }
         return data;
     }
@@ -2939,9 +2940,8 @@ export interface ICreateOrEditAdvertisementRequest {
     postTime: PostTimeDto;
     title: string;
     description: string;
-    thumbnailImageHash?: string | undefined;
     imagesToAdd?: any[] | undefined;
-    imageIdsToDelete?: number[] | undefined;
+    imageOrder?: string[] | undefined;
 }
 
 export class DataTableQuery implements IDataTableQuery {

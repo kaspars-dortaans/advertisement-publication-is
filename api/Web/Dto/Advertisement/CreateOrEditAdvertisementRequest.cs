@@ -23,13 +23,12 @@ public class CreateOrEditAdvertisementRequest
     [Required(ErrorMessage = CustomErrorCodes.MissingRequired)]
     public string Description { get; set; } = default!;
 
-    /// <summary>
-    /// Not id in order to be able assign new images as thumbnail
-    /// </summary>
-    public string? ThumbnailImageHash { get; set; }
-
     [MaxFileSize(ImageConstants.MaxFileSizeInBytes)]
     [AllowedFileTypes(ImageConstants.AllowedFileTypes)]
     public IEnumerable<IFormFile>? ImagesToAdd { get; set; }
-    public IEnumerable<int>? ImageIdsToDelete { get; set; }
+
+    /// <summary>
+    /// Image hashes in order representing image order. Ids are not used because new uploaded images does not have an id yet.
+    /// </summary>
+    public IEnumerable<string>? ImageOrder { get; set; }
 }

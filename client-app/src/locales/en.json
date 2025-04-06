@@ -92,7 +92,8 @@
   },
   "imageUpload": {
     "uploadImages": "Upload",
-    "imagesUploaded": "Images uploaded {0} / {1}"
+    "imagesUploaded": "Images uploaded {0} / {1}",
+    "thumbnail": "Thumbnail"
   },
   "navigation": {
     "login": "Login",
