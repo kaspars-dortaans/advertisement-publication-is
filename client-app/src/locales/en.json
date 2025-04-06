@@ -118,6 +118,11 @@
     "gb": "{0} GB",
     "tb": "{0} TB"
   },
+  "time": {
+    "days": "{0} days",
+    "weeks": "{0} weeks",
+    "months": "{0} months"
+  },
   "errors": {
     "FieldNotValid": "{0} field is not valid",
     "Required": "This field is required",

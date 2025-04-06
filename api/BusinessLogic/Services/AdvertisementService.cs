@@ -9,7 +9,6 @@ using BusinessLogic.Helpers.CookieSettings;
 using BusinessLogic.Helpers.FilePathResolver;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
-using System.Security.Cryptography;
 using System.Text.RegularExpressions;
 using Z.EntityFramework.Plus;
 
@@ -380,7 +379,7 @@ public class AdvertisementService(
             OwnerId = userId,
             AttributeValues = advertisementAttributeValues,
             PostedDate = DateTime.UtcNow,
-            ValidToDate = DateTime.UtcNow + new TimeSpan(dto.PostDayCount, 0, 0, 0),
+            ValidToDate = DateTime.UtcNow + new TimeSpan(dto.PostTime.Months * 30 + dto.PostTime.Weeks * 7 + dto.PostTime.Days, 0, 0, 0),
             ViewCount = 0,
             IsActive = true
         };

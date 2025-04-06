@@ -14,7 +14,6 @@ public class UserService(
     UserManager<User> userManager,
     IStorage storage,
     IFilePathResolver filePathResolver,
-    FileHelper fileHelper,
     IBaseService<Entities.Files.File> fileService,
     ImageHelper imageHelper) : BaseService<User>(context), IUserService
 {
@@ -22,7 +21,6 @@ public class UserService(
     private readonly IStorage _storage = storage;
     private readonly IFilePathResolver _filePathResolver = filePathResolver;
     private readonly IBaseService<Entities.Files.File> _fileService = fileService;
-    private readonly FileHelper _fileHelper = fileHelper;
     private readonly ImageHelper _imageHelper = imageHelper;
 
     /// <summary>

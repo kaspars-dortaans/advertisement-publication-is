@@ -17,10 +17,10 @@
               <!-- Time period -->
               <FloatLabel variant="on">
                 <Select
-                  v-model="fields.postDayCount!.model"
-                  v-bind="fields.postDayCount?.attributes"
-                  :invalid="fields.postDayCount?.hasError"
-                  :options="advertisementPostTimeSpanOptions"
+                  v-model="fields.postTime!.model"
+                  v-bind="fields.postTime?.attributes"
+                  :invalid="fields.postTime?.hasError"
+                  :options="postTimeOptions"
                   optionLabel="name"
                   optionValue="value"
                   id="time-period-select"
@@ -28,7 +28,7 @@
                 />
                 <label for="time-period-select">{{ l.form.putAdvertisement.timePeriod }}</label>
               </FloatLabel>
-              <FieldError :field="fields.postDayCount" />
+              <FieldError :field="fields.postTime" />
 
               <Divider />
 
@@ -125,7 +125,7 @@ import BlockWithSpinner from '@/components/common/BlockWithSpinner.vue'
 import ResponsiveLayout from '@/components/common/ResponsiveLayout.vue'
 import FieldError from '@/components/form/FieldError.vue'
 import MultipleImageUpload from '@/components/form/MultipleImageUpload.vue'
-import { advertisementPostTimeSpanOptions } from '@/constants/advertisement-post-time-span'
+import { createAdvertisementPostTimeSpanOptions } from '@/constants/advertisement-post-time-span'
 import { ImageConstants } from '@/constants/api/ImageConstants'
 import {
   AdvertisementClient,
@@ -147,7 +147,7 @@ import {
 import { toTypedSchema } from '@vee-validate/yup'
 import type { SelectChangeEvent } from 'primevue'
 import { useForm } from 'vee-validate'
-import { computed, onBeforeMount, ref } from 'vue'
+import { computed, onBeforeMount, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { array, number, object, Schema, string, type AnyObject } from 'yup'
 
@@ -156,19 +156,20 @@ const { push } = useRouter()
 
 //Services
 const l = LocaleService.currentLocale
+const ls = LocaleService.get()
 const advertisementService = getClient(AdvertisementClient)
 
 //Reactive data
 const isEdit = computed(() => typeof params.id === 'number' && !isNaN(params.id))
 
-const loading = ref(false)
-const loadingAttributes = ref(false)
+const postTimeOptions = computed(() => createAdvertisementPostTimeSpanOptions(ls))
 
-//TODO: Refetch data and revalidate on language change
+const loading = ref(false)
 const categoryList = ref<CategoryItem[]>([])
 const selectedCategories = ref<number[]>([])
 const categorySelectOptions = ref<CategoryItem[][]>([])
 
+const loadingAttributes = ref(false)
 const attributeInfo = ref<AttributeFormInfo[]>([])
 const attributeValueLists = ref<AttributeValueListItem[]>([])
 
@@ -177,7 +178,7 @@ const validationSchema = computed(() => {
   let schemaObject: AnyObject = {
     categoryId: number().test(canAddAdvertisementToCategoryValidator(categoryList)),
     attributeValues: array().default([]),
-    postDayCount: number().required(),
+    postTime: object().required(),
     title: string().required(),
     description: string().required(),
     thumbnailImageHash: string().optional(),
@@ -225,7 +226,7 @@ const imageFieldNames: `imagesToAdd.${number}`[] = [
 ].map<`imagesToAdd.${number}`>((i) => `imagesToAdd.${i}`)
 defineMultipleFields([
   'categoryId',
-  'postDayCount',
+  'postTime',
   'title',
   'description',
   'imagesToAdd',
@@ -233,14 +234,56 @@ defineMultipleFields([
 ])
 
 //Hooks
-onBeforeMount(async () => {
-  loading.value = true
-  categoryList.value = await advertisementService.getCategories()
-  categorySelectOptions.value = [categoryList.value.filter((c) => c.parentCategoryId == null)]
-  loading.value = false
+onBeforeMount(() => {
+  reloadData()
+})
+
+//Watchers
+watch(LocaleService.currentLocaleName, () => {
+  reloadData()
 })
 
 //Methods
+const reloadData = () => {
+  loadCategoryList()
+  if (attributeInfo.value) {
+    loadCategoryInfo(values.categoryId)
+  }
+}
+
+const loadCategoryList = async () => {
+  loading.value = true
+  categoryList.value = await advertisementService.getCategories()
+
+  //Check if all selected categories are present
+  let clearCategorySelection =
+    !selectedCategories.value.length ||
+    !selectedCategories.value.every(
+      (id) => id == null || categoryList.value.some((c) => c.id === id)
+    )
+  if (!clearCategorySelection) {
+    //Try and swap category options
+    outerLoop: for (let i = 0; i < categorySelectOptions.value.length; i++) {
+      const optionList = categorySelectOptions.value[i]
+      for (let j = 0; j < optionList.length; j++) {
+        const newOption = categoryList.value.find((c) => c.id === optionList[j].id)
+        if (!newOption) {
+          clearCategorySelection = true
+          break outerLoop
+        }
+        optionList[j] = newOption
+      }
+    }
+  }
+
+  if (clearCategorySelection) {
+    selectedCategories.value = []
+    categorySelectOptions.value = [categoryList.value.filter((c) => c.parentCategoryId == null)]
+  }
+
+  loading.value = false
+}
+
 const loadCategoryInfo = async (categoryId: number) => {
   loadingAttributes.value = true
   const result = await advertisementService.getCategoryFormInfo(categoryId)
@@ -331,7 +374,7 @@ const submit = handleSubmit(async () => {
         undefined,
         values.categoryId,
         attributeValues,
-        values.postDayCount,
+        values.postTime,
         values.title,
         values.description,
         thumbnailImageHash,

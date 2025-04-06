@@ -120,6 +120,11 @@ export const emptyLocale = {
     gb: "",
     tb: "",
   },
+  time: {
+    days: "",
+    weeks: "",
+    months: "",
+  },
   errors: {
     FieldNotValid: "",
     Required: "",

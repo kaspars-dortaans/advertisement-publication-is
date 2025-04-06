@@ -1,4 +1,5 @@
 ﻿using BusinessLogic.Constants;
+using BusinessLogic.Dto.Time;
 using System.ComponentModel.DataAnnotations;
 using Web.Validators;
 
@@ -14,7 +15,7 @@ public class CreateOrEditAdvertisementRequest
     public IEnumerable<KeyValuePair<int, string>>? AttributeValues { get; set; }
 
     [Required(ErrorMessage = CustomErrorCodes.MissingRequired)]
-    public int PostDayCount { get; set; } = default!;
+    public PostTimeDto PostTime { get; set; } = default!;
 
     [Required(ErrorMessage = CustomErrorCodes.MissingRequired)]
     public string Title { get; set; } = default!;

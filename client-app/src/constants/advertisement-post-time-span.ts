@@ -1,14 +1,20 @@
-//TODO: Localize
-export const advertisementPostTimeSpanOptions = [
-  { name: '1 day', value: 1 },
-  { name: '3 days', value: 3 },
-  { name: '1 week', value: 7 },
-  { name: '2 weeks', value: 14 },
-  { name: '3 weeks', value: 21 },
-  { name: '1 month', value: 30 },
-  { name: '2 months', value: 60 },
-  { name: '3 months', value: 90 }
-] as {
-  name: string
-  value: number
-}[]
+import type { IPostTimeDto } from '@/services/api-client'
+import type { LocaleService } from '@/services/locale-service'
+
+const defaultOptionList: { timeUnit: keyof IPostTimeDto; value: number }[] = [
+  { timeUnit: 'days', value: 1 },
+  { timeUnit: 'days', value: 3 },
+  { timeUnit: 'weeks', value: 7 },
+  { timeUnit: 'weeks', value: 14 },
+  { timeUnit: 'weeks', value: 21 },
+  { timeUnit: 'months', value: 30 },
+  { timeUnit: 'months', value: 60 },
+  { timeUnit: 'months', value: 90 }
+]
+
+export const createAdvertisementPostTimeSpanOptions = (ls: LocaleService) => {
+  return defaultOptionList.map((o) => ({
+    name: ls.l('time.' + o.timeUnit, o.value),
+    value: { [o.timeUnit]: o.value } as IPostTimeDto
+  }))
+}

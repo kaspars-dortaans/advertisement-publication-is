@@ -118,6 +118,11 @@
     "gb": "{0} GB",
     "tb": "{0} TB"
   },
+  "time": {
+    "days": "{0} dienas",
+    "weeks": "{1} nedēļas",
+    "months": "{2} mēneši"
+  },
   "errors": {
     "FieldNotValid": "{0} lauka vērtība nav derīga",
     "Required": "Šis lauks ir obligāts",

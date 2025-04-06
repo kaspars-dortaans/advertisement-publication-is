@@ -902,7 +902,7 @@ export class AdvertisementClient {
      * @param id (optional) 
      * @param categoryId (optional) 
      * @param attributeValues (optional) 
-     * @param postDayCount (optional) 
+     * @param postTime (optional) 
      * @param title (optional) 
      * @param description (optional) 
      * @param thumbnailImageHash (optional) 
@@ -910,7 +910,7 @@ export class AdvertisementClient {
      * @param imageIdsToDelete (optional) 
      * @return Success
      */
-    createAdvertisement(id: number | null | undefined, categoryId: number | undefined, attributeValues: Int32StringKeyValuePair[] | null | undefined, postDayCount: number | undefined, title: string | undefined, description: string | undefined, thumbnailImageHash: string | null | undefined, imagesToAdd: FileParameter[] | null | undefined, imageIdsToDelete: number[] | null | undefined, cancelToken?: CancelToken): Promise<PublicUserInfoDto> {
+    createAdvertisement(id: number | null | undefined, categoryId: number | undefined, attributeValues: Int32StringKeyValuePair[] | null | undefined, postTime: PostTimeDto | undefined, title: string | undefined, description: string | undefined, thumbnailImageHash: string | null | undefined, imagesToAdd: FileParameter[] | null | undefined, imageIdsToDelete: number[] | null | undefined, cancelToken?: CancelToken): Promise<PublicUserInfoDto> {
         let url_ = this.baseUrl + "/api/Advertisement/CreateAdvertisement";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -926,10 +926,10 @@ export class AdvertisementClient {
                 content_.append("attributeValues[" + i + "].key", "" + item_.key)
                 content_.append("attributeValues[" + i + "].value", "" + item_.value)
             });
-        if (postDayCount === null || postDayCount === undefined)
-            throw new Error("The parameter 'postDayCount' cannot be null.");
+        if (postTime === null || postTime === undefined)
+            throw new Error("The parameter 'postTime' cannot be null.");
         else
-            content_.append("postDayCount", postDayCount.toString());
+            content_.append("postTime", JSON.stringify(postTime));
         if (title === null || title === undefined)
             throw new Error("The parameter 'title' cannot be null.");
         else
@@ -2853,7 +2853,7 @@ export class CreateOrEditAdvertisementRequest implements ICreateOrEditAdvertisem
     id?: number | undefined;
     categoryId!: number;
     attributeValues?: Int32StringKeyValuePair[] | undefined;
-    postDayCount!: number;
+    postTime!: PostTimeDto;
     title!: string;
     description!: string;
     thumbnailImageHash?: string | undefined;
@@ -2867,6 +2867,9 @@ export class CreateOrEditAdvertisementRequest implements ICreateOrEditAdvertisem
                     (<any>this)[property] = (<any>data)[property];
             }
         }
+        if (!data) {
+            this.postTime = new PostTimeDto();
+        }
     }
 
     init(_data?: any) {
@@ -2878,7 +2881,7 @@ export class CreateOrEditAdvertisementRequest implements ICreateOrEditAdvertisem
                 for (let item of _data["attributeValues"])
                     this.attributeValues!.push(Int32StringKeyValuePair.fromJS(item));
             }
-            this.postDayCount = _data["postDayCount"];
+            this.postTime = _data["postTime"] ? PostTimeDto.fromJS(_data["postTime"]) : new PostTimeDto();
             this.title = _data["title"];
             this.description = _data["description"];
             this.thumbnailImageHash = _data["thumbnailImageHash"];
@@ -2911,7 +2914,7 @@ export class CreateOrEditAdvertisementRequest implements ICreateOrEditAdvertisem
             for (let item of this.attributeValues)
                 data["attributeValues"].push(item.toJSON());
         }
-        data["postDayCount"] = this.postDayCount;
+        data["postTime"] = this.postTime ? this.postTime.toJSON() : <any>undefined;
         data["title"] = this.title;
         data["description"] = this.description;
         data["thumbnailImageHash"] = this.thumbnailImageHash;
@@ -2933,7 +2936,7 @@ export interface ICreateOrEditAdvertisementRequest {
     id?: number | undefined;
     categoryId: number;
     attributeValues?: Int32StringKeyValuePair[] | undefined;
-    postDayCount: number;
+    postTime: PostTimeDto;
     title: string;
     description: string;
     thumbnailImageHash?: string | undefined;
@@ -3473,6 +3476,50 @@ export class OrderQuery implements IOrderQuery {
 export interface IOrderQuery {
     column?: number;
     direction?: string | undefined;
+}
+
+export class PostTimeDto implements IPostTimeDto {
+    days?: number;
+    weeks?: number;
+    months?: number;
+
+    constructor(data?: IPostTimeDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.days = _data["days"];
+            this.weeks = _data["weeks"];
+            this.months = _data["months"];
+        }
+    }
+
+    static fromJS(data: any): PostTimeDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new PostTimeDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["days"] = this.days;
+        data["weeks"] = this.weeks;
+        data["months"] = this.months;
+        return data;
+    }
+}
+
+export interface IPostTimeDto {
+    days?: number;
+    weeks?: number;
+    months?: number;
 }
 
 export class PublicUserInfoDto implements IPublicUserInfoDto {
