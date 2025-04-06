@@ -1,5 +1,7 @@
 <template>
-  <p v-if="errorMessage" class="text-red-500 text-xs italic">{{ errorMessage }}</p>
+  <p v-if="errorMessages?.length" class="p-invalid">
+    <template v-for="message in errorMessages" :key="message"> {{ message }} <br /> </template>
+  </p>
 </template>
 
 <script setup lang="ts" generic="FieldType, DtoType extends GenericObject">
@@ -12,7 +14,15 @@ const { field, messages } = defineProps<{
   messages?: string | string[] | undefined
 }>()
 
-const errorMessage = computed(() =>
-  field && field.hasError ? field.error : Array.isArray(messages) ? messages.join('\n') : messages
-)
+const errorMessages = computed(() => {
+  const errorArray = []
+  if (field && field.hasError) {
+    errorArray.push(field.error)
+  } else if (Array.isArray(messages)) {
+    errorArray.push(...messages)
+  } else if (messages) {
+    errorArray.push(messages)
+  }
+  return errorArray
+})
 </script>

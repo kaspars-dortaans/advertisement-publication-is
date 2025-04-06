@@ -54,6 +54,14 @@ const router = createRouter({
       props: (route) => ({ search: route.query?.search })
     },
     {
+      path: '/advertisement/create',
+      name: 'createAdvertisement',
+      component: () => import('../views/advertisement/CreateOrEditAdvertisement.vue'),
+      meta: {
+        requiresPermission: Permissions[Permissions.CreateAdvertisement]
+      }
+    },
+    {
       path: '/advertisement/:id/',
       redirect: (route) => ({ name: 'viewAdvertisement', params: route.params }),
       children: [
@@ -72,7 +80,7 @@ const router = createRouter({
         {
           path: '/advertisement/:id/edit',
           name: 'editAdvertisement',
-          component: () => import('../views/advertisement/EditAdvertisement.vue'),
+          component: () => import('../views/advertisement/CreateOrEditAdvertisement.vue'),
           props: (route) => ({ id: parseInt(firstParam(route.params.id)) })
         }
       ]

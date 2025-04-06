@@ -1,6 +1,5 @@
 export class CustomErrorCodes {
   static readonly InvalidLoginCredentials = "InvalidLoginCredentials"
-  static readonly UserWithSuchEmailAlreadyExist = "UserWithSuchEmailAlreadyExist"
   static readonly MissingRequired = "Required"
   static readonly NotAnEmail = "NotAnEmail"
   static readonly NotAPhoneNumber = "NotAPhoneNumber"
@@ -9,11 +8,13 @@ export class CustomErrorCodes {
   static readonly ComparablePropertyDidNotMatch = "ComparablePropertyDidNotMatch"
   static readonly InvalidFile = "InvalidFile"
   static readonly InvalidFileExtension = "InvalidFileType"
-  static readonly FileSizeIsTooLarge = "InvalidFileSize"
-  static readonly DisallowedFileType = "DisallowedFileType"
+  static readonly InvalidSizeForFile = "InvalidSizeForFile"
   static readonly InvalidImage = "InvalidImage"
   static readonly DisallowedAspectRatio = "DisallowedAspectRatio"
   static readonly UserNotFound = "UserNotFound"
   static readonly InvalidCookie = "InvalidCookie"
   static readonly NotFound = "NotFound"
+  static readonly CategoryCanNotContainAdvertisements = "CategoryCanNotContainAdvertisements"
+  static readonly OptionNotFound = "OptionNotFound"
+  static readonly InvalidValue = "InvalidValue"
 }

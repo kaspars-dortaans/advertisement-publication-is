@@ -77,7 +77,7 @@
 
 <script setup lang="ts">
 import { LocaleService } from '@/services/locale-service'
-import { getImageMimeType } from '@/utils/image-mime-type'
+import { getImageType } from '@/utils/image-mime-type'
 import type { FileUploadSelectEvent } from 'primevue/fileupload'
 import { onUnmounted, reactive, ref, useTemplateRef, watch } from 'vue'
 import { CircleStencil, Cropper } from 'vue-advanced-cropper'
@@ -224,7 +224,7 @@ const editImage = async (imgFile: File) => {
   clearCropperSource()
 
   cropperSource.img = URL.createObjectURL(imgFile)
-  cropperSource.type = await getImageMimeType(
+  cropperSource.type = await getImageType(
     imgFile,
     imgFile.type ?? imgFile.name.slice(imgFile.name.lastIndexOf('.'))
   )

@@ -34,7 +34,12 @@
             severity="secondary"
             @click="todo"
           />
-          <Button :label="l.actions.create" severity="primary" @click="todo"></Button>
+          <Button
+            :label="l.actions.create"
+            severity="primary"
+            as="RouterLink"
+            :to="{ name: 'createAdvertisement' }"
+          />
         </div>
       </template>
 
@@ -74,8 +79,8 @@
 </template>
 
 <script setup lang="ts">
-import LazyLoadedTable from '@/components/Common/LazyLoadedTable.vue'
-import ResponsiveLayout from '@/components/Common/ResponsiveLayout.vue'
+import LazyLoadedTable from '@/components/common/LazyLoadedTable.vue'
+import ResponsiveLayout from '@/components/common/ResponsiveLayout.vue'
 import {
   AdvertisementClient,
   AdvertisementInfo,

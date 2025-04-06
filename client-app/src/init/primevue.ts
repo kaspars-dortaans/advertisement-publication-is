@@ -35,6 +35,7 @@ import Tree from 'primevue/tree'
 
 //Panel
 import Panel from 'primevue/panel'
+import Divider from 'primevue/divider'
 
 //Message
 import Checkbox from 'primevue/checkbox'
@@ -174,6 +175,7 @@ export function initPrimeVue(app: App<Element>) {
 
   //Panel
   app.component('Panel', Panel)
+  app.component('Divider', Divider)
 
   //Message
   app.component('Message', Message)

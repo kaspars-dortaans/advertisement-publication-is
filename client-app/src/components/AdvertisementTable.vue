@@ -77,9 +77,7 @@
             <div class="flex flex-row gap-2 items-center">
               <img
                 :src="slotProps.data.thumbnailImageUrl"
-                class="flex-none"
-                width="100"
-                height="100"
+                class="flex-none w-28 h-28 object-cover"
               />
               <div class="flex flex-col gap-2">
                 <h4>{{ slotProps.data.title }}</h4>

@@ -5,3 +5,7 @@
 .panel-title-container {
   @apply flex flex-row items-center gap-5;
 }
+
+p.p-invalid {
+  @apply text-red-500 text-xs italic;
+}

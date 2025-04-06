@@ -97,12 +97,12 @@
             <FieldError :field="fields.passwordConfirmation" />
           </div>
 
-          <ImageUpload
+          <ProfileImageUpload
             v-model="fields.profileImage!.value"
             v-bind="fields.profileImage?.attributes"
             :invalid="fields.profileImage?.hasError"
-            :maxFileSize="ProfileImageConstants.MaxFileSizeInBytes"
-            :allowedFileTypes="ProfileImageConstants.AllowedFileTypes"
+            :maxFileSize="ImageConstants.MaxFileSizeInBytes"
+            :allowedFileTypes="ImageConstants.AllowedFileTypes"
           />
         </div>
 
@@ -121,8 +121,8 @@
 <script setup lang="ts">
 import ResponsiveLayout from '@/components/common/ResponsiveLayout.vue'
 import FieldError from '@/components/form/FieldError.vue'
-import ImageUpload from '@/components/form/ImageUpload.vue'
-import { ProfileImageConstants } from '@/constants/api/ProfileImageConstants'
+import ProfileImageUpload from '@/components/form/ProfileImageUpload.vue'
+import { ImageConstants } from '@/constants/api/ImageConstants'
 import { UserClient, type FileParameter, type IRegisterDto } from '@/services/api-client'
 import { LocaleService } from '@/services/locale-service'
 import { getClient } from '@/utils/client-builder'

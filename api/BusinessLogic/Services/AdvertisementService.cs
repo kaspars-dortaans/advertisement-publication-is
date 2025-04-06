@@ -334,6 +334,7 @@ public class AdvertisementService(
                 continue;
             }
 
+            //TODO: Validate integer and decimal values
             if (attribute.ValueType == Enums.ValueTypes.ValueListEntry && attribute.ValueListEntryIds is not null)
             {
                 //Validate value list selection

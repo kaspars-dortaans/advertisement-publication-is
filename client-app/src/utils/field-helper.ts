@@ -11,7 +11,7 @@ import type {
 import { computed, type Ref } from 'vue'
 
 //vee validate not exported generic types
-type TPath<TValues> = Path<TValues>
+export type TPath<TValues> = Path<TValues>
 type TValue<TValues, Path extends TPath<TValues>> = PathValue<TValues, Path>
 type TExtras = GenericObject
 type Attributes = Ref<BaseFieldProps & TExtras>
@@ -26,7 +26,7 @@ type SetFieldErrorFn<TValues extends GenericObject> = FormContext<TValues>['setF
 type SetErrorsFn<TValues extends GenericObject> = FormContext<TValues>['setErrors']
 
 //FieldHelper types
-type Fields<TValues extends GenericObject> = Partial<{
+export type Fields<TValues extends GenericObject> = Partial<{
   [key in TPath<TValues>]: Field<TValue<TValues, key>, TValues>
 }>
 
@@ -34,6 +34,7 @@ type Fields<TValues extends GenericObject> = Partial<{
 export class Field<FieldType, TValues extends GenericObject> {
   private _path: TPath<TValues>
   private _errors: ErrorsProperty<TValues>
+  private _setFieldError: SetFieldErrorFn<TValues>
   model: Ref<FieldType>
   attributes: Attributes
 
@@ -53,16 +54,26 @@ export class Field<FieldType, TValues extends GenericObject> {
     return !!this._errors.value[this._path]
   }
 
+  setErrors = (e: string | string[]) => {
+    this._setFieldError(this._path, e)
+  }
+
+  clearErrors = () => {
+    this._setFieldError(this._path, undefined)
+  }
+
   constructor(
     path: TPath<TValues>,
     errors: ErrorsProperty<TValues>,
     model: Ref<FieldType>,
-    attributes: Attributes
+    attributes: Attributes,
+    setFieldError: SetFieldErrorFn<TValues>
   ) {
     this.model = model
     this.attributes = attributes
     this._path = path
     this._errors = errors
+    this._setFieldError = setFieldError
   }
 }
 
@@ -76,7 +87,7 @@ export class FieldHelper<TValues extends GenericObject> {
 
   readonly formErrorKey: TPath<TValues> = 'formLevelErrors' as TPath<TValues>
 
-  //Functions and proprties of FormContext are destructured in order to preserve their reactivity
+  //Functions and properties of FormContext are destructured in order to preserve their reactivity
   //For more info see https://vee-validate.logaretm.com/v4/guide/composition-api/caveats/#destructing-composable
   constructor(formContext: FormContext<TValues>) {
     const { errors, defineField, setFieldError, setErrors } = formContext
@@ -96,9 +107,10 @@ export class FieldHelper<TValues extends GenericObject> {
 
   defineField = (path: Path<TValues>, config?: FieldConfig<TValues, Path<TValues>>) => {
     const [field, fieldAttrs] = this._defineField(path, config)
-    this.fields[path] = new Field(path, this._errors, field, fieldAttrs)
+    this.fields[path] = new Field(path, this._errors, field, fieldAttrs, this._setFieldError)
   }
 
+  /** Define multiple fields, with possible parameter values in format { "fieldName1", ["fieldName2", configObject] } */
   defineMultipleFields = (
     fields: (Path<TValues> | [Path<TValues>, FieldConfig<TValues, Path<TValues>>?])[]
   ) => {
@@ -119,11 +131,15 @@ export class FieldHelper<TValues extends GenericObject> {
 
     //Handle field validation errors
     if (errorObj.errors) {
-      for (const fieldKey in errorObj.errors) {
-        //convert first char to lowercase for field names to match api-client dto objects field names
-        const jsFieldKey = fieldKey[0].toLocaleLowerCase() + fieldKey.slice(1)
-        if (jsFieldKey in this.fields) {
-          this._setFieldError(jsFieldKey as Path<TValues>, errorObj.errors[fieldKey])
+      for (const errorKey in errorObj.errors) {
+        //Replace surrounding brackets with dot for array element validation errors
+        let fieldKey = errorKey
+        if (errorKey.includes('[')) {
+          fieldKey = fieldKey.replace(/\[([^[\]]*)\]/g, '.$1')
+        }
+
+        if (fieldKey in this.fields) {
+          this._setFieldError(fieldKey as Path<TValues>, errorObj.errors[fieldKey])
         }
       }
     }

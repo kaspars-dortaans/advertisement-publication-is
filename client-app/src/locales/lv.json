@@ -81,7 +81,18 @@
       "currentPassword": "Pašreizējā parole",
       "newPassword": "Jaunā parole",
       "confirmNewPassword": "Apstiprināt jauno paroli"
+    },
+    "putAdvertisement": {
+      "category": "Kategorija",
+      "subcategory": "Apakškategorija",
+      "title": "Nosaukums",
+      "description": "Apraksts",
+      "timePeriod": "Laika periods"
     }
+  },
+  "imageUpload": {
+    "uploadImages": "Augšupielādēt",
+    "imagesUploaded": "Attēli augšupielādēti {0} / {1}"
   },
   "navigation": {
     "login": "Ienākt",
@@ -99,7 +110,16 @@
     "myAdvertisements": "Mani sludinājumi",
     "editAdvertisement": "Rediģēt sludinājumu"
   },
+  "dataSize": {
+    "bits": "{0} biti",
+    "bytes": "{0} baiti",
+    "kb": "{0} KB",
+    "mb": "{0} MB",
+    "gb": "{0} GB",
+    "tb": "{0} TB"
+  },
   "errors": {
+    "FieldNotValid": "{0} lauka vērtība nav derīga",
     "Required": "Šis lauks ir obligāts",
     "RequiredField": "{fieldName} lauks ir obligāts",
     "NotAnEmail": "Šim laukam ir jāsatur derīgu e-pasta adresi",
@@ -114,7 +134,12 @@
     "DuplicateEmail": "Šis e-pasts jau ir aizņemts",
     "InvalidFileType": "{0}: Nederīgs faila tips.",
     "InvalidFileSize": "Nederīgs faila lielums, faila izmēram jābūt mazākam par {1}.",
+    "InvalidSizeForFile": "{0}: faila lielums nav derīgs, faila lielumam jābūt mazākam par {1}.",
     "InvalidFileLimit": "Maksimālais augšupielādējamo failu skaits ir {0}.",
-    "NotAUrl": "Laukam ir jāsatur derīgu URL."
+    "FileAlreadySelected": "{0}: fails jau ir atlasīts",
+    "NotAUrl": "Laukam ir jāsatur derīgu URL.",
+    "CategoryCanNotContainAdvertisements": "Šī kategorija nevar saturēt sludinājumus",
+    "InvalidValue": "Šī lauka vērtība nav derīga",
+    "OptionNotFound": "Opcija nav atrasta"
   }
 }

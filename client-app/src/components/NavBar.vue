@@ -70,12 +70,11 @@ const allRouteItems: INavbarItem[] = [
         label: 'navigation.savedAdvertisements',
         showWithoutPermission: true
       },
-      //TODO: Uncomment when view is completed
-      // {
-      //   route: 'createAdvertisement',
-      //   label: 'navigation.createAdvertisement',
-      //   showWithoutPermission: true
-      // }
+      {
+        route: 'createAdvertisement',
+        label: 'navigation.createAdvertisement',
+        showWithoutPermission: true
+      },
       {
         route: 'manageAdvertisements',
         label: 'navigation.myAdvertisements'

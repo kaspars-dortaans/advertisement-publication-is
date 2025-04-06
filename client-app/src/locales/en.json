@@ -81,7 +81,18 @@
       "currentPassword": "Current password",
       "newPassword": "New password",
       "confirmNewPassword": "Confirm new password"
+    },
+    "putAdvertisement": {
+      "category": "Category",
+      "subcategory": "Subcategory",
+      "title": "Title",
+      "description": "Description",
+      "timePeriod": "Time period"
     }
+  },
+  "imageUpload": {
+    "uploadImages": "Upload",
+    "imagesUploaded": "Images uploaded {0} / {1}"
   },
   "navigation": {
     "login": "Login",
@@ -99,7 +110,16 @@
     "myAdvertisements": "My advertisements",
     "editAdvertisement": "Edit advertisement"
   },
+  "dataSize": {
+    "bits": "{0} b",
+    "bytes": "{0} B",
+    "kb": "{0} KB",
+    "mb": "{0} MB",
+    "gb": "{0} GB",
+    "tb": "{0} TB"
+  },
   "errors": {
+    "FieldNotValid": "{0} field is not valid",
     "Required": "This field is required",
     "RequiredField": "{fieldName} is a required field",
     "NotAnEmail": "This field must contain valid email address",
@@ -112,9 +132,14 @@
     "PasswordRequiresUpper": "Password requires upper case letters",
     "ComparablePropertyDidNotMatch": "This field did not match {comparableFieldName} field",
     "DuplicateEmail": "This email is already taken",
-    "InvalidFileType": "{0}: Invalid file type.'",
+    "InvalidFileType": "{0}: Invalid file type.",
     "InvalidFileSize": "Invalid file size, file size should be smaller than {1}.",
+    "InvalidSizeForFile": "{0}: file size is invalid, file size should be smaller than {1}.",
     "InvalidFileLimit": "Maximum number of files to be uploaded is {0}.",
-    "NotAUrl": "Field must contain a valid URL."
+    "FileAlreadySelected": "{0}: file already has been selected",
+    "NotAUrl": "Field must contain a valid URL.",
+    "CategoryCanNotContainAdvertisements": "This category can not contain advertisements.",
+    "InvalidValue": "This fields value is not valid.",
+    "OptionNotFound": "Selected option was not found."
   }
 }

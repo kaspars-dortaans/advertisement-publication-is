@@ -49,6 +49,13 @@ export const emptyLocale = {
     createdAt: "",
   },
   form: {
+    putAdvertisement: {
+      category: "",
+      subcategory: "",
+      title: "",
+      description: "",
+      timePeriod: "",
+    },
     changePassword: {
       currentPassword: "",
       newPassword: "",
@@ -85,6 +92,10 @@ export const emptyLocale = {
       dragAndDropToUpload: "",
     },
   },
+  imageUpload: {
+    uploadImages: "",
+    imagesUploaded: "",
+  },
   navigation: {
     login: "",
     logout: "",
@@ -101,7 +112,16 @@ export const emptyLocale = {
     myAdvertisements: "",
     editAdvertisement: "",
   },
+  dataSize: {
+    bits: "",
+    bytes: "",
+    kb: "",
+    mb: "",
+    gb: "",
+    tb: "",
+  },
   errors: {
+    FieldNotValid: "",
     Required: "",
     RequiredField: "",
     NotAnEmail: "",
@@ -116,7 +136,12 @@ export const emptyLocale = {
     DuplicateEmail: "",
     InvalidFileType: "",
     InvalidFileSize: "",
+    InvalidSizeForFile: "",
     InvalidFileLimit: "",
+    FileAlreadySelected: "",
     NotAUrl: "",
+    CategoryCanNotContainAdvertisements: "",
+    InvalidValue: "",
+    OptionNotFound: "",
   }
 }

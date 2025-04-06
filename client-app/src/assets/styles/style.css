@@ -178,3 +178,8 @@ a.link {
 .slideup {
   animation: slideup 0.45s cubic-bezier(0, 1, 0, 1);
 }
+
+/* Custom styles */
+div.p-invalid {
+  @apply border-red-500;
+}

@@ -897,6 +897,161 @@ export class AdvertisementClient {
         }
         return Promise.resolve<void>(null as any);
     }
+
+    /**
+     * @param id (optional) 
+     * @param categoryId (optional) 
+     * @param attributeValues (optional) 
+     * @param postDayCount (optional) 
+     * @param title (optional) 
+     * @param description (optional) 
+     * @param thumbnailImageHash (optional) 
+     * @param imagesToAdd (optional) 
+     * @param imageIdsToDelete (optional) 
+     * @return Success
+     */
+    createAdvertisement(id: number | null | undefined, categoryId: number | undefined, attributeValues: Int32StringKeyValuePair[] | null | undefined, postDayCount: number | undefined, title: string | undefined, description: string | undefined, thumbnailImageHash: string | null | undefined, imagesToAdd: FileParameter[] | null | undefined, imageIdsToDelete: number[] | null | undefined, cancelToken?: CancelToken): Promise<PublicUserInfoDto> {
+        let url_ = this.baseUrl + "/api/Advertisement/CreateAdvertisement";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = new FormData();
+        if (id !== null && id !== undefined)
+            content_.append("id", id.toString());
+        if (categoryId === null || categoryId === undefined)
+            throw new Error("The parameter 'categoryId' cannot be null.");
+        else
+            content_.append("categoryId", categoryId.toString());
+        if (attributeValues !== null && attributeValues !== undefined)
+            attributeValues.forEach((item_, i) => {
+                content_.append("attributeValues[" + i + "].key", "" + item_.key)
+                content_.append("attributeValues[" + i + "].value", "" + item_.value)
+            });
+        if (postDayCount === null || postDayCount === undefined)
+            throw new Error("The parameter 'postDayCount' cannot be null.");
+        else
+            content_.append("postDayCount", postDayCount.toString());
+        if (title === null || title === undefined)
+            throw new Error("The parameter 'title' cannot be null.");
+        else
+            content_.append("title", title.toString());
+        if (description === null || description === undefined)
+            throw new Error("The parameter 'description' cannot be null.");
+        else
+            content_.append("description", description.toString());
+        if (thumbnailImageHash !== null && thumbnailImageHash !== undefined)
+            content_.append("thumbnailImageHash", thumbnailImageHash.toString());
+        if (imagesToAdd !== null && imagesToAdd !== undefined)
+            imagesToAdd.forEach(item_ => content_.append("imagesToAdd", item_.data, item_.fileName ? item_.fileName : "imagesToAdd") );
+        if (imageIdsToDelete !== null && imageIdsToDelete !== undefined)
+            imageIdsToDelete.forEach(item_ => content_.append("imageIdsToDelete", item_.toString()));
+
+        let options_: AxiosRequestConfig = {
+            data: content_,
+            method: "POST",
+            url: url_,
+            headers: {
+                "Accept": "text/plain"
+            },
+            cancelToken
+        };
+
+        return this.instance.request(options_).catch((_error: any) => {
+            if (isAxiosError(_error) && _error.response) {
+                return _error.response;
+            } else {
+                throw _error;
+            }
+        }).then((_response: AxiosResponse) => {
+            return this.processCreateAdvertisement(_response);
+        });
+    }
+
+    protected processCreateAdvertisement(response: AxiosResponse): Promise<PublicUserInfoDto> {
+        const status = response.status;
+        let _headers: any = {};
+        if (response.headers && typeof response.headers === "object") {
+            for (const k in response.headers) {
+                if (response.headers.hasOwnProperty(k)) {
+                    _headers[k] = response.headers[k];
+                }
+            }
+        }
+        if (status === 200) {
+            const _responseText = response.data;
+            let result200: any = null;
+            let resultData200  = _responseText;
+            result200 = PublicUserInfoDto.fromJS(resultData200);
+            return Promise.resolve<PublicUserInfoDto>(result200);
+
+        } else if (status === 400) {
+            const _responseText = response.data;
+            let result400: any = null;
+            let resultData400  = _responseText;
+            result400 = RequestExceptionResponse.fromJS(resultData400);
+            return throwException("Bad Request", status, _responseText, _headers, result400);
+
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.data;
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Promise.resolve<PublicUserInfoDto>(null as any);
+    }
+
+    /**
+     * @param categoryId (optional) 
+     * @return Success
+     */
+    getCategoryFormInfo(categoryId: number | undefined, cancelToken?: CancelToken): Promise<CategoryFormInfo> {
+        let url_ = this.baseUrl + "/api/Advertisement/GetCategoryFormInfo?";
+        if (categoryId === null)
+            throw new Error("The parameter 'categoryId' cannot be null.");
+        else if (categoryId !== undefined)
+            url_ += "categoryId=" + encodeURIComponent("" + categoryId) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: AxiosRequestConfig = {
+            method: "GET",
+            url: url_,
+            headers: {
+                "Accept": "text/plain"
+            },
+            cancelToken
+        };
+
+        return this.instance.request(options_).catch((_error: any) => {
+            if (isAxiosError(_error) && _error.response) {
+                return _error.response;
+            } else {
+                throw _error;
+            }
+        }).then((_response: AxiosResponse) => {
+            return this.processGetCategoryFormInfo(_response);
+        });
+    }
+
+    protected processGetCategoryFormInfo(response: AxiosResponse): Promise<CategoryFormInfo> {
+        const status = response.status;
+        let _headers: any = {};
+        if (response.headers && typeof response.headers === "object") {
+            for (const k in response.headers) {
+                if (response.headers.hasOwnProperty(k)) {
+                    _headers[k] = response.headers[k];
+                }
+            }
+        }
+        if (status === 200) {
+            const _responseText = response.data;
+            let result200: any = null;
+            let resultData200  = _responseText;
+            result200 = CategoryFormInfo.fromJS(resultData200);
+            return Promise.resolve<CategoryFormInfo>(result200);
+
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.data;
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Promise.resolve<CategoryFormInfo>(null as any);
+    }
 }
 
 export class FileClient {
@@ -2038,6 +2193,66 @@ export interface IAdvertisementQuery {
     attributeOrder?: AttributeOrderQuery[] | undefined;
 }
 
+export class AttributeFormInfo implements IAttributeFormInfo {
+    id?: number;
+    name?: string | undefined;
+    order?: number;
+    valueValidationRegex?: string | undefined;
+    valueListId?: number | undefined;
+    iconUrl?: string | undefined;
+    attributeValueType?: ValueTypes;
+
+    constructor(data?: IAttributeFormInfo) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.name = _data["name"];
+            this.order = _data["order"];
+            this.valueValidationRegex = _data["valueValidationRegex"];
+            this.valueListId = _data["valueListId"];
+            this.iconUrl = _data["iconUrl"];
+            this.attributeValueType = _data["attributeValueType"];
+        }
+    }
+
+    static fromJS(data: any): AttributeFormInfo {
+        data = typeof data === 'object' ? data : {};
+        let result = new AttributeFormInfo();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["name"] = this.name;
+        data["order"] = this.order;
+        data["valueValidationRegex"] = this.valueValidationRegex;
+        data["valueListId"] = this.valueListId;
+        data["iconUrl"] = this.iconUrl;
+        data["attributeValueType"] = this.attributeValueType;
+        return data;
+    }
+}
+
+export interface IAttributeFormInfo {
+    id?: number;
+    name?: string | undefined;
+    order?: number;
+    valueValidationRegex?: string | undefined;
+    valueListId?: number | undefined;
+    iconUrl?: string | undefined;
+    attributeValueType?: ValueTypes;
+}
+
 export class AttributeOrderQuery implements IAttributeOrderQuery {
     attributeId!: number;
     direction!: string;
@@ -2422,6 +2637,62 @@ export interface ICategoryAttributeInfo {
     attributeFilterType?: FilterType;
 }
 
+export class CategoryFormInfo implements ICategoryFormInfo {
+    attributeInfo?: AttributeFormInfo[] | undefined;
+    attributeValueLists?: AttributeValueListItem[] | undefined;
+
+    constructor(data?: ICategoryFormInfo) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            if (Array.isArray(_data["attributeInfo"])) {
+                this.attributeInfo = [] as any;
+                for (let item of _data["attributeInfo"])
+                    this.attributeInfo!.push(AttributeFormInfo.fromJS(item));
+            }
+            if (Array.isArray(_data["attributeValueLists"])) {
+                this.attributeValueLists = [] as any;
+                for (let item of _data["attributeValueLists"])
+                    this.attributeValueLists!.push(AttributeValueListItem.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): CategoryFormInfo {
+        data = typeof data === 'object' ? data : {};
+        let result = new CategoryFormInfo();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        if (Array.isArray(this.attributeInfo)) {
+            data["attributeInfo"] = [];
+            for (let item of this.attributeInfo)
+                data["attributeInfo"].push(item.toJSON());
+        }
+        if (Array.isArray(this.attributeValueLists)) {
+            data["attributeValueLists"] = [];
+            for (let item of this.attributeValueLists)
+                data["attributeValueLists"].push(item.toJSON());
+        }
+        return data;
+    }
+}
+
+export interface ICategoryFormInfo {
+    attributeInfo?: AttributeFormInfo[] | undefined;
+    attributeValueLists?: AttributeValueListItem[] | undefined;
+}
+
 export class CategoryInfo implements ICategoryInfo {
     categoryName?: string | undefined;
     attributeInfo?: CategoryAttributeInfo[] | undefined;
@@ -2576,6 +2847,98 @@ export interface IChangePasswordRequest {
     currentPassword: string;
     password: string;
     confirmPassword: string;
+}
+
+export class CreateOrEditAdvertisementRequest implements ICreateOrEditAdvertisementRequest {
+    id?: number | undefined;
+    categoryId!: number;
+    attributeValues?: Int32StringKeyValuePair[] | undefined;
+    postDayCount!: number;
+    title!: string;
+    description!: string;
+    thumbnailImageHash?: string | undefined;
+    imagesToAdd?: any[] | undefined;
+    imageIdsToDelete?: number[] | undefined;
+
+    constructor(data?: ICreateOrEditAdvertisementRequest) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.categoryId = _data["categoryId"];
+            if (Array.isArray(_data["attributeValues"])) {
+                this.attributeValues = [] as any;
+                for (let item of _data["attributeValues"])
+                    this.attributeValues!.push(Int32StringKeyValuePair.fromJS(item));
+            }
+            this.postDayCount = _data["postDayCount"];
+            this.title = _data["title"];
+            this.description = _data["description"];
+            this.thumbnailImageHash = _data["thumbnailImageHash"];
+            if (Array.isArray(_data["imagesToAdd"])) {
+                this.imagesToAdd = [] as any;
+                for (let item of _data["imagesToAdd"])
+                    this.imagesToAdd!.push(item);
+            }
+            if (Array.isArray(_data["imageIdsToDelete"])) {
+                this.imageIdsToDelete = [] as any;
+                for (let item of _data["imageIdsToDelete"])
+                    this.imageIdsToDelete!.push(item);
+            }
+        }
+    }
+
+    static fromJS(data: any): CreateOrEditAdvertisementRequest {
+        data = typeof data === 'object' ? data : {};
+        let result = new CreateOrEditAdvertisementRequest();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["categoryId"] = this.categoryId;
+        if (Array.isArray(this.attributeValues)) {
+            data["attributeValues"] = [];
+            for (let item of this.attributeValues)
+                data["attributeValues"].push(item.toJSON());
+        }
+        data["postDayCount"] = this.postDayCount;
+        data["title"] = this.title;
+        data["description"] = this.description;
+        data["thumbnailImageHash"] = this.thumbnailImageHash;
+        if (Array.isArray(this.imagesToAdd)) {
+            data["imagesToAdd"] = [];
+            for (let item of this.imagesToAdd)
+                data["imagesToAdd"].push(item);
+        }
+        if (Array.isArray(this.imageIdsToDelete)) {
+            data["imageIdsToDelete"] = [];
+            for (let item of this.imageIdsToDelete)
+                data["imageIdsToDelete"].push(item);
+        }
+        return data;
+    }
+}
+
+export interface ICreateOrEditAdvertisementRequest {
+    id?: number | undefined;
+    categoryId: number;
+    attributeValues?: Int32StringKeyValuePair[] | undefined;
+    postDayCount: number;
+    title: string;
+    description: string;
+    thumbnailImageHash?: string | undefined;
+    imagesToAdd?: any[] | undefined;
+    imageIdsToDelete?: number[] | undefined;
 }
 
 export class DataTableQuery implements IDataTableQuery {

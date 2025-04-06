@@ -1,3 +1,4 @@
 export class FileFolderConstants {
-  static readonly ProfileImageFolder = "profileImage"
+  static readonly ProfileImageFolder = "profileImages"
+  static readonly AdvertisementImageFolder = "advertisementImages"
 }
