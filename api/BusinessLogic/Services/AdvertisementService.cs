@@ -7,6 +7,7 @@ using BusinessLogic.Exceptions;
 using BusinessLogic.Helpers;
 using BusinessLogic.Helpers.CookieSettings;
 using BusinessLogic.Helpers.FilePathResolver;
+using BusinessLogic.Helpers.Storage;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
@@ -21,12 +22,14 @@ public class AdvertisementService(
     IBaseService<AdvertisementBookmark> advertisementBookmarkService,
     CookieSettingsHelper cookieSettingHelper,
     IFilePathResolver filePathResolver,
+    IStorage storage,
     ImageHelper imageHelper) : BaseService<Advertisement>(context), IAdvertisementService
 {
     private readonly ICategoryService _categoryService = categoryService;
     private readonly IBaseService<AdvertisementBookmark> _advertisementBookmarkService = advertisementBookmarkService;
     private readonly CookieSettingsHelper _cookieSettingHelper = cookieSettingHelper;
     private readonly IFilePathResolver _filePathResolver = filePathResolver;
+    private readonly IStorage _storage = storage;
     private readonly ImageHelper _imageHelper = imageHelper;
     public async Task<AdvertisementDto> FindOwnedOrActiveAdvertisement(int advertisementId, int? userId)
     {
@@ -298,6 +301,19 @@ public class AdvertisementService(
             });
 
         return await advertisementInfoQuery.ResolveDataTableQuery(tableQuery);
+    }
+
+    public async Task RemoveAdvertisements(IEnumerable<int> advertisementIds, int userId)
+    {
+        var imagePaths = (await Where(a => a.OwnerId == userId)
+            .SelectMany(a => a.Images.Select(i => new[] { i.Path, i.ThumbnailPath }))
+            .ToListAsync())
+            .SelectMany(p => p);
+
+        await Task.WhenAll([
+            _storage.DeleteFiles(imagePaths),
+            DeleteWhereAsync(a => a.OwnerId == userId && advertisementIds.Contains(a.Id))
+        ]);
     }
 
     public async Task CreateAdvertisement(CreateOrEditAdvertisementDto dto, int userId)

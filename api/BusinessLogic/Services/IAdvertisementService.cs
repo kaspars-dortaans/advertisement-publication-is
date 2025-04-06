@@ -12,5 +12,6 @@ public interface IAdvertisementService : IBaseService<Advertisement>
     public Task BookmarkAdvertisement(int advertisementId, int userId, bool addBookmark);
     public IQueryable<int> GetCategoryListFromAdvertisementIds(IEnumerable<int> ids);
     public Task<DataTableQueryResponse<AdvertisementInfo>> GetAdvertisementInfo(DataTableQuery query, int? userId);
+    public Task RemoveAdvertisements(IEnumerable<int> advertisementIds, int userId);
     public Task CreateAdvertisement(CreateOrEditAdvertisementDto dto, int userId);
 }

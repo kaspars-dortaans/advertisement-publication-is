@@ -6,4 +6,5 @@ public interface IStorage
     public Task PutFiles(IEnumerable<KeyValuePair<string, Stream>> files);
     public Task<Stream> GetFile(string path);
     public Task DeleteFile(string path);
+    public Task DeleteFiles(IEnumerable<string> paths);
 }

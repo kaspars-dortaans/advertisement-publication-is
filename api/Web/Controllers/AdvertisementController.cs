@@ -241,8 +241,7 @@ public class AdvertisementController(
     [HttpPost]
     public async Task DeleteAdvertisements(IEnumerable<int> advertisementIds)
     {
-        var userId = User.GetUserId() ?? throw new ApiException([CustomErrorCodes.UserNotFound]);
-        await _advertisementService.DeleteWhereAsync(a => a.OwnerId == userId && advertisementIds.Contains(a.Id));
+        await _advertisementService.RemoveAdvertisements(advertisementIds, User.GetUserId()!.Value);
     }
 
     [HasPermission(Permissions.CreateAdvertisement)]

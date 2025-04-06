@@ -2,17 +2,22 @@
 
 namespace BusinessLogic.Helpers.Storage;
 
-public class LocalFileStorage : IStorage
+public class LocalFileStorage(IOptions<StorageOptions> options) : IStorage
 {
-    private readonly IOptions<StorageOptions> _storageOptions;
-    public LocalFileStorage(IOptions<StorageOptions> options)
-    {
-        _storageOptions = options;
-    }
+    private readonly IOptions<StorageOptions> _storageOptions = options;
 
     public Task DeleteFile(string path)
     {
         File.Delete(Path.Combine(FullPath(path)));
+        return Task.CompletedTask;
+    }
+
+    public Task DeleteFiles(IEnumerable<string> paths)
+    {
+        foreach (var path in paths)
+        {
+            DeleteFile(path);
+        }
         return Task.CompletedTask;
     }
 
@@ -50,7 +55,7 @@ public class LocalFileStorage : IStorage
         return p;
     }
 
-    public void EnsureDirectoryExists(string path)
+    protected static void EnsureDirectoryExists(string path)
     {
         var directoryPath = Path.GetDirectoryName(path);
         if (directoryPath is null)
