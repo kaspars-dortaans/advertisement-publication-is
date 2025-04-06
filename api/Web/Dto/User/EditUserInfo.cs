@@ -32,8 +32,8 @@ public class EditUserInfo
 
     public bool ProfileImageChanged { get; set; }
 
-    [MaxFileSize(ProfileImageConstants.MaxFileSizeInBytes)]
-    [AllowedFileTypes(ProfileImageConstants.AllowedFileTypes)]
-    [AllowedImageAspectRatio(ProfileImageConstants.AllowedAspectRatio)]
+    [MaxFileSize(ImageConstants.MaxFileSizeInBytes)]
+    [AllowedFileTypes(ImageConstants.AllowedFileTypes)]
+    [AllowedImageAspectRatio(ImageConstants.AllowedAspectRatio)]
     public IFormFile? ProfileImage { get; set; }
 }

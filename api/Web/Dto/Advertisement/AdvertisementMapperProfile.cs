@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using BusinessLogic.Dto.Image;
 using Web.Helpers;
+using BusinessLogic.Dto.Advertisement;
 
 namespace Web.Dto.Advertisement;
 
@@ -11,7 +12,7 @@ public class AdvertisementMapperProfile : Profile
 {
     public AdvertisementMapperProfile()
     {
-        CreateMap<BusinessLogic.Dto.Advertisement.AdvertisementListItemDto, AdvertisementListItem>()
+        CreateMap<AdvertisementListItemDto, AdvertisementListItem>()
             .ForMember(a => a.ThumbnailImageUrl, o => o
                 .MapFrom((a, _, _, context) => FileUrlHelper.MapperGetThumbnailUrl(context, a.ThumbnailImageId)));
 
@@ -28,5 +29,7 @@ public class AdvertisementMapperProfile : Profile
             .ForMember(report => report.ReportDate, o => o.MapFrom(request => DateTime.UtcNow))
             .ForMember(report => report.ReporterId, o => o.MapFrom((request, _, _, context) =>
                 (context.Items[nameof(ControllerBase.User)] as ClaimsPrincipal)?.GetUserId()));
+
+        CreateMap<CreateOrEditAdvertisementRequest, CreateOrEditAdvertisementDto>();
     }
 }

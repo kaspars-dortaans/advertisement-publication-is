@@ -104,7 +104,7 @@ public class UserService(
 
         //Compute file hash
         using var profileImageStream = profileImage?.OpenReadStream();
-        string? profileImageHexHash = profileImageStream is not null ? await _fileHelper.GetFileHash(profileImageStream) : null;
+        string? profileImageHexHash = profileImageStream is not null ? await FileHelper.GetFileHash(profileImageStream) : null;
 
         //If trying to save already existing image return
         if (user.ProfileImageFile?.Hash == profileImageHexHash)

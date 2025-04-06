@@ -3,14 +3,9 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Web.Validators;
 
-public class AllowedFileTypes : ValidationAttribute
+public class AllowedFileTypes(string allowedFileTypes) : ValidationAttribute()
 {
-    private readonly string _allowedFileTypes;
-
-    public AllowedFileTypes(string allowedFileTypes) : base()
-    {
-        _allowedFileTypes = allowedFileTypes;
-    }
+    private readonly string _allowedFileTypes = allowedFileTypes;
 
     protected override ValidationResult? IsValid(object? value, ValidationContext validationContext)
     {
@@ -19,21 +14,32 @@ public class AllowedFileTypes : ValidationAttribute
             return ValidationResult.Success;
         }
 
-        if (value is not IFormFile formFile)
+        List<IFormFile> files;
+
+        if (value is IEnumerable<IFormFile> fileEnumerable)
         {
-            return new ValidationResult(CustomErrorCodes.InvalidFileExtension);
+            files = fileEnumerable.ToList();
+        }
+        else if (value is IFormFile formFile)
+        {
+            files = [formFile];
+        }
+        else
+        {
+            return new ValidationResult(CustomErrorCodes.InvalidFile);
         }
 
-        var formFileExtension = formFile.FileName.Split('.').Last();
         var allowedExtensions = _allowedFileTypes
             .Split(',')
-            .Select(ext => ext.TrimStart(new char[] { '.', ' ' }));
+            .Select(ext => ext.TrimStart(['.', ' ']));
 
-        if (allowedExtensions.Contains(formFileExtension))
-        {
-            return ValidationResult.Success;
-        }
+        var invalidFileNames = files
+            .Select((f, i) => new {File = f, Index = i})
+            .Where(e => !allowedExtensions.Contains(e.File.FileName.Split('.').Last()))
+            .Select(e => $"{(value is IFormFile? "" : $"[{e.Index}].")}{e.File.FileName.Replace(".", "\\.")}");
 
-        return new ValidationResult(CustomErrorCodes.DisallowedFileType);
+        return invalidFileNames.Any()
+            ? new ValidationResult(CustomErrorCodes.InvalidFileExtension, [string.Join(",", invalidFileNames)])
+            : ValidationResult.Success;
     }
 }

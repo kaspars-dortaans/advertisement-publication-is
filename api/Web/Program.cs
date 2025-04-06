@@ -162,6 +162,7 @@ builder.Services.AddScoped<IFileService, FileService>();
 builder.Services.AddScoped<IStorage, LocalFileStorage>();
 builder.Services.AddScoped<IFilePathResolver, FilePathResolver>();
 builder.Services.AddScoped<CookieSettingsHelper>();
+builder.Services.AddScoped<ImageHelper>();
 
 //Db seeding
 builder.Services.AddScoped<DbSeeder>();

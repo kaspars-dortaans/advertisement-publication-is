@@ -2,11 +2,16 @@
 using BusinessLogic.Dto.Advertisement;
 using BusinessLogic.Dto.DataTableQuery;
 using BusinessLogic.Entities;
+using BusinessLogic.Entities.Files;
 using BusinessLogic.Exceptions;
 using BusinessLogic.Helpers;
 using BusinessLogic.Helpers.CookieSettings;
+using BusinessLogic.Helpers.FilePathResolver;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
+using System.Security.Cryptography;
+using System.Text.RegularExpressions;
+using Z.EntityFramework.Plus;
 
 namespace BusinessLogic.Services;
 
@@ -14,12 +19,15 @@ public class AdvertisementService(
     Context context,
     ICategoryService categoryService,
     IBaseService<AdvertisementBookmark> advertisementBookmarkService,
-    CookieSettingsHelper cookieSettingHelper) : BaseService<Advertisement>(context), IAdvertisementService
+    CookieSettingsHelper cookieSettingHelper,
+    IFilePathResolver filePathResolver,
+    ImageHelper imageHelper) : BaseService<Advertisement>(context), IAdvertisementService
 {
     private readonly ICategoryService _categoryService = categoryService;
     private readonly IBaseService<AdvertisementBookmark> _advertisementBookmarkService = advertisementBookmarkService;
     private readonly CookieSettingsHelper _cookieSettingHelper = cookieSettingHelper;
-    
+    private readonly IFilePathResolver _filePathResolver = filePathResolver;
+    private readonly ImageHelper _imageHelper = imageHelper;
     public async Task<AdvertisementDto> FindOwnedOrActiveAdvertisement(int advertisementId, int? userId)
     {
         var locale = _cookieSettingHelper.Settings.NormalizedLocale;
@@ -289,6 +297,130 @@ public class AdvertisementService(
                 CreatedAt = a.PostedDate
             });
 
-       return await advertisementInfoQuery.ResolveDataTableQuery(tableQuery);
+        return await advertisementInfoQuery.ResolveDataTableQuery(tableQuery);
+    }
+
+    public async Task CreateAdvertisement(CreateOrEditAdvertisementDto dto, int userId)
+    {
+        //Validate selected category
+        var canAddToCategory = await DbContext.Categories.AnyAsync(c => c.Id == dto.CategoryId && c.CanContainAdvertisements);
+        if (!canAddToCategory)
+        {
+            throw new ApiException([], new Dictionary<string, IList<string>>
+            {
+                { nameof(CreateOrEditAdvertisementDto.CategoryId), [CustomErrorCodes.CategoryCanNotContainAdvertisements] }
+            });
+        }
+
+        //Validate attribute values (in memory)
+        var submittedAttributeIds = dto.AttributeValues.Select(av => av.Key).ToList();
+        var attributes = await DbContext.Attributes
+            .Where(a => a.UsedInCategories.Any(c => c.Id == dto.CategoryId) && submittedAttributeIds.Contains(a.Id))
+            .Select(a => new
+            {
+                a.Id,
+                a.ValueType,
+                a.ValueValidationRegex,
+                ValueListEntryIds = a.AttributeValueList != null ? a.AttributeValueList.ListEntries.Select(e => e.Id.ToString()) : null
+            }).ToListAsync();
+
+        List<KeyValuePair<int, string>> invalidAttributes = [];
+        var attributeValues = dto.AttributeValues.ToArray();
+        for (var i = 0; i < attributeValues.Length; i++)
+        {
+            var attribute = attributes.FirstOrDefault(a => a.Id == attributeValues[i].Key);
+            if (attribute is null)
+            {
+                continue;
+            }
+
+            if (attribute.ValueType == Enums.ValueTypes.ValueListEntry && attribute.ValueListEntryIds is not null)
+            {
+                //Validate value list selection
+                if (attribute.ValueListEntryIds.All(id => id != attributeValues[i].Value))
+                {
+                    invalidAttributes.Add(new(i, CustomErrorCodes.OptionNotFound));
+                }
+            }
+            else if (!string.IsNullOrEmpty(attribute.ValueValidationRegex))
+            {
+                //Validate with regex if present
+                if (!Regex.IsMatch(attributeValues[i].Value, attribute.ValueValidationRegex))
+                {
+                    invalidAttributes.Add(new(i, CustomErrorCodes.InvalidValue));
+                }
+            }
+        };
+
+        if (invalidAttributes.Count != 0)
+        {
+            var validationErrors = invalidAttributes
+                .GroupBy(ia => ia.Key)
+                .ToDictionary(
+                    g => nameof(CreateOrEditAdvertisementDto.AttributeValues) + "[" + g.Key + "]",
+                    g => (IList<string>)g.Select(ia => ia.Value).ToList());
+
+            throw new ApiException([], validationErrors);
+        }
+
+        var advertisementAttributeValues = dto.AttributeValues
+            .Select(av => new AdvertisementAttributeValue()
+            {
+                AttributeId = av.Key,
+                Value = av.Value
+            })
+            .ToList();
+
+        var newAdvertisement = new Advertisement()
+        {
+            Title = dto.Title,
+            AdvertisementText = dto.Description,
+            CategoryId = dto.CategoryId,
+            OwnerId = userId,
+            AttributeValues = advertisementAttributeValues,
+            PostedDate = DateTime.UtcNow,
+            ValidToDate = DateTime.UtcNow + new TimeSpan(dto.PostDayCount, 0, 0, 0),
+            ViewCount = 0,
+            IsActive = true
+        };
+
+        var entityEntry = await DbSet.AddAsync(newAdvertisement);
+        await DbContext.SaveChangesAsync();
+
+        //Add and store images after successful advertisement creation
+        if (dto.ImagesToAdd is not null && dto.ImagesToAdd.Any())
+        {
+            var imageTasks = dto.ImagesToAdd
+                .Select(async (formImage) =>
+                {
+                    using var imageStream = formImage.OpenReadStream();
+                    var imageHash = await FileHelper.GetFileHash(imageStream);
+                    var imagePath = _filePathResolver.GenerateUniqueFilePath(FileFolderConstants.AdvertisementImageFolder, formImage.FileName);
+                    var thumbnailPath = _filePathResolver.GenerateUniqueFilePath(FileFolderConstants.AdvertisementImageFolder, ImageConstants.ThumbnailPrefix + formImage.FileName);
+
+                    await _imageHelper.StoreImageWithThumbnail(imageStream, imagePath, thumbnailPath);
+
+                    return new AdvertisementImage()
+                    {
+                        AdvertisementId = entityEntry.Entity.Id,
+                        IsPublic = true,
+                        Path = imagePath,
+                        ThumbnailPath = thumbnailPath,
+                        Hash = imageHash
+                    };
+                })
+                .ToArray();
+
+            var images = await Task.WhenAll(imageTasks);
+            await DbContext.AdvertisementImages.AddRangeAsync(images);
+            await DbContext.SaveChangesAsync();
+
+            //Set thumbnail image
+            var thumbnailImage = images.FirstOrDefault(i => i.Hash == dto.ThumbnailImageHash);
+            if (thumbnailImage is not null)
+            {
+                await DbSet.Where(a => a.Id == newAdvertisement.Id).UpdateFromQueryAsync(a => new Advertisement() { ThumbnailImageId = thumbnailImage.Id });
+            }
+        }
     }
 }

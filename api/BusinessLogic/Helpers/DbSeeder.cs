@@ -16,10 +16,10 @@ public class DbSeeder(Context context, UserManager<User> userManager, RoleManage
     {
         //Add permissions
         var permissions = ((IEnumerable<Permissions>)Enum.GetValues(typeof(Permissions)))
-            .Select(p => new Permission
-            {
-                Name = Enum.GetName(p)!
-            });
+        .Select(p => new Permission
+        {
+            Name = Enum.GetName(p)!
+        });
         AddIfNotExistsMultiple(permissions, (pConst) => p => p.Name == pConst.Name);
 
         //Add roles
@@ -77,157 +77,113 @@ public class DbSeeder(Context context, UserManager<User> userManager, RoleManage
         {
             new()
             {
-                Id = 1,
                 CanContainAdvertisements = false,
+                LocalisedNames = [
+                    new() {
+                        Locale = "EN",
+                        Text = "Electric devices"
+                    },
+                    new() {
+                        Locale = "LV",
+                        Text = "Elektriskās ierīces"
+                    },
+                ]
             },
-            new()
-            {
-                Id = 2,
+            new() {
                 CanContainAdvertisements = false,
                 ParentCategoryId = 1,
+                LocalisedNames = [
+                    new() {
+                        Locale = "EN",
+                        Text = "Phones"
+                    },
+                    new() {
+                        Locale = "LV",
+                        Text = "Tālruņi"
+                    },
+                ]
             },
             new()
             {
-                Id = 3,
-                CanContainAdvertisements = false,
-                ParentCategoryId = 2,
-            },
-            new()
-            {
-                Id = 4,
                 CanContainAdvertisements = true,
                 ParentCategoryId = 2,
-                AdvertisementCount = 1
+                LocalisedNames = [
+                    new() {
+                        Locale = "EN",
+                        Text = "Mobile phones"
+                    },
+                    new() {
+                        Locale = "LV",
+                        Text = "Mobīlie tālruņi"
+                    },
+                ]
             },
             new()
             {
-                Id = 5,
+                CanContainAdvertisements = true,
+                ParentCategoryId = 2,
+                AdvertisementCount = 1,
+                LocalisedNames = [
+                    new() {
+                        Locale = "EN",
+                        Text = "Smartphone"
+                    },
+                    new() {
+                        Locale = "LV",
+                        Text = "Viedtālruņi"
+                    },
+                ]
+            },
+            new()
+            {
                 CanContainAdvertisements = false,
+                LocalisedNames = [
+                    new() {
+                        Locale = "EN",
+                        Text = "Vehicle"
+                    },
+                    new() {
+                        Locale = "LV",
+                        Text = "Transportlīdzkļi"
+                    },
+                ]
             },
             new()
             {
-                Id = 6,
                 ParentCategoryId = 5,
-                CanContainAdvertisements = true
+                CanContainAdvertisements = true,
+                LocalisedNames = [
+                    new() {
+                        Locale = "EN",
+                        Text = "Motorcycle"
+                    },
+                    new() {
+                        Locale = "LV",
+                        Text = "Motocikls"
+                    },
+                ]
             },
         };
 
-        AddIfNotExistsMultiple(categories, cConst => c => cConst.Id == c.Id);
-
-
-        //Add category names
-        var categoryNameLocales = new List<CategoryNameLocaleText>()
-        {
-            new()
-            {
-                Id = 1,
-                CategoryId = 1,
-                Locale = "EN",
-                Text = "Electric devices"
-            },
-            new()
-            {
-                Id = 2,
-                CategoryId = 1,
-                Locale = "LV",
-                Text = "Elektriskās ierīces"
-            },
-            new()
-            {
-                Id = 3,
-                CategoryId = 2,
-                Locale = "EN",
-                Text = "Phones"
-            },
-            new()
-            {
-                Id = 4,
-                CategoryId = 2,
-                Locale = "LV",
-                Text = "Tālruņi"
-            },
-            new()
-            {
-                Id = 5,
-                CategoryId = 3,
-                Locale = "EN",
-                Text = "Mobile phones"
-            },
-            new()
-            {
-                Id = 6,
-                CategoryId = 3,
-                Locale = "LV",
-                Text = "Mobīlie tālruņi"
-            },
-            new()
-            {
-                Id = 7,
-                CategoryId = 4,
-                Locale = "EN",
-                Text = "Smartphone"
-            },
-            new()
-            {
-                Id = 8,
-                CategoryId = 4,
-                Locale = "LV",
-                Text = "Viedtālruņi"
-            },
-            new()
-            {
-                Id = 9,
-                CategoryId = 5,
-                Locale = "EN",
-                Text = "Vehicle"
-            },
-            new()
-            {
-                Id = 10,
-                CategoryId = 5,
-                Locale = "LV",
-                Text = "Transportlīdzkļi"
-            },
-            new()
-            {
-                Id = 11,
-                CategoryId = 6,
-                Locale = "EN",
-                Text = "Motorcycle"
-            },
-            new()
-            {
-                Id = 12,
-                CategoryId = 6,
-                Locale = "LV",
-                Text = "Motocikls"
-            },
-        };
-
-        AddIfNotExistsMultiple(categoryNameLocales, lConst => l => lConst.Id == l.Id);
+        AddIfNotExistsMultiple(categories, cConst => (c) => cConst.LocalisedNames.ElementAt(0).Text == c.LocalisedNames.Where(l => l.Locale == "EN").First().Text);
 
         // Category attributes
         var attributes = new List<Attribute>()
         {
             new()
             {
-                Id = 2,
                 Searchable = true,
-                Sortable = true,
+                Sortable = false,
                 ValueType = Enums.ValueTypes.Integer,
                 AttributeNameLocales =
                 [
                     new()
                     {
-                        Id = 13,
-                        AttributeId = 2,
                         Locale = "EN",
                         Text = "Width"
                     },
                     new()
                     {
-                        Id = 14,
-                        AttributeId = 2,
                         Locale = "LV",
                         Text = "Platums"
                     }
@@ -236,30 +192,25 @@ public class DbSeeder(Context context, UserManager<User> userManager, RoleManage
                 [
                     new()
                     {
-                        AttributeId = 2,
-                        CategoryId = 1
+                        AttributeId = 1,
+                        CategoryId = 3
                     }
                 ]
             },
             new()
             {
-                Id = 3,
                 Searchable = false,
-                Sortable = false,
+                Sortable = true,
                 ValueType = Enums.ValueTypes.ValueListEntry,
                 AttributeNameLocales =
                 [
                     new()
                     {
-                        Id = 15,
-                        AttributeId = 3,
                         Locale = "EN",
                         Text = "Manufacturer"
                     },
                     new()
                     {
-                        Id = 16,
-                        AttributeId = 3,
                         Locale = "LV",
                         Text = "Ražotājs"
                     }
@@ -268,46 +219,38 @@ public class DbSeeder(Context context, UserManager<User> userManager, RoleManage
                 [
                     new()
                     {
-                        AttributeId = 3,
-                        CategoryId = 1
+                        AttributeId = 2,
+                        CategoryId = 3
                     }
                 ],
                 AttributeValueList = new AttributeValueList()
                 {
-                    Id = 1,
                     LocalisedNames =
                     [
                         new()
                         {
-                            Id = 17,
                             Locale = "EN",
                             Text = "Phone manufacturer list",
-                            AttributeValueListId = 1
                         },
                         new()
                         {
-                            Id = 18,
                             Locale = "LV",
                             Text = "Tālruņu ražotāju saraksts",
-                            AttributeValueListId = 1
                         }
                     ],
                     ListEntries =
                     [
                         new()
                         {
-                            Id = 1,
                             LocalisedNames =
                             [
                                 new()
                                 {
-                                    Id = 19,
                                     Locale = "EN",
                                     Text = "LG"
                                 },
                                 new()
                                 {
-                                    Id = 20,
                                     Locale = "LV",
                                     Text = "LG"
                                 },
@@ -315,18 +258,15 @@ public class DbSeeder(Context context, UserManager<User> userManager, RoleManage
                         },
                         new()
                         {
-                            Id = 2,
                             LocalisedNames =
                             [
                                 new()
                                 {
-                                    Id = 21,
                                     Locale = "EN",
                                     Text = "SAMSUNG"
                                 },
                                 new()
                                 {
-                                    Id = 22,
                                     Locale = "LV",
                                     Text = "SAMSUNG"
                                 }
@@ -337,18 +277,17 @@ public class DbSeeder(Context context, UserManager<User> userManager, RoleManage
             }
         };
 
-        AddIfNotExistsMultiple(attributes, aConst => a => aConst.Id == a.Id);
+        AddIfNotExistsMultiple(attributes, aConst => a => aConst.AttributeNameLocales.ElementAt(0).Text == a.AttributeNameLocales.Where(l => l.Locale == "EN").First().Text);
 
         // Advertisements
         var advertisements = new List<Advertisement>()
         {
             new()
             {
-                Id = 1,
                 IsActive = true,
                 Title = "Advertisement 1",
                 AdvertisementText = "Text body",
-                CategoryId = 1,
+                CategoryId = 4,
                 OwnerId = adminUser.Id,
                 PostedDate = DateTime.UtcNow,
                 ValidToDate = DateTime.UtcNow.AddMonths(1),
@@ -357,25 +296,22 @@ public class DbSeeder(Context context, UserManager<User> userManager, RoleManage
                 [
                     new()
                     {
-                        Id = 1,
-                        AttributeId = 2,
+                        AttributeId = 1,
                         Value = "12"
                     },
                     new()
                     {
-                        Id = 2,
-                        AttributeId = 3,
+                        AttributeId = 2,
                         Value = "1"
                     }
                 ]
             },
             new()
             {
-                Id = 2,
                 IsActive = true,
                 Title = "Advertisement 2",
                 AdvertisementText = "Text body 2",
-                CategoryId = 1,
+                CategoryId = 4,
                 OwnerId = adminUser.Id,
                 PostedDate = DateTime.UtcNow,
                 ValidToDate = DateTime.UtcNow.AddMonths(1),
@@ -384,21 +320,19 @@ public class DbSeeder(Context context, UserManager<User> userManager, RoleManage
                 [
                     new()
                     {
-                        Id = 3,
-                        AttributeId = 2,
+                        AttributeId = 1,
                         Value = "10"
                     },
                     new()
                     {
-                        Id = 4,
-                        AttributeId = 3,
+                        AttributeId = 2,
                         Value = "2"
                     }
                 ]
             },
         };
 
-        AddIfNotExistsMultiple(advertisements, aConst => a => aConst.Id == a.Id);
+        AddIfNotExistsMultiple(advertisements, aConst => a => aConst.Title == a.Title);
     }
 
     private void AddIfNotExists<T>(T entity, Expression<Func<T, bool>> predicate) where T : class
