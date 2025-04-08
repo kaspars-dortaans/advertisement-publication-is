@@ -9,7 +9,6 @@ using BusinessLogic.Helpers;
 using BusinessLogic.Helpers.CookieSettings;
 using BusinessLogic.Helpers.FilePathResolver;
 using BusinessLogic.Helpers.Storage;
-using BusinessLogic.Migrations;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;

@@ -40,15 +40,27 @@ public class DbSeeder(Context context, UserManager<User> userManager, RoleManage
         var allRoles = _roleManager.Roles.ToList();
 
         //Add all permissions to admin role
+        //TODO: Assign appropriate permissions to roles
         var adminRole = _context.Roles.First(r => r.Name == nameof(Roles.Admin));
         var adminRolePermissions = _context.Permissions.Select(p => new RolePermission()
         {
             PermissionId = p.Id,
             RoleId = adminRole.Id
         }).ToList();
-
+        
         AddIfNotExistsMultiple(
             adminRolePermissions,
+            pConst => p => pConst.RoleId == p.RoleId && pConst.PermissionId == p.PermissionId);
+
+        var userRole = _context.Roles.First(r => r.Name == nameof(Roles.User));
+        var userRolePermissions = _context.Permissions.Select(p => new RolePermission()
+        {
+            PermissionId = p.Id,
+            RoleId = userRole.Id
+        }).ToList();
+
+        AddIfNotExistsMultiple(
+            userRolePermissions,
             pConst => p => pConst.RoleId == p.RoleId && pConst.PermissionId == p.PermissionId);
 
         //Seed admin user

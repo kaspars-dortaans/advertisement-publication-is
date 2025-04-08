@@ -98,6 +98,8 @@ export class AuthService {
     this._updateToken(null)
     AuthService.permissionsPromise.value = Promise.resolve([])
     AuthService.permissions.value = []
+    AuthService.profileInfo.value = null
+    AuthService.profileInfoPromise.value = Promise.resolve(null)
     AuthService.isAuthenticated.value = false
   }
 

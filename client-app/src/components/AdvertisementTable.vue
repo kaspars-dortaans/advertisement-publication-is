@@ -50,14 +50,14 @@
           />
         </div>
         <div class="space-x-2">
+          <Button severity="secondary" @click="clearFilter">{{ l.actions.clear }}</Button>
+          <Button severity="primary" @click="filterTable">{{ l.actions.search }}</Button>
           <slot
             name="actionButtons"
             :selectedRows="selectedRows"
             :setLoading="setLoading"
             :refresh="loadAdvertisements"
           ></slot>
-          <Button severity="secondary" @click="clearFilter">{{ l.actions.clear }}</Button>
-          <Button severity="primary" @click="filterTable">{{ l.actions.search }}</Button>
         </div>
       </div>
     </template>
@@ -68,7 +68,12 @@
       </div>
     </template>
 
-    <Column v-if="multiRowSelect" selectionMode="multiple" headerStyle="width: 3rem"></Column>
+    <Column
+      v-if="multiRowSelect"
+      selectionMode="multiple"
+      headerStyle="width: 3rem"
+      body-style="width: 3rem"
+    ></Column>
 
     <Column :field="advertisementColumnField">
       <template #body="slotProps">
