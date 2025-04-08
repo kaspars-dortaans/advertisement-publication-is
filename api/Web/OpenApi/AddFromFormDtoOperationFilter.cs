@@ -9,7 +9,7 @@ namespace Web.OpenApi;
 /// Add missing Dto used with FromForm attribute to openApi definition
 /// Solution found: https://github.com/domaindrivendev/Swashbuckle.AspNetCore/issues/2592#issuecomment-1397498558
 /// </summary>
-public class FixFromFormOperationFilter : IOperationFilter
+public class AddFromFormDtoOperationFilter : IOperationFilter
 {
     public void Apply(OpenApiOperation operation, OperationFilterContext context)
     {

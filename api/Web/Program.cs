@@ -82,6 +82,8 @@ builder.Services
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(o =>
 {
+    o.UseAllOfToExtendReferenceSchemas();
+    
     var bearerScheme = new OpenApiSecurityScheme()
     {
         Name = "Authorization",
@@ -107,7 +109,7 @@ builder.Services.AddSwaggerGen(o =>
     o.MapType(typeof(IFormFile), () => new OpenApiSchema() { Type = "file", Format = "binary" });
 
     ////Filters
-    o.OperationFilter<FixFromFormOperationFilter>();
+    o.OperationFilter<AddFromFormDtoOperationFilter>();
     o.DocumentFilter<IncludeDocumentFilter>();
 });
 

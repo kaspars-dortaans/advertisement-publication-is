@@ -69,7 +69,8 @@ else
 {%-             elsif parameter.IsObjectArray -%}
     {{ parameter.VariableName }}.forEach((item_, i) => {
 {%-                 for property in parameter.Schema.Item.ActualSchema.Properties  -%}
-        content_.append("{{ parameter.Name }}[" + i + "].{{ property[0] }}", "" + item_.{{ property[0] }})
+        if(item_.{{ property[0] }} != null)
+            content_.append("{{ parameter.Name }}[" + i + "].{{ property[0] }}", "" + item_.{{ property[0] }})
 {%-                 endfor -%}
     });
 {%-             elsif parameter.IsArray -%}
