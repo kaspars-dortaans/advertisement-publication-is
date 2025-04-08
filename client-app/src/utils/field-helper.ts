@@ -2,13 +2,14 @@ import { RequestExceptionResponse } from '@/services/api-client'
 import type {
   BaseFieldProps,
   FormContext,
+  FormMeta,
   GenericObject,
   InputBindsConfig,
   LazyInputBindsConfig,
   Path,
   PathValue
 } from 'vee-validate'
-import { computed, type Ref } from 'vue'
+import { computed, type ComputedRef, type Ref } from 'vue'
 
 //vee validate not exported generic types
 export type TPath<TValues> = Path<TValues>
@@ -81,7 +82,9 @@ export class FieldHelper<TValues extends GenericObject> {
   protected _defineField: DefineFieldFn<TValues>
   protected _setFieldError: SetFieldErrorFn<TValues>
   protected _setErrors: SetErrorsFn<TValues>
+  protected _isFieldDirty: (path: TPath<TValues>) => boolean
   protected _errors: ErrorsProperty<TValues>
+  protected _meta: ComputedRef<FormMeta<TValues>>
 
   fields: Fields<TValues> = {}
 
@@ -90,10 +93,12 @@ export class FieldHelper<TValues extends GenericObject> {
   //Functions and properties of FormContext are destructured in order to preserve their reactivity
   //For more info see https://vee-validate.logaretm.com/v4/guide/composition-api/caveats/#destructing-composable
   constructor(formContext: FormContext<TValues>) {
-    const { errors, defineField, setFieldError, setErrors } = formContext
+    const { errors, defineField, setFieldError, setErrors, isFieldDirty, meta } = formContext
     this._defineField = defineField
     this._setFieldError = setFieldError
     this._setErrors = setErrors
+    this._isFieldDirty = isFieldDirty
+    this._meta = meta
     this._errors = errors
   }
 
@@ -103,6 +108,17 @@ export class FieldHelper<TValues extends GenericObject> {
 
   hasFormErrors = computed(() => {
     return !!this._errors.value[this.formErrorKey]
+  })
+
+  valuesChanged = computed(() => {
+    return (
+      this._meta.value.dirty &&
+      Object.entries<Field<unknown, TValues>>(this.fields as GenericObject).some(
+        (e) =>
+          this._isFieldDirty(e[0] as TPath<TValues>) &&
+          e[1].value !== this._meta.value.initialValues?.[e[0] as TPath<TValues>]
+      )
+    )
   })
 
   defineField = (path: Path<TValues>, config?: FieldConfig<TValues, Path<TValues>>) => {

@@ -17,7 +17,9 @@
     "extend": "Pagarināt",
     "activate": "Aktivizēt",
     "deactivate": "Deaktivizēt",
-    "view": "Skatīt"
+    "view": "Skatīt",
+    "leave": "Pamest",
+    "stay": "Palikt"
   },
   "dataTable": {
     "pageReportTemplate": "{1} līdz {2} no {3}",
@@ -44,11 +46,19 @@
     "categoryName": "Kategorija",
     "isActive": "Ir aktīvs",
     "validTo": "Derīgs līdz",
-    "createdAt": "Izveidots"
+    "createdAt": "Izveidots",
+    "confirmDeleteHeader": "Izdzēst sludinājumus",
+    "confirmDeleteMessage": "{0} sludinājumi tiks izdzēsti."
+  },
+  "advertisementBookmark": {
+    "confirmDeleteHeader": "Izdzēst sludinājumu atzīmes",
+    "confirmDeleteMessage": "{0} sludinājumu atzīmes tiks izdzēstas."
   },
   "form": {
     "common": {
-      "dragAndDropToUpload": "Velc un met šeit lai Augšupielādētu"
+      "dragAndDropToUpload": "Velc un met šeit lai Augšupielādētu",
+      "leaveForm": "Pamest veidlapu",
+      "changesWillBeDiscarded": "Veiktās izmaiņas netiks saglabātas."
     },
     "login": {
       "email": "E-pasts",

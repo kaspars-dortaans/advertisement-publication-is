@@ -145,6 +145,7 @@ import FieldError from '@/components/form/FieldError.vue'
 import MultipleImageUpload from '@/components/form/MultipleImageUpload.vue'
 import { createAdvertisementPostTimeSpanOptions } from '@/constants/advertisement-post-time-span'
 import { ImageConstants } from '@/constants/api/ImageConstants'
+import { leaveFormGuard } from '@/utils/confirm-dialog'
 import {
   AdvertisementClient,
   AttributeFormInfo,
@@ -167,13 +168,21 @@ import {
   requiredWhen
 } from '@/validators/custom-validators'
 import { toTypedSchema } from '@vee-validate/yup'
-import type { SelectChangeEvent } from 'primevue'
+import { useConfirm, type SelectChangeEvent } from 'primevue'
 import { useForm } from 'vee-validate'
 import { computed, onBeforeMount, ref, watch } from 'vue'
-import { useRouter } from 'vue-router'
+import { onBeforeRouteLeave, useRouter } from 'vue-router'
 import { array, number, object, Schema, string, type AnyObject } from 'yup'
 
+//Route
 const { push } = useRouter()
+const confirm = useConfirm()
+const formSubmitted = ref(false)
+onBeforeRouteLeave((_to, _from, next) =>
+  leaveFormGuard(confirm, formSubmitted, valuesChanged, next)
+)
+
+//Props
 const { id: advertisementId } = defineProps<{
   id?: number
 }>()
@@ -250,9 +259,8 @@ const validationSchema = computed(() => {
 
 //Change attributeValues type, to allow easier validation and model binding
 const form = useForm<CreateOrEditAdvertisementForm>({ validationSchema })
-const { fields, defineMultipleFields, handleErrors } = new FieldHelper(form)
-const { values, handleSubmit, isSubmitting, setFieldValue, setValues, validateField, resetForm } =
-  form
+const { fields, valuesChanged, defineMultipleFields, handleErrors } = new FieldHelper(form)
+const { values, handleSubmit, isSubmitting, setFieldValue, validateField, resetForm } = form
 
 const imageFieldNames: `imagesToAdd.${number}`[] = [
   ...Array(ImageConstants.MaxImageCountPerAdvertisement).keys()
@@ -336,12 +344,14 @@ const loadAdvertisementInfo = async () => {
       })
     : []
 
-  setValues({
-    categoryId: advertisement.categoryId,
-    attributeValues: attributeValues,
-    title: advertisement.title,
-    description: advertisement.description,
-    imagesToAdd: advertisement.imageOrder
+  resetForm({
+    values: {
+      categoryId: advertisement.categoryId,
+      attributeValues: attributeValues,
+      title: advertisement.title,
+      description: advertisement.description,
+      imagesToAdd: advertisement.imageOrder
+    }
   })
   loading.value -= 1
 }
@@ -503,6 +513,7 @@ const submit = handleSubmit(async () => {
         imageOrder
       )
     }
+    formSubmitted.value = true
     push({ name: 'manageAdvertisements' })
   } catch (e) {
     //Transform added image index to advertisement image index

@@ -49,6 +49,7 @@ import Image from 'primevue/image'
 import Avatar from 'primevue/avatar'
 import BlockUI from 'primevue/blockui'
 import Badge from 'primevue/badge'
+import { ConfirmationService } from 'primevue'
 
 const customPassTrough = {
   password: {
@@ -146,6 +147,9 @@ export function initPrimeVue(app: App<Element>) {
   })
 
   //components
+  //Overlay
+  app.use(ConfirmationService)
+
   //File
   app.component('FileUpload', FileUpload)
 

@@ -20,6 +20,8 @@ export const emptyLocale = {
     activate: "",
     deactivate: "",
     view: "",
+    leave: "",
+    stay: "",
   },
   dataTable: {
     pageReportTemplate: "",
@@ -47,6 +49,12 @@ export const emptyLocale = {
     isActive: "",
     validTo: "",
     createdAt: "",
+    confirmDeleteHeader: "",
+    confirmDeleteMessage: "",
+  },
+  advertisementBookmark: {
+    confirmDeleteHeader: "",
+    confirmDeleteMessage: "",
   },
   form: {
     putAdvertisement: {
@@ -91,6 +99,8 @@ export const emptyLocale = {
     },
     common: {
       dragAndDropToUpload: "",
+      leaveForm: "",
+      changesWillBeDiscarded: "",
     },
   },
   imageUpload: {

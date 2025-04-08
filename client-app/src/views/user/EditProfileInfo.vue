@@ -126,19 +126,32 @@ import ResponsiveLayout from '@/components/common/ResponsiveLayout.vue'
 import FieldError from '@/components/form/FieldError.vue'
 import ProfileImageUpload from '@/components/form/ProfileImageUpload.vue'
 import { ImageConstants } from '@/constants/api/ImageConstants'
-import { EditUserInfo, UserClient, type FileParameter } from '@/services/api-client'
+import {
+  EditUserInfo,
+  UserClient,
+  type FileParameter,
+  type IEditUserInfo
+} from '@/services/api-client'
 import { AuthService } from '@/services/auth-service'
 import { LocaleService } from '@/services/locale-service'
 import { getClient } from '@/utils/client-builder'
 import { FieldHelper } from '@/utils/field-helper'
 import { downloadFile, hashFile } from '@/utils/file-helper'
 import { toTypedSchema } from '@vee-validate/yup'
+import { useConfirm } from 'primevue'
 import { useForm } from 'vee-validate'
 import { onBeforeMount, ref } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRouter, onBeforeRouteLeave } from 'vue-router'
 import { boolean, object, string } from 'yup'
+import { leaveFormGuard } from '@/utils/confirm-dialog'
 
+//Route
 const { push } = useRouter()
+const formSubmitted = ref(false)
+const confirm = useConfirm()
+onBeforeRouteLeave((_to, _from, next) =>
+  leaveFormGuard(confirm, formSubmitted, valuesChanged, next)
+)
 
 //Services
 const l = LocaleService.currentLocale
@@ -146,7 +159,7 @@ const authService = AuthService.get()
 const userService = getClient(UserClient)
 
 //Forms and fields
-const form = useForm<EditUserInfo>({
+const form = useForm<IEditUserInfo>({
   validationSchema: toTypedSchema(
     object({
       firstName: string().required(),
@@ -160,10 +173,9 @@ const form = useForm<EditUserInfo>({
     })
   )
 })
-const { fields, hasFormErrors, formErrors, defineMultipleFields, handleErrors } = new FieldHelper(
-  form
-)
-const { handleSubmit, values, isSubmitting, setValues } = form
+const { fields, hasFormErrors, formErrors, valuesChanged, defineMultipleFields, handleErrors } =
+  new FieldHelper(form)
+const { handleSubmit, values, isSubmitting, resetForm } = form
 
 defineMultipleFields([
   'firstName',
@@ -193,8 +205,8 @@ onBeforeMount(async () => {
     originalProfileImage.value = profileImage
   }
 
-  setValues(
-    new EditUserInfo({
+  resetForm({
+    values: new EditUserInfo({
       userName: userInfo?.userName!,
       firstName: userInfo?.firstName!,
       lastName: userInfo?.lastName!,
@@ -205,7 +217,7 @@ onBeforeMount(async () => {
       linkToUserSite: userInfo?.linkToUserSite,
       profileImage: profileImage
     })
-  )
+  })
   loading.value = false
 })
 
@@ -234,6 +246,7 @@ const onSubmit = handleSubmit(async () => {
       profileImageChanged,
       profileImage
     )
+    formSubmitted.value = true
     push({ name: 'profileInfo' })
   } catch (error) {
     handleErrors(error)

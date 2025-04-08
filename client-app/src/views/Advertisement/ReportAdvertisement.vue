@@ -37,41 +37,55 @@
 import BackButton from '@/components/BackButton.vue'
 import ResponsiveLayout from '@/components/common/ResponsiveLayout.vue'
 import FieldError from '@/components/form/FieldError.vue'
+import { leaveFormGuard } from '@/utils/confirm-dialog'
 import { AdvertisementClient, ReportAdvertisementRequest } from '@/services/api-client'
 import { AppNavigation } from '@/services/app-navigation'
 import { LocaleService } from '@/services/locale-service'
 import { getClient } from '@/utils/client-builder'
 import { FieldHelper } from '@/utils/field-helper'
 import { toTypedSchema } from '@vee-validate/yup'
+import { useConfirm } from 'primevue'
 import { useForm } from 'vee-validate'
-import { onMounted } from 'vue'
-import { useRouter } from 'vue-router'
+import { onMounted, ref } from 'vue'
+import { onBeforeRouteLeave, useRouter } from 'vue-router'
 import { object, string } from 'yup'
 
+//Route
 const { push } = useRouter()
+const formSubmitted = ref(false)
+const confirm = useConfirm()
+onBeforeRouteLeave((_to, _from, next) =>
+  leaveFormGuard(confirm, formSubmitted, valuesChanged, next)
+)
+
+//Props
 const { id: advertisementId } = defineProps<{ id: number }>()
 
+//Services
 const l = LocaleService.currentLocale
 const navigation = AppNavigation.get()
 const _advertisementService = getClient(AdvertisementClient)
 
+//Form and fields
 const form = useForm({
   validationSchema: toTypedSchema(
     object({
-      description: string().required()
+      description: string().required().default('')
     })
   )
 })
 const { values, handleSubmit, isSubmitting } = form
-const { defineField, handleErrors, fields } = new FieldHelper(form)
+const { fields, valuesChanged, defineField, handleErrors } = new FieldHelper(form)
 defineField('description')
 
+//Hooks
 onMounted(() => {
   if (typeof advertisementId !== 'number' || isNaN(advertisementId)) {
     push({ name: 'NotFound' })
   }
 })
 
+//Methods
 const report = handleSubmit(async () => {
   try {
     await _advertisementService.reportAdvertisement(
@@ -80,6 +94,7 @@ const report = handleSubmit(async () => {
         reportedAdvertisementId: advertisementId
       })
     )
+    formSubmitted.value = true
     if (navigation.hasPrevious()) {
       push(navigation.getPreviousFullPath)
     } else {

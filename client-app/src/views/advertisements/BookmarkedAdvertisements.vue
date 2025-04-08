@@ -11,7 +11,10 @@
       <template #actionButtons="slotProps">
         <Button
           severity="danger"
-          @click="removeBookmarks(slotProps.selectedRows, slotProps.setLoading, slotProps.refresh)"
+          :disabled="!slotProps.selectedRows?.length"
+          @click="
+            confirmBookmarkDelete(slotProps.selectedRows, slotProps.setLoading, slotProps.refresh)
+          "
           >{{ l.actions.remove }}</Button
         >
       </template>
@@ -22,6 +25,7 @@
 <script setup lang="ts">
 import AdvertisementTable from '@/components/AdvertisementTable.vue'
 import ResponsiveLayout from '@/components/common/ResponsiveLayout.vue'
+import { confirmDelete } from '@/utils/confirm-dialog'
 import {
   AdvertisementClient,
   AdvertisementListItem,
@@ -30,11 +34,14 @@ import {
 } from '@/services/api-client'
 import { LocaleService } from '@/services/locale-service'
 import { getClient } from '@/utils/client-builder'
+import { useConfirm } from 'primevue'
 import { onBeforeMount, ref } from 'vue'
 
 //Services
 const l = LocaleService.currentLocale
+const ls = LocaleService.get()
 const advertisementService = getClient(AdvertisementClient)
+const confirm = useConfirm()
 
 //Reactive data
 const advertisementCategories = ref<Int32StringKeyValuePair[]>([])
@@ -52,6 +59,14 @@ const loadAdvertisements = (q: AdvertisementQuery) => {
 const loadCategoryList = async () => {
   advertisementCategories.value =
     await advertisementService.getBookmarkedAdvertisementCategoryList()
+}
+
+const confirmBookmarkDelete = (...params: Parameters<typeof removeBookmarks>) => {
+  confirmDelete(confirm, {
+    header: l.value.advertisementBookmark.confirmDeleteHeader,
+    message: ls.l('advertisementBookmark.confirmDeleteMessage', params[0].length),
+    accept: () => removeBookmarks(params[0], params[1], params[2])
+  })
 }
 
 const removeBookmarks = async (

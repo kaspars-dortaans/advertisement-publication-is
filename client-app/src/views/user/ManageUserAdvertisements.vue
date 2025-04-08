@@ -26,7 +26,7 @@
             :label="l.actions.delete"
             :disabled="!selectedAdvertisements.length"
             severity="danger"
-            @click="deleteAdvertisements"
+            @click="confirmDeleteAdvertisements"
           />
           <Button
             :label="l.actions.extend"
@@ -81,6 +81,7 @@
 <script setup lang="ts">
 import LazyLoadedTable from '@/components/common/LazyLoadedTable.vue'
 import ResponsiveLayout from '@/components/common/ResponsiveLayout.vue'
+import { confirmDelete } from '@/utils/confirm-dialog'
 import {
   AdvertisementClient,
   AdvertisementInfo,
@@ -89,6 +90,7 @@ import {
 } from '@/services/api-client'
 import { LocaleService } from '@/services/locale-service'
 import { getClient } from '@/utils/client-builder'
+import { useConfirm } from 'primevue'
 import { computed, ref, useTemplateRef } from 'vue'
 import { useRouter } from 'vue-router'
 
@@ -99,6 +101,7 @@ const table = useTemplateRef('table')
 const l = LocaleService.currentLocale
 const ls = LocaleService.get()
 const advertisementService = getClient(AdvertisementClient)
+const confirm = useConfirm()
 
 //Reactive data
 const selectedAdvertisements = ref<AdvertisementInfo[]>([])
@@ -157,6 +160,14 @@ const setAdvertisementActiveState = async (isActive: boolean) => {
     .filter((id) => typeof id === 'number') as number[]
   await advertisementService.setIsActiveAdvertisements(isActive, ids)
   table.value?.refresh()
+}
+
+const confirmDeleteAdvertisements = () => {
+  confirmDelete(confirm, {
+    header: l.value.manageAdvertisements.confirmDeleteHeader,
+    message: ls.l('manageAdvertisements.confirmDeleteMessage', selectedAdvertisements.value.length),
+    accept: () => deleteAdvertisements()
+  })
 }
 
 const deleteAdvertisements = async () => {

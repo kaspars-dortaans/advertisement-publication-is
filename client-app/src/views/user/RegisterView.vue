@@ -7,9 +7,7 @@
       <form class="flex flex-col gap-3 lg:items-center bg-white" @submit="onSubmit">
         <div class="flex flex-col gap-5 lg:items-center lg:flex-row">
           <div class="flex flex-col gap-2 min-w-full md:min-w-80">
-            <Message v-if="fieldHelper.hasFormErrors.value" severity="error">{{
-              fieldHelper.formErrors
-            }}</Message>
+            <Message v-if="hasFormErrors" severity="error">{{ formErrors }}</Message>
 
             <InputText
               v-model="fields.firstName!.value"
@@ -84,6 +82,7 @@
               v-bind="fields.password?.attributes"
               :placeholder="l.form.register.password"
               :invalid="fields.password!.hasError"
+              fluid
             />
             <FieldError :field="fields.password" />
 
@@ -93,6 +92,7 @@
               :placeholder="l.form.register.confirmPassword"
               :feedback="false"
               :invalid="fields.passwordConfirmation!.hasError"
+              fluid
             />
             <FieldError :field="fields.passwordConfirmation" />
           </div>
@@ -126,35 +126,47 @@ import { ImageConstants } from '@/constants/api/ImageConstants'
 import { UserClient, type FileParameter, type IRegisterDto } from '@/services/api-client'
 import { LocaleService } from '@/services/locale-service'
 import { getClient } from '@/utils/client-builder'
+import { leaveFormGuard } from '@/utils/confirm-dialog'
 import { FieldHelper } from '@/utils/field-helper'
 import { toTypedSchema } from '@vee-validate/yup'
+import { useConfirm } from 'primevue'
 import { useForm } from 'vee-validate'
-import { useRouter } from 'vue-router'
+import { ref } from 'vue'
+import { onBeforeRouteLeave, useRouter } from 'vue-router'
 import { boolean, object, string } from 'yup'
+
+//Router
+const { push } = useRouter()
+const confirm = useConfirm()
+const formSubmitted = ref(false)
+onBeforeRouteLeave((_to, _from, next) =>
+  leaveFormGuard(confirm, formSubmitted, valuesChanged, next)
+)
 
 //Services
 const api = getClient(UserClient)
 const l = LocaleService.currentLocale
-const router = useRouter()
 
 // Form and fields
 const form = useForm<IRegisterDto>({
   validationSchema: toTypedSchema(
     object({
-      firstName: string().required(),
-      lastName: string().required(),
-      userName: string().required(),
-      email: string().required().email(),
+      firstName: string().required().default(''),
+      lastName: string().required().default(''),
+      userName: string().required().default(''),
+      email: string().required().email().default(''),
       isEmailPublic: boolean().default(false),
-      phoneNumber: string().required(),
+      phoneNumber: string().required().default(''),
       isPhoneNumberPublic: boolean().default(false),
-      password: string().required(),
-      passwordConfirmation: string().required()
+      password: string().required().default(''),
+      passwordConfirmation: string().required().default('')
     })
   )
 })
-const fieldHelper = new FieldHelper<IRegisterDto>(form)
-const fields = fieldHelper.defineMultipleFields([
+const { fields, hasFormErrors, formErrors, valuesChanged, defineMultipleFields, handleErrors } =
+  new FieldHelper<IRegisterDto>(form)
+const { values, handleSubmit, isSubmitting } = form
+defineMultipleFields([
   'firstName',
   'lastName',
   'userName',
@@ -166,12 +178,8 @@ const fields = fieldHelper.defineMultipleFields([
   'passwordConfirmation',
   'profileImage'
 ])
-const { values, handleSubmit, validate, isSubmitting } = form
 
 const onSubmit = handleSubmit(async () => {
-  fieldHelper.clearErrors()
-  await validate()
-
   try {
     const profileImage = values.profileImage
       ? ({
@@ -192,9 +200,10 @@ const onSubmit = handleSubmit(async () => {
       values.isPhoneNumberPublic,
       profileImage
     )
-    router.push({ name: 'login' })
+    formSubmitted.value = true
+    push({ name: 'login' })
   } catch (error) {
-    fieldHelper.handleErrors(error)
+    handleErrors(error)
   }
 })
 </script>

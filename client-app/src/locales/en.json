@@ -17,7 +17,9 @@
     "extend": "Extend",
     "activate": "Activate",
     "deactivate": "Deactivate",
-    "view": "View"
+    "view": "View",
+    "leave": "Leave",
+    "stay": "Stay"
   },
   "dataTable": {
     "pageReportTemplate": "{1} to {2} of {3}",
@@ -44,11 +46,19 @@
     "categoryName": "Category",
     "isActive": "Active",
     "validTo": "Valid to",
-    "createdAt": "Created at"
+    "createdAt": "Created at",
+    "confirmDeleteHeader": "Delete advertisements",
+    "confirmDeleteMessage": "{0} advertisement(s) will be deleted."
+  },
+  "advertisementBookmark": {
+    "confirmDeleteHeader": "Delete advertisement bookmarks",
+    "confirmDeleteMessage": "{0} bookmark(s) will be deleted."
   },
   "form": {
     "common": {
-      "dragAndDropToUpload": "Drag and drop here to upload"
+      "dragAndDropToUpload": "Drag and drop here to upload",
+      "leaveForm": "Leave form page",
+      "changesWillBeDiscarded": "Made changes will be discarded."
     },
     "login": {
       "email": "E-mail",
