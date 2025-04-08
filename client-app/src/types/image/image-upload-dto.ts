@@ -1,6 +1,4 @@
-import type { IFileHashDto } from '@/types/image/file-hash'
-
-export interface IImageUploadDto extends IFileHashDto {
-  id?: number
-  url: string
+import type { IImageDto } from '@/services/api-client'
+export interface IImageUploadDto extends IImageDto {
+  file?: File
 }

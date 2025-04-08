@@ -113,7 +113,6 @@ public class AdvertisementController(
     public async Task RemoveAdvertisementBookmarks(IEnumerable<int> ids)
     {
         var userId = User.GetUserId();
-        //TODO: Remove advertisement images from storage
         await _advertisementBookmarkService.DeleteWhereAsync(ab => ab.BookmarkOwnerId == userId && ids.Contains(ab.BookmarkedAdvertisementId));
     }
 
@@ -250,9 +249,41 @@ public class AdvertisementController(
     [HttpPost]
     public async Task CreateAdvertisement([FromForm] CreateOrEditAdvertisementRequest request)
     {
+        if (request.PostTime is null)
+        {
+            throw new ApiException([], new Dictionary<string, IList<string>>
+            {
+                { nameof(CreateOrEditAdvertisementRequest.PostTime), [CustomErrorCodes.MissingRequired] }
+            });
+        }
         var userId = User.GetUserId()!.Value;
         var advertisementDto = _mapper.Map<CreateOrEditAdvertisementDto>(request);
         await _advertisementService.CreateAdvertisement(advertisementDto, userId);
+    }
+
+    [HasPermission(Permissions.EditOwnedAdvertisement)]
+    [ProducesResponseType<AdvertisementFormInfo>(StatusCodes.Status200OK)]
+    [ProducesResponseType<RequestExceptionResponse>(StatusCodes.Status400BadRequest)]
+    [HttpGet]
+    public async Task<AdvertisementFormInfo> EditAdvertisement(int advertisementId)
+    {
+        var dto = await _advertisementService.GetAdvertisementFormInfo(advertisementId, User.GetUserId()!.Value);
+        var advertisementValues = _mapper.Map<CreateOrEditAdvertisementRequest>(dto, opts => opts.Items[nameof(Url)] = Url);
+        return new AdvertisementFormInfo
+        {
+            Advertisement = advertisementValues,
+            CategoryInfo = await GetCategoryFormInfo(dto.CategoryId)
+        };
+    }
+
+    [HasPermission(Permissions.EditOwnedAdvertisement)]
+    [ProducesResponseType<AdvertisementFormInfo>(StatusCodes.Status200OK)]
+    [ProducesResponseType<RequestExceptionResponse>(StatusCodes.Status400BadRequest)]
+    [HttpPost]
+    public async Task EditAdvertisement([FromForm] CreateOrEditAdvertisementRequest request)
+    {
+        var dto = _mapper.Map<CreateOrEditAdvertisementDto>(request);
+        await _advertisementService.UpdateAdvertisement(dto, User.GetUserId()!.Value);
     }
 
     [AllowAnonymous]

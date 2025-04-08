@@ -17,4 +17,6 @@ export class CustomErrorCodes {
   static readonly CategoryCanNotContainAdvertisements = "CategoryCanNotContainAdvertisements"
   static readonly OptionNotFound = "OptionNotFound"
   static readonly InvalidValue = "InvalidValue"
+  static readonly ValueMustBeInteger = "ValueMustBeInteger"
+  static readonly ValueMustBeNumber = "ValueMustBeNumber"
 }

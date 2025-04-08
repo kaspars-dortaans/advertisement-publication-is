@@ -1,6 +1,6 @@
 <template>
   <ResponsiveLayout>
-    <BlockWithSpinner :loading="loading">
+    <BlockWithSpinner :loading="loading > 0 || isSubmitting">
       <Panel>
         <template #header>
           <div class="panel-title-container">
@@ -15,20 +15,33 @@
           <div class="flex flex-col lg:flex-row gap-3">
             <fieldset class="flex flex-col gap-2 w-full md:min-w-60">
               <!-- Time period -->
-              <FloatLabel variant="on">
-                <Select
-                  v-model="fields.postTime!.model"
-                  v-bind="fields.postTime?.attributes"
-                  :invalid="fields.postTime?.hasError"
-                  :options="postTimeOptions"
-                  optionLabel="name"
-                  optionValue="value"
-                  id="time-period-select"
-                  fluid
-                />
-                <label for="time-period-select">{{ l.form.putAdvertisement.timePeriod }}</label>
-              </FloatLabel>
-              <FieldError :field="fields.postTime" />
+              <div v-if="isEdit" class="flex gap-2">
+                <FloatLabel variant="on" class="flex-1">
+                  <InputText
+                    :defaultValue="dateFormat.format(existingAdvertisement?.validTo)"
+                    disabled
+                    fluid
+                  ></InputText>
+                  <label for="valid-to">{{ l.form.putAdvertisement.validTo }}</label>
+                </FloatLabel>
+                <Button :label="l.actions.extend" severity="secondary" @click="todo" />
+              </div>
+              <template v-else>
+                <FloatLabel variant="on">
+                  <Select
+                    v-model="fields.postTime!.model"
+                    v-bind="fields.postTime?.attributes"
+                    :invalid="fields.postTime?.hasError"
+                    :options="postTimeOptions"
+                    optionLabel="name"
+                    optionValue="value"
+                    id="time-period-select"
+                    fluid
+                  />
+                  <label for="time-period-select">{{ l.form.putAdvertisement.timePeriod }}</label>
+                </FloatLabel>
+                <FieldError :field="fields.postTime" />
+              </template>
 
               <Divider />
 
@@ -36,6 +49,7 @@
               <template v-for="(categoryOptions, i) in categorySelectOptions" :key="i">
                 <FloatLabel variant="on">
                   <Select
+                    :defaultValue="selectedCategories[i]"
                     :options="categoryOptions"
                     :invalid="fields.categoryId?.hasError && i === categorySelectOptions.length - 1"
                     :id="'category-select-' + i"
@@ -111,7 +125,11 @@
               />
             </fieldset>
           </div>
-          <Button :label="l.actions.create" class="mx-auto" type="submit" />
+          <Button
+            :label="isEdit ? l.actions.save : l.actions.create"
+            class="mx-auto"
+            type="submit"
+          />
         </form>
       </Panel>
     </BlockWithSpinner>
@@ -131,7 +149,10 @@ import {
   AdvertisementClient,
   AttributeFormInfo,
   AttributeValueListItem,
+  CategoryFormInfo,
   CategoryItem,
+  CreateOrEditAdvertisementRequest,
+  ImageDto,
   Int32StringKeyValuePair,
   RequestExceptionResponse,
   ValueTypes
@@ -142,17 +163,20 @@ import { getClient } from '@/utils/client-builder'
 import { FieldHelper } from '@/utils/field-helper'
 import {
   canAddAdvertisementToCategoryValidator,
-  matchArrayElement
+  matchArrayElement,
+  requiredWhen
 } from '@/validators/custom-validators'
 import { toTypedSchema } from '@vee-validate/yup'
 import type { SelectChangeEvent } from 'primevue'
 import { useForm } from 'vee-validate'
 import { computed, onBeforeMount, ref, watch } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { useRouter } from 'vue-router'
 import { array, number, object, Schema, string, type AnyObject } from 'yup'
 
-const { params } = useRoute()
 const { push } = useRouter()
+const { id: advertisementId } = defineProps<{
+  id?: number
+}>()
 
 //Services
 const l = LocaleService.currentLocale
@@ -160,11 +184,11 @@ const ls = LocaleService.get()
 const advertisementService = getClient(AdvertisementClient)
 
 //Reactive data
-const isEdit = computed(() => typeof params.id === 'number' && !isNaN(params.id))
+const isEdit = computed(() => typeof advertisementId === 'number' && !isNaN(advertisementId))
 
 const postTimeOptions = computed(() => createAdvertisementPostTimeSpanOptions(ls))
 
-const loading = ref(false)
+const loading = ref(0)
 const categoryList = ref<CategoryItem[]>([])
 const selectedCategories = ref<number[]>([])
 const categorySelectOptions = ref<CategoryItem[][]>([])
@@ -173,12 +197,20 @@ const loadingAttributes = ref(false)
 const attributeInfo = ref<AttributeFormInfo[]>([])
 const attributeValueLists = ref<AttributeValueListItem[]>([])
 
+const existingAdvertisement = ref<CreateOrEditAdvertisementRequest>()
+const dateFormat = computed(() =>
+  Intl.DateTimeFormat(LocaleService.currentLocaleName.value, {
+    dateStyle: 'short',
+    timeStyle: 'short'
+  })
+)
+
 //Forms and fields
 const validationSchema = computed(() => {
   let schemaObject: AnyObject = {
     categoryId: number().test(canAddAdvertisementToCategoryValidator(categoryList)),
     attributeValues: array().default([]),
-    postTime: object().required(),
+    postTime: object().test(requiredWhen(() => !isEdit.value)),
     title: string().required(),
     description: string().required(),
     thumbnailImageHash: string().optional(),
@@ -219,7 +251,8 @@ const validationSchema = computed(() => {
 //Change attributeValues type, to allow easier validation and model binding
 const form = useForm<CreateOrEditAdvertisementForm>({ validationSchema })
 const { fields, defineMultipleFields, handleErrors } = new FieldHelper(form)
-const { values, handleSubmit, setFieldValue, validateField } = form
+const { values, handleSubmit, isSubmitting, setFieldValue, setValues, validateField, resetForm } =
+  form
 
 const imageFieldNames: `imagesToAdd.${number}`[] = [
   ...Array(ImageConstants.MaxImageCountPerAdvertisement).keys()
@@ -235,7 +268,11 @@ defineMultipleFields([
 
 //Hooks
 onBeforeMount(() => {
-  reloadData()
+  if (isEdit.value) {
+    loadAdvertisementInfo()
+  } else {
+    reloadData()
+  }
 })
 
 //Watchers
@@ -243,37 +280,90 @@ watch(LocaleService.currentLocaleName, () => {
   reloadData()
 })
 
+watch(
+  () => advertisementId,
+  (newId) => {
+    resetForm()
+    if (newId) {
+      loadAdvertisementInfo()
+    } else {
+      attributeInfo.value = []
+      attributeValueLists.value = []
+      selectedCategories.value = []
+      existingAdvertisement.value = undefined
+      resetCategoryOptionsLists()
+    }
+  }
+)
+
 //Methods
 const reloadData = () => {
   loadCategoryList()
-  if (attributeInfo.value) {
+  //If category info was loaded, reload it
+  if (attributeInfo.value.length) {
     loadCategoryInfo(values.categoryId)
   }
 }
 
+const loadAdvertisementInfo = async () => {
+  loading.value += 1
+  const [{ advertisement, categoryInfo }] = await Promise.all([
+    advertisementService.editAdvertisementGet(advertisementId),
+    loadCategoryList()
+  ])
+  existingAdvertisement.value = advertisement
+  setCategoryInfo(categoryInfo)
+
+  if (!advertisement) {
+    return
+  }
+
+  let categoryId: number | undefined = advertisement?.categoryId
+  let category: CategoryItem | undefined
+  while ((category = categoryList.value.find((c) => c.id === categoryId)) != null) {
+    selectedCategories.value.unshift(category.id!)
+    categoryId = category.parentCategoryId
+  }
+  resetCategoryOptionsLists()
+
+  const attributeValues = advertisement.attributeValues
+    ? attributeInfo.value.map((a) => {
+        const value = advertisement.attributeValues!.find((av) => av.key === a.id)?.value
+        if (value && a.attributeValueType !== ValueTypes.Text) {
+          return parseInt(value)
+        }
+        return value
+      })
+    : []
+
+  setValues({
+    categoryId: advertisement.categoryId,
+    attributeValues: attributeValues,
+    title: advertisement.title,
+    description: advertisement.description,
+    imagesToAdd: advertisement.imageOrder
+  })
+  loading.value -= 1
+}
+
 const loadCategoryList = async () => {
-  loading.value = true
+  loading.value += 1
   categoryList.value = await advertisementService.getCategories()
 
-  //Check if all selected categories are present
+  //Check if all selected categories are present and their hierarchy has not changed
   let clearCategorySelection =
     !selectedCategories.value.length ||
-    !selectedCategories.value.every(
-      (id) => id == null || categoryList.value.some((c) => c.id === id)
-    )
-  if (!clearCategorySelection) {
-    //Try and swap category options
-    outerLoop: for (let i = 0; i < categorySelectOptions.value.length; i++) {
-      const optionList = categorySelectOptions.value[i]
-      for (let j = 0; j < optionList.length; j++) {
-        const newOption = categoryList.value.find((c) => c.id === optionList[j].id)
-        if (!newOption) {
-          clearCategorySelection = true
-          break outerLoop
-        }
-        optionList[j] = newOption
+    !selectedCategories.value.every((id, i) => {
+      if (id == null) {
+        return true
       }
-    }
+      const category = categoryList.value.find((c) => c.id === id)
+      return category && (i == 0 || selectedCategories.value[i - 1] == category?.parentCategoryId)
+    })
+
+  //Reset category options
+  if (!clearCategorySelection) {
+    resetCategoryOptionsLists()
   }
 
   if (clearCategorySelection) {
@@ -281,19 +371,36 @@ const loadCategoryList = async () => {
     categorySelectOptions.value = [categoryList.value.filter((c) => c.parentCategoryId == null)]
   }
 
-  loading.value = false
+  loading.value -= 1
+}
+
+const resetCategoryOptionsLists = () => {
+  categorySelectOptions.value = [categoryList.value.filter((c) => c.parentCategoryId == null)]
+  for (const id of selectedCategories.value) {
+    const childCategories = categoryList.value.filter((c) => c.parentCategoryId === id)
+    if (childCategories.length) {
+      categorySelectOptions.value.push(childCategories)
+    } else {
+      break
+    }
+  }
 }
 
 const loadCategoryInfo = async (categoryId: number) => {
   loadingAttributes.value = true
+  setFieldValue('attributeValues', [])
   const result = await advertisementService.getCategoryFormInfo(categoryId)
-  if (result.attributeInfo) {
-    ensureAttributesHaveModels(result.attributeInfo)
+  setCategoryInfo(result)
+  loadingAttributes.value = false
+}
+
+const setCategoryInfo = (categoryInfo?: CategoryFormInfo) => {
+  if (categoryInfo?.attributeInfo) {
+    ensureAttributesHaveModels(categoryInfo.attributeInfo)
   }
 
-  attributeValueLists.value = result.attributeValueLists!
-  attributeInfo.value = result.attributeInfo!
-  loadingAttributes.value = false
+  attributeValueLists.value = categoryInfo?.attributeValueLists ?? []
+  attributeInfo.value = categoryInfo?.attributeInfo ?? []
 }
 
 const ensureAttributesHaveModels = (attributeInfo: AttributeFormInfo[]) => {
@@ -342,16 +449,18 @@ const selectCategory = async (e: SelectChangeEvent, i: number) => {
 }
 
 const submit = handleSubmit(async () => {
-  loading.value = true
-
   //Transform attributeValues to type accepted by Api
-  const attributeValues = values.attributeValues.map(
-    (av: string | number, i: number) =>
-      new Int32StringKeyValuePair({
+  const attributeValues = values.attributeValues
+    .map((av: string | number | undefined, i: number) => {
+      if (av == null) {
+        return av
+      }
+      return new Int32StringKeyValuePair({
         key: attributeInfo.value[i].id,
         value: '' + av
       })
-  )
+    })
+    .filter((i) => i != null)
 
   //Transform images for Api call
   const imagesToAdd = values.imagesToAdd.filter((image) => image?.file)
@@ -359,58 +468,73 @@ const submit = handleSubmit(async () => {
     data: image.file,
     fileName: image.file!.name
   }))
-  const imageOrder = values.imagesToAdd.filter((image) => image?.hash).map((image) => image.hash!)
+  const imageOrder = values.imagesToAdd
+    .filter((image) => image?.hash)
+    .map(
+      (image) =>
+        new ImageDto({
+          hash: image.hash
+        })
+    )
 
-  if (isEdit.value) {
-    //TODO: Call Api
-    //TODO: Filter images to delete
-    const imagesToDelete = []
-    alert('Not implemented yet')
-  } else {
-    try {
-      await advertisementService.createAdvertisement(
-        undefined,
+  try {
+    if (isEdit.value) {
+      await advertisementService.editAdvertisementPost(
+        advertisementId,
         values.categoryId,
         attributeValues,
-        values.postTime,
+        undefined,
+        undefined,
         values.title,
         values.description,
         imagesToAddFileParameter,
         imageOrder
       )
-      push({ name: 'manageAdvertisements' })
-    } catch (e) {
-      //Transform added image index to advertisement image index
-      if (
-        e instanceof RequestExceptionResponse &&
-        'errors' in e &&
-        e.errors &&
-        typeof e.errors === 'object'
-      ) {
-        const addImagesProperty: keyof CreateOrEditAdvertisementForm = 'imagesToAdd'
-        const addImagesErrors = Object.entries(e.errors).filter((e) =>
-          e[0].startsWith(addImagesProperty)
+    } else {
+      await advertisementService.createAdvertisement(
+        undefined,
+        values.categoryId,
+        attributeValues,
+        values.postTime,
+        undefined,
+        values.title,
+        values.description,
+        imagesToAddFileParameter,
+        imageOrder
+      )
+    }
+    push({ name: 'manageAdvertisements' })
+  } catch (e) {
+    //Transform added image index to advertisement image index
+    if (
+      e instanceof RequestExceptionResponse &&
+      'errors' in e &&
+      e.errors &&
+      typeof e.errors === 'object'
+    ) {
+      const addImagesProperty: keyof CreateOrEditAdvertisementForm = 'imagesToAdd'
+      const addImagesErrors = Object.entries(e.errors).filter((e) =>
+        e[0].startsWith(addImagesProperty)
+      )
+      for (const addImageError of addImagesErrors) {
+        const indexInAddedImages = parseInt(
+          addImageError[0].match(/(?<=\[)[^[\]]+(?=\])/)?.[0] ?? ''
         )
-        for (const addImageError of addImagesErrors) {
-          const indexInAddedImages = parseInt(
-            addImageError[0].match(/(?<=\[)[^[\]]+(?=\])/)?.[0] ?? ''
-          )
-          if (isNaN(indexInAddedImages)) {
-            continue
-          }
+        if (isNaN(indexInAddedImages)) {
+          continue
+        }
 
-          const imageHash = imagesToAdd[indexInAddedImages].hash
-          const imageIndex = values.imagesToAdd.findIndex((i) => i.hash == imageHash)
-          if (imageIndex > -1) {
-            e.errors[addImagesProperty + '.' + imageIndex] = addImageError[1]
-            delete e.errors[addImageError[0]]
-          }
+        const imageHash = imagesToAdd[indexInAddedImages].hash
+        const imageIndex = values.imagesToAdd.findIndex((i) => i.hash == imageHash)
+        if (imageIndex > -1) {
+          e.errors[addImagesProperty + '.' + imageIndex] = addImageError[1]
+          delete e.errors[addImageError[0]]
         }
       }
-      handleErrors(e)
     }
+    handleErrors(e)
   }
-
-  loading.value = false
 })
+
+const todo = () => alert('Not implemented yet!')
 </script>

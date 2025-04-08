@@ -15,7 +15,7 @@
           class="relative border-primary border rounded-lg overflow-hidden"
           :class="{ 'p-invalid': imageFields[index]?.hasError }"
         >
-          <img :src="element.url" class="w-40 h-40 object-contain" />
+          <img :src="element.imageURLs.thumbnailUrl" class="w-40 h-40 object-contain" />
           <div
             class="absolute top-0 left-0 w-10 h-10 py-1.5 rounded-lg text-white text-center font-semibold bg-black opacity-85"
           >
@@ -68,6 +68,7 @@ import { computed, onBeforeUnmount, ref, useTemplateRef, watch } from 'vue'
 import { mixed, ValidationError } from 'yup'
 import FieldError from './FieldError.vue'
 import draggable from 'vuedraggable'
+import { ImageUrl } from '@/services/api-client'
 
 //Props and model
 const images = defineModel<IImageUploadDto[]>()
@@ -121,7 +122,7 @@ onBeforeUnmount(() => {
 watch(
   images,
   (newValues) => {
-    const newImages = newValues?.filter((i) => !!i) ?? []
+    const newImages = newValues?.filter((i) => i?.imageURLs?.url) ?? []
 
     //Reassign existing errors to correct image
     const imageApiErrors = imageFields.value
@@ -130,7 +131,9 @@ watch(
     clearFieldErrors()
     if (imageApiErrors.length && newImages.length) {
       for (let i = 0; i < newImages.length; i++) {
-        const existingError = imageApiErrors.find((error) => error[0] === newImages[i].url)
+        const existingError = imageApiErrors.find(
+          (error) => error[0] === newImages[i].imageURLs!.thumbnailUrl
+        )
         if (existingError) {
           imageFields.value[i].setErrors(existingError[1]!)
         }
@@ -139,13 +142,13 @@ watch(
 
     //Revoke url of removed images
     for (const url of uploadedImageUrls.value) {
-      if (!newImages.some((image) => image.url === url)) {
+      if (!newImages.some((image) => image.imageURLs!.url === url)) {
         URL.revokeObjectURL(url)
       }
     }
 
-    imageUrls.value = newImages.map((i) => i.url)
-    uploadedImageUrls.value = newImages.filter((i) => i.file).map((i) => i.url)
+    imageUrls.value = newImages.map((i) => i.imageURLs!.url!)
+    uploadedImageUrls.value = newImages.filter((i) => i.file).map((i) => i.imageURLs!.url!)
 
     //Clear model of undefined values
     if (newValues?.length !== newImages.length) {
@@ -177,7 +180,10 @@ const selectImagesForUpload = async (inputEvent: Event) => {
   //Create object url
   for (let i = 0; i < validFiles.length; i++) {
     const url = URL.createObjectURL(validFiles[i].file!)
-    validFiles[i].url = url
+    validFiles[i].imageURLs = new ImageUrl({
+      url: url,
+      thumbnailUrl: url
+    })
   }
 
   //Update model

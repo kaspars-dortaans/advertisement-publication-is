@@ -20,4 +20,6 @@ public static class CustomErrorCodes
     public const string CategoryCanNotContainAdvertisements = "CategoryCanNotContainAdvertisements";
     public const string OptionNotFound = "OptionNotFound";
     public const string InvalidValue = "InvalidValue";
+    public const string ValueMustBeInteger = "ValueMustBeInteger";
+    public const string ValueMustBeNumber = "ValueMustBeNumber";
 }

@@ -55,6 +55,7 @@ export const emptyLocale = {
       title: "",
       description: "",
       timePeriod: "",
+      validTo: "",
     },
     changePassword: {
       currentPassword: "",
@@ -149,5 +150,7 @@ export const emptyLocale = {
     CategoryCanNotContainAdvertisements: "",
     InvalidValue: "",
     OptionNotFound: "",
+    ValueMustBeInteger: "",
+    ValueMustBeNumber: "",
   }
 }

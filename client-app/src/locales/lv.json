@@ -87,7 +87,8 @@
       "subcategory": "Apakškategorija",
       "title": "Nosaukums",
       "description": "Apraksts",
-      "timePeriod": "Laika periods"
+      "timePeriod": "Laika periods",
+      "validTo": "Derīgs līdz"
     }
   },
   "imageUpload": {
@@ -146,6 +147,8 @@
     "NotAUrl": "Laukam ir jāsatur derīgu URL.",
     "CategoryCanNotContainAdvertisements": "Šī kategorija nevar saturēt sludinājumus",
     "InvalidValue": "Šī lauka vērtība nav derīga",
-    "OptionNotFound": "Opcija nav atrasta"
+    "OptionNotFound": "Opcija nav atrasta",
+    "ValueMustBeInteger": "Lauka vērtībai jābūt veselam skaitlim",
+    "ValueMustBeNumber": "Lauka vērtībai jābūt skaitlim"
   }
 }

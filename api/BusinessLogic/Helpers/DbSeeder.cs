@@ -193,7 +193,7 @@ public class DbSeeder(Context context, UserManager<User> userManager, RoleManage
                     new()
                     {
                         AttributeId = 1,
-                        CategoryId = 3
+                        CategoryId = 2
                     }
                 ]
             },
@@ -220,7 +220,7 @@ public class DbSeeder(Context context, UserManager<User> userManager, RoleManage
                     new()
                     {
                         AttributeId = 2,
-                        CategoryId = 3
+                        CategoryId = 2
                     }
                 ],
                 AttributeValueList = new AttributeValueList()

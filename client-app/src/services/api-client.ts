@@ -903,13 +903,14 @@ export class AdvertisementClient {
      * @param categoryId (optional) 
      * @param attributeValues (optional) 
      * @param postTime (optional) 
+     * @param validTo (optional) 
      * @param title (optional) 
      * @param description (optional) 
      * @param imagesToAdd (optional) 
      * @param imageOrder (optional) 
      * @return Success
      */
-    createAdvertisement(id: number | null | undefined, categoryId: number | undefined, attributeValues: Int32StringKeyValuePair[] | null | undefined, postTime: PostTimeDto | undefined, title: string | undefined, description: string | undefined, imagesToAdd: FileParameter[] | null | undefined, imageOrder: string[] | null | undefined, cancelToken?: CancelToken): Promise<PublicUserInfoDto> {
+    createAdvertisement(id: number | null | undefined, categoryId: number | undefined, attributeValues: Int32StringKeyValuePair[] | null | undefined, postTime: PostTimeDto | null | undefined, validTo: Date | null | undefined, title: string | undefined, description: string | undefined, imagesToAdd: FileParameter[] | null | undefined, imageOrder: ImageDto[] | null | undefined, cancelToken?: CancelToken): Promise<PublicUserInfoDto> {
         let url_ = this.baseUrl + "/api/Advertisement/CreateAdvertisement";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -922,12 +923,12 @@ export class AdvertisementClient {
             content_.append("categoryId", categoryId.toString());
         if (attributeValues !== null && attributeValues !== undefined)
             attributeValues.forEach((item_, i) => {
-                content_.append("attributeValues[" + i + "].key", "" + item_.key)
-                content_.append("attributeValues[" + i + "].value", "" + item_.value)
+                if(item_.key != null)
+                    content_.append("attributeValues[" + i + "].key", "" + item_.key)
+                if(item_.value != null)
+                    content_.append("attributeValues[" + i + "].value", "" + item_.value)
             });
-        if (postTime === null || postTime === undefined)
-            throw new Error("The parameter 'postTime' cannot be null.");
-        else
+        if (postTime !== null && postTime !== undefined)
         {
             if(postTime.days != null)
                 content_.append("postTime.days", "" + postTime.days)
@@ -936,6 +937,8 @@ export class AdvertisementClient {
             if(postTime.months != null)
                 content_.append("postTime.months", "" + postTime.months)
         }
+        if (validTo !== null && validTo !== undefined)
+            content_.append("validTo", validTo.toJSON());
         if (title === null || title === undefined)
             throw new Error("The parameter 'title' cannot be null.");
         else
@@ -947,7 +950,14 @@ export class AdvertisementClient {
         if (imagesToAdd !== null && imagesToAdd !== undefined)
             imagesToAdd.forEach(item_ => content_.append("imagesToAdd", item_.data, item_.fileName ? item_.fileName : "imagesToAdd") );
         if (imageOrder !== null && imageOrder !== undefined)
-            imageOrder.forEach(item_ => content_.append("imageOrder", item_.toString()));
+            imageOrder.forEach((item_, i) => {
+                if(item_.id != null)
+                    content_.append("imageOrder[" + i + "].id", "" + item_.id)
+                if(item_.imageURLs != null)
+                    content_.append("imageOrder[" + i + "].imageURLs", "" + item_.imageURLs)
+                if(item_.hash != null)
+                    content_.append("imageOrder[" + i + "].hash", "" + item_.hash)
+            });
 
         let options_: AxiosRequestConfig = {
             data: content_,
@@ -999,6 +1009,182 @@ export class AdvertisementClient {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
         }
         return Promise.resolve<PublicUserInfoDto>(null as any);
+    }
+
+    /**
+     * @param advertisementId (optional) 
+     * @return Success
+     */
+    editAdvertisementGet(advertisementId: number | undefined, cancelToken?: CancelToken): Promise<AdvertisementFormInfo> {
+        let url_ = this.baseUrl + "/api/Advertisement/EditAdvertisement?";
+        if (advertisementId === null)
+            throw new Error("The parameter 'advertisementId' cannot be null.");
+        else if (advertisementId !== undefined)
+            url_ += "advertisementId=" + encodeURIComponent("" + advertisementId) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: AxiosRequestConfig = {
+            method: "GET",
+            url: url_,
+            headers: {
+                "Accept": "text/plain"
+            },
+            cancelToken
+        };
+
+        return this.instance.request(options_).catch((_error: any) => {
+            if (isAxiosError(_error) && _error.response) {
+                return _error.response;
+            } else {
+                throw _error;
+            }
+        }).then((_response: AxiosResponse) => {
+            return this.processEditAdvertisementGet(_response);
+        });
+    }
+
+    protected processEditAdvertisementGet(response: AxiosResponse): Promise<AdvertisementFormInfo> {
+        const status = response.status;
+        let _headers: any = {};
+        if (response.headers && typeof response.headers === "object") {
+            for (const k in response.headers) {
+                if (response.headers.hasOwnProperty(k)) {
+                    _headers[k] = response.headers[k];
+                }
+            }
+        }
+        if (status === 200) {
+            const _responseText = response.data;
+            let result200: any = null;
+            let resultData200  = _responseText;
+            result200 = AdvertisementFormInfo.fromJS(resultData200);
+            return Promise.resolve<AdvertisementFormInfo>(result200);
+
+        } else if (status === 400) {
+            const _responseText = response.data;
+            let result400: any = null;
+            let resultData400  = _responseText;
+            result400 = RequestExceptionResponse.fromJS(resultData400);
+            return throwException("Bad Request", status, _responseText, _headers, result400);
+
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.data;
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Promise.resolve<AdvertisementFormInfo>(null as any);
+    }
+
+    /**
+     * @param id (optional) 
+     * @param categoryId (optional) 
+     * @param attributeValues (optional) 
+     * @param postTime (optional) 
+     * @param validTo (optional) 
+     * @param title (optional) 
+     * @param description (optional) 
+     * @param imagesToAdd (optional) 
+     * @param imageOrder (optional) 
+     * @return Success
+     */
+    editAdvertisementPost(id: number | null | undefined, categoryId: number | undefined, attributeValues: Int32StringKeyValuePair[] | null | undefined, postTime: PostTimeDto | null | undefined, validTo: Date | null | undefined, title: string | undefined, description: string | undefined, imagesToAdd: FileParameter[] | null | undefined, imageOrder: ImageDto[] | null | undefined, cancelToken?: CancelToken): Promise<AdvertisementFormInfo> {
+        let url_ = this.baseUrl + "/api/Advertisement/EditAdvertisement";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = new FormData();
+        if (id !== null && id !== undefined)
+            content_.append("id", id.toString());
+        if (categoryId === null || categoryId === undefined)
+            throw new Error("The parameter 'categoryId' cannot be null.");
+        else
+            content_.append("categoryId", categoryId.toString());
+        if (attributeValues !== null && attributeValues !== undefined)
+            attributeValues.forEach((item_, i) => {
+                if(item_.key != null)
+                    content_.append("attributeValues[" + i + "].key", "" + item_.key)
+                if(item_.value != null)
+                    content_.append("attributeValues[" + i + "].value", "" + item_.value)
+            });
+        if (postTime !== null && postTime !== undefined)
+        {
+            if(postTime.days != null)
+                content_.append("postTime.days", "" + postTime.days)
+            if(postTime.weeks != null)
+                content_.append("postTime.weeks", "" + postTime.weeks)
+            if(postTime.months != null)
+                content_.append("postTime.months", "" + postTime.months)
+        }
+        if (validTo !== null && validTo !== undefined)
+            content_.append("validTo", validTo.toJSON());
+        if (title === null || title === undefined)
+            throw new Error("The parameter 'title' cannot be null.");
+        else
+            content_.append("title", title.toString());
+        if (description === null || description === undefined)
+            throw new Error("The parameter 'description' cannot be null.");
+        else
+            content_.append("description", description.toString());
+        if (imagesToAdd !== null && imagesToAdd !== undefined)
+            imagesToAdd.forEach(item_ => content_.append("imagesToAdd", item_.data, item_.fileName ? item_.fileName : "imagesToAdd") );
+        if (imageOrder !== null && imageOrder !== undefined)
+            imageOrder.forEach((item_, i) => {
+                if(item_.id != null)
+                    content_.append("imageOrder[" + i + "].id", "" + item_.id)
+                if(item_.imageURLs != null)
+                    content_.append("imageOrder[" + i + "].imageURLs", "" + item_.imageURLs)
+                if(item_.hash != null)
+                    content_.append("imageOrder[" + i + "].hash", "" + item_.hash)
+            });
+
+        let options_: AxiosRequestConfig = {
+            data: content_,
+            method: "POST",
+            url: url_,
+            headers: {
+                "Accept": "text/plain"
+            },
+            cancelToken
+        };
+
+        return this.instance.request(options_).catch((_error: any) => {
+            if (isAxiosError(_error) && _error.response) {
+                return _error.response;
+            } else {
+                throw _error;
+            }
+        }).then((_response: AxiosResponse) => {
+            return this.processEditAdvertisementPost(_response);
+        });
+    }
+
+    protected processEditAdvertisementPost(response: AxiosResponse): Promise<AdvertisementFormInfo> {
+        const status = response.status;
+        let _headers: any = {};
+        if (response.headers && typeof response.headers === "object") {
+            for (const k in response.headers) {
+                if (response.headers.hasOwnProperty(k)) {
+                    _headers[k] = response.headers[k];
+                }
+            }
+        }
+        if (status === 200) {
+            const _responseText = response.data;
+            let result200: any = null;
+            let resultData200  = _responseText;
+            result200 = AdvertisementFormInfo.fromJS(resultData200);
+            return Promise.resolve<AdvertisementFormInfo>(result200);
+
+        } else if (status === 400) {
+            const _responseText = response.data;
+            let result400: any = null;
+            let resultData400  = _responseText;
+            result400 = RequestExceptionResponse.fromJS(resultData400);
+            return throwException("Bad Request", status, _responseText, _headers, result400);
+
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.data;
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Promise.resolve<AdvertisementFormInfo>(null as any);
     }
 
     /**
@@ -1833,6 +2019,46 @@ export interface IAdvertisementDto {
     maskedAdvertiserEmail?: string | undefined;
 }
 
+export class AdvertisementFormInfo implements IAdvertisementFormInfo {
+    advertisement?: CreateOrEditAdvertisementRequest | undefined;
+    categoryInfo?: CategoryFormInfo | undefined;
+
+    constructor(data?: IAdvertisementFormInfo) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.advertisement = _data["advertisement"] ? CreateOrEditAdvertisementRequest.fromJS(_data["advertisement"]) : <any>undefined;
+            this.categoryInfo = _data["categoryInfo"] ? CategoryFormInfo.fromJS(_data["categoryInfo"]) : <any>undefined;
+        }
+    }
+
+    static fromJS(data: any): AdvertisementFormInfo {
+        data = typeof data === 'object' ? data : {};
+        let result = new AdvertisementFormInfo();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["advertisement"] = this.advertisement ? this.advertisement.toJSON() : <any>undefined;
+        data["categoryInfo"] = this.categoryInfo ? this.categoryInfo.toJSON() : <any>undefined;
+        return data;
+    }
+}
+
+export interface IAdvertisementFormInfo {
+    advertisement?: CreateOrEditAdvertisementRequest | undefined;
+    categoryInfo?: CategoryFormInfo | undefined;
+}
+
 export class AdvertisementInfo implements IAdvertisementInfo {
     id?: number;
     title?: string | undefined;
@@ -2085,7 +2311,7 @@ export class AdvertisementQuery implements IAdvertisementQuery {
     draw?: number;
     start?: number | undefined;
     length?: number | undefined;
-    search?: SearchQuery;
+    search?: SearchQuery | undefined;
     order?: OrderQuery[] | undefined;
     columns?: TableColumn[] | undefined;
     categoryId?: number | undefined;
@@ -2187,7 +2413,7 @@ export interface IAdvertisementQuery {
     draw?: number;
     start?: number | undefined;
     length?: number | undefined;
-    search?: SearchQuery;
+    search?: SearchQuery | undefined;
     order?: OrderQuery[] | undefined;
     columns?: TableColumn[] | undefined;
     categoryId?: number | undefined;
@@ -2857,11 +3083,12 @@ export class CreateOrEditAdvertisementRequest implements ICreateOrEditAdvertisem
     id?: number | undefined;
     categoryId!: number;
     attributeValues?: Int32StringKeyValuePair[] | undefined;
-    postTime!: PostTimeDto;
+    postTime?: PostTimeDto | undefined;
+    validTo?: Date | undefined;
     title!: string;
     description!: string;
     imagesToAdd?: any[] | undefined;
-    imageOrder?: string[] | undefined;
+    imageOrder?: ImageDto[] | undefined;
 
     constructor(data?: ICreateOrEditAdvertisementRequest) {
         if (data) {
@@ -2869,9 +3096,6 @@ export class CreateOrEditAdvertisementRequest implements ICreateOrEditAdvertisem
                 if (data.hasOwnProperty(property))
                     (<any>this)[property] = (<any>data)[property];
             }
-        }
-        if (!data) {
-            this.postTime = new PostTimeDto();
         }
     }
 
@@ -2884,7 +3108,8 @@ export class CreateOrEditAdvertisementRequest implements ICreateOrEditAdvertisem
                 for (let item of _data["attributeValues"])
                     this.attributeValues!.push(Int32StringKeyValuePair.fromJS(item));
             }
-            this.postTime = _data["postTime"] ? PostTimeDto.fromJS(_data["postTime"]) : new PostTimeDto();
+            this.postTime = _data["postTime"] ? PostTimeDto.fromJS(_data["postTime"]) : <any>undefined;
+            this.validTo = _data["validTo"] ? new Date(_data["validTo"].toString()) : <any>undefined;
             this.title = _data["title"];
             this.description = _data["description"];
             if (Array.isArray(_data["imagesToAdd"])) {
@@ -2895,7 +3120,7 @@ export class CreateOrEditAdvertisementRequest implements ICreateOrEditAdvertisem
             if (Array.isArray(_data["imageOrder"])) {
                 this.imageOrder = [] as any;
                 for (let item of _data["imageOrder"])
-                    this.imageOrder!.push(item);
+                    this.imageOrder!.push(ImageDto.fromJS(item));
             }
         }
     }
@@ -2917,6 +3142,7 @@ export class CreateOrEditAdvertisementRequest implements ICreateOrEditAdvertisem
                 data["attributeValues"].push(item.toJSON());
         }
         data["postTime"] = this.postTime ? this.postTime.toJSON() : <any>undefined;
+        data["validTo"] = this.validTo ? this.validTo.toISOString() : <any>undefined;
         data["title"] = this.title;
         data["description"] = this.description;
         if (Array.isArray(this.imagesToAdd)) {
@@ -2927,7 +3153,7 @@ export class CreateOrEditAdvertisementRequest implements ICreateOrEditAdvertisem
         if (Array.isArray(this.imageOrder)) {
             data["imageOrder"] = [];
             for (let item of this.imageOrder)
-                data["imageOrder"].push(item);
+                data["imageOrder"].push(item.toJSON());
         }
         return data;
     }
@@ -2937,18 +3163,19 @@ export interface ICreateOrEditAdvertisementRequest {
     id?: number | undefined;
     categoryId: number;
     attributeValues?: Int32StringKeyValuePair[] | undefined;
-    postTime: PostTimeDto;
+    postTime?: PostTimeDto | undefined;
+    validTo?: Date | undefined;
     title: string;
     description: string;
     imagesToAdd?: any[] | undefined;
-    imageOrder?: string[] | undefined;
+    imageOrder?: ImageDto[] | undefined;
 }
 
 export class DataTableQuery implements IDataTableQuery {
     draw?: number;
     start?: number | undefined;
     length?: number | undefined;
-    search?: SearchQuery;
+    search?: SearchQuery | undefined;
     order?: OrderQuery[] | undefined;
     columns?: TableColumn[] | undefined;
 
@@ -3011,7 +3238,7 @@ export interface IDataTableQuery {
     draw?: number;
     start?: number | undefined;
     length?: number | undefined;
-    search?: SearchQuery;
+    search?: SearchQuery | undefined;
     order?: OrderQuery[] | undefined;
     columns?: TableColumn[] | undefined;
 }
@@ -3156,7 +3383,7 @@ export enum FilterType {
 
 export class ForbidResult implements IForbidResult {
     authenticationSchemes?: string[] | undefined;
-    properties?: AuthenticationProperties;
+    properties?: AuthenticationProperties | undefined;
 
     constructor(data?: IForbidResult) {
         if (data) {
@@ -3199,12 +3426,12 @@ export class ForbidResult implements IForbidResult {
 
 export interface IForbidResult {
     authenticationSchemes?: string[] | undefined;
-    properties?: AuthenticationProperties;
+    properties?: AuthenticationProperties | undefined;
 }
 
 export class ImageDto implements IImageDto {
     id?: number;
-    imageURLs?: ImageUrl;
+    imageURLs?: ImageUrl | undefined;
     hash?: string | undefined;
 
     constructor(data?: IImageDto) {
@@ -3242,7 +3469,7 @@ export class ImageDto implements IImageDto {
 
 export interface IImageDto {
     id?: number;
-    imageURLs?: ImageUrl;
+    imageURLs?: ImageUrl | undefined;
     hash?: string | undefined;
 }
 
@@ -3857,7 +4084,7 @@ export class TableColumn implements ITableColumn {
     name?: string | undefined;
     searchable?: boolean;
     orderable?: boolean;
-    search?: SearchQuery;
+    search?: SearchQuery | undefined;
 
     constructor(data?: ITableColumn) {
         if (data) {
@@ -3901,7 +4128,7 @@ export interface ITableColumn {
     name?: string | undefined;
     searchable?: boolean;
     orderable?: boolean;
-    search?: SearchQuery;
+    search?: SearchQuery | undefined;
 }
 
 export class UserInfo implements IUserInfo {
@@ -3914,7 +4141,7 @@ export class UserInfo implements IUserInfo {
     isEmailPublic?: boolean;
     email?: string | undefined;
     linkToUserSite?: string | undefined;
-    profileImage?: ImageDto;
+    profileImage?: ImageDto | undefined;
 
     constructor(data?: IUserInfo) {
         if (data) {
@@ -3973,7 +4200,7 @@ export interface IUserInfo {
     isEmailPublic?: boolean;
     email?: string | undefined;
     linkToUserSite?: string | undefined;
-    profileImage?: ImageDto;
+    profileImage?: ImageDto | undefined;
 }
 
 export class UserListItem implements IUserListItem {

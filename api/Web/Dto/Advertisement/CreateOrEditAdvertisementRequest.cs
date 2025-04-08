@@ -1,4 +1,5 @@
 ﻿using BusinessLogic.Constants;
+using BusinessLogic.Dto.Image;
 using BusinessLogic.Dto.Time;
 using System.ComponentModel.DataAnnotations;
 using Web.Validators;
@@ -14,8 +15,12 @@ public class CreateOrEditAdvertisementRequest
 
     public IEnumerable<KeyValuePair<int, string>>? AttributeValues { get; set; }
 
-    [Required(ErrorMessage = CustomErrorCodes.MissingRequired)]
-    public PostTimeDto PostTime { get; set; } = default!;
+    public PostTimeDto? PostTime { get; set; }
+
+    /// <summary>
+    /// Displayed on edit, readonly
+    /// </summary>
+    public DateTime? ValidTo { get; set; }
 
     [Required(ErrorMessage = CustomErrorCodes.MissingRequired)]
     public string Title { get; set; } = default!;
@@ -28,7 +33,7 @@ public class CreateOrEditAdvertisementRequest
     public IEnumerable<IFormFile>? ImagesToAdd { get; set; }
 
     /// <summary>
-    /// Image hashes in order representing image order. Ids are not used because new uploaded images does not have an id yet.
+    /// Image DTO's order representing image order.
     /// </summary>
-    public IEnumerable<string>? ImageOrder { get; set; }
+    public IEnumerable<ImageDto>? ImageOrder { get; set; }
 }

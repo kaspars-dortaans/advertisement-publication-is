@@ -1,4 +1,5 @@
-﻿using BusinessLogic.Dto.Time;
+﻿using BusinessLogic.Dto.Image;
+using BusinessLogic.Dto.Time;
 using Microsoft.AspNetCore.Http;
 
 namespace BusinessLogic.Dto.Advertisement;
@@ -13,15 +14,20 @@ public class CreateOrEditAdvertisementDto
 
     public PostTimeDto PostTime { get; set; } = default!;
 
+    /// <summary>
+    /// Displayed on edit, readonly
+    /// </summary>
+    public DateTime? ValidTo { get; set; }
+
     public string Title { get; set; } = default!;
 
     public string Description { get; set; } = default!;
-
+    
     public IEnumerable<IFormFile>? ImagesToAdd { get; set; }
 
     /// <summary>
-    /// Image hashes in order representing image order. Ids are not used because new uploaded images does not have an id yet.
+    /// Image DTO's order representing image order.
     /// </summary>
-    public IEnumerable<string>? ImageOrder { get; set; }
+    public IEnumerable<ImageDto>? ImageOrder { get; set; }
 }
 

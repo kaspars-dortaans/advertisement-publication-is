@@ -5,6 +5,6 @@ export type CreateOrEditAdvertisementForm = Omit<
   CreateOrEditAdvertisementRequest,
   'attributeValues' | 'imagesToAdd'
 > & {
-  attributeValues: (string | number)[]
+  attributeValues: (string | number | undefined)[]
   imagesToAdd: IImageUploadDto[]
 }

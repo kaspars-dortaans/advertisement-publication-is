@@ -87,7 +87,8 @@
       "subcategory": "Subcategory",
       "title": "Title",
       "description": "Description",
-      "timePeriod": "Time period"
+      "timePeriod": "Time period",
+      "validTo": "Valid to"
     }
   },
   "imageUpload": {
@@ -146,6 +147,8 @@
     "NotAUrl": "Field must contain a valid URL.",
     "CategoryCanNotContainAdvertisements": "This category can not contain advertisements.",
     "InvalidValue": "This fields value is not valid.",
-    "OptionNotFound": "Selected option was not found."
+    "OptionNotFound": "Selected option was not found.",
+    "ValueMustBeInteger": "Field's value must be an integer",
+    "ValueMustBeNumber": "Field's value must be a valid number"
   }
 }

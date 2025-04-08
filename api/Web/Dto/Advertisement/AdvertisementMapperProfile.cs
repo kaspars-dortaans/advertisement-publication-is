@@ -30,6 +30,17 @@ public class AdvertisementMapperProfile : Profile
             .ForMember(report => report.ReporterId, o => o.MapFrom((request, _, _, context) =>
                 (context.Items[nameof(ControllerBase.User)] as ClaimsPrincipal)?.GetUserId()));
 
-        CreateMap<CreateOrEditAdvertisementRequest, CreateOrEditAdvertisementDto>();
+        CreateMap<CreateOrEditAdvertisementRequest, CreateOrEditAdvertisementDto>()
+            .ReverseMap()
+                .ForMember(r => r.ImageOrder, o => o.MapFrom((dto, _, _, context) => dto.ImageOrder.Select(imageDto => new ImageDto
+                {
+                    Id = imageDto.Id,
+                    Hash = imageDto.Hash,
+                    ImageURLs = new ImageUrl()
+                    {
+                        Url = FileUrlHelper.MapperGetFileUrl(context, imageDto.Id)!,
+                        ThumbnailUrl = FileUrlHelper.MapperGetThumbnailUrl(context, imageDto.Id)!
+                    }
+                })));
     }
 }

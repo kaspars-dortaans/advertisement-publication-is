@@ -3,7 +3,7 @@ import { LocaleService } from '@/services/locale-service'
 import type { IFileHashDto } from '@/types/image/file-hash'
 import { formatDataSize, hashFile } from '@/utils/file-helper'
 import { getImageType } from '@/utils/image-mime-type'
-import type { Ref } from 'vue'
+import { isRef, type Ref } from 'vue'
 import type { TestFunction } from 'yup'
 
 const ls = LocaleService.get()
@@ -120,6 +120,18 @@ export const uniqueFile = (existingFileHashes: IFileHashDto[]): TestFunction => 
       })
     }
 
+    return true
+  }
+}
+
+export const requiredWhen = (predicate: Ref<boolean> | (() => boolean)): TestFunction => {
+  return function (value, context) {
+    const predicateValue = isRef(predicate) ? predicate.value : predicate()
+    if (predicateValue && value == null) {
+      return context.createError({
+        message: ls.l('errors.RequiredField', context.path)
+      })
+    }
     return true
   }
 }
