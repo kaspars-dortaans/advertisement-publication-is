@@ -10,7 +10,7 @@
       :paginatorTemplate="PaginatorTemplate"
       :totalRecords="totalRecordCount"
       sortMode="multiple"
-      class="bg-white"
+      class="bg-white flex-1 lg:flex-none rounded-none lg:rounded-md"
       removableSort
       paginator
       lazy

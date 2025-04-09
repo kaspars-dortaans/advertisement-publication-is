@@ -14,7 +14,7 @@
     :expandableRowGroups="groupByCategory"
     groupRowsBy="categoryName"
     sortMode="multiple"
-    class="bg-white"
+    class="bg-white flex-1 rounded-none lg:rounded-md"
     removableSort
     paginator
     lazy

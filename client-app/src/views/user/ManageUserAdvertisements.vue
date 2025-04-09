@@ -1,87 +1,83 @@
 <template>
-  <ResponsiveLayout>
-    <LazyLoadedTable
-      v-model:loading="loading"
-      v-model:selection="selectedAdvertisements"
-      :columns="columns"
-      :dataSource="advertisementSource"
-      ref="table"
-    >
-      <template #header>
-        <h3 class="page-title mb-2">{{ l.navigation.myAdvertisements }}</h3>
-        <div class="flex flex-wrap justify-end gap-2">
+  <LazyLoadedTable
+    v-model:loading="loading"
+    v-model:selection="selectedAdvertisements"
+    :columns="columns"
+    :dataSource="advertisementSource"
+    ref="table"
+  >
+    <template #header>
+      <h3 class="page-title mb-2">{{ l.navigation.myAdvertisements }}</h3>
+      <div class="flex flex-wrap justify-end gap-2">
+        <Button
+          :label="l.actions.deactivate"
+          :disabled="!selectedAdvertisements.length || allSelectedAdvertisementsAreInactive"
+          severity="secondary"
+          @click="setAdvertisementActiveState(false)"
+        />
+        <Button
+          :label="l.actions.activate"
+          :disabled="!selectedAdvertisements.length || allSelectedAdvertisementsAreActive"
+          severity="primary"
+          @click="setAdvertisementActiveState(true)"
+        />
+        <Button
+          :label="l.actions.delete"
+          :disabled="!selectedAdvertisements.length"
+          severity="danger"
+          @click="confirmDeleteAdvertisements"
+        />
+        <Button
+          :label="l.actions.extend"
+          :disabled="!selectedAdvertisements.length"
+          severity="secondary"
+          @click="todo"
+        />
+        <Button
+          :label="l.actions.create"
+          severity="primary"
+          as="RouterLink"
+          :to="{ name: 'createAdvertisement' }"
+        />
+      </div>
+    </template>
+
+    <Column selectionMode="multiple" headerStyle="width: 3rem" />
+
+    <Column field="title" :header="l.manageAdvertisements.title" sortable />
+    <Column field="categoryName" :header="l.manageAdvertisements.categoryName" sortable />
+    <Column field="isActive" :header="l.manageAdvertisements.isActive" sortable>
+      <template #body="slotProps">
+        <Badge
+          :severity="slotProps.data.isActive ? 'primary' : 'secondary'"
+          :value="ls.l(slotProps.data.isActive + '')"
+        />
+      </template>
+    </Column>
+    <Column field="validTo" :header="l.manageAdvertisements.validTo" sortable>
+      <template #body="slotProps">{{ dateFormat.format(slotProps.data.validTo) }}</template>
+    </Column>
+    <Column field="createdAt" :header="l.manageAdvertisements.createdAt" sortable>
+      <template #body="slotProps">{{ dateFormat.format(slotProps.data.createdAt) }}</template>
+    </Column>
+
+    <Column>
+      <template #body="slotProps">
+        <div class="space-x-2 space-y-2">
+          <Button :label="l.actions.edit" @click="editAdvertisement(slotProps.data)" />
           <Button
-            :label="l.actions.deactivate"
-            :disabled="!selectedAdvertisements.length || allSelectedAdvertisementsAreInactive"
+            :label="l.actions.view"
             severity="secondary"
-            @click="setAdvertisementActiveState(false)"
-          />
-          <Button
-            :label="l.actions.activate"
-            :disabled="!selectedAdvertisements.length || allSelectedAdvertisementsAreActive"
-            severity="primary"
-            @click="setAdvertisementActiveState(true)"
-          />
-          <Button
-            :label="l.actions.delete"
-            :disabled="!selectedAdvertisements.length"
-            severity="danger"
-            @click="confirmDeleteAdvertisements"
-          />
-          <Button
-            :label="l.actions.extend"
-            :disabled="!selectedAdvertisements.length"
-            severity="secondary"
-            @click="todo"
-          />
-          <Button
-            :label="l.actions.create"
-            severity="primary"
-            as="RouterLink"
-            :to="{ name: 'createAdvertisement' }"
+            @click="viewAdvertisement(slotProps.data)"
           />
         </div>
       </template>
-
-      <Column selectionMode="multiple" headerStyle="width: 3rem" />
-
-      <Column field="title" :header="l.manageAdvertisements.title" sortable />
-      <Column field="categoryName" :header="l.manageAdvertisements.categoryName" sortable />
-      <Column field="isActive" :header="l.manageAdvertisements.isActive" sortable>
-        <template #body="slotProps">
-          <Badge
-            :severity="slotProps.data.isActive ? 'primary' : 'secondary'"
-            :value="ls.l(slotProps.data.isActive + '')"
-          />
-        </template>
-      </Column>
-      <Column field="validTo" :header="l.manageAdvertisements.validTo" sortable>
-        <template #body="slotProps">{{ dateFormat.format(slotProps.data.validTo) }}</template>
-      </Column>
-      <Column field="createdAt" :header="l.manageAdvertisements.createdAt" sortable>
-        <template #body="slotProps">{{ dateFormat.format(slotProps.data.createdAt) }}</template>
-      </Column>
-
-      <Column>
-        <template #body="slotProps">
-          <div class="space-x-2 space-y-2">
-            <Button :label="l.actions.edit" @click="editAdvertisement(slotProps.data)" />
-            <Button
-              :label="l.actions.view"
-              severity="secondary"
-              @click="viewAdvertisement(slotProps.data)"
-            />
-          </div>
-        </template>
-      </Column>
-    </LazyLoadedTable>
-  </ResponsiveLayout>
+    </Column>
+  </LazyLoadedTable>
 </template>
 
 <script setup lang="ts">
 import LazyLoadedTable from '@/components/common/LazyLoadedTable.vue'
-import ResponsiveLayout from '@/components/common/ResponsiveLayout.vue'
-import { confirmDelete } from '@/utils/confirm-dialog'
 import {
   AdvertisementClient,
   AdvertisementInfo,
@@ -90,6 +86,7 @@ import {
 } from '@/services/api-client'
 import { LocaleService } from '@/services/locale-service'
 import { getClient } from '@/utils/client-builder'
+import { confirmDelete } from '@/utils/confirm-dialog'
 import { useConfirm } from 'primevue'
 import { computed, ref, useTemplateRef } from 'vue'
 import { useRouter } from 'vue-router'

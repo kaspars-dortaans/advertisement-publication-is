@@ -1,6 +1,6 @@
 <template>
   <ResponsiveLayout>
-    <Panel>
+    <Panel class="rounded-none lg:rounded-md">
       <template #header>
         <span class="text-2xl">{{ l.navigation.register }}</span>
       </template>

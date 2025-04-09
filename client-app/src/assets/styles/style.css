@@ -93,9 +93,8 @@ body {
   min-height: 100%;
   overflow-x: hidden;
   overflow-y: auto;
-  background-color: var(--body-bg);
+  background-color: var(--p-primary-800);
   font-weight: normal;
-  color: var(--body-text-color);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 
@@ -103,7 +102,7 @@ body {
 }
 
 #app {
-  @apply h-full flex flex-col;
+  @apply h-full flex flex-col max-w-screen-2xl mx-auto;
 }
 
 a.link {

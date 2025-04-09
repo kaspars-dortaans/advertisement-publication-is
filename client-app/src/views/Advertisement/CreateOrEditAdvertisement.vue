@@ -12,8 +12,8 @@
         </template>
 
         <form class="flex flex-col gap-2" @submit="submit">
-          <div class="flex flex-col lg:flex-row gap-3">
-            <fieldset class="flex flex-col gap-2 w-full md:min-w-60">
+          <div class="flex flex-col lg:flex-row lg:justify-center flex-wrap gap-3">
+            <fieldset class="flex flex-col gap-2 min-w-full lg:min-w-60">
               <!-- Time period -->
               <div v-if="isEdit" class="flex gap-2">
                 <FloatLabel variant="on" class="flex-1">
@@ -81,9 +81,11 @@
                   />
                 </BlockWithSpinner>
               </template>
+
+              <Divider />
             </fieldset>
 
-            <fieldset class="flex flex-col gap-2 w-full md:min-w-96">
+            <fieldset class="flex flex-col gap-2 min-w-full lg:min-w-96">
               <!-- Title -->
               <FloatLabel variant="on">
                 <InputText
@@ -114,7 +116,8 @@
 
               <!-- Images -->
             </fieldset>
-            <fieldset class="md:min-w-96">
+
+            <fieldset class="lg:min-w-96">
               <MultipleImageUpload
                 v-model="fields.imagesToAdd!.model.value"
                 :maxImageCount="ImageConstants.MaxImageCountPerAdvertisement"

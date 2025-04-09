@@ -4,7 +4,6 @@
       :advertisementSource="(q) => loadAdvertisements(q)"
       :groupByCategory="true"
       ref="advertisementTable"
-      class="flex-1"
     >
       <template #title>
         <div class="panel-title-container">

@@ -6,7 +6,6 @@
       :categoryFilterList="advertisementCategories"
       :groupByCategory="true"
       multiRowSelect
-      class="flex-1"
     >
       <template #actionButtons="slotProps">
         <Button

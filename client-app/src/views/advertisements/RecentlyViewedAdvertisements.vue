@@ -4,7 +4,6 @@
       :categoryName="l.navigation.recentlyViewedAdvertisements"
       :advertisementSource="loadAdvertisements"
       :categoryFilterList="advertisementCategories"
-      class="flex-1"
     ></AdvertisementTable>
   </ResponsiveLayout>
 </template>

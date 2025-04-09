@@ -48,7 +48,6 @@
     <AdvertisementTable
       :advertisementSource="loadUserAdvertisements"
       :categoryNameSource="getCategoryName"
-      class="flex-1 rounded-none lg:rounded-md"
     ></AdvertisementTable>
   </ResponsiveLayout>
 </template>

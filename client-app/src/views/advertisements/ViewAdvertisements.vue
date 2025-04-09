@@ -4,13 +4,12 @@
       v-model="categoryId"
       v-model:selectedCategoryName="selectedCategoryName"
       ref="categoryMenu"
-      class="flex-none w-full max-h-[50%] lg:max-h-full lg:w-64"
+      class="w-full lg:w-64 lg:sticky lg:top-0 lg:left-0"
     />
     <AdvertisementTable
       :categoryId="categoryId"
       :categoryName="selectedCategoryName"
       :advertisementSource="(q) => advertisementService.getAdvertisements(q)"
-      class="flex-1"
     ></AdvertisementTable>
   </ResponsiveLayout>
 </template>

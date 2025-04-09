@@ -1,5 +1,5 @@
 <template>
-  <MenuBar :model="navbarItems">
+  <MenuBar :model="navbarItems" class="rounded-none">
     <template #start>
       <div class="flex flex-row items-center gap-2 w-full">
         <RouterLink :to="{ name: 'home' }">
