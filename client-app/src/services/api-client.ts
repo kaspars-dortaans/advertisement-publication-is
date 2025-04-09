@@ -1188,6 +1188,69 @@ export class AdvertisementClient {
     }
 
     /**
+     * @param body (optional) 
+     * @return Success
+     */
+    extendAdvertisements(body: ExtendAdvertisementRequest | undefined, cancelToken?: CancelToken): Promise<AdvertisementFormInfo> {
+        let url_ = this.baseUrl + "/api/Advertisement/ExtendAdvertisements";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_: AxiosRequestConfig = {
+            data: content_,
+            method: "POST",
+            url: url_,
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "text/plain"
+            },
+            cancelToken
+        };
+
+        return this.instance.request(options_).catch((_error: any) => {
+            if (isAxiosError(_error) && _error.response) {
+                return _error.response;
+            } else {
+                throw _error;
+            }
+        }).then((_response: AxiosResponse) => {
+            return this.processExtendAdvertisements(_response);
+        });
+    }
+
+    protected processExtendAdvertisements(response: AxiosResponse): Promise<AdvertisementFormInfo> {
+        const status = response.status;
+        let _headers: any = {};
+        if (response.headers && typeof response.headers === "object") {
+            for (const k in response.headers) {
+                if (response.headers.hasOwnProperty(k)) {
+                    _headers[k] = response.headers[k];
+                }
+            }
+        }
+        if (status === 200) {
+            const _responseText = response.data;
+            let result200: any = null;
+            let resultData200  = _responseText;
+            result200 = AdvertisementFormInfo.fromJS(resultData200);
+            return Promise.resolve<AdvertisementFormInfo>(result200);
+
+        } else if (status === 400) {
+            const _responseText = response.data;
+            let result400: any = null;
+            let resultData400  = _responseText;
+            result400 = RequestExceptionResponse.fromJS(resultData400);
+            return throwException("Bad Request", status, _responseText, _headers, result400);
+
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.data;
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Promise.resolve<AdvertisementFormInfo>(null as any);
+    }
+
+    /**
      * @param categoryId (optional) 
      * @return Success
      */
@@ -3373,6 +3436,58 @@ export interface IEditUserInfo {
     linkToUserSite?: string | undefined;
     profileImageChanged?: boolean;
     profileImage?: any | undefined;
+}
+
+export class ExtendAdvertisementRequest implements IExtendAdvertisementRequest {
+    advertisementIds!: number[];
+    extendTime!: PostTimeDto;
+
+    constructor(data?: IExtendAdvertisementRequest) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+        if (!data) {
+            this.advertisementIds = [];
+            this.extendTime = new PostTimeDto();
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            if (Array.isArray(_data["advertisementIds"])) {
+                this.advertisementIds = [] as any;
+                for (let item of _data["advertisementIds"])
+                    this.advertisementIds!.push(item);
+            }
+            this.extendTime = _data["extendTime"] ? PostTimeDto.fromJS(_data["extendTime"]) : new PostTimeDto();
+        }
+    }
+
+    static fromJS(data: any): ExtendAdvertisementRequest {
+        data = typeof data === 'object' ? data : {};
+        let result = new ExtendAdvertisementRequest();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        if (Array.isArray(this.advertisementIds)) {
+            data["advertisementIds"] = [];
+            for (let item of this.advertisementIds)
+                data["advertisementIds"].push(item);
+        }
+        data["extendTime"] = this.extendTime ? this.extendTime.toJSON() : <any>undefined;
+        return data;
+    }
+}
+
+export interface IExtendAdvertisementRequest {
+    advertisementIds: number[];
+    extendTime: PostTimeDto;
 }
 
 export enum FilterType {

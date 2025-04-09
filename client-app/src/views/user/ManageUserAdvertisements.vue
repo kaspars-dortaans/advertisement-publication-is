@@ -31,7 +31,7 @@
           :label="l.actions.extend"
           :disabled="!selectedAdvertisements.length"
           severity="secondary"
-          @click="todo"
+          @click="extendAdvertisements"
         />
         <Button
           :label="l.actions.create"
@@ -64,7 +64,6 @@
     <Column>
       <template #body="slotProps">
         <div class="space-x-2 space-y-2">
-          <Button :label="l.actions.edit" @click="editAdvertisement(slotProps.data)" />
           <Button
             :label="l.actions.edit"
             as="RouterLink"
@@ -97,7 +96,6 @@ import { useConfirm } from 'primevue'
 import { computed, ref, useTemplateRef } from 'vue'
 import { useRouter } from 'vue-router'
 
-const { push } = useRouter()
 const table = useTemplateRef('table')
 const { push } = useRouter()
 
@@ -184,7 +182,10 @@ const deleteAdvertisements = async () => {
   table.value?.refresh()
 }
 
-const todo = () => {
-  alert('Not implemented yet')
+const extendAdvertisements = () => {
+    push({
+        name: 'extendAdvertisements',
+        params: { advertisementIds: JSON.stringify(selectedAdvertisementIds.value) }
+    })
 }
 </script>

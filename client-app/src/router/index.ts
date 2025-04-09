@@ -90,6 +90,14 @@ const router = createRouter({
       name: 'viewAdvertisements',
       component: () => import('../views/advertisements/ViewAdvertisements.vue')
     },
+    {
+      path: '/advertisements/extend/:advertisementIds',
+      name: 'extendAdvertisements',
+      component: () => import('../views/advertisements/ExtendAdvertisements.vue'),
+      props: (route) => ({
+        advertisementIds: JSON.parse(firstParam(route.params.advertisementIds))
+      })
+    },
 
     {
       path: '/profile-info',

@@ -2,6 +2,7 @@
 using BusinessLogic.Dto.Advertisement;
 using BusinessLogic.Dto.DataTableQuery;
 using BusinessLogic.Dto.Image;
+using BusinessLogic.Dto.Time;
 using BusinessLogic.Entities;
 using BusinessLogic.Entities.Files;
 using BusinessLogic.Exceptions;
@@ -332,7 +333,7 @@ public class AdvertisementService(
             OwnerId = userId,
             AttributeValues = advertisementAttributeValues,
             PostedDate = DateTime.UtcNow,
-            ValidToDate = DateTime.UtcNow + new TimeSpan(dto.PostTime.Months * 30 + dto.PostTime.Weeks * 7 + dto.PostTime.Days, 0, 0, 0),
+            ValidToDate = DateTime.UtcNow.AddDays(dto.PostTime.ToDays()),
             ViewCount = 0,
             IsActive = true
         };
@@ -359,11 +360,11 @@ public class AdvertisementService(
             await ValidateAttributeCategory(dto.CategoryId);
         }
         var attributeValues = await ValidateAdvertisementAttributeValues(dto.AttributeValues, dto.CategoryId);
-        
+
         //Updated entities
         await SynchronizeAdvertisementAttributeValues(dto.Id!.Value, attributeValues, compareData.AttributeAndValueIds.ToList());
         await SynchronizeAdvertisementImages(dto.Id!.Value, dto.ImagesToAdd, dto.ImageOrder, compareData.Images);
-        
+
         var thumbnailHash = dto.ImageOrder?.FirstOrDefault()?.Hash;
         await Where(a => a.Id == dto.Id!.Value).UpdateFromQueryAsync(a => new Advertisement()
         {
@@ -624,5 +625,31 @@ public class AdvertisementService(
             })
             .FirstOrDefaultAsync(a => a.Id == advertisementId)) ?? throw new ApiException([CustomErrorCodes.NotFound]);
         return dto;
+    }
+
+    public async Task ExtendAdvertisement(int userId, IEnumerable<int> advertisementId, PostTimeDto extendTime)
+    {
+        var advertisements = await Where(a => a.OwnerId == userId && advertisementId.Contains(a.Id))
+            .ToListAsync();
+
+        //Validate that user is owner of all specified advertisements
+        if (advertisements.Count != advertisementId.Count())
+        {
+            throw new ApiException([CustomErrorCodes.NotFound]);
+        }
+
+        foreach (var advertisement in advertisements)
+        {
+            if (DateTime.UtcNow > advertisement.ValidToDate)
+            {
+                advertisement.PostedDate = DateTime.UtcNow;
+                advertisement.ValidToDate = DateTime.UtcNow.AddDays(extendTime.ToDays());
+            }
+            else
+            {
+                advertisement.ValidToDate = advertisement.ValidToDate.AddDays(extendTime.ToDays());
+            }
+        }
+        await DbContext.SaveChangesAsync();
     }
 }

@@ -57,6 +57,11 @@ export const emptyLocale = {
     confirmDeleteMessage: "",
   },
   form: {
+    extendAdvertisements: {
+      pageTitle: "",
+      timePeriod: "",
+      extendedList: "",
+    },
     putAdvertisement: {
       category: "",
       subcategory: "",

@@ -99,6 +99,11 @@
       "description": "Apraksts",
       "timePeriod": "Laika periods",
       "validTo": "Derīgs līdz"
+    },
+    "extendAdvertisements": {
+      "pageTitle": "Pagarināt sludinājumus",
+      "timePeriod": "Laika periods",
+      "extendedList": "Šie sludinājumi {0} tiks pagarināti:"
     }
   },
   "imageUpload": {

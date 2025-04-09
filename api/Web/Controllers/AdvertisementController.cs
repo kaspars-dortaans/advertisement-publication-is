@@ -4,6 +4,7 @@ using BusinessLogic.Constants;
 using BusinessLogic.Dto;
 using BusinessLogic.Dto.Advertisement;
 using BusinessLogic.Dto.DataTableQuery;
+using BusinessLogic.Dto.Time;
 using BusinessLogic.Entities;
 using BusinessLogic.Exceptions;
 using BusinessLogic.Helpers;
@@ -284,6 +285,15 @@ public class AdvertisementController(
     {
         var dto = _mapper.Map<CreateOrEditAdvertisementDto>(request);
         await _advertisementService.UpdateAdvertisement(dto, User.GetUserId()!.Value);
+    }
+
+    [HasPermission(Permissions.EditOwnedAdvertisement)]
+    [ProducesResponseType<AdvertisementFormInfo>(StatusCodes.Status200OK)]
+    [ProducesResponseType<RequestExceptionResponse>(StatusCodes.Status400BadRequest)]
+    [HttpPost]
+    public async Task ExtendAdvertisements(ExtendAdvertisementRequest request)
+    {
+        await _advertisementService.ExtendAdvertisement(User.GetUserId()!.Value, request.AdvertisementIds, request.ExtendTime);
     }
 
     [AllowAnonymous]

@@ -99,6 +99,11 @@
       "description": "Description",
       "timePeriod": "Time period",
       "validTo": "Valid to"
+    },
+    "extendAdvertisements": {
+      "pageTitle": "Extend advertisements",
+      "timePeriod": "Time period",
+      "extendedList": "These advertisements will be extended ({0}):"
     }
   },
   "imageUpload": {

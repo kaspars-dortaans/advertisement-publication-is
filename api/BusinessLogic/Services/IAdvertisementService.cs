@@ -1,5 +1,6 @@
 ﻿using BusinessLogic.Dto.Advertisement;
 using BusinessLogic.Dto.DataTableQuery;
+using BusinessLogic.Dto.Time;
 using BusinessLogic.Entities;
 
 namespace BusinessLogic.Services;
@@ -16,4 +17,5 @@ public interface IAdvertisementService : IBaseService<Advertisement>
     public Task CreateAdvertisement(CreateOrEditAdvertisementDto dto, int userId);
     public Task UpdateAdvertisement(CreateOrEditAdvertisementDto dto, int userId);
     public Task<CreateOrEditAdvertisementDto> GetAdvertisementFormInfo(int advertisementId, int userId);
+    public Task ExtendAdvertisement(int userId, IEnumerable<int> advertisementId, PostTimeDto extendTime);
 }
