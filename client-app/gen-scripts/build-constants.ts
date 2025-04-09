@@ -312,9 +312,7 @@ const extractConstants = async (
 const generateConstantTsFile = async (destinationPath: string, c: ConstantCollection) => {
   let fields: string[] = []
   let joinString = ''
-  if (c.name === 'Permissions') {
-    console.log(c)
-  }
+
   switch (c.type) {
     case 'class':
       fields = c.constants.map((c) => {

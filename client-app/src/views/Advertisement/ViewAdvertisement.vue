@@ -3,7 +3,7 @@
   <Panel :pt="panelPt">
     <template #header>
       <div class="panel-title-container">
-        <BackButton :defaultTo="{ name: 'home' }" />
+        <BackButton :defaultTo="{ name: 'viewAdvertisements' }" />
         <h3 class="page-title">{{ advertisement.title }}</h3>
         <Button
           :icon="bookmarkIcon"

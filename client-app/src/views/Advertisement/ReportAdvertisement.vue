@@ -1,10 +1,13 @@
 <template>
   <ResponsiveLayout>
-    <Panel class="my-auto sm:min-w-96">
+    <Panel class="my-auto sm:min-w-96 rounded-none lg:rounded-md">
       <template #header>
-        <h3 class="page-title">{{ l.advertisements.reportRuleViolation }}</h3>
+        <div class="panel-title-container">
+          <BackButton :defaultTo="{ name: 'viewAdvertisement' }" />
+          <h3 class="page-title">{{ l.advertisements.reportRuleViolation }}</h3>
+        </div>
       </template>
-      <form class="flex flex-col gap-4 min-h-80">
+      <form class="flex flex-col gap-4 min-h-80" @submit="report">
         <label for="report-text-area">{{ l.advertisements.description }}</label>
         <Textarea
           v-model="fields.description!.value"
@@ -21,12 +24,7 @@
             :defaultTo="{ name: 'viewAdvertisement' }"
             noIcon
           ></BackButton>
-          <Button
-            type="submit"
-            :label="l.actions.report"
-            :loading="isSubmitting"
-            @click="report"
-          ></Button>
+          <Button type="submit" :label="l.actions.report" :loading="isSubmitting"></Button>
         </div>
       </form>
     </Panel>

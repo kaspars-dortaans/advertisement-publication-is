@@ -66,9 +66,15 @@
         <div class="space-x-2 space-y-2">
           <Button :label="l.actions.edit" @click="editAdvertisement(slotProps.data)" />
           <Button
+            :label="l.actions.edit"
+            as="RouterLink"
+            :to="{ name: 'editAdvertisement', params: { id: '' + slotProps.data.id } }"
+          />
+          <Button
             :label="l.actions.view"
             severity="secondary"
-            @click="viewAdvertisement(slotProps.data)"
+            as="RouterLink"
+            :to="{ name: 'viewAdvertisement', params: { id: '' + slotProps.data.id } }"
           />
         </div>
       </template>
@@ -93,6 +99,7 @@ import { useRouter } from 'vue-router'
 
 const { push } = useRouter()
 const table = useTemplateRef('table')
+const { push } = useRouter()
 
 //Services
 const l = LocaleService.currentLocale
@@ -102,6 +109,10 @@ const confirm = useConfirm()
 
 //Reactive data
 const selectedAdvertisements = ref<AdvertisementInfo[]>([])
+const selectedAdvertisementIds = computed(
+  () =>
+    selectedAdvertisements.value.map((a) => a.id).filter((id) => typeof id === 'number') as number[]
+)
 const allSelectedAdvertisementsAreActive = computed(() =>
   selectedAdvertisements.value.every((a) => a.isActive)
 )
@@ -169,19 +180,8 @@ const confirmDeleteAdvertisements = () => {
 
 const deleteAdvertisements = async () => {
   loading.value = true
-  const ids = selectedAdvertisements.value
-    .map((a) => a.id)
-    .filter((id) => typeof id === 'number') as number[]
-  await advertisementService.deleteAdvertisements(ids)
+  await advertisementService.deleteAdvertisements(selectedAdvertisementIds.value)
   table.value?.refresh()
-}
-
-const viewAdvertisement = (advertisement: AdvertisementInfo) => {
-  push({ name: 'viewAdvertisement', params: { id: '' + advertisement.id } })
-}
-
-const editAdvertisement = (advertisement: AdvertisementInfo) => {
-  push({ name: 'editAdvertisement', params: { id: '' + advertisement.id } })
 }
 
 const todo = () => {

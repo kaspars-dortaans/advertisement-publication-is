@@ -8,7 +8,7 @@ const router = createRouter({
     {
       path: '/',
       name: 'home',
-      component: () => import('../views/advertisements/ViewAdvertisements.vue')
+      redirect: { name: 'viewAdvertisements' }
     },
     {
       path: '/login',
@@ -84,6 +84,11 @@ const router = createRouter({
           props: (route) => ({ id: parseInt(firstParam(route.params.id)) })
         }
       ]
+    },
+    {
+      path: '/advertisements/view',
+      name: 'viewAdvertisements',
+      component: () => import('../views/advertisements/ViewAdvertisements.vue')
     },
 
     {

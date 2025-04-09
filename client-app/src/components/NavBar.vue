@@ -2,7 +2,7 @@
   <MenuBar :model="navbarItems" class="rounded-none">
     <template #start>
       <div class="flex flex-row items-center gap-2 w-full">
-        <RouterLink :to="{ name: 'home' }">
+        <RouterLink :to="{ name: 'viewAdvertisements' }">
           <img class="h-9" :src="logoUrl" :alt="l.navigation.siteLogo" />
         </RouterLink>
         <IconField class="flex-1">
@@ -58,7 +58,7 @@ const allRouteItems: INavbarItem[] = [
     label: 'navigation.advertisements',
     items: [
       {
-        route: 'home',
+        route: 'viewAdvertisements',
         label: 'navigation.seeAdvertisements'
       },
       {
