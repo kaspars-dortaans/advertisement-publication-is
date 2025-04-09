@@ -5,6 +5,7 @@ import path from 'path'
 type Constant = {
   name: string
   value: string
+  comment: boolean
 }
 
 type ConstantCollection = {
@@ -138,9 +139,9 @@ const extractConstants = async (
         requiredFieldKeywords.every((keyword) => tokens.some((t) => t === keyword))
       ) {
         collectionStack[collectionStack.length - 1].constants.push({
-          name: tokens[tokens.length - 1],
-          //statement is used to preserve value if it was also split by regex
-          value: statement.slice(assignment[0].length + 3) //plus regex match length
+          name: tokens[tokens.length - 1], //statement is used to preserve value if it was also split by regex
+          value: statement.slice(assignment[0].length + 3), //plus regex match length
+          comment: false
         })
       }
     }
@@ -151,8 +152,9 @@ const extractConstants = async (
     if (assignment.length) {
       collectionStack[collectionStack.length - 1].constants.push({
         name: assignment[0].trim(),
-        value: assignment[1]?.trim()
-      } as Constant)
+        value: assignment[1]?.trim(),
+        comment: false
+      })
     }
     lastStatementEndIndex = i
   }
@@ -240,10 +242,11 @@ const extractConstants = async (
           collectionStack.length &&
           collectionStack[collectionStack.length - 1].codeBlockStartIndex === codeBlockStartIndex
         ) {
-          //If in enum add last enum value
+          //If in enum add last enum value, if it is present
           if (
             collectionStack.length &&
-            collectionStack[collectionStack.length - 1].type === 'enum'
+            collectionStack[collectionStack.length - 1].type === 'enum' &&
+            code.slice(lastStatementEndIndex + 1, i).match(/[a-zA-Z]/)
           ) {
             addEnumConstant(i)
           }
@@ -277,27 +280,55 @@ const extractConstants = async (
           insideString = false
         }
         break
+
+      case '\n':
+        if (
+          collectionStack.length &&
+          codeBlockStartIndexStack.length ===
+            collectionStack[collectionStack.length - 1].codeBlockLevel
+        ) {
+          const statement = code.slice(lastStatementEndIndex + 1, i)
+          const commentStart = statement.lastIndexOf('//')
+          if (commentStart > -1) {
+            const comment = statement.slice(commentStart, i)
+            lastStatementEndIndex = i
+            collectionStack[collectionStack.length - 1].constants.push({
+              name: '',
+              value: comment,
+              comment: true
+            })
+          }
+        }
+        break
     }
   }
-  return collectionsWithConstants
+
+  return collectionsWithConstants.filter((collection) =>
+    collection.constants.some((c) => !c.comment)
+  )
 }
 
 /** Generate Ts file which contains constants */
 const generateConstantTsFile = async (destinationPath: string, c: ConstantCollection) => {
   let fields: string[] = []
   let joinString = ''
+  if (c.name === 'Permissions') {
+    console.log(c)
+  }
   switch (c.type) {
     case 'class':
       fields = c.constants.map((c) => {
-        return `  static readonly ${c.name} = ${c.value}`
+        return c.comment ? '  ' + c.value : `  static readonly ${c.name} = ${c.value}`
       })
       joinString = '\n'
       break
     case 'enum':
       fields = c.constants.map((c) => {
-        return `  ${c.name}${c.value !== undefined ? ` = ${c.value}` : ''}`
+        return c.comment
+          ? '  ' + c.value
+          : `  ${c.name}${c.value !== undefined ? ` = ${c.value},` : ','}`
       })
-      joinString = ',\n'
+      joinString = '\n'
       break
   }
 
