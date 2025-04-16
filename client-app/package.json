@@ -16,6 +16,7 @@
     "gen:constants": "tsx ./gen-scripts/build-constants.ts"
   },
   "dependencies": {
+    "@microsoft/signalr": "^8.0.7",
     "@vee-validate/yup": "^4.13.2",
     "axios": "^1.7.2",
     "nswag": "^14.0.8",
@@ -32,7 +33,7 @@
   "devDependencies": {
     "@rushstack/eslint-patch": "^1.8.0",
     "@tsconfig/node20": "^20.1.4",
-    "@types/node": "^20.14.5",
+    "@types/node": "^20.17.30",
     "@vitejs/plugin-vue": "^5.2.1",
     "@vue/eslint-config-prettier": "^9.0.0",
     "@vue/eslint-config-typescript": "^13.0.0",
