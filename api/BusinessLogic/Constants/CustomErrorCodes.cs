@@ -22,4 +22,10 @@ public static class CustomErrorCodes
     public const string InvalidValue = "InvalidValue";
     public const string ValueMustBeInteger = "ValueMustBeInteger";
     public const string ValueMustBeNumber = "ValueMustBeNumber";
+    public const string InvalidFileLimit = "InvalidFileLimit";
+    public const string NotAMemberOfChat = "InvalidFileLimit";
+    public const string AdvertisementNotFound = "AdvertisementNotFound";
+    public const string AdvertisementNotActive = "AdvertisementNotActive";
+    public const string UserNotOwnerOfAdvertisement = "UserNotOwnerOfAdvertisement";
+    public const string ChatAlreadyExists = "ChatAlreadyExists";
 }

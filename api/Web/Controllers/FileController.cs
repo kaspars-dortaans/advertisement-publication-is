@@ -35,7 +35,7 @@ public class FileController(
         }
 
         var userId = User.Identity?.IsAuthenticated == true ? User.GetUserId() : null;
-        if (!_fileService.HasAccessToFile(file, userId))
+        if (!(await _fileService.HasAccessToFile(file, userId)))
         {
             return Forbid();
         }

@@ -101,4 +101,9 @@ public class BaseService<Entity> : IBaseService<Entity> where Entity : class
     {
         return DbSet.Include(navigationPropertyPath);
     }
+
+    public Task<int> CountAsync(Expression<Func<Entity, bool>> predicate)
+    {
+        return DbSet.CountAsync(predicate);
+    }
 }

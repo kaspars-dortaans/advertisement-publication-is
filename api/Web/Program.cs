@@ -188,6 +188,7 @@ builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IAdvertisementService, AdvertisementService>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<IFileService, FileService>();
+builder.Services.AddScoped<IChatService, ChatService>();
 
 //Helpers
 builder.Services.AddScoped<IStorage, LocalFileStorage>();

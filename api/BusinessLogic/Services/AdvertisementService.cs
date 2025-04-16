@@ -22,6 +22,7 @@ public class AdvertisementService(
     Context context,
     ICategoryService categoryService,
     IBaseService<AdvertisementBookmark> advertisementBookmarkService,
+    IBaseService<Chat> chatService,
     CookieSettingsHelper cookieSettingHelper,
     IFilePathResolver filePathResolver,
     IStorage storage,
@@ -29,6 +30,7 @@ public class AdvertisementService(
 {
     private readonly ICategoryService _categoryService = categoryService;
     private readonly IBaseService<AdvertisementBookmark> _advertisementBookmarkService = advertisementBookmarkService;
+    private readonly IBaseService<Chat> _chatService = chatService;
     private readonly CookieSettingsHelper _cookieSettingHelper = cookieSettingHelper;
     private readonly IFilePathResolver _filePathResolver = filePathResolver;
     private readonly IStorage _storage = storage;
@@ -311,6 +313,9 @@ public class AdvertisementService(
             .SelectMany(a => a.Images.Select(i => new[] { i.Path, i.ThumbnailPath }))
             .ToListAsync())
             .SelectMany(p => p);
+
+        //TODO: Delete message attachments
+        await _chatService.DeleteWhereAsync(c => advertisementIds.Any(id => id == c.AdvertisementId));
 
         await Task.WhenAll([
             _storage.DeleteFiles(imagePaths),

@@ -4,4 +4,5 @@ public static class FileFolderConstants
 {
     public const string ProfileImageFolder = "profileImages";
     public const string AdvertisementImageFolder = "advertisementImages";
+    public const string MessageAttachmentFolder = "messageAttachments";
 }

@@ -32,7 +32,7 @@ public class AdvertisementMapperProfile : Profile
 
         CreateMap<CreateOrEditAdvertisementRequest, CreateOrEditAdvertisementDto>()
             .ReverseMap()
-                .ForMember(r => r.ImageOrder, o => o.MapFrom((dto, _, _, context) => dto.ImageOrder.Select(imageDto => new ImageDto
+                .ForMember(r => r.ImageOrder, o => o.MapFrom((dto, _, _, context) => dto.ImageOrder?.Select(imageDto => new ImageDto
                 {
                     Id = imageDto.Id,
                     Hash = imageDto.Hash,
