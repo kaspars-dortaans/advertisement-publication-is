@@ -21,7 +21,7 @@ export const downloadFile = async (
 
   if (response.status === HttpStatusCode.Ok) {
     const contentDisposition = response.headers['content-disposition'] as string
-    const fileName = contentDisposition.match(/filename\s*=(.+);/)?.[1] ?? ''
+    const fileName = contentDisposition.match(/filename\s*=['"]*([^"']*)['"]*;/)?.[1] ?? ''
     return new File([response.data], fileName)
   }
 }
@@ -42,6 +42,7 @@ export const downloadAndSaveFile = async (
     //Create link and click it to save file in user device
     const url = URL.createObjectURL(file)
     link.setAttribute('href', url)
+    console.log('file.Name', file.name)
     link.setAttribute('download', file.name)
     link.click()
 
