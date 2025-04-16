@@ -11,6 +11,7 @@ import FileUpload from 'primevue/fileupload'
 
 //Menu
 import MenuBar, { type MenubarPassThroughMethodOptions } from 'primevue/menubar'
+import Menu from 'primevue/menu'
 
 //Button
 import Button from 'primevue/button'
@@ -36,6 +37,11 @@ import Tree from 'primevue/tree'
 //Panel
 import Panel from 'primevue/panel'
 import Divider from 'primevue/divider'
+import Tabs from 'primevue/tabs'
+import TabList from 'primevue/tablist'
+import Tab from 'primevue/tab'
+import TabPanels from 'primevue/tabpanels'
+import TabPanel from 'primevue/tabpanel'
 
 //Message
 import Checkbox from 'primevue/checkbox'
@@ -52,17 +58,6 @@ import Badge from 'primevue/badge'
 import { ConfirmationService } from 'primevue'
 
 const customPassTrough = {
-  password: {
-    root: {
-      class: 'flex-1'
-    },
-    pcInput: {
-      root: {
-        class: 'flex-1'
-      }
-    }
-  },
-
   menubar: {
     start: 'flex-1',
     submenu: (opts: MenubarPassThroughMethodOptions) => {
@@ -155,6 +150,7 @@ export function initPrimeVue(app: App<Element>) {
 
   //Menu
   app.component('MenuBar', MenuBar)
+  app.component('Menu', Menu)
 
   //Button
   app.component('Button', Button)
@@ -180,6 +176,11 @@ export function initPrimeVue(app: App<Element>) {
   //Panel
   app.component('Panel', Panel)
   app.component('Divider', Divider)
+  app.component('Tabs', Tabs)
+  app.component('TabList', TabList)
+  app.component('Tab', Tab)
+  app.component('TabPanels', TabPanels)
+  app.component('TabPanel', TabPanel)
 
   //Message
   app.component('Message', Message)

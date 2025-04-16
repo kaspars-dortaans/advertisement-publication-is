@@ -141,13 +141,11 @@ public class MessageController(
         var userId = User!.GetUserId()!.Value;
         await _chatService.MarkMessageAsRead(chatId, messageIds, userId);
 
-        var recipientIds = await _chatService.MessageRecipientIds(messageIds.First());
+        var recipientIds = (await _chatService.MessageRecipientIds(messageIds.First())).Select(id => id.ToString());
         if (recipientIds.Any())
         {
-            var recipientIdsWithoutSender = recipientIds.Where(id => id != userId).Select(id => id.ToString());
-
             //Send "mark message as read" event for message recipients
-            await _messageHubContext.Clients.Users(recipientIdsWithoutSender).MarkMessageAsRead(chatId, messageIds);
+            await _messageHubContext.Clients.Users(recipientIds).MarkMessageAsRead(chatId, userId, messageIds);
         }
     }
 

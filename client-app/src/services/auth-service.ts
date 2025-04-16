@@ -78,6 +78,7 @@ export class AuthService {
       AuthService.profileInfoPromise.value = this.userService.getUserInfo()
       AuthService.permissions.value = await AuthService.permissionsPromise.value
       AuthService.profileInfo.value = await AuthService.profileInfoPromise.value
+      AuthService.isAuthenticated.value = true
     } catch (e) {
       //TODO: Implement token refresh & try to refresh token
       this.logout()
@@ -90,7 +91,6 @@ export class AuthService {
     this._updateToken(newToken)
 
     await this.refreshProfileData()
-    AuthService.isAuthenticated.value = true
   }
 
   /** Logout by deleting authorization jwt token */

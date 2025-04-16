@@ -57,16 +57,21 @@ const stringifyJsObjectEmpty = (obj: object) => {
     resultStrings.push(indentation + (property.name ? property.name + ': {\n' : '{\n'))
 
     if (property.entries) {
-      for (const entry of property.entries) {
-        if (typeof entry[1] === 'object' && entry[1] != null) {
+      for (let i = 0; i < property.entries.length; i++) {
+        if (typeof property.entries[i][1] === 'object' && property.entries[i][1] != null) {
           objectProperties.push({
             depth: property.depth + 1,
             parentName: property.name,
-            name: entry[0],
-            entries: Object.entries(entry[1])
+            name: property.entries[i][0],
+            entries: Object.entries(property.entries[i][1])
           })
         } else {
-          resultStrings.push(indentation + singleIndentation + entry[0] + ': "",\n')
+          resultStrings.push(
+            indentation +
+              singleIndentation +
+              property.entries[i][0] +
+              `: ''${(lastDepth === 0 && objectProperties.length) || i < property.entries.length - 1 ? ',' : ''}\n`
+          )
         }
       }
     }

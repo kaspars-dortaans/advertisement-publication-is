@@ -9,3 +9,9 @@
 p.p-invalid {
   @apply text-red-500 text-xs italic;
 }
+
+.clamp-line {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

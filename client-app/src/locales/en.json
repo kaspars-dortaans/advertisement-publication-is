@@ -106,6 +106,18 @@
       "extendedList": "These advertisements will be extended ({0}):"
     }
   },
+  "messages": {
+    "messageIsRead": "Read",
+    "messageIsSent": "Sent",
+    "noChatsYet": "No chats yet",
+    "noMessageYet": "No message yet",
+    "noChatSelected": "Select chat to see messages",
+    "noConnectionToServer": "Not connected to the server",
+    "connectingToServer": "Trying to connect to the server",
+    "retryConnecting": "Try connect",
+    "userAdvertisementChats": "My advertisements",
+    "otherUserAdvertisementChats": "Other"
+  },
   "imageUpload": {
     "uploadImages": "Upload",
     "imagesUploaded": "Images uploaded {0} / {1}",
@@ -125,7 +137,8 @@
     "createAdvertisement": "Create advertisements",
     "siteLogo": "Site logo",
     "myAdvertisements": "My advertisements",
-    "editAdvertisement": "Edit advertisement"
+    "editAdvertisement": "Edit advertisement",
+    "messages": "Messages"
   },
   "dataSize": {
     "bits": "{0} b",

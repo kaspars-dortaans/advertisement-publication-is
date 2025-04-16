@@ -21,8 +21,9 @@
     <template #item="{ item, props, hasSubmenu }">
       <router-link v-if="item.route" v-slot="{ href, navigate }" :to="{ name: item.route }" custom>
         <a :href="href" v-bind="props.action" @click="navigate">
-          <i v-if="item.icon" class="mr-2" :class="item.icon" />
+          <i v-if="item.icon" :class="item.icon" />
           <span v-if="item.label">{{ ls.l(item.label) }}</span>
+          <Badge v-if="item.badgeValue?.value" :value="item.badgeValue.value" class="rounded-xl" />
         </a>
       </router-link>
       <Avatar v-else-if="item.avatar" :image="item.url" shape="circle" />
@@ -38,11 +39,15 @@
 <script setup lang="ts">
 import defaultProfileImageUrl from '@/assets/images/default-profile-image.svg'
 import logoUrl from '@/assets/images/logo.svg'
+import { NewMessageTimeout } from '@/constants/message'
+import { MessageClient } from '@/services/api-client'
 import { AuthService } from '@/services/auth-service'
 import { LocaleService } from '@/services/locale-service'
+import type { MessageHub } from '@/services/message-hub'
 import type { INavbarItem } from '@/types/navbar/navbar-item'
+import { getClient } from '@/utils/client-builder'
 import { debounceFn } from '@/utils/debounce'
-import { computed, ref, type ComputedRef } from 'vue'
+import { computed, inject, onBeforeMount, onBeforeUnmount, ref, watch, type ComputedRef } from 'vue'
 import { useRouter, type RouteRecordNormalized } from 'vue-router'
 
 const { push, getRoutes } = useRouter()
@@ -50,41 +55,17 @@ const { push, getRoutes } = useRouter()
 //Services
 const ls = LocaleService.get()
 const l = LocaleService.currentLocale
-
-//Constants
-/** All navigation routes */
-const allRouteItems: INavbarItem[] = [
-  {
-    label: 'navigation.advertisements',
-    items: [
-      {
-        route: 'viewAdvertisements',
-        label: 'navigation.seeAdvertisements'
-      },
-      {
-        route: 'recentlyViewedAdvertisements',
-        label: 'navigation.recentlyViewedAdvertisements'
-      },
-      {
-        route: 'bookmarkedAdvertisements',
-        label: 'navigation.savedAdvertisements',
-        showWithoutPermission: true
-      },
-      {
-        route: 'createAdvertisement',
-        label: 'navigation.createAdvertisement',
-        showWithoutPermission: true
-      },
-      {
-        route: 'manageAdvertisements',
-        label: 'navigation.myAdvertisements'
-      }
-    ]
-  }
-]
+const messageService = getClient(MessageClient)
+const messageHub = inject<MessageHub>('messageHub')!
 
 //Reactive data
 const searchInput = ref('')
+const unreadMessageCount = ref(0)
+const unreadMessageCountPositive = computed(() =>
+  unreadMessageCount.value < 0 ? 0 : unreadMessageCount.value
+)
+const unsubscribeCallbacks: (() => void)[] = []
+const currentUserId = computed(() => AuthService.profileInfo.value?.id)
 
 /** All navigation items */
 const navbarItems: ComputedRef<INavbarItem[]> = computed(() => [
@@ -142,13 +123,96 @@ const profileRoutes = computed(() => {
   ] as INavbarItem[]
 })
 
+//Constants
+/** All navigation routes */
+const allRouteItems: INavbarItem[] = [
+  {
+    label: 'navigation.advertisements',
+    items: [
+      {
+        route: 'viewAdvertisements',
+        label: 'navigation.seeAdvertisements'
+      },
+      {
+        route: 'recentlyViewedAdvertisements',
+        label: 'navigation.recentlyViewedAdvertisements'
+      },
+      {
+        route: 'bookmarkedAdvertisements',
+        label: 'navigation.savedAdvertisements',
+        showWithoutPermission: true
+      },
+      {
+        route: 'createAdvertisement',
+        label: 'navigation.createAdvertisement',
+        showWithoutPermission: true
+      },
+      {
+        route: 'manageAdvertisements',
+        label: 'navigation.myAdvertisements'
+      }
+    ] as INavbarItem[]
+  },
+  {
+    icon: 'pi pi-envelope',
+    route: 'viewMessages',
+    badgeValue: unreadMessageCountPositive
+  }
+]
+
+//Hooks
+onBeforeMount(async () => {
+  unsubscribeCallbacks.push(
+    await messageHub.subscribeNewMessages((_, message) => {
+      if (message.fromUserId !== currentUserId.value) {
+        setTimeout(() => {
+          unreadMessageCount.value += 1
+        }, NewMessageTimeout)
+      }
+    })
+  )
+
+  unsubscribeCallbacks.push(
+    await messageHub.subscribeNewChat((newChat) => {
+      if (
+        typeof newChat.advertisementOwnerId === 'number' &&
+        newChat.advertisementOwnerId === currentUserId.value
+      ) {
+        unreadMessageCount.value += 1
+      }
+    })
+  )
+
+  unsubscribeCallbacks.push(
+    await messageHub.subscribeMarkMessageAsRead((_, userId, messageIds) => {
+      if (userId === currentUserId.value) {
+        unreadMessageCount.value -= messageIds.length
+      }
+    })
+  )
+
+  unsubscribeCallbacks.push(
+    messageHub.subscribeToReconnect(() => {
+      loadUnreadMessageCount()
+    })
+  )
+})
+
+onBeforeUnmount(() => {
+  for (const callback of unsubscribeCallbacks) {
+    callback()
+  }
+})
+
 //Methods
+/** Search advertisements with debounce */
 const search = () => {
   push({ name: 'searchAdvertisements', query: { search: searchInput.value } })
   searchInput.value = ''
 }
 const { debounce: debouncedSearch, clear: clearDebounceSearch } = debounceFn(search)
 
+/** Search advertisements without debounce */
 const immediateSearch = () => {
   clearDebounceSearch()
   search()
@@ -174,6 +238,7 @@ const filterRoutes = (
           label: i.label,
           route: i.route,
           icon: i.icon,
+          badgeValue: i.badgeValue,
           items: i.items?.length ? filterRoutes(i.items, routes, userPermissions) : i.items
         } as INavbarItem
       } else {
@@ -182,4 +247,21 @@ const filterRoutes = (
     })
     .filter((i) => i != null) as INavbarItem[]
 }
+
+/** Call Api to get unread message count for user */
+const loadUnreadMessageCount = async () => {
+  unreadMessageCount.value = await messageService.getUnreadMessageCount()
+}
+
+//Watch
+/** Get unread message count when user logged ing */
+watch(
+  AuthService.isAuthenticated,
+  (isAuthenticated) => {
+    if (isAuthenticated) {
+      loadUnreadMessageCount
+    }
+  },
+  { immediate: true }
+)
 </script>

@@ -19,4 +19,10 @@ export class CustomErrorCodes {
   static readonly InvalidValue = "InvalidValue"
   static readonly ValueMustBeInteger = "ValueMustBeInteger"
   static readonly ValueMustBeNumber = "ValueMustBeNumber"
+  static readonly InvalidFileLimit = "InvalidFileLimit"
+  static readonly NotAMemberOfChat = "InvalidFileLimit"
+  static readonly AdvertisementNotFound = "AdvertisementNotFound"
+  static readonly AdvertisementNotActive = "AdvertisementNotActive"
+  static readonly UserNotOwnerOfAdvertisement = "UserNotOwnerOfAdvertisement"
+  static readonly ChatAlreadyExists = "ChatAlreadyExists"
 }

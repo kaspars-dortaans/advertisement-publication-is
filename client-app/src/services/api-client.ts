@@ -1401,6 +1401,425 @@ export class FileClient {
     }
 }
 
+export class MessageClient {
+    protected instance: AxiosInstance;
+    protected baseUrl: string;
+    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+
+    constructor(baseUrl?: string, instance?: AxiosInstance) {
+
+        this.instance = instance || axios.create();
+
+        this.baseUrl = baseUrl ?? "";
+
+    }
+
+    /**
+     * @return Success
+     */
+    getAllChats( cancelToken?: CancelToken): Promise<ChatListItemDto[]> {
+        let url_ = this.baseUrl + "/api/Message/GetAllChats";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: AxiosRequestConfig = {
+            method: "GET",
+            url: url_,
+            headers: {
+                "Accept": "text/plain"
+            },
+            cancelToken
+        };
+
+        return this.instance.request(options_).catch((_error: any) => {
+            if (isAxiosError(_error) && _error.response) {
+                return _error.response;
+            } else {
+                throw _error;
+            }
+        }).then((_response: AxiosResponse) => {
+            return this.processGetAllChats(_response);
+        });
+    }
+
+    protected processGetAllChats(response: AxiosResponse): Promise<ChatListItemDto[]> {
+        const status = response.status;
+        let _headers: any = {};
+        if (response.headers && typeof response.headers === "object") {
+            for (const k in response.headers) {
+                if (response.headers.hasOwnProperty(k)) {
+                    _headers[k] = response.headers[k];
+                }
+            }
+        }
+        if (status === 200) {
+            const _responseText = response.data;
+            let result200: any = null;
+            let resultData200  = _responseText;
+            if (Array.isArray(resultData200)) {
+                result200 = [] as any;
+                for (let item of resultData200)
+                    result200!.push(ChatListItemDto.fromJS(item));
+            }
+            else {
+                result200 = <any>null;
+            }
+            return Promise.resolve<ChatListItemDto[]>(result200);
+
+        } else if (status === 400) {
+            const _responseText = response.data;
+            let result400: any = null;
+            let resultData400  = _responseText;
+            result400 = RequestExceptionResponse.fromJS(resultData400);
+            return throwException("Bad Request", status, _responseText, _headers, result400);
+
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.data;
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Promise.resolve<ChatListItemDto[]>(null as any);
+    }
+
+    /**
+     * @param chatId (optional) 
+     * @return Success
+     */
+    getChatMessages(chatId: number | undefined, cancelToken?: CancelToken): Promise<{ [key: string]: MessageItemDto[]; }> {
+        let url_ = this.baseUrl + "/api/Message/GetChatMessages?";
+        if (chatId === null)
+            throw new Error("The parameter 'chatId' cannot be null.");
+        else if (chatId !== undefined)
+            url_ += "chatId=" + encodeURIComponent("" + chatId) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: AxiosRequestConfig = {
+            method: "GET",
+            url: url_,
+            headers: {
+                "Accept": "text/plain"
+            },
+            cancelToken
+        };
+
+        return this.instance.request(options_).catch((_error: any) => {
+            if (isAxiosError(_error) && _error.response) {
+                return _error.response;
+            } else {
+                throw _error;
+            }
+        }).then((_response: AxiosResponse) => {
+            return this.processGetChatMessages(_response);
+        });
+    }
+
+    protected processGetChatMessages(response: AxiosResponse): Promise<{ [key: string]: MessageItemDto[]; }> {
+        const status = response.status;
+        let _headers: any = {};
+        if (response.headers && typeof response.headers === "object") {
+            for (const k in response.headers) {
+                if (response.headers.hasOwnProperty(k)) {
+                    _headers[k] = response.headers[k];
+                }
+            }
+        }
+        if (status === 200) {
+            const _responseText = response.data;
+            let result200: any = null;
+            let resultData200  = _responseText;
+            if (resultData200) {
+                result200 = {} as any;
+                for (let key in resultData200) {
+                    if (resultData200.hasOwnProperty(key))
+                        (<any>result200)![key] = resultData200[key] ? resultData200[key].map((i: any) => MessageItemDto.fromJS(i)) : [];
+                }
+            }
+            else {
+                result200 = <any>null;
+            }
+            return Promise.resolve<{ [key: string]: MessageItemDto[]; }>(result200);
+
+        } else if (status === 400) {
+            const _responseText = response.data;
+            let result400: any = null;
+            let resultData400  = _responseText;
+            result400 = RequestExceptionResponse.fromJS(resultData400);
+            return throwException("Bad Request", status, _responseText, _headers, result400);
+
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.data;
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Promise.resolve<{ [key: string]: MessageItemDto[]; }>(null as any);
+    }
+
+    /**
+     * @param userId (optional) 
+     * @param advertisementId (optional) 
+     * @param withMessage (optional) 
+     * @return Success
+     */
+    createChat(userId: number | undefined, advertisementId: number | null | undefined, withMessage: SendMessageRequest | null | undefined, cancelToken?: CancelToken): Promise<void> {
+        let url_ = this.baseUrl + "/api/Message/CreateChat";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = new FormData();
+        if (userId === null || userId === undefined)
+            throw new Error("The parameter 'userId' cannot be null.");
+        else
+            content_.append("userId", userId.toString());
+        if (advertisementId !== null && advertisementId !== undefined)
+            content_.append("advertisementId", advertisementId.toString());
+        if (withMessage !== null && withMessage !== undefined)
+        {
+            if(withMessage.chatId != null)
+                content_.append("withMessage.chatId", "" + withMessage.chatId)
+            if(withMessage.text != null)
+                content_.append("withMessage.text", "" + withMessage.text)
+            if(withMessage.attachments != null)
+                content_.append("withMessage.attachments", "" + withMessage.attachments)
+        }
+
+        let options_: AxiosRequestConfig = {
+            data: content_,
+            method: "POST",
+            url: url_,
+            headers: {
+            },
+            cancelToken
+        };
+
+        return this.instance.request(options_).catch((_error: any) => {
+            if (isAxiosError(_error) && _error.response) {
+                return _error.response;
+            } else {
+                throw _error;
+            }
+        }).then((_response: AxiosResponse) => {
+            return this.processCreateChat(_response);
+        });
+    }
+
+    protected processCreateChat(response: AxiosResponse): Promise<void> {
+        const status = response.status;
+        let _headers: any = {};
+        if (response.headers && typeof response.headers === "object") {
+            for (const k in response.headers) {
+                if (response.headers.hasOwnProperty(k)) {
+                    _headers[k] = response.headers[k];
+                }
+            }
+        }
+        if (status === 200) {
+            const _responseText = response.data;
+            return Promise.resolve<void>(null as any);
+
+        } else if (status === 400) {
+            const _responseText = response.data;
+            let result400: any = null;
+            let resultData400  = _responseText;
+            result400 = RequestExceptionResponse.fromJS(resultData400);
+            return throwException("Bad Request", status, _responseText, _headers, result400);
+
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.data;
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Promise.resolve<void>(null as any);
+    }
+
+    /**
+     * @param chatId (optional) 
+     * @param text (optional) 
+     * @param attachments (optional) 
+     * @return Success
+     */
+    sendMessage(chatId: number | undefined, text: string | undefined, attachments: FileParameter[] | null | undefined, cancelToken?: CancelToken): Promise<void> {
+        let url_ = this.baseUrl + "/api/Message/SendMessage";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = new FormData();
+        if (chatId === null || chatId === undefined)
+            throw new Error("The parameter 'chatId' cannot be null.");
+        else
+            content_.append("chatId", chatId.toString());
+        if (text === null || text === undefined)
+            throw new Error("The parameter 'text' cannot be null.");
+        else
+            content_.append("text", text.toString());
+        if (attachments !== null && attachments !== undefined)
+            attachments.forEach(item_ => content_.append("attachments", item_.data, item_.fileName ? item_.fileName : "attachments") );
+
+        let options_: AxiosRequestConfig = {
+            data: content_,
+            method: "POST",
+            url: url_,
+            headers: {
+            },
+            cancelToken
+        };
+
+        return this.instance.request(options_).catch((_error: any) => {
+            if (isAxiosError(_error) && _error.response) {
+                return _error.response;
+            } else {
+                throw _error;
+            }
+        }).then((_response: AxiosResponse) => {
+            return this.processSendMessage(_response);
+        });
+    }
+
+    protected processSendMessage(response: AxiosResponse): Promise<void> {
+        const status = response.status;
+        let _headers: any = {};
+        if (response.headers && typeof response.headers === "object") {
+            for (const k in response.headers) {
+                if (response.headers.hasOwnProperty(k)) {
+                    _headers[k] = response.headers[k];
+                }
+            }
+        }
+        if (status === 200) {
+            const _responseText = response.data;
+            return Promise.resolve<void>(null as any);
+
+        } else if (status === 400) {
+            const _responseText = response.data;
+            let result400: any = null;
+            let resultData400  = _responseText;
+            result400 = RequestExceptionResponse.fromJS(resultData400);
+            return throwException("Bad Request", status, _responseText, _headers, result400);
+
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.data;
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Promise.resolve<void>(null as any);
+    }
+
+    /**
+     * @param chatId (optional) 
+     * @param body (optional) 
+     * @return Success
+     */
+    markMessageAsRead(chatId: number | undefined, body: number[] | undefined, cancelToken?: CancelToken): Promise<void> {
+        let url_ = this.baseUrl + "/api/Message/MarkMessageAsRead?";
+        if (chatId === null)
+            throw new Error("The parameter 'chatId' cannot be null.");
+        else if (chatId !== undefined)
+            url_ += "chatId=" + encodeURIComponent("" + chatId) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_: AxiosRequestConfig = {
+            data: content_,
+            method: "POST",
+            url: url_,
+            headers: {
+                "Content-Type": "application/json",
+            },
+            cancelToken
+        };
+
+        return this.instance.request(options_).catch((_error: any) => {
+            if (isAxiosError(_error) && _error.response) {
+                return _error.response;
+            } else {
+                throw _error;
+            }
+        }).then((_response: AxiosResponse) => {
+            return this.processMarkMessageAsRead(_response);
+        });
+    }
+
+    protected processMarkMessageAsRead(response: AxiosResponse): Promise<void> {
+        const status = response.status;
+        let _headers: any = {};
+        if (response.headers && typeof response.headers === "object") {
+            for (const k in response.headers) {
+                if (response.headers.hasOwnProperty(k)) {
+                    _headers[k] = response.headers[k];
+                }
+            }
+        }
+        if (status === 200) {
+            const _responseText = response.data;
+            return Promise.resolve<void>(null as any);
+
+        } else if (status === 400) {
+            const _responseText = response.data;
+            let result400: any = null;
+            let resultData400  = _responseText;
+            result400 = RequestExceptionResponse.fromJS(resultData400);
+            return throwException("Bad Request", status, _responseText, _headers, result400);
+
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.data;
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Promise.resolve<void>(null as any);
+    }
+
+    /**
+     * @return Success
+     */
+    getUnreadMessageCount( cancelToken?: CancelToken): Promise<number> {
+        let url_ = this.baseUrl + "/api/Message/GetUnreadMessageCount";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: AxiosRequestConfig = {
+            method: "GET",
+            url: url_,
+            headers: {
+                "Accept": "text/plain"
+            },
+            cancelToken
+        };
+
+        return this.instance.request(options_).catch((_error: any) => {
+            if (isAxiosError(_error) && _error.response) {
+                return _error.response;
+            } else {
+                throw _error;
+            }
+        }).then((_response: AxiosResponse) => {
+            return this.processGetUnreadMessageCount(_response);
+        });
+    }
+
+    protected processGetUnreadMessageCount(response: AxiosResponse): Promise<number> {
+        const status = response.status;
+        let _headers: any = {};
+        if (response.headers && typeof response.headers === "object") {
+            for (const k in response.headers) {
+                if (response.headers.hasOwnProperty(k)) {
+                    _headers[k] = response.headers[k];
+                }
+            }
+        }
+        if (status === 200) {
+            const _responseText = response.data;
+            let result200: any = null;
+            let resultData200  = _responseText;
+                result200 = resultData200 !== undefined ? resultData200 : <any>null;
+    
+            return Promise.resolve<number>(result200);
+
+        } else if (status === 400) {
+            const _responseText = response.data;
+            let result400: any = null;
+            let resultData400  = _responseText;
+            result400 = RequestExceptionResponse.fromJS(resultData400);
+            return throwException("Bad Request", status, _responseText, _headers, result400);
+
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.data;
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Promise.resolve<number>(null as any);
+    }
+}
+
 export class UserClient {
     protected instance: AxiosInstance;
     protected baseUrl: string;
@@ -3142,6 +3561,110 @@ export interface IChangePasswordRequest {
     confirmPassword: string;
 }
 
+export class ChatListItemDto implements IChatListItemDto {
+    id?: number;
+    advertisementId?: number | undefined;
+    advertisementOwnerId?: number | undefined;
+    title?: string | undefined;
+    lastMessage?: string | undefined;
+    unreadMessageCount?: number;
+    thumbnailImageUrl?: string | undefined;
+
+    constructor(data?: IChatListItemDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.advertisementId = _data["advertisementId"];
+            this.advertisementOwnerId = _data["advertisementOwnerId"];
+            this.title = _data["title"];
+            this.lastMessage = _data["lastMessage"];
+            this.unreadMessageCount = _data["unreadMessageCount"];
+            this.thumbnailImageUrl = _data["thumbnailImageUrl"];
+        }
+    }
+
+    static fromJS(data: any): ChatListItemDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new ChatListItemDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["advertisementId"] = this.advertisementId;
+        data["advertisementOwnerId"] = this.advertisementOwnerId;
+        data["title"] = this.title;
+        data["lastMessage"] = this.lastMessage;
+        data["unreadMessageCount"] = this.unreadMessageCount;
+        data["thumbnailImageUrl"] = this.thumbnailImageUrl;
+        return data;
+    }
+}
+
+export interface IChatListItemDto {
+    id?: number;
+    advertisementId?: number | undefined;
+    advertisementOwnerId?: number | undefined;
+    title?: string | undefined;
+    lastMessage?: string | undefined;
+    unreadMessageCount?: number;
+    thumbnailImageUrl?: string | undefined;
+}
+
+export class CreateChatRequest implements ICreateChatRequest {
+    userId?: number;
+    advertisementId?: number | undefined;
+    withMessage?: SendMessageRequest | undefined;
+
+    constructor(data?: ICreateChatRequest) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.userId = _data["userId"];
+            this.advertisementId = _data["advertisementId"];
+            this.withMessage = _data["withMessage"] ? SendMessageRequest.fromJS(_data["withMessage"]) : <any>undefined;
+        }
+    }
+
+    static fromJS(data: any): CreateChatRequest {
+        data = typeof data === 'object' ? data : {};
+        let result = new CreateChatRequest();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["userId"] = this.userId;
+        data["advertisementId"] = this.advertisementId;
+        data["withMessage"] = this.withMessage ? this.withMessage.toJSON() : <any>undefined;
+        return data;
+    }
+}
+
+export interface ICreateChatRequest {
+    userId?: number;
+    advertisementId?: number | undefined;
+    withMessage?: SendMessageRequest | undefined;
+}
+
 export class CreateOrEditAdvertisementRequest implements ICreateOrEditAdvertisementRequest {
     id?: number | undefined;
     categoryId!: number;
@@ -3708,6 +4231,114 @@ export interface ILoginDto {
     password: string;
 }
 
+export class MessageAttachmentItemDto implements IMessageAttachmentItemDto {
+    url?: string | undefined;
+    fileName?: string | undefined;
+    sizeInBytes?: number;
+
+    constructor(data?: IMessageAttachmentItemDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.url = _data["url"];
+            this.fileName = _data["fileName"];
+            this.sizeInBytes = _data["sizeInBytes"];
+        }
+    }
+
+    static fromJS(data: any): MessageAttachmentItemDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new MessageAttachmentItemDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["url"] = this.url;
+        data["fileName"] = this.fileName;
+        data["sizeInBytes"] = this.sizeInBytes;
+        return data;
+    }
+}
+
+export interface IMessageAttachmentItemDto {
+    url?: string | undefined;
+    fileName?: string | undefined;
+    sizeInBytes?: number;
+}
+
+export class MessageItemDto implements IMessageItemDto {
+    id?: number;
+    fromUserId?: number;
+    text?: string | undefined;
+    sentTime?: Date;
+    isMessageRead?: boolean;
+    attachments?: MessageAttachmentItemDto[] | undefined;
+
+    constructor(data?: IMessageItemDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.fromUserId = _data["fromUserId"];
+            this.text = _data["text"];
+            this.sentTime = _data["sentTime"] ? new Date(_data["sentTime"].toString()) : <any>undefined;
+            this.isMessageRead = _data["isMessageRead"];
+            if (Array.isArray(_data["attachments"])) {
+                this.attachments = [] as any;
+                for (let item of _data["attachments"])
+                    this.attachments!.push(MessageAttachmentItemDto.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): MessageItemDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new MessageItemDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["fromUserId"] = this.fromUserId;
+        data["text"] = this.text;
+        data["sentTime"] = this.sentTime ? this.sentTime.toISOString() : <any>undefined;
+        data["isMessageRead"] = this.isMessageRead;
+        if (Array.isArray(this.attachments)) {
+            data["attachments"] = [];
+            for (let item of this.attachments)
+                data["attachments"].push(item.toJSON());
+        }
+        return data;
+    }
+}
+
+export interface IMessageItemDto {
+    id?: number;
+    fromUserId?: number;
+    text?: string | undefined;
+    sentTime?: Date;
+    isMessageRead?: boolean;
+    attachments?: MessageAttachmentItemDto[] | undefined;
+}
+
 export class NotFoundResult implements INotFoundResult {
     statusCode?: number;
 
@@ -4162,6 +4793,58 @@ export class SearchQuery implements ISearchQuery {
 export interface ISearchQuery {
     value?: string | undefined;
     regex?: boolean;
+}
+
+export class SendMessageRequest implements ISendMessageRequest {
+    chatId!: number;
+    text!: string;
+    attachments?: any[] | undefined;
+
+    constructor(data?: ISendMessageRequest) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.chatId = _data["chatId"];
+            this.text = _data["text"];
+            if (Array.isArray(_data["attachments"])) {
+                this.attachments = [] as any;
+                for (let item of _data["attachments"])
+                    this.attachments!.push(item);
+            }
+        }
+    }
+
+    static fromJS(data: any): SendMessageRequest {
+        data = typeof data === 'object' ? data : {};
+        let result = new SendMessageRequest();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["chatId"] = this.chatId;
+        data["text"] = this.text;
+        if (Array.isArray(this.attachments)) {
+            data["attachments"] = [];
+            for (let item of this.attachments)
+                data["attachments"].push(item);
+        }
+        return data;
+    }
+}
+
+export interface ISendMessageRequest {
+    chatId: number;
+    text: string;
+    attachments?: any[] | undefined;
 }
 
 export class T implements IT {

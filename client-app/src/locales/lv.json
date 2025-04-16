@@ -106,6 +106,18 @@
       "extendedList": "Šie sludinājumi {0} tiks pagarināti:"
     }
   },
+  "messages": {
+    "messageIsRead": "Lasīta",
+    "messageIsSent": "Nosūtīta",
+    "noChatsYet": "Vēl nav nevienas sarakstes",
+    "noMessageYet": "Vēl nav ziņu",
+    "noChatSelected": "Izvēlēties saraksti, lai skatītu ziņas",
+    "noConnectionToServer": "Nevarēja savienoties ar serveri",
+    "connectingToServer": "Savienojas ar serveri",
+    "retryConnecting": "Mēģināt savienoties",
+    "userAdvertisementChats": "Mani sludinājumi",
+    "otherUserAdvertisementChats": "Citi"
+  },
   "imageUpload": {
     "uploadImages": "Augšupielādēt",
     "imagesUploaded": "Attēli augšupielādēti {0} / {1}",
@@ -125,7 +137,8 @@
     "createAdvertisement": "Izveidot sludinājumu",
     "siteLogo": "Mājaslapas logo",
     "myAdvertisements": "Mani sludinājumi",
-    "editAdvertisement": "Rediģēt sludinājumu"
+    "editAdvertisement": "Rediģēt sludinājumu",
+    "messages": "Sarakstes"
   },
   "dataSize": {
     "bits": "{0} biti",

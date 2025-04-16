@@ -1,18 +1,53 @@
 import { axiosInstance } from '@/init/axios'
 import { LocaleService } from '@/services/locale-service'
-import { HttpStatusCode } from 'axios'
+import { HttpStatusCode, type AxiosProgressEvent } from 'axios'
 
 const ls = LocaleService.get()
 
-export const downloadFile = async (url: string) => {
+/**
+ * Download file with axios
+ * @param url File url
+ * @param downloadProgressCallback Progress callback
+ * @returns Promise to File
+ */
+export const downloadFile = async (
+  url: string,
+  downloadProgressCallback?: (e: AxiosProgressEvent) => void
+) => {
   const response = await axiosInstance.get(url, {
-    responseType: 'blob'
+    responseType: 'blob',
+    onDownloadProgress: downloadProgressCallback
   })
 
   if (response.status === HttpStatusCode.Ok) {
     const contentDisposition = response.headers['content-disposition'] as string
     const fileName = contentDisposition.match(/filename\s*=(.+);/)?.[1] ?? ''
     return new File([response.data], fileName)
+  }
+}
+
+/**
+ * Download file with axios and save it to user devices
+ * @param url Url to file
+ * @param downloadProgressCallback Download progress callback
+ */
+export const downloadAndSaveFile = async (
+  url: string,
+  downloadProgressCallback?: (e: AxiosProgressEvent) => void
+) => {
+  const file = await downloadFile(url, downloadProgressCallback)
+  if (file) {
+    const link = document.createElement('a')
+
+    //Create link and click it to save file in user device
+    const url = URL.createObjectURL(file)
+    link.setAttribute('href', url)
+    link.setAttribute('download', file.name)
+    link.click()
+
+    //Clean up
+    link.remove()
+    URL.revokeObjectURL(url)
   }
 }
 

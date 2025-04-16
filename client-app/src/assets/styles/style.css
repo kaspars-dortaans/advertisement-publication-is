@@ -6,7 +6,9 @@
 
 /* Custom */
 @import './galleria.css';
+@import './menu.css';
 @import './text.css';
+@import './message.css';
 
 /* Primary and Surface Palettes */
 :root {

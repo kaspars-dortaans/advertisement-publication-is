@@ -1,0 +1,18 @@
+/* Active */
+.p-menu-item.active .p-menu-item-content {
+  @apply bg-surface-200 dark:bg-surface-700 text-surface-800 dark:text-surface-0;
+}
+
+.p-menu-item.active .p-menu-item-icon {
+  @apply text-surface-500 dark:text-surface-400;
+}
+
+/* Active & hover */
+.p-menu-item.active:not(.p-disabled) .p-menu-item-content:hover {
+  @apply bg-surface-300 dark:bg-surface-600;
+}
+
+/* Active & focus */
+.p-menu-item.active.p-focus .p-menu-item-content {
+  @apply bg-surface-300 dark:bg-surface-600;
+}

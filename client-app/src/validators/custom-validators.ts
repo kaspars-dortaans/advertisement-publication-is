@@ -82,18 +82,36 @@ export const fileType = (allowedFileTypes: string | string[]): TestFunction => {
   }
 }
 
-/** Validate that file does not exceed provided size */
+/** Validate that files does not exceed provided size */
 export const fileSize = (maxFileSizeInBytes: number): TestFunction => {
   return function (value, context) {
-    if (!(value instanceof File)) {
+    let files: File[]
+    if (Array.isArray(value)) {
+      if (value.length && value.some((f) => !(f instanceof File))) {
+        return context.createError({
+          message: ls.l('errors.FieldNotValid', context.path)
+        })
+      }
+      files = []
+    } else if (value instanceof File) {
+      files = [value]
+    } else {
       return context.createError({
         message: ls.l('errors.FieldNotValid', context.path)
       })
     }
 
-    if (value.size > maxFileSizeInBytes) {
+    let errorMessage = ''
+    for (const file of files) {
+      if (file.size > maxFileSizeInBytes) {
+        errorMessage +=
+          ls.l('errors.InvalidSizeForFile', file.name, formatDataSize(maxFileSizeInBytes)) + ';\n'
+      }
+    }
+
+    if (errorMessage) {
       return context.createError({
-        message: ls.l('errors.InvalidSizeForFile', value.name, formatDataSize(maxFileSizeInBytes))
+        message: errorMessage
       })
     }
     return true

@@ -93,6 +93,8 @@ export class MessageHub {
       try {
         this.connectionStatus.value = 'Connecting'
         this.startConnectPromise = this.connection.start()
+        await this.startConnectPromise
+        this.startConnectPromise = null
       } catch (e) {
         console.error(e)
       }
@@ -120,6 +122,7 @@ export class MessageHub {
       this.stopConnectionPromise = this.connection.stop()
     }
     await this.stopConnectionPromise
+    this.stopConnectionPromise = null
   }
 
   /**
@@ -180,7 +183,7 @@ export class MessageHub {
    * @returns Unsubscribe callback
    */
   public async subscribeMarkMessageAsRead(
-    callback: (chatId: number, messageIds: number[]) => void
+    callback: (chatId: number, userId: number, messageIds: number[]) => void
   ) {
     return await this.subscribeToHubEvent('MarkMessageAsRead', callback)
   }

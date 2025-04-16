@@ -59,9 +59,18 @@
             as="RouterLink"
             :to="{ name: 'viewUser', params: { id: advertisement.ownerId } }"
           ></Button>
-          <Button :disabled="userOwnedAdvertisement" @click="todo">{{
-            l.advertisements.sendMessage
-          }}</Button>
+          <Button
+            v-if="!userOwnedAdvertisement"
+            as="RouterLink"
+            :to="{
+              name: 'viewMessages',
+              query: {
+                newChatToUserId: advertisement.ownerId,
+                newChatToAdvertisementId: advertisement.id
+              }
+            }"
+            >{{ l.advertisements.sendMessage }}</Button
+          >
         </div>
 
         <div
@@ -197,10 +206,6 @@ watch(LocaleService.currentLocaleName, () => {
 //Methods
 const loadAdvertisement = async () => {
   advertisement.value = await advertisementService.getAdvertisement(advertisementId)
-}
-
-const todo = () => {
-  alert('todo')
 }
 
 const revealPhoneNumber = async () => {

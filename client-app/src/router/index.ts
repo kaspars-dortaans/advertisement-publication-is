@@ -139,6 +139,24 @@ const router = createRouter({
         requiresPermission: Permissions[Permissions.ViewOwnedAdvertisements]
       }
     },
+    {
+      path: '/view-messages/:chatId?',
+      name: 'viewMessages',
+      component: () => import('../views/messages/ViewMessages.vue'),
+      props: (route) => {
+        const userId = parseInt('' + route.query.newChatToUserId)
+        const advertisementId = parseInt('' + route.query.newChatToAdvertisementId)
+        const chatId = parseInt(firstParam(route.params.chatId))
+        return {
+          chatId: isNaN(chatId) ? undefined : chatId,
+          newChatToUserId: isNaN(userId) ? undefined : userId,
+          newChatToAdvertisementId: isNaN(advertisementId) ? undefined : advertisementId
+        }
+      },
+      meta: {
+        requiresPermission: Permissions[Permissions.ViewMessages]
+      }
+    },
 
     //Not found
     {

@@ -1,0 +1,48 @@
+/* Message */
+.message {
+  @apply max-w-[60%] rounded-md p-1.5;
+}
+
+.message.incoming {
+  @apply bg-slate-100 self-start;
+}
+
+.message.outgoing {
+  @apply bg-primary-300 self-end;
+}
+
+/* Message attachment */
+.message-attachment {
+  @apply flex flex-nowrap items-center gap-2 bg-opacity-15 bg-black rounded-md mb-2 p-2;
+}
+
+.message.incoming .message-attachment {
+  @apply flex-row;
+}
+
+.message.outgoing .message-attachment {
+  @apply flex-row-reverse;
+}
+
+/* Message container */
+
+.attachment-text-container {
+  @apply overflow-hidden;
+}
+
+.message.outgoing .attachment-text-container {
+  @apply mr-auto;
+}
+
+/* Attachment download button */
+.attachment-download-button {
+  @apply min-w-10 min-h-10;
+}
+
+.outgoing .attachment-download-button {
+  @apply bg-primary-100 hover:bg-primary-200 border-primary-100 hover:border-primary-200;
+}
+
+.incoming .attachment-download-button {
+  @apply bg-surface-100 hover:bg-surface-200 border-surface-100 hover:border-surface-200;
+}
