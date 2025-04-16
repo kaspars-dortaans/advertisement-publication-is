@@ -8,16 +8,10 @@ using System.Text;
 
 namespace BusinessLogic.Authentication.Jwt
 {
-    public class JwtProvider : IJwtProvider
+    public class JwtProvider(UserManager<User> userManager, IOptions<JwtProviderOptions> options) : IJwtProvider
     {
-        private readonly UserManager<User> _userManager;
-        private readonly JwtProviderOptions _options;
-
-        public JwtProvider(UserManager<User> userManager, IOptions<JwtProviderOptions> options)
-        {
-            _userManager = userManager;
-            _options = options.Value;
-        }
+        private readonly UserManager<User> _userManager = userManager;
+        private readonly JwtProviderOptions _options = options.Value;
 
         public async Task<string> GetJwtToken(string email, string password)
         {

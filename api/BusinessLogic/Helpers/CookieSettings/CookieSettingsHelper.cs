@@ -16,12 +16,7 @@ public class CookieSettingsHelper
 
     public CookieSettingsHelper(IHttpContextAccessor contextAccessor)
     {
-        var context = contextAccessor.HttpContext;
-        if (context is null)
-        {
-            throw new ApiException([CustomErrorCodes.InvalidCookie]);
-        }
-
+        var context = contextAccessor.HttpContext ?? throw new ApiException([CustomErrorCodes.InvalidCookie]);
         var cookie = context.Request.Cookies.FirstOrDefault(c => c.Key == CookieConstants.UserSettingCookieName);
 
         if (string.IsNullOrEmpty(cookie.Value))

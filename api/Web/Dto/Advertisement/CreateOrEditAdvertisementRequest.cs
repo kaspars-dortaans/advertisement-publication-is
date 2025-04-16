@@ -30,6 +30,7 @@ public class CreateOrEditAdvertisementRequest
 
     [MaxFileSize(ImageConstants.MaxFileSizeInBytes)]
     [AllowedFileTypes(ImageConstants.AllowedFileTypes)]
+    [MaxLength(ImageConstants.MaxImageCountPerAdvertisement, ErrorMessage = CustomErrorCodes.InvalidFileLimit)]
     public IEnumerable<IFormFile>? ImagesToAdd { get; set; }
 
     /// <summary>
