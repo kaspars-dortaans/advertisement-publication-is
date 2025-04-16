@@ -1,3 +1,4 @@
+using BusinessLogic.Authentication;
 using BusinessLogic.Authentication.Jwt;
 using BusinessLogic.Authorization;
 using BusinessLogic.Entities;
@@ -10,6 +11,7 @@ using ImageMagick;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.Net.Http.Headers;
@@ -18,6 +20,7 @@ using System.Reflection;
 using System.Text;
 using System.Text.Json.Serialization;
 using Web.Filters;
+using Web.Hubs;
 using Web.OpenApi;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -56,7 +59,31 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
          IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey!))
      };
      options.MapInboundClaims = false;
+
+     // Based on: https://learn.microsoft.com/en-us/aspnet/core/signalr/authn-and-authz?view=aspnetcore-9.0
+     // Sending the access token in the query string is required when using WebSockets or ServerSentEvents
+     // due to a limitation in Browser APIs. We restrict it to only calls to the
+     // SignalR hub in this code.
+     options.Events = new JwtBearerEvents
+     {
+         OnMessageReceived = context =>
+         {
+             var accessToken = context.Request.Query["access_token"];
+
+             // If the request is for our hub...
+             var path = context.HttpContext.Request.Path;
+             if (!string.IsNullOrEmpty(accessToken) &&
+                 (path.StartsWithSegments("/hubs/messages")))
+             {
+                 // Read the token out of the query string
+                 context.Token = accessToken;
+             }
+             return Task.CompletedTask;
+         }
+     };
  });
+//UserId provider for signalR
+builder.Services.AddSingleton<IUserIdProvider, JwtTokenBasedUserIdProvider>();
 
 //Authorization
 builder.Services.AddAuthorization(o =>
@@ -154,6 +181,8 @@ builder.Services.AddOptions<StorageOptions>().Bind(builder.Configuration.GetSect
 builder.Services.AddScoped<IJwtProvider, JwtProvider>();
 
 //Register services here
+builder.Services.AddSignalR();
+
 builder.Services.AddScoped(typeof(IBaseService<>), typeof(BaseService<>));
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IAdvertisementService, AdvertisementService>();
@@ -187,6 +216,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+app.MapHub<MessageHub>("/hubs/messages");
 
 if (app.Environment.IsDevelopment())
 {

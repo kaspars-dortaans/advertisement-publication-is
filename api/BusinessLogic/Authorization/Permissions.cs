@@ -18,6 +18,10 @@ public enum Permissions
     EditOwnedAdvertisement,
     DeleteOwnedAdvertisement,
 
+    //Messages
+    ViewMessages,
+    SendMessage,
+
     //Manage all users
-    ViewUsers,
+    ViewUsers
 }
