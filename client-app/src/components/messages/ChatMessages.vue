@@ -1,5 +1,13 @@
 <template>
-  <div class="relative flex-1 h-0">
+  <div class="relative flex-1 h-0 flex flex-col flex-nowrap">
+    <Button
+      v-if="currentAdvertisementId"
+      :label="l.messages.viewAdvertisement"
+      class="mb-2 self-start"
+      as="RouterLink"
+      :to="{ name: 'viewAdvertisement', params: { id: currentAdvertisementId } }"
+    />
+
     <!-- Connection error messages -->
     <div
       v-if="messageHub.connectionStatus.value === 'Disconnected'"
@@ -31,7 +39,7 @@
 
     <!-- Message container -->
     <div
-      class="max-h-full overflow-y-auto flex flex-col flex-nowrap gap-2 pr-2"
+      class="flex-1 overflow-y-auto flex flex-col flex-nowrap gap-2 pr-2"
       ref="messageContainer"
       @scroll="handleScroll.debounce"
     >
@@ -39,7 +47,7 @@
         v-if="typeof stickyDateGroupIndex === 'number'"
         class="self-center rounded-2xl py-1 px-3 bg-surface-200 absolute top"
       >
-        {{ dateFormat.format(messagesByDate[stickyDateGroupIndex].date) }}
+        {{ dateFormat.format(messagesByDate[stickyDateGroupIndex]?.date) }}
       </p>
 
       <!-- Message groups by date -->
@@ -146,6 +154,7 @@ const loading = defineModel<boolean>('loading')
 //Props
 const { currentChatId, isNewChat } = defineProps<{
   currentChatId?: number
+  currentAdvertisementId?: number
   isNewChat: boolean
 }>()
 
@@ -246,17 +255,12 @@ const loadMessages = async (chatId?: number) => {
     const messageDateGroups: IMessageDateGroup[] = []
     const unreadMessageIds: number[] = []
     for (const dateString in messageDictionary) {
-      messageDateGroups.push({
-        date: new Date(dateString),
-        messages: messageDictionary[dateString]
-      })
       for (const message of messageDictionary[dateString]) {
         if (
           !message.isMessageRead &&
           message.fromUserId !== currentUserId.value &&
           typeof message.id === 'number'
         ) {
-          message.isMessageRead = true
           unreadMessageIds.push(message.id)
         }
 
@@ -268,6 +272,11 @@ const loadMessages = async (chatId?: number) => {
           }
         }
       }
+
+      messageDateGroups.push({
+        date: new Date(dateString),
+        messages: messageDictionary[dateString]
+      })
     }
     messagesByDate.value = messageDateGroups.sort((a, b) => (a.date < b.date ? -1 : 1))
 
@@ -328,26 +337,24 @@ const handleNewMessage = (chatId: number, iNewMessage: IMessageItemDto) => {
     messagesByDate.value[dateIndex].messages.push(newMessage)
   }
 
-  //Scroll to view new message & mark it as read
-  if (!isScrollingPreviousMessages.value) {
-    if (newMessage.fromUserId !== currentUserId.value) {
+  //If not current user message
+  if (newMessage.fromUserId !== currentUserId.value) {
+    //Scroll to view new message & mark it as read
+    if (!isScrollingPreviousMessages.value) {
       markMessageAsRead([newMessage.id!])
-    }
-    nextTick(() => {
-      scrollMessageContainerToBottom()
-    })
-  } else {
-    if (newMessage.fromUserId !== currentUserId.value) {
+      nextTick(() => {
+        scrollMessageContainerToBottom()
+      })
+    } else {
       unreadMessageCount.value++
+      //When new message is displayed observe it
+      nextTick(() => {
+        const messageEl = messagesElements.value?.find((el) => el.id === 'message-' + newMessage.id)
+        if (messageEl) {
+          messageObserver.value?.observe(messageEl)
+        }
+      })
     }
-
-    //When new message is displayed observe it
-    nextTick(() => {
-      const messageEl = messagesElements.value?.find((el) => el.id === 'message-' + newMessage.id)
-      if (messageEl) {
-        messageObserver.value?.observe(messageEl)
-      }
-    })
   }
 }
 
@@ -356,26 +363,33 @@ const handleNewMessage = (chatId: number, iNewMessage: IMessageItemDto) => {
  * @param chatId
  * @param messageIds
  */
-const handleMessageRead = (chatId: number, userId: number, messageIds: number[]) => {
-  if (currentChatId !== chatId) {
+const handleMessageRead = (
+  chatId: number,
+  _userId: number,
+  messageIds: number[],
+  messagesAffected: number
+) => {
+  if (currentChatId !== chatId || !messagesAffected) {
     return
   }
 
+  let unreadMessagesCounter = 0
   for (let i = messagesByDate.value.length - 1; i >= 0; i--) {
     for (let j = messagesByDate.value[i].messages.length - 1; j >= 0; j--) {
       if (messagesByDate.value[i].messages[j].isMessageRead) {
         continue
       }
 
+      //If read message ids contain current message id, mark it as read
       if (messageIds.some((id) => id === messagesByDate.value[i].messages[j].id)) {
         messagesByDate.value[i].messages[j].isMessageRead = true
-        //If this user has read this message, decrease unread message count
-        if (userId === currentUserId.value) {
-          unreadMessageCount.value = unreadMessageCount.value > 0 ? unreadMessageCount.value - 1 : 0
-        }
+      } else if (messagesByDate.value[i].messages[j].fromUserId !== currentUserId.value) {
+        //If not, and current user id is not equal to message sender, increase unread message counter
+        unreadMessagesCounter++
       }
     }
   }
+  unreadMessageCount.value = unreadMessagesCounter
 }
 
 /**
@@ -435,7 +449,7 @@ const searchStickyDateElement = (lastIndex: number | undefined) => {
     }
   }
 
-  return undefined
+  return delta > 0 ? elements.length - 1 : 0
 }
 
 /**

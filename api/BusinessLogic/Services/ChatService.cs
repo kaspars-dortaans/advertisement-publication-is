@@ -143,12 +143,12 @@ public class ChatService(Context dbContext,
         };
     }
 
-    public async Task MarkMessageAsRead(int chatId, IEnumerable<int> messageIds, int userId)
+    public async Task<int> MarkMessageAsRead(int chatId, IEnumerable<int> messageIds, int userId)
     {
         await ValidateIsMemberOfChat(chatId, userId);
 
-        await _messageService
-            .Where(m => messageIds.Contains(m.Id))
+        return await _messageService
+            .Where(m => messageIds.Contains(m.Id) && userId != m.FromUserId)
             .ExecuteUpdateAsync(setters => setters.SetProperty(m => m.IsMessageRead, true));
     }
 

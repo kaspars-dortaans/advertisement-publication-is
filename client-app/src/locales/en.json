@@ -116,7 +116,8 @@
     "connectingToServer": "Trying to connect to the server",
     "retryConnecting": "Try connect",
     "userAdvertisementChats": "My advertisements",
-    "otherUserAdvertisementChats": "Other"
+    "otherUserAdvertisementChats": "Other",
+    "viewAdvertisement": "View advertisement"
   },
   "imageUpload": {
     "uploadImages": "Upload",

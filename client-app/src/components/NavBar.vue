@@ -184,11 +184,13 @@ onBeforeMount(async () => {
   )
 
   unsubscribeCallbacks.push(
-    await messageHub.subscribeMarkMessageAsRead((_, userId, messageIds) => {
-      if (userId === currentUserId.value) {
-        unreadMessageCount.value -= messageIds.length
+    await messageHub.subscribeMarkMessageAsRead(
+      (_chatId, userId, _messageIds, messagesAffected) => {
+        if (userId === currentUserId.value) {
+          unreadMessageCount.value -= messagesAffected
+        }
       }
-    })
+    )
   )
 
   unsubscribeCallbacks.push(
@@ -259,7 +261,7 @@ watch(
   AuthService.isAuthenticated,
   (isAuthenticated) => {
     if (isAuthenticated) {
-      loadUnreadMessageCount
+      loadUnreadMessageCount()
     }
   },
   { immediate: true }

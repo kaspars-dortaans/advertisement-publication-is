@@ -139,13 +139,13 @@ public class MessageController(
     {
         //To implement group chats, this endpoint need to be adapted to support group chat message read status change
         var userId = User!.GetUserId()!.Value;
-        await _chatService.MarkMessageAsRead(chatId, messageIds, userId);
+        var messagesAffected = await _chatService.MarkMessageAsRead(chatId, messageIds, userId);
 
         var recipientIds = (await _chatService.MessageRecipientIds(messageIds.First())).Select(id => id.ToString());
         if (recipientIds.Any())
         {
             //Send "mark message as read" event for message recipients
-            await _messageHubContext.Clients.Users(recipientIds).MarkMessageAsRead(chatId, userId, messageIds);
+            await _messageHubContext.Clients.Users(recipientIds).MarkMessageAsRead(chatId, userId, messageIds, messagesAffected);
         }
     }
 

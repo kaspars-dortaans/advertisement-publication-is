@@ -118,7 +118,8 @@ export const emptyLocale = {
     connectingToServer: '',
     retryConnecting: '',
     userAdvertisementChats: '',
-    otherUserAdvertisementChats: ''
+    otherUserAdvertisementChats: '',
+    viewAdvertisement: ''
   },
   imageUpload: {
     uploadImages: '',

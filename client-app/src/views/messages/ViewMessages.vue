@@ -49,6 +49,7 @@
             <ChatMessages
               v-model:loading="loadingMessages"
               :currentChatId="currentChat?.id"
+              :currentAdvertisementId="currentChat?.advertisementId"
               :isNewChat="isNewChat"
               ref="chatMessages"
             />
@@ -120,6 +121,7 @@ import { fileSize } from '@/validators/custom-validators'
 import { toTypedSchema } from '@vee-validate/yup'
 import { useForm } from 'vee-validate'
 import { computed, inject, onBeforeMount, onBeforeUnmount, ref, useTemplateRef } from 'vue'
+import { useRouter } from 'vue-router'
 import { array, object, string } from 'yup'
 
 //Props
@@ -133,6 +135,7 @@ const { chatId, newChatToAdvertisementId, newChatToUserId } = defineProps<{
 const l = LocaleService.currentLocale
 const messageHub = inject<MessageHub>('messageHub')!
 const messageService = getClient(MessageClient)
+const { replace } = useRouter()
 
 //Refs
 const fileInputEl = useTemplateRef('fileInput')
@@ -207,12 +210,12 @@ defineMultipleFields(['text', 'attachments'])
 //Hooks
 onBeforeMount(async () => {
   const unsubscribeNewChatPromise = messageHub.subscribeNewChat(handleNewChat)
-  await loadChats()
   unsubscribeNewChat.value = await unsubscribeNewChatPromise
   unsubscribeNewMessage.value = await messageHub.subscribeNewMessages(handleNewMessage)
   unsubscribeMarkMessageAsRead.value =
     await messageHub.subscribeMarkMessageAsRead(handleMessageRead)
   unsubscribeOnReconnect.value = messageHub.subscribeToReconnect(loadChats)
+  await loadChats()
 })
 
 onBeforeUnmount(async () => {
@@ -233,6 +236,7 @@ const selectChat = (selectedChat: ChatListItemDto) => {
   }
   tabOpened.value = selectedChat.advertisementOwnerId == currentUserId.value ? 0 : 1
   currentChat.value = selectedChat
+  replace({ name: 'viewMessages', params: { chatId: currentChat.value.id! } })
 }
 
 /**
@@ -344,7 +348,7 @@ const handleNewMessage = (chatId: number, iNewMessage: IMessageItemDto) => {
     return
   }
 
-  let chat = chatMenuItems.value.find((i) => i.chat.id === chatId)?.chat
+  let chat = chatMenuItems.value.find((i) => i.chat?.id === chatId)?.chat
   if (chat) {
     if (chat.id === currentChat.value?.id) {
       setTimeout(() => {
@@ -363,14 +367,19 @@ const handleNewMessage = (chatId: number, iNewMessage: IMessageItemDto) => {
  * @param chatId
  * @param messageIds
  */
-const handleMessageRead = (chatId: number, userId: number, messageIds: number[]) => {
-  if (userId !== currentUserId.value) {
+const handleMessageRead = (
+  chatId: number,
+  userId: number,
+  _messageIds: number[],
+  messagesAffected: number
+) => {
+  if (userId !== currentUserId.value || !messagesAffected) {
     return
   }
 
   let chat = chatMenuItems.value.find((i) => i.chat.id === chatId)?.chat
   if (chat) {
-    chat.unreadMessageCount = (chat.unreadMessageCount ?? 0) - messageIds.length
+    chat.unreadMessageCount = (chat.unreadMessageCount ?? 0) - messagesAffected
   }
 }
 </script>

@@ -183,7 +183,12 @@ export class MessageHub {
    * @returns Unsubscribe callback
    */
   public async subscribeMarkMessageAsRead(
-    callback: (chatId: number, userId: number, messageIds: number[]) => void
+    callback: (
+      chatId: number,
+      userId: number,
+      messageIds: number[],
+      messagesAffected: number
+    ) => void
   ) {
     return await this.subscribeToHubEvent('MarkMessageAsRead', callback)
   }
