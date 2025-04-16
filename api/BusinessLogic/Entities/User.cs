@@ -15,4 +15,6 @@ public class User : IdentityUser<int>
     public ICollection<Advertisement> OwnedAdvertisements { get; set; } = default!;
     public ICollection<Advertisement> BookmarkedAdvertisements { get; set; } = default!;
     public ICollection<AdvertisementBookmark> AdvertisementBookmarks { get; set; } = default!;
+    public ICollection<Chat> Chats { get; set; } = default!;
+
 }

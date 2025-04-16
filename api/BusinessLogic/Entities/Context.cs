@@ -43,10 +43,16 @@ public class Context(DbContextOptions<Context> options) : IdentityDbContext<User
             .HasForeignKey(ur => ur.RoleId)
             .IsRequired();
 
-        modelBuilder.Entity<User>()
+        var userBuilder = modelBuilder.Entity<User>();
+        userBuilder
             .HasOne(user => user.ProfileImageFile)
             .WithOne(file => file.OwnerUser)
             .HasForeignKey<UserImage>(file => file.OwnerUserId);
+
+        userBuilder
+            .HasMany(u => u.Chats)
+            .WithMany(c => c.Users)
+            .UsingEntity<ChatUser>();
 
         modelBuilder.Entity<Category>()
             .HasMany(c => c.Attributes)
