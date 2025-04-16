@@ -20,15 +20,26 @@ export class Settings {
     //Get and set settings from cookie
     const settingCookieValue = getCookie(CookieConstants.UserSettingCookieName)
     const valueObject = settingCookieValue ? (JSON.parse(settingCookieValue) as object) : {}
+
     const settings = {
-      locale: 'locale' in valueObject && valueObject.locale ? valueObject.locale : ''
+      locale: 'locale' in valueObject && valueObject.locale ? valueObject.locale : '',
+      timeZoneId: Intl.DateTimeFormat().resolvedOptions().timeZone
     } as ICookieUserSettings
+
     this.userSettingCookieValue = reactive(settings)
 
     //On settings change sync cookie value
-    watch(this.userSettingCookieValue, (value) => {
-      const settingValue = JSON.stringify(value)
-      setCookie(CookieConstants.UserSettingCookieName, settingValue, UserSettingCookieOptions)
-    })
+    watch(
+      this.userSettingCookieValue,
+      (value) => {
+        this.syncCookieValue(value)
+      },
+      { immediate: true }
+    )
+  }
+
+  private syncCookieValue(value: ICookieUserSettings) {
+    const settingValue = JSON.stringify(value)
+    setCookie(CookieConstants.UserSettingCookieName, settingValue, UserSettingCookieOptions)
   }
 }
