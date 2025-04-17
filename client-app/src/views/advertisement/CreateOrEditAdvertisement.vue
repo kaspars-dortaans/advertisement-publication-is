@@ -301,6 +301,15 @@ watch(
     if (newId) {
       loadAdvertisementInfo()
     } else {
+      resetForm({
+        values: {
+          categoryId: undefined,
+          attributeValues: [],
+          title: '',
+          description: '',
+          imagesToAdd: []
+        }
+      })
       attributeInfo.value = []
       attributeValueLists.value = []
       selectedCategories.value = []
