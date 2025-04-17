@@ -41,7 +41,7 @@ public class ChatService(Context dbContext,
             Title = c.Advertisement != null ? c.Advertisement.Title : c.ChatMessages.First(m => m.FromUserId != userId).FromUser.UserName!,
             UnreadMessageCount = c.ChatMessages.Where(m => m.FromUserId != userId && !m.IsMessageRead).Count(),
             ThumbnailImageId = c.Advertisement != null ? c.Advertisement.ThumbnailImageId : c.ChatMessages.First(m => m.FromUserId != userId).FromUser.ProfileImageFileId,
-            LastMessage = c.ChatMessages.OrderBy(c => c.SentTime).First().Text
+            LastMessage = c.ChatMessages.OrderByDescending(c => c.SentTime).First().Text
         });
     }
 
