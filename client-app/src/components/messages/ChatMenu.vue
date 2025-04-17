@@ -13,7 +13,7 @@
                 class="min-w-6 min-h-6 rounded-xl"
               />
             </div>
-            <p class="line-clamp-2">{{ item.chat.lastMessage }}</p>
+            <p class="line-clamp-2 break-all">{{ item.chat.lastMessage }}</p>
           </div>
         </template>
         <span v-else class="mx-auto">{{ item.label }}</span>

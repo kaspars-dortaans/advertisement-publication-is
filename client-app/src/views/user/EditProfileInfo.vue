@@ -1,7 +1,7 @@
 <template>
   <ResponsiveLayout>
     <BlockWithSpinner :loading="loading">
-      <Panel>
+      <Panel class="rounded-none lg:rounded-md">
         <template #header>
           <div class="panel-title-container">
             <BackButton :default-to="{ name: 'profileInfo' }" />

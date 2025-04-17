@@ -2,14 +2,23 @@
   <ResponsiveLayout containerClass="h-0">
     <div class="h-full flex-1 max-w-6xl">
       <div
-        class="max-h-full min-h-full lg:min-h-96 w-full bg-surface-0 p-[1.125rem] gap-[1.125rem] rounded-none lg:rounded-md flex flex-col flex-nowrap"
+        class="max-h-full min-h-full lg:min-h-96 w-full bg-surface-0 p-[1.125rem] gap-[1.125rem] rounded-none lg:rounded-md flex flex-col flex-nowrap overflow-hidden"
       >
-        <h3 class="page-title">{{ l.navigation.messages }}</h3>
+        <div class="panel-title-container">
+          <Button
+            v-if="smallScreen && !focusOnMenu"
+            icon="pi pi-arrow-left"
+            severity="secondary"
+            @click="focusOnMenu = true"
+          />
+          <h3 class="page-title">{{ l.navigation.messages }}</h3>
+        </div>
 
         <div class="flex flex-1 h-40">
           <BlockWithSpinner
+            v-show="!smallScreen || focusOnMenu"
             :loading="loadingChats"
-            class="overflow-y-auto overflow-x-visible h-full"
+            class="flex-1 lg:flex-none overflow-y-auto lg:max-w-sm"
           >
             <Tabs :value="tabOpened">
               <TabList>
@@ -40,11 +49,12 @@
             </Tabs>
           </BlockWithSpinner>
 
-          <Divider layout="vertical" />
+          <Divider v-if="!smallScreen" layout="vertical" />
 
           <BlockWithSpinner
+            v-show="!smallScreen || !focusOnMenu"
             :loading="loadingMessages"
-            class="max-h-full flex-1 flex flex-col flex-nowrap gap-2"
+            class="max-h-full flex-1 flex flex-col flex-nowrap gap-2 overflow-hidden"
           >
             <ChatMessages
               v-model:loading="loadingMessages"
@@ -117,6 +127,7 @@ import type { MessageHub } from '@/services/message-hub'
 import type { IChatMenuItem } from '@/types/messages/chat-menu-item'
 import { getClient } from '@/utils/client-builder'
 import { FieldHelper } from '@/utils/field-helper'
+import { useTrackScreenSize } from '@/utils/screen-size'
 import { fileSize } from '@/validators/custom-validators'
 import { toTypedSchema } from '@vee-validate/yup'
 import { useForm } from 'vee-validate'
@@ -145,6 +156,9 @@ const chatMessageEl = useTemplateRef('chatMessages')
 const loadingChats = ref(false)
 const loadingMessages = ref(false)
 const sendingMessage = ref(false)
+const { width } = useTrackScreenSize()
+const smallScreen = computed(() => width.value < 1024)
+const focusOnMenu = ref(false)
 
 const chatMenuItems = ref<IChatMenuItem[]>([])
 const otherUserAdvertisementChats = computed(() => {
@@ -237,6 +251,9 @@ const selectChat = (selectedChat: ChatListItemDto) => {
   tabOpened.value = selectedChat.advertisementOwnerId == currentUserId.value ? 0 : 1
   currentChat.value = selectedChat
   replace({ name: 'viewMessages', params: { chatId: currentChat.value.id! } })
+  if (smallScreen.value) {
+    focusOnMenu.value = false
+  }
 }
 
 /**

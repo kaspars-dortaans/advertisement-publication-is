@@ -1,6 +1,6 @@
 <template>
   <!-- Gallery, title, text, attributes, contacts -->
-  <Panel :pt="panelPt">
+  <Panel :pt="panelPt" class="rounded-none lg:rounded-b-md">
     <template #header>
       <div class="panel-title-container">
         <BackButton :defaultTo="{ name: 'viewAdvertisements' }" />

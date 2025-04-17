@@ -94,7 +94,7 @@
 
           <!-- Message text -->
           <p>
-            <span>{{ message.text }}</span>
+            <span class="break-all">{{ message.text }}</span>
             <span class="float-end ml-3">
               <span class="text-xs inline-flex gap-1.5">
                 <span class="whitespace-nowrap">{{ timeFormat.format(message.sentTime) }}</span>

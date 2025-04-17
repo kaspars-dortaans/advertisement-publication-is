@@ -1,6 +1,6 @@
 <template>
   <ResponsiveLayout>
-    <div class="flex-1 lg:flex-none flex flex-col gap-4 bg-white rounded-md">
+    <div class="flex-1 lg:flex-none flex flex-col gap-4 bg-white rounded-none lg:rounded-md">
       <div class="panel-title-container p-4">
         <BackButton :defaultTo="{ name: 'profileInfo' }" />
         <h3 class="page-title">{{ l.navigation.changePassword }}</h3>

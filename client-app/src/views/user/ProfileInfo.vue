@@ -1,7 +1,7 @@
 <template>
   <ResponsiveLayout>
     <BlockWithSpinner :loading="loading" class="flex-1 lg:flex-none flex flex-col">
-      <Panel class="flex-1">
+      <Panel class="flex-1 rounded-none lg:rounded-md">
         <template #header>
           <div class="panel-title-container">
             <BackButton :defaultTo="{ name: 'home' }"></BackButton>
@@ -38,7 +38,7 @@
 
           <img
             :src="profileInfo?.profileImage?.imageURLs?.url ?? defaultProfileImageUrl"
-            class="w-56 h-56"
+            class="w-56 h-56 rounded-md"
           />
         </div>
 
