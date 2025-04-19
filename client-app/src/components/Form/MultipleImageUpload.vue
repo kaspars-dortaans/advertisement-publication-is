@@ -72,7 +72,7 @@ import { ImageUrl } from '@/services/api-client'
 
 //Props and model
 const images = defineModel<IImageUploadDto[]>()
-const { accept, maxImageCount, maxFileSizeInBytes, fields, fieldKey } = defineProps<{
+const props = defineProps<{
   maxImageCount: number
   accept: string
   maxFileSizeInBytes: number
@@ -89,12 +89,12 @@ const uploadInput = useTemplateRef<HTMLInputElement>('uploadInput')
 
 //Reactive data
 const imageFields = computed(() =>
-  Object.entries(fields)
-    .filter((e) => e[0].startsWith(fieldKey + '.'))
+  Object.entries(props.fields)
+    .filter((e) => e[0].startsWith(props.fieldKey + '.'))
     .sort((a, b) => (a[0] < b[0] ? -1 : 1))
     .map((e) => e[1] as Field<unknown, DtoType>)
 )
-const acceptMultipleImages = computed(() => maxImageCount > 1)
+const acceptMultipleImages = computed(() => props.maxImageCount > 1)
 
 const imageUrls = ref<string[]>([])
 const uploadedImageUrls = ref<string[]>([])
@@ -106,7 +106,10 @@ const apiErrors = computed<string[]>(() =>
 const allErrors = computed(() => [...apiErrors.value, ...validationErrors.value])
 
 const imageSchema = computed(() => {
-  return mixed<File>().required().test(fileType(accept)).test(fileSize(maxFileSizeInBytes))
+  return mixed<File>()
+    .required()
+    .test(fileType(props.accept))
+    .test(fileSize(props.maxFileSizeInBytes))
 })
 const uniqueImageSchema = mixed<IImageUploadDto>().required().test(uniqueFile(images.value!))
 
@@ -220,9 +223,9 @@ const validateSelectedFiles = async (fileList: FileList) => {
   }
 
   //Validate file count
-  if (imageUrls.value.length + validImages.length > maxImageCount) {
-    validationErrors.value.push(ls.l('errors.InvalidFileLimit', maxImageCount))
-    validImages.splice(Math.max(maxImageCount - imageUrls.value.length, 0))
+  if (imageUrls.value.length + validImages.length > props.maxImageCount) {
+    validationErrors.value.push(ls.l('errors.InvalidFileLimit', props.maxImageCount))
+    validImages.splice(Math.max(props.maxImageCount - imageUrls.value.length, 0))
   }
 
   return validImages

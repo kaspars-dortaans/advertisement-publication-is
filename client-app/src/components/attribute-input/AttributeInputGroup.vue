@@ -23,7 +23,7 @@ import type { Field, Fields } from '@/utils/field-helper'
 import { computed } from 'vue'
 import AttributeInput from './AttributeInput.vue'
 
-const { fields, fieldKey, attributes, valueLists } = defineProps<{
+const props = defineProps<{
   fields: Fields<DtoType>
   fieldKey: string
   attributes: AttributeFormInfo[]
@@ -31,15 +31,15 @@ const { fields, fieldKey, attributes, valueLists } = defineProps<{
 }>()
 
 const attributeFields = computed(() =>
-  Object.entries(fields)
-    .filter((e) => e[0].startsWith(fieldKey + '.'))
+  Object.entries(props.fields)
+    .filter((e) => e[0].startsWith(props.fieldKey + '.'))
     .sort((a, b) => (a[0] < b[0] ? -1 : 1))
     .map((e) => e[1] as Field<string | number | undefined, DtoType>)
 )
 
 const valueListDict = computed(() => {
   const obj: { [key: number]: AttributeValueListEntryItem[] } = {}
-  for (const valueList of valueLists) {
+  for (const valueList of props.valueLists) {
     if (!valueList.id || !valueList.entries) {
       continue
     }

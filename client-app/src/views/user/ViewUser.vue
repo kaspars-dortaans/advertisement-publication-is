@@ -69,7 +69,7 @@ import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 
 //Props
-const { id: userId } = defineProps<{ id: number }>()
+const props = defineProps<{ id: number }>()
 
 //Route
 const { push } = useRouter()
@@ -84,7 +84,7 @@ const userInfo = ref<PublicUserInfoDto | undefined>()
 const loadingInfo = ref(false)
 
 onMounted(() => {
-  if (typeof userId !== 'number') {
+  if (typeof props.id !== 'number') {
     push({ name: 'NotFound' })
   }
 
@@ -92,7 +92,7 @@ onMounted(() => {
 })
 
 const loadUserAdvertisements = async (query: AdvertisementQuery) => {
-  query.advertisementOwnerId = userId
+  query.advertisementOwnerId = props.id
   await wait(1000)
   return await advertisementService.getAdvertisements(query)
 }
@@ -100,7 +100,7 @@ const loadUserAdvertisements = async (query: AdvertisementQuery) => {
 const loadUserInfo = async () => {
   loadingInfo.value = true
   await wait(1000)
-  userInfo.value = await userService.getPublicUserInfo(userId)
+  userInfo.value = await userService.getPublicUserInfo(props.id)
   loadingInfo.value = false
 }
 

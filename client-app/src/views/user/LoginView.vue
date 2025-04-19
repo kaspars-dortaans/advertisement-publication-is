@@ -60,7 +60,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { object, string } from 'yup'
 
 //Props
-const { redirect } = defineProps<{ redirect: boolean }>()
+const props = defineProps<{ redirect: boolean }>()
 
 //Route
 const { push } = useRouter()
@@ -89,10 +89,10 @@ const tryLogin = handleSubmit(async () => {
   try {
     await authService.login(loginDto)
 
-    if (redirect && redirectedFrom) {
+    if (props.redirect && redirectedFrom) {
       //If redirected to login when trying access route which requires permissions while unauthorized
       push(redirectedFrom.fullPath)
-    } else if (redirect && navigation.hasPrevious()) {
+    } else if (props.redirect && navigation.hasPrevious()) {
       //If redirected to login when api request returned unauthorized code
       push(navigation.getPreviousFullPath)
     } else {

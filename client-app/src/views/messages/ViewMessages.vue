@@ -136,7 +136,7 @@ import { useRouter } from 'vue-router'
 import { array, object, string } from 'yup'
 
 //Props
-const { chatId, newChatToAdvertisementId, newChatToUserId } = defineProps<{
+const props = defineProps<{
   chatId?: number
   newChatToUserId?: number
   newChatToAdvertisementId?: number
@@ -198,7 +198,7 @@ const tabOpened = ref<0 | 1>(0)
 
 const currentUserId = computed(() => AuthService.profileInfo.value?.id)
 const currentChat = ref<ChatListItemDto | undefined>()
-const isNewChat = computed(() => newChatToUserId != null)
+const isNewChat = computed(() => props.newChatToUserId != null)
 
 const unsubscribeNewChat = ref<(() => void) | undefined>()
 const unsubscribeNewMessage = ref<(() => void) | undefined>()
@@ -273,12 +273,12 @@ const loadChats = async () => {
   let existingChat: ChatListItemDto | undefined
   if (currentChat.value) {
     existingChat = chats.find((c) => c.id === currentChat.value!.id)
-  } else if (chatId != null) {
+  } else if (props.chatId != null) {
     //If link to existing chat try find chat
-    existingChat = chats.find((c) => c.id === chatId)
-  } else if (newChatToAdvertisementId) {
+    existingChat = chats.find((c) => c.id === props.chatId)
+  } else if (props.newChatToAdvertisementId) {
     //If trying to create new chat, check if chat does not already exists for given advertisement
-    existingChat = chats.find((c) => c.advertisementId === newChatToAdvertisementId)
+    existingChat = chats.find((c) => c.advertisementId === props.newChatToAdvertisementId)
   }
 
   if (existingChat) {
@@ -306,8 +306,8 @@ const sendMessage = handleSubmit(async () => {
 
     if (!currentChat.value) {
       await messageService.createChat(
-        newChatToUserId,
-        newChatToAdvertisementId,
+        props.newChatToUserId,
+        props.newChatToAdvertisementId,
         new SendMessageRequest({
           text: values.text,
           attachments: attachmentFileParameter
@@ -350,7 +350,7 @@ const handleNewChat = (iNewChat: IChatListItemDto) => {
   }
 
   //If created new chat load its messages
-  if (newChat.advertisementId === newChatToAdvertisementId) {
+  if (newChat.advertisementId === props.newChatToAdvertisementId) {
     selectChat(newChat)
   }
 }

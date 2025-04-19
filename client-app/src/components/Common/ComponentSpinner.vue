@@ -8,5 +8,5 @@
 </template>
 
 <script setup lang="ts">
-const { show } = defineProps<{ show: boolean }>()
+defineProps<{ show: boolean }>()
 </script>

@@ -33,7 +33,7 @@ import { useRouter } from 'vue-router'
 const { push } = useRouter()
 
 //Props
-const { search } = defineProps<{ search: string }>()
+const props = defineProps<{ search: string }>()
 
 //Services
 const advertisementService = getClient(AdvertisementClient)
@@ -44,19 +44,19 @@ const advertisementTable = useTemplateRef('advertisementTable')
 
 //Reactive data
 const title = computed(() => {
-  return `${l.value.advertisements.search} '${search}'`
+  return `${l.value.advertisements.search} '${props.search}'`
 })
 
 //Hooks
 onBeforeMount(() => {
-  if (!search) {
+  if (!props.search) {
     push({ name: 'home' })
   }
 })
 
 //Watchers
 watch(
-  () => search,
+  () => props.search,
   (newSearchValue: string) => {
     if (newSearchValue) {
       advertisementTable.value?.refresh()
@@ -80,7 +80,7 @@ const loadAdvertisements = (q: AdvertisementQuery) => {
     })
   ]
   q.search = new SearchQuery({
-    value: search
+    value: props.search
   })
 
   return advertisementService.getAdvertisements(q)

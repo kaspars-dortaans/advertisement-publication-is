@@ -25,7 +25,7 @@
 <script lang="ts" setup>
 import type { IChatMenuItem } from '@/types/messages/chat-menu-item'
 
-const { menuItems } = defineProps<{
+defineProps<{
   menuItems: IChatMenuItem[]
 }>()
 </script>

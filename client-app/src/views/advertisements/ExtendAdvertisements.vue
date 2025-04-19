@@ -76,7 +76,7 @@ import { number, object } from 'yup'
 const { push } = useRouter()
 
 //Props
-const { advertisementIds } = defineProps<{
+const props = defineProps<{
   advertisementIds: number[]
 }>()
 
@@ -117,7 +117,7 @@ onBeforeMount(async () => {
 
   const result = await advertisementService.getAdvertisements(
     new AdvertisementQuery({
-      advertisementIds: advertisementIds,
+      advertisementIds: props.advertisementIds,
       order: [],
       columns: [],
       attributeSearch: [],
@@ -134,7 +134,7 @@ const submit = handleSubmit(async () => {
   try {
     await advertisementService.extendAdvertisements(
       new ExtendAdvertisementRequest({
-        advertisementIds: advertisementIds,
+        advertisementIds: props.advertisementIds,
         extendTime: values.extendTime
       })
     )

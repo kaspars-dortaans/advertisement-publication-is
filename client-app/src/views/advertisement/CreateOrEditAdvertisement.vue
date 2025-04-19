@@ -189,7 +189,7 @@ onBeforeRouteLeave((_to, _from, next) =>
 )
 
 //Props
-const { id: advertisementId } = defineProps<{
+const props = defineProps<{
   id?: number
 }>()
 
@@ -199,7 +199,7 @@ const ls = LocaleService.get()
 const advertisementService = getClient(AdvertisementClient)
 
 //Reactive data
-const isEdit = computed(() => typeof advertisementId === 'number' && !isNaN(advertisementId))
+const isEdit = computed(() => typeof props.id === 'number' && !isNaN(props.id))
 
 const postTimeOptions = computed(() => createAdvertisementPostTimeSpanOptions(ls))
 
@@ -295,7 +295,7 @@ watch(LocaleService.currentLocaleName, () => {
 })
 
 watch(
-  () => advertisementId,
+  () => props.id,
   (newId) => {
     resetForm()
     if (newId) {
@@ -331,7 +331,7 @@ const reloadData = () => {
 const loadAdvertisementInfo = async () => {
   loading.value += 1
   const [{ advertisement, categoryInfo }] = await Promise.all([
-    advertisementService.editAdvertisementGet(advertisementId),
+    advertisementService.editAdvertisementGet(props.id),
     loadCategoryList()
   ])
   existingAdvertisement.value = advertisement
@@ -505,7 +505,7 @@ const submit = handleSubmit(async () => {
   try {
     if (isEdit.value) {
       await advertisementService.editAdvertisementPost(
-        advertisementId,
+        props.id,
         values.categoryId,
         attributeValues,
         undefined,

@@ -10,7 +10,7 @@
 </template>
 
 <script lang="ts" setup>
-const { containerClass } = defineProps<{
+defineProps<{
   containerClass?: string
 }>()
 </script>

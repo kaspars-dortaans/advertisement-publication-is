@@ -152,7 +152,7 @@ import {
 const loading = defineModel<boolean>('loading')
 
 //Props
-const { currentChatId, isNewChat } = defineProps<{
+const props = defineProps<{
   currentChatId?: number
   currentAdvertisementId?: number
   isNewChat: boolean
@@ -212,11 +212,11 @@ onBeforeMount(async () => {
   unsubscribeMarkMessageAsRead.value =
     await messageHub.subscribeMarkMessageAsRead(handleMessageRead)
   unsubscribeOnReconnect.value = messageHub.subscribeToReconnect(() => {
-    loadMessages(currentChatId)
+    loadMessages(props.currentChatId)
   })
 
-  if (currentChatId) {
-    loadMessages(currentChatId)
+  if (props.currentChatId) {
+    loadMessages(props.currentChatId)
   }
 })
 
@@ -227,7 +227,7 @@ onBeforeUnmount(async () => {
 })
 
 watch(
-  () => currentChatId,
+  () => props.currentChatId,
   async (chatId) => {
     await loadMessages(chatId)
   }
@@ -302,7 +302,7 @@ const loadMessages = async (chatId?: number) => {
  */
 const handleNewMessage = (chatId: number, iNewMessage: IMessageItemDto) => {
   //If message not for current chat return
-  if (currentChatId !== chatId) {
+  if (props.currentChatId !== chatId) {
     return
   }
 
@@ -369,7 +369,7 @@ const handleMessageRead = (
   messageIds: number[],
   messagesAffected: number
 ) => {
-  if (currentChatId !== chatId || !messagesAffected) {
+  if (props.currentChatId !== chatId || !messagesAffected) {
     return
   }
 
@@ -483,11 +483,11 @@ const observerMessage: IntersectionObserverCallback = (entries, observer) => {
  * @param ids message ids
  */
 const markMessageAsRead = async (ids: number[]) => {
-  if (!currentChatId) {
+  if (!props.currentChatId) {
     return
   }
 
-  await messageService.markMessageAsRead(currentChatId, ids)
+  await messageService.markMessageAsRead(props.currentChatId, ids)
 }
 
 /**

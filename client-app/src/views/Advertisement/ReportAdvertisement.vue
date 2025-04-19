@@ -57,7 +57,7 @@ onBeforeRouteLeave((_to, _from, next) =>
 )
 
 //Props
-const { id: advertisementId } = defineProps<{ id: number }>()
+const props = defineProps<{ id: number }>()
 
 //Services
 const l = LocaleService.currentLocale
@@ -78,7 +78,7 @@ defineField('description')
 
 //Hooks
 onMounted(() => {
-  if (typeof advertisementId !== 'number' || isNaN(advertisementId)) {
+  if (typeof props.id !== 'number' || isNaN(props.id)) {
     push({ name: 'NotFound' })
   }
 })
@@ -89,7 +89,7 @@ const report = handleSubmit(async () => {
     await _advertisementService.reportAdvertisement(
       new ReportAdvertisementRequest({
         description: values.description!,
-        reportedAdvertisementId: advertisementId
+        reportedAdvertisementId: props.id
       })
     )
     formSubmitted.value = true

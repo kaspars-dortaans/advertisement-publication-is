@@ -8,5 +8,5 @@
 <script setup lang="ts">
 import ComponentSpinner from '@/components/common/ComponentSpinner.vue'
 
-const { loading } = defineProps<{ loading: boolean }>()
+defineProps<{ loading: boolean }>()
 </script>

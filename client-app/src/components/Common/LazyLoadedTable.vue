@@ -41,7 +41,7 @@ import { getPageReportTemplate } from '@/utils/data-table'
 import type { DataTablePageEvent, DataTableSortEvent, DataTableSortMeta } from 'primevue'
 import { onBeforeMount, ref } from 'vue'
 
-const { dataSource, columns } = defineProps<{
+const props = defineProps<{
   dataSource: (query: DataTableQuery) => Promise<IDataTableQueryResponse_1>
   columns: TableColumn[]
 }>()
@@ -88,7 +88,7 @@ const sortTable = (event: DataTableSortEvent) => {
   sortQuery.value = sortInfo.map((s) => {
     const columnField = typeof s.field === 'function' ? s.field(null) : s.field
     return new OrderQuery({
-      column: columns.findIndex((c) => c.data === columnField),
+      column: props.columns.findIndex((c) => c.data === columnField),
       direction: s.order == 1 ? Direction.Ascending : Direction.Descending
     })
   })
@@ -99,8 +99,8 @@ const sortTable = (event: DataTableSortEvent) => {
 const loadTableRecords = async () => {
   loading.value = true
 
-  const response = await dataSource({
-    columns: columns,
+  const response = await props.dataSource({
+    columns: props.columns,
     start: pageFirstRecord.value,
     length: pageRecordCount.value,
     order: sortQuery.value,

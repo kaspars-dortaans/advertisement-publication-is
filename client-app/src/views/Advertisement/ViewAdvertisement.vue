@@ -131,7 +131,7 @@ import { useRouter } from 'vue-router'
 import { AuthService } from '@/services/auth-service'
 
 //Props
-const { id: advertisementId } = defineProps<{ id: number }>()
+const props = defineProps<{ id: number }>()
 
 //Route
 const { push } = useRouter()
@@ -167,7 +167,7 @@ const userOwnedAdvertisement = computed(() => {
 
 //Hooks
 onMounted(() => {
-  if (typeof advertisementId !== 'number' || isNaN(advertisementId)) {
+  if (typeof props.id !== 'number' || isNaN(props.id)) {
     push({ name: 'NotFound' })
     return
   }
@@ -182,12 +182,12 @@ onMounted(() => {
       const filtered = historyRecords.filter(
         (r) => Date.now() - r.timeStamp < AdvertisementHistoryTimeSpanInMiliSeconds
       )
-      const existingRecord = filtered.find((r) => r.id === advertisementId)
+      const existingRecord = filtered.find((r) => r.id === props.id)
       if (existingRecord) {
         existingRecord.timeStamp = Date.now()
       } else {
         filtered.push({
-          id: advertisementId,
+          id: props.id,
           timeStamp: Date.now()
         })
       }
@@ -205,21 +205,22 @@ watch(LocaleService.currentLocaleName, () => {
 
 //Methods
 const loadAdvertisement = async () => {
-  advertisement.value = await advertisementService.getAdvertisement(advertisementId)
+  advertisement.value = await advertisementService.getAdvertisement(props.id)
 }
 
 const revealPhoneNumber = async () => {
   loadingPhoneNumber.value = true
   advertisement.value.maskedAdvertiserPhoneNumber =
-    await advertisementService.revealAdvertiserPhoneNumber(advertisementId)
+    await advertisementService.revealAdvertiserPhoneNumber(props.id)
   revealedPhone.value = true
   loadingPhoneNumber.value = false
 }
 
 const revealEmail = async () => {
   loadingEmail.value = true
-  advertisement.value.maskedAdvertiserEmail =
-    await advertisementService.revealAdvertiserEmail(advertisementId)
+  advertisement.value.maskedAdvertiserEmail = await advertisementService.revealAdvertiserEmail(
+    props.id
+  )
   revealedEmail.value = true
   loadingEmail.value = false
 }

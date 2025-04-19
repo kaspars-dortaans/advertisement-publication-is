@@ -85,7 +85,7 @@ import 'vue-advanced-cropper/dist/style.css'
 import FieldError from '@/components/form/FieldError.vue'
 
 //Props & emits
-const { maxFileSize, allowedFileTypes } = defineProps<{
+defineProps<{
   maxFileSize: number
   allowedFileTypes: string
 }>()

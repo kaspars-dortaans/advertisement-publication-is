@@ -29,7 +29,7 @@ import { defineExpose, ref, useTemplateRef } from 'vue'
 const model = defineModel<File[]>()
 
 //Props
-const { invalid } = defineProps<{
+defineProps<{
   invalid?: boolean
 }>()
 

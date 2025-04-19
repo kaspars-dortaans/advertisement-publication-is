@@ -26,12 +26,12 @@
         <h3 class="page-title mb-2">{{ categoryName ?? categoryInfo.categoryName }}</h3>
       </slot>
       <div
-        v-if="filterableColumns?.length || categoryFilterList.length"
+        v-if="filterableColumns?.length || categoryFilterList?.length"
         class="flex flex-row gap-2 flex-wrap justify-center"
       >
         <div class="flex-auto flex flex-row justify-center flex-wrap gap-2">
           <Select
-            v-if="categoryFilterList.length"
+            v-if="categoryFilterList?.length"
             v-model="categoryFilterModel"
             :options="categoryFilterList"
             :placeholder="l.advertisements.selectCategory"
@@ -141,14 +141,7 @@ import {
 } from 'primevue'
 import { computed, onMounted, ref, watch, type ComputedRef } from 'vue'
 
-const {
-  advertisementSource,
-  categoryId,
-  categoryName,
-  categoryFilterList = [],
-  groupByCategory = false,
-  multiRowSelect = false
-} = defineProps<{
+const props = defineProps<{
   advertisementSource: (
     query: AdvertisementQuery
   ) => Promise<AdvertisementListItemDataTableQueryResponse>
@@ -205,7 +198,7 @@ const categoryFilterModel = ref<number | undefined>()
 
 /** Resulting selected category id in filter or passed as prop */
 const selectedCategoryId = computed(() =>
-  categoryId !== undefined ? categoryId : categoryFilterModel.value
+  props.categoryId !== undefined ? props.categoryId : categoryFilterModel.value
 )
 
 /** Data table expanded group v-model */
@@ -286,7 +279,7 @@ const handleCategoryChange = async (selectedCategoryId?: number | null) => {
     promises.push(loadCategoryInfo())
   } else {
     categoryInfo.value = new CategoryInfo({
-      categoryName: categoryName,
+      categoryName: props.categoryName,
       attributeInfo: [],
       attributeValueLists: []
     })
@@ -306,7 +299,7 @@ const loadAdvertisements = async () => {
   setLoading(true)
 
   //Load advertisements
-  const response = await advertisementSource(
+  const response = await props.advertisementSource(
     new AdvertisementQuery({
       categoryId: selectedCategoryId.value ?? undefined,
       attributeOrder: attributeOrderQuery.value,
@@ -321,7 +314,7 @@ const loadAdvertisements = async () => {
   totalRecordCount.value = response.recordsFiltered ?? 0
 
   //Expand groups
-  if (groupByCategory) {
+  if (props.groupByCategory) {
     const allCategoryNames = [...new Set(advertisements.value.map((a) => a.categoryName))]
     expandedRowGroups.value = allCategoryNames
   }

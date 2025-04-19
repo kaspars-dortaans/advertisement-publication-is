@@ -9,19 +9,19 @@ import { Field } from '@/utils/field-helper'
 import type { GenericObject } from 'vee-validate'
 import { computed } from 'vue'
 
-const { field, messages } = defineProps<{
+const props = defineProps<{
   field?: Field<FieldType, DtoType> | undefined
   messages?: string | string[] | undefined
 }>()
 
 const errorMessages = computed(() => {
   const errorArray = []
-  if (field && field.hasError) {
-    errorArray.push(field.error)
-  } else if (Array.isArray(messages)) {
-    errorArray.push(...messages)
-  } else if (messages) {
-    errorArray.push(messages)
+  if (props.field && props.field.hasError) {
+    errorArray.push(props.field.error)
+  } else if (Array.isArray(props.messages)) {
+    errorArray.push(...props.messages)
+  } else if (props.messages) {
+    errorArray.push(props.messages)
   }
   return errorArray
 })
