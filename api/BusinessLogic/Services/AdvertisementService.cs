@@ -13,7 +13,6 @@ using BusinessLogic.Helpers.Storage;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
-using System.Text.RegularExpressions;
 using Z.EntityFramework.Plus;
 
 namespace BusinessLogic.Services;
@@ -124,7 +123,8 @@ public class AdvertisementService(
             {
                 Id = a.Id,
                 CategoryId = a.CategoryId,
-                CategoryName = a.Category.LocalisedNames.Localise(locale),
+                //Ef could not translate OrderBy with Localise extension method
+                CategoryName = a.Category.LocalisedNames.First(lt => lt.Locale == locale || lt.Locale == LocalisationConstants.TextNotLocalised).Text,
                 PostedDate = a.PostedDate,
                 Title = a.Title,
                 AdvertisementText = a.AdvertisementText,
@@ -300,7 +300,8 @@ public class AdvertisementService(
             {
                 Id = a.Id,
                 Title = a.Title,
-                CategoryName = a.Category.LocalisedNames.Localise(locale),
+                //Ef could not translate OrderBy with Localise extension method
+                CategoryName = a.Category.LocalisedNames.First(lt => lt.Locale == locale || lt.Locale == LocalisationConstants.TextNotLocalised).Text,
                 IsActive = a.IsActive,
                 ValidTo = a.ValidToDate,
                 CreatedAt = a.PostedDate
@@ -424,102 +425,6 @@ public class AdvertisementService(
 
         //Remove attributes
         await DbContext.AdvertisementAttributeValues.Where(av => removedAttributeIds.Contains(av.Id)).ExecuteDeleteAsync();
-    }
-
-    private async Task ValidateAttributeCategory(int categoryId)
-    {
-        var canAddToCategory = await DbContext.Categories.AnyAsync(c => c.Id == categoryId && c.CanContainAdvertisements);
-        if (!canAddToCategory)
-        {
-            throw new ApiException([], new Dictionary<string, IList<string>>
-            {
-                { nameof(CreateOrEditAdvertisementDto.CategoryId), [CustomErrorCodes.CategoryCanNotContainAdvertisements] }
-            });
-        }
-    }
-
-    private async Task<List<AdvertisementAttributeValue>> ValidateAdvertisementAttributeValues(IEnumerable<KeyValuePair<int, string>> attributeValues, int categoryId)
-    {
-        var submittedAttributeIds = attributeValues.Select(av => av.Key).ToList();
-        var parentCategoryIds = DbContext.GetCategoryParentIds(categoryId);
-        var attributes = await DbContext.Attributes
-            .Where(a => a.UsedInCategories.Any(c => c.Id == categoryId || parentCategoryIds.Any(parentCategory => parentCategory.Id == c.Id)) && submittedAttributeIds.Contains(a.Id))
-            .Select(a => new
-            {
-                a.Id,
-                a.ValueType,
-                a.ValueValidationRegex,
-                ValueListEntryIds = a.AttributeValueList != null ? a.AttributeValueList.ListEntries.Select(e => e.Id.ToString()) : null
-            }).ToListAsync();
-
-        List<KeyValuePair<int, string>> invalidAttributes = [];
-        var attributeValueArray = attributeValues.ToArray();
-        var validAttributes = new List<AdvertisementAttributeValue>();
-        for (var i = 0; i < attributeValueArray.Length; i++)
-        {
-            var attribute = attributes.FirstOrDefault(a => a.Id == attributeValueArray[i].Key);
-            if (attribute is null)
-            {
-                continue;
-            }
-
-            var value = attributeValueArray[i].Value;
-            switch (attribute.ValueType)
-            {
-                case Enums.ValueTypes.ValueListEntry:
-                    if (attribute.ValueListEntryIds is not null && attribute.ValueListEntryIds.All(id => id != value))
-                    {
-                        invalidAttributes.Add(new(i, CustomErrorCodes.OptionNotFound));
-                        continue;
-                    }
-                    break;
-
-                case Enums.ValueTypes.Integer:
-                    if (!int.TryParse(value, out int _))
-                    {
-                        invalidAttributes.Add(new(i, CustomErrorCodes.ValueMustBeInteger));
-                        continue;
-                    }
-                    break;
-
-                case Enums.ValueTypes.Decimal:
-                    if (!double.TryParse(value, out double _))
-                    {
-                        invalidAttributes.Add(new(i, CustomErrorCodes.ValueMustBeNumber));
-                        continue;
-                    }
-                    break;
-            }
-
-            if (!string.IsNullOrEmpty(attribute.ValueValidationRegex))
-            {
-                //Validate with regex if present
-                if (!Regex.IsMatch(attributeValueArray[i].Value, attribute.ValueValidationRegex))
-                {
-                    invalidAttributes.Add(new(i, CustomErrorCodes.InvalidValue));
-                    continue;
-                }
-            }
-
-            validAttributes.Add(new AdvertisementAttributeValue()
-            {
-                AttributeId = attributeValueArray[i].Key,
-                Value = value
-            });
-        };
-
-        if (invalidAttributes.Count != 0)
-        {
-            var validationErrors = invalidAttributes
-                .GroupBy(ia => ia.Key)
-                .ToDictionary(
-                    g => nameof(CreateOrEditAdvertisementDto.AttributeValues) + "[" + g.Key + "]",
-                    g => (IList<string>)g.Select(ia => ia.Value).ToList());
-
-            throw new ApiException([], validationErrors);
-        }
-
-        return validAttributes;
     }
 
     private async Task SynchronizeAdvertisementImages(int advertisementId, IEnumerable<IFormFile>? imageFiles, IEnumerable<ImageDto>? imageOrder, IEnumerable<AdvertisementImage>? existingImages)

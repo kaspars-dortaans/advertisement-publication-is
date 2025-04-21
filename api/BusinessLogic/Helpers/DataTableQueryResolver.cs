@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using BusinessLogic.Dto.DataTableQuery;
 using System.Linq.Expressions;
+using System.Reflection;
 using Z.EntityFramework.Plus;
 namespace BusinessLogic.Helpers;
 
@@ -26,7 +27,7 @@ public static class DataTableQueryResolver
         {
             foreach (var column in filteredColumns)
             {
-                query = query.Where(ReflectionHelper.GetWhereSearchPredicate<Entity>([column.Name], column.Search!.Value));
+                query = query.Where(ReflectionHelper.GetWhereSearchPredicate<Entity>([column.Data], column.Search!.Value));
             }
         }
         if (config?.AdditionalFilter is not null)
@@ -141,8 +142,8 @@ public static class DataTableQueryResolver
         //Returns true if sort was applied
         bool ApplySort(string orderAscendingMethodName, string orderDescendingMethodName, OrderQuery order)
         {
-            var columnName = request.Columns.ElementAt(order.Column).Name;
-            var columnType = typeof(Entity).GetProperty(columnName)?.PropertyType;
+            var columnName = request.Columns.ElementAt(order.Column).Data;
+            var columnType = typeof(Entity).GetProperty(columnName, BindingFlags.IgnoreCase | BindingFlags.Instance | BindingFlags.Public)?.PropertyType;
             if (columnType == null)
             {
                 return false;
