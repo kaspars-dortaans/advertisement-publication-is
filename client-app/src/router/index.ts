@@ -1,6 +1,6 @@
 import { Permissions } from '@/constants/api/Permissions'
 import { AuthService } from '@/services/auth-service'
-import { createRouter, createWebHistory } from 'vue-router'
+import { createRouter, createWebHistory, type LocationQueryValue } from 'vue-router'
 
 const router = createRouter({
   history: createWebHistory(),
@@ -40,7 +40,7 @@ const router = createRouter({
       path: '/user/:id/',
       name: 'viewUser',
       component: () => import('../views/user/ViewUser.vue'),
-      props: (route) => ({ id: parseInt(firstParam(route.params.id)) })
+      props: (route) => ({ id: toNumberOrUndefined(route.params.id) })
     },
     {
       path: '/recently-viewed-advertisements',
@@ -66,22 +66,22 @@ const router = createRouter({
       redirect: (route) => ({ name: 'viewAdvertisement', params: route.params }),
       children: [
         {
-          path: '/advertisement/:id/view',
+          path: 'view',
           name: 'viewAdvertisement',
           component: () => import('../views/advertisement/ViewAdvertisement.vue'),
-          props: (route) => ({ id: parseInt(firstParam(route.params.id)) })
+          props: (route) => ({ id: toNumberOrUndefined(route.params.id) })
         },
         {
-          path: '/advertisement/:id/report',
+          path: 'report',
           name: 'reportAdvertisement',
           component: () => import('../views/advertisement/ReportAdvertisement.vue'),
-          props: (route) => ({ id: parseInt(firstParam(route.params.id)) })
+          props: (route) => ({ id: toNumberOrUndefined(route.params.id) })
         },
         {
-          path: '/advertisement/:id/edit',
+          path: 'edit',
           name: 'editAdvertisement',
           component: () => import('../views/advertisement/CreateOrEditAdvertisement.vue'),
-          props: (route) => ({ id: parseInt(firstParam(route.params.id)) })
+          props: (route) => ({ id: toNumberOrUndefined(route.params.id) })
         }
       ]
     },
@@ -91,11 +91,12 @@ const router = createRouter({
       component: () => import('../views/advertisements/ViewAdvertisements.vue')
     },
     {
-      path: '/advertisements/extend/:advertisementIds',
-      name: 'extendAdvertisements',
-      component: () => import('../views/advertisements/ExtendAdvertisements.vue'),
+      path: '/extend/:type/:ids',
+      name: 'extend',
+      component: () => import('../views/ExtendForm.vue'),
       props: (route) => ({
-        advertisementIds: JSON.parse(firstParam(route.params.advertisementIds))
+        ids: JSON.parse(firstParam(route.params.ids)),
+        type: firstParam(route.params.type)
       })
     },
 
@@ -144,13 +145,10 @@ const router = createRouter({
       name: 'viewMessages',
       component: () => import('../views/messages/ViewMessages.vue'),
       props: (route) => {
-        const userId = parseInt('' + route.query.newChatToUserId)
-        const advertisementId = parseInt('' + route.query.newChatToAdvertisementId)
-        const chatId = parseInt(firstParam(route.params.chatId))
         return {
-          chatId: isNaN(chatId) ? undefined : chatId,
-          newChatToUserId: isNaN(userId) ? undefined : userId,
-          newChatToAdvertisementId: isNaN(advertisementId) ? undefined : advertisementId
+          chatId: toNumberOrUndefined(route.params.chatId),
+          newChatToUserId: toNumberOrUndefined(route.query.newChatToUserId),
+          newChatToAdvertisementId: toNumberOrUndefined(route.query.newChatToAdvertisementId)
         }
       },
       meta: {
@@ -199,13 +197,9 @@ const router = createRouter({
 
     //Not found
     {
-      path: '/not-found',
+      path: '/:all(.*)*',
       name: 'notFound',
       component: () => import('../views/NotFound.vue')
-    },
-    {
-      path: '/:all(.*)',
-      redirect: { name: 'notFound' }
     }
   ]
 })

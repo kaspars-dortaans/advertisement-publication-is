@@ -6,7 +6,7 @@
       >
         <div class="panel-title-container">
           <Button
-            v-if="smallScreen && !focusOnMenu"
+            v-if="isSmallScreen && !focusOnMenu"
             icon="pi pi-arrow-left"
             severity="secondary"
             @click="focusOnMenu = true"
@@ -16,7 +16,7 @@
 
         <div class="flex flex-1 h-40">
           <BlockWithSpinner
-            v-show="!smallScreen || focusOnMenu"
+            v-show="!isSmallScreen || focusOnMenu"
             :loading="loadingChats"
             class="flex-1 lg:flex-none overflow-y-auto lg:max-w-sm"
           >
@@ -49,10 +49,10 @@
             </Tabs>
           </BlockWithSpinner>
 
-          <Divider v-if="!smallScreen" layout="vertical" />
+          <Divider v-if="!isSmallScreen" layout="vertical" />
 
           <BlockWithSpinner
-            v-show="!smallScreen || !focusOnMenu"
+            v-show="!isSmallScreen || !focusOnMenu"
             :loading="loadingMessages"
             class="max-h-full flex-1 flex flex-col flex-nowrap gap-2 overflow-hidden"
           >
@@ -156,8 +156,7 @@ const chatMessageEl = useTemplateRef('chatMessages')
 const loadingChats = ref(false)
 const loadingMessages = ref(false)
 const sendingMessage = ref(false)
-const { width } = useTrackScreenSize()
-const smallScreen = computed(() => width.value < 1024)
+const { isSmallScreen } = useTrackScreenSize()
 const focusOnMenu = ref(false)
 
 const chatMenuItems = ref<IChatMenuItem[]>([])
@@ -251,7 +250,7 @@ const selectChat = (selectedChat: ChatListItemDto) => {
   tabOpened.value = selectedChat.advertisementOwnerId == currentUserId.value ? 0 : 1
   currentChat.value = selectedChat
   replace({ name: 'viewMessages', params: { chatId: currentChat.value.id! } })
-  if (smallScreen.value) {
+  if (isSmallScreen.value) {
     focusOnMenu.value = false
   }
 }
