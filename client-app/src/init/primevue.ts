@@ -28,6 +28,7 @@ import { usePassThrough } from 'primevue/passthrough'
 import Password from 'primevue/password'
 import Select from 'primevue/select'
 import Textarea from 'primevue/textarea'
+import AutoComplete from 'primevue/autocomplete'
 
 //Data
 import Column from 'primevue/column'
@@ -167,6 +168,7 @@ export function initPrimeVue(app: App<Element>) {
   app.component('Password', Password)
   app.component('FloatLabel', FloatLabel)
   app.component('Select', Select)
+  app.component('AutoComplete', AutoComplete)
 
   //Data
   app.component('Tree', Tree)

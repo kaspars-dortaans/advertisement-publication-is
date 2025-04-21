@@ -54,6 +54,16 @@
     "confirmDeleteHeader": "Izdzēst sludinājumu atzīmes",
     "confirmDeleteMessage": "{0} sludinājumu atzīmes tiks izdzēstas."
   },
+  "manageAdvertisementNotificationSubscriptions": {
+    "confirmDeleteHeader": "Izdzēst sludinājumu paziņojumu abonementus",
+    "confirmDeleteMessage": "{0} paziņojumu abonementi tiks izdēsti.",
+    "title": "Nosaukums",
+    "keywords": "Atslēgvārdi",
+    "categoryName": "Kategorija",
+    "isActive": "Ir aktīvs",
+    "validTo": "Derīgs līdz",
+    "createdAt": "Izveidots"
+  },
   "form": {
     "common": {
       "dragAndDropToUpload": "Velc un met šeit lai Augšupielādētu",
@@ -100,10 +110,17 @@
       "timePeriod": "Laika periods",
       "validTo": "Derīgs līdz"
     },
-    "extendAdvertisements": {
+    "extend": {
       "pageTitle": "Pagarināt sludinājumus",
       "timePeriod": "Laika periods",
-      "extendedList": "Šie sludinājumi {0} tiks pagarināti:"
+      "extendedAdvertisementList": "Šie sludinājumi tiks pagarināti ({0}):",
+      "extendedAdvertisementNotificationSubscriptionList": "Šie sludinājumu paziņojumu abonementi tiks pagarināti ({0}):"
+    },
+    "putAdvertisementNotification": {
+      "title": "Nosaukums",
+      "keywords": "Atslēgvārdi",
+      "timePeriod": "Laika periods",
+      "validTo": "Derīgs līdz"
     }
   },
   "messages": {
@@ -139,7 +156,8 @@
     "siteLogo": "Mājaslapas logo",
     "myAdvertisements": "Mani sludinājumi",
     "editAdvertisement": "Rediģēt sludinājumu",
-    "messages": "Sarakstes"
+    "messages": "Sarakstes",
+    "advertisementNotifications": "Sludinājumu paziņojumu abonementi"
   },
   "dataSize": {
     "bits": "{0} biti",

@@ -790,16 +790,11 @@ export class AdvertisementClient {
     }
 
     /**
-     * @param isActive (optional) 
      * @param body (optional) 
      * @return Success
      */
-    setIsActiveAdvertisements(isActive: boolean | undefined, body: number[] | undefined, cancelToken?: CancelToken): Promise<void> {
-        let url_ = this.baseUrl + "/api/Advertisement/SetIsActiveAdvertisements?";
-        if (isActive === null)
-            throw new Error("The parameter 'isActive' cannot be null.");
-        else if (isActive !== undefined)
-            url_ += "isActive=" + encodeURIComponent("" + isActive) + "&";
+    setIsActiveAdvertisements(body: SetActiveStatusRequest | undefined, cancelToken?: CancelToken): Promise<void> {
+        let url_ = this.baseUrl + "/api/Advertisement/SetIsActiveAdvertisements";
         url_ = url_.replace(/[?&]$/, "");
 
         const content_ = JSON.stringify(body);
@@ -1191,7 +1186,7 @@ export class AdvertisementClient {
      * @param body (optional) 
      * @return Success
      */
-    extendAdvertisements(body: ExtendAdvertisementRequest | undefined, cancelToken?: CancelToken): Promise<AdvertisementFormInfo> {
+    extendAdvertisements(body: ExtendRequest | undefined, cancelToken?: CancelToken): Promise<AdvertisementFormInfo> {
         let url_ = this.baseUrl + "/api/Advertisement/ExtendAdvertisements";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -1304,6 +1299,511 @@ export class AdvertisementClient {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
         }
         return Promise.resolve<CategoryFormInfo>(null as any);
+    }
+}
+
+export class AdvertisementNotificationClient {
+    protected instance: AxiosInstance;
+    protected baseUrl: string;
+    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+
+    constructor(baseUrl?: string, instance?: AxiosInstance) {
+
+        this.instance = instance || axios.create();
+
+        this.baseUrl = baseUrl ?? "";
+
+    }
+
+    /**
+     * @param body (optional) 
+     * @return Success
+     */
+    getAdvertisementNotificationSubscriptions(body: DataTableQuery | undefined, cancelToken?: CancelToken): Promise<NotificationSubscriptionItemDataTableQueryResponse> {
+        let url_ = this.baseUrl + "/api/AdvertisementNotification/GetAdvertisementNotificationSubscriptions";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_: AxiosRequestConfig = {
+            data: content_,
+            method: "POST",
+            url: url_,
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "text/plain"
+            },
+            cancelToken
+        };
+
+        return this.instance.request(options_).catch((_error: any) => {
+            if (isAxiosError(_error) && _error.response) {
+                return _error.response;
+            } else {
+                throw _error;
+            }
+        }).then((_response: AxiosResponse) => {
+            return this.processGetAdvertisementNotificationSubscriptions(_response);
+        });
+    }
+
+    protected processGetAdvertisementNotificationSubscriptions(response: AxiosResponse): Promise<NotificationSubscriptionItemDataTableQueryResponse> {
+        const status = response.status;
+        let _headers: any = {};
+        if (response.headers && typeof response.headers === "object") {
+            for (const k in response.headers) {
+                if (response.headers.hasOwnProperty(k)) {
+                    _headers[k] = response.headers[k];
+                }
+            }
+        }
+        if (status === 200) {
+            const _responseText = response.data;
+            let result200: any = null;
+            let resultData200  = _responseText;
+            result200 = NotificationSubscriptionItemDataTableQueryResponse.fromJS(resultData200);
+            return Promise.resolve<NotificationSubscriptionItemDataTableQueryResponse>(result200);
+
+        } else if (status === 400) {
+            const _responseText = response.data;
+            let result400: any = null;
+            let resultData400  = _responseText;
+            result400 = RequestExceptionResponse.fromJS(resultData400);
+            return throwException("Bad Request", status, _responseText, _headers, result400);
+
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.data;
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Promise.resolve<NotificationSubscriptionItemDataTableQueryResponse>(null as any);
+    }
+
+    /**
+     * @param body (optional) 
+     * @return Success
+     */
+    getSubscriptionsLookupByIds(body: number[] | undefined, cancelToken?: CancelToken): Promise<Int32StringKeyValuePair[]> {
+        let url_ = this.baseUrl + "/api/AdvertisementNotification/GetSubscriptionsLookupByIds";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_: AxiosRequestConfig = {
+            data: content_,
+            method: "POST",
+            url: url_,
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "text/plain"
+            },
+            cancelToken
+        };
+
+        return this.instance.request(options_).catch((_error: any) => {
+            if (isAxiosError(_error) && _error.response) {
+                return _error.response;
+            } else {
+                throw _error;
+            }
+        }).then((_response: AxiosResponse) => {
+            return this.processGetSubscriptionsLookupByIds(_response);
+        });
+    }
+
+    protected processGetSubscriptionsLookupByIds(response: AxiosResponse): Promise<Int32StringKeyValuePair[]> {
+        const status = response.status;
+        let _headers: any = {};
+        if (response.headers && typeof response.headers === "object") {
+            for (const k in response.headers) {
+                if (response.headers.hasOwnProperty(k)) {
+                    _headers[k] = response.headers[k];
+                }
+            }
+        }
+        if (status === 200) {
+            const _responseText = response.data;
+            let result200: any = null;
+            let resultData200  = _responseText;
+            if (Array.isArray(resultData200)) {
+                result200 = [] as any;
+                for (let item of resultData200)
+                    result200!.push(Int32StringKeyValuePair.fromJS(item));
+            }
+            else {
+                result200 = <any>null;
+            }
+            return Promise.resolve<Int32StringKeyValuePair[]>(result200);
+
+        } else if (status === 400) {
+            const _responseText = response.data;
+            let result400: any = null;
+            let resultData400  = _responseText;
+            result400 = RequestExceptionResponse.fromJS(resultData400);
+            return throwException("Bad Request", status, _responseText, _headers, result400);
+
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.data;
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Promise.resolve<Int32StringKeyValuePair[]>(null as any);
+    }
+
+    /**
+     * @param body (optional) 
+     * @return Success
+     */
+    createSubscriptions(body: CreateOrEditNotificationSubscriptionRequest | undefined, cancelToken?: CancelToken): Promise<void> {
+        let url_ = this.baseUrl + "/api/AdvertisementNotification/CreateSubscriptions";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_: AxiosRequestConfig = {
+            data: content_,
+            method: "POST",
+            url: url_,
+            headers: {
+                "Content-Type": "application/json",
+            },
+            cancelToken
+        };
+
+        return this.instance.request(options_).catch((_error: any) => {
+            if (isAxiosError(_error) && _error.response) {
+                return _error.response;
+            } else {
+                throw _error;
+            }
+        }).then((_response: AxiosResponse) => {
+            return this.processCreateSubscriptions(_response);
+        });
+    }
+
+    protected processCreateSubscriptions(response: AxiosResponse): Promise<void> {
+        const status = response.status;
+        let _headers: any = {};
+        if (response.headers && typeof response.headers === "object") {
+            for (const k in response.headers) {
+                if (response.headers.hasOwnProperty(k)) {
+                    _headers[k] = response.headers[k];
+                }
+            }
+        }
+        if (status === 200) {
+            const _responseText = response.data;
+            return Promise.resolve<void>(null as any);
+
+        } else if (status === 400) {
+            const _responseText = response.data;
+            let result400: any = null;
+            let resultData400  = _responseText;
+            result400 = RequestExceptionResponse.fromJS(resultData400);
+            return throwException("Bad Request", status, _responseText, _headers, result400);
+
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.data;
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Promise.resolve<void>(null as any);
+    }
+
+    /**
+     * @param subscriptionId (optional) 
+     * @return Success
+     */
+    editSubscriptionsGet(subscriptionId: number | undefined, cancelToken?: CancelToken): Promise<SubscriptionFormInfo> {
+        let url_ = this.baseUrl + "/api/AdvertisementNotification/EditSubscriptions?";
+        if (subscriptionId === null)
+            throw new Error("The parameter 'subscriptionId' cannot be null.");
+        else if (subscriptionId !== undefined)
+            url_ += "subscriptionId=" + encodeURIComponent("" + subscriptionId) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: AxiosRequestConfig = {
+            method: "GET",
+            url: url_,
+            headers: {
+                "Accept": "text/plain"
+            },
+            cancelToken
+        };
+
+        return this.instance.request(options_).catch((_error: any) => {
+            if (isAxiosError(_error) && _error.response) {
+                return _error.response;
+            } else {
+                throw _error;
+            }
+        }).then((_response: AxiosResponse) => {
+            return this.processEditSubscriptionsGet(_response);
+        });
+    }
+
+    protected processEditSubscriptionsGet(response: AxiosResponse): Promise<SubscriptionFormInfo> {
+        const status = response.status;
+        let _headers: any = {};
+        if (response.headers && typeof response.headers === "object") {
+            for (const k in response.headers) {
+                if (response.headers.hasOwnProperty(k)) {
+                    _headers[k] = response.headers[k];
+                }
+            }
+        }
+        if (status === 200) {
+            const _responseText = response.data;
+            let result200: any = null;
+            let resultData200  = _responseText;
+            result200 = SubscriptionFormInfo.fromJS(resultData200);
+            return Promise.resolve<SubscriptionFormInfo>(result200);
+
+        } else if (status === 400) {
+            const _responseText = response.data;
+            let result400: any = null;
+            let resultData400  = _responseText;
+            result400 = RequestExceptionResponse.fromJS(resultData400);
+            return throwException("Bad Request", status, _responseText, _headers, result400);
+
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.data;
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Promise.resolve<SubscriptionFormInfo>(null as any);
+    }
+
+    /**
+     * @param body (optional) 
+     * @return Success
+     */
+    editSubscriptionsPost(body: CreateOrEditNotificationSubscriptionRequest | undefined, cancelToken?: CancelToken): Promise<void> {
+        let url_ = this.baseUrl + "/api/AdvertisementNotification/EditSubscriptions";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_: AxiosRequestConfig = {
+            data: content_,
+            method: "POST",
+            url: url_,
+            headers: {
+                "Content-Type": "application/json",
+            },
+            cancelToken
+        };
+
+        return this.instance.request(options_).catch((_error: any) => {
+            if (isAxiosError(_error) && _error.response) {
+                return _error.response;
+            } else {
+                throw _error;
+            }
+        }).then((_response: AxiosResponse) => {
+            return this.processEditSubscriptionsPost(_response);
+        });
+    }
+
+    protected processEditSubscriptionsPost(response: AxiosResponse): Promise<void> {
+        const status = response.status;
+        let _headers: any = {};
+        if (response.headers && typeof response.headers === "object") {
+            for (const k in response.headers) {
+                if (response.headers.hasOwnProperty(k)) {
+                    _headers[k] = response.headers[k];
+                }
+            }
+        }
+        if (status === 200) {
+            const _responseText = response.data;
+            return Promise.resolve<void>(null as any);
+
+        } else if (status === 400) {
+            const _responseText = response.data;
+            let result400: any = null;
+            let resultData400  = _responseText;
+            result400 = RequestExceptionResponse.fromJS(resultData400);
+            return throwException("Bad Request", status, _responseText, _headers, result400);
+
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.data;
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Promise.resolve<void>(null as any);
+    }
+
+    /**
+     * @param body (optional) 
+     * @return Success
+     */
+    extendSubscriptions(body: ExtendRequest | undefined, cancelToken?: CancelToken): Promise<void> {
+        let url_ = this.baseUrl + "/api/AdvertisementNotification/ExtendSubscriptions";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_: AxiosRequestConfig = {
+            data: content_,
+            method: "POST",
+            url: url_,
+            headers: {
+                "Content-Type": "application/json",
+            },
+            cancelToken
+        };
+
+        return this.instance.request(options_).catch((_error: any) => {
+            if (isAxiosError(_error) && _error.response) {
+                return _error.response;
+            } else {
+                throw _error;
+            }
+        }).then((_response: AxiosResponse) => {
+            return this.processExtendSubscriptions(_response);
+        });
+    }
+
+    protected processExtendSubscriptions(response: AxiosResponse): Promise<void> {
+        const status = response.status;
+        let _headers: any = {};
+        if (response.headers && typeof response.headers === "object") {
+            for (const k in response.headers) {
+                if (response.headers.hasOwnProperty(k)) {
+                    _headers[k] = response.headers[k];
+                }
+            }
+        }
+        if (status === 200) {
+            const _responseText = response.data;
+            return Promise.resolve<void>(null as any);
+
+        } else if (status === 400) {
+            const _responseText = response.data;
+            let result400: any = null;
+            let resultData400  = _responseText;
+            result400 = RequestExceptionResponse.fromJS(resultData400);
+            return throwException("Bad Request", status, _responseText, _headers, result400);
+
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.data;
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Promise.resolve<void>(null as any);
+    }
+
+    /**
+     * @param body (optional) 
+     * @return Success
+     */
+    setSubscriptionActiveStatus(body: SetActiveStatusRequest | undefined, cancelToken?: CancelToken): Promise<void> {
+        let url_ = this.baseUrl + "/api/AdvertisementNotification/SetSubscriptionActiveStatus";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_: AxiosRequestConfig = {
+            data: content_,
+            method: "POST",
+            url: url_,
+            headers: {
+                "Content-Type": "application/json",
+            },
+            cancelToken
+        };
+
+        return this.instance.request(options_).catch((_error: any) => {
+            if (isAxiosError(_error) && _error.response) {
+                return _error.response;
+            } else {
+                throw _error;
+            }
+        }).then((_response: AxiosResponse) => {
+            return this.processSetSubscriptionActiveStatus(_response);
+        });
+    }
+
+    protected processSetSubscriptionActiveStatus(response: AxiosResponse): Promise<void> {
+        const status = response.status;
+        let _headers: any = {};
+        if (response.headers && typeof response.headers === "object") {
+            for (const k in response.headers) {
+                if (response.headers.hasOwnProperty(k)) {
+                    _headers[k] = response.headers[k];
+                }
+            }
+        }
+        if (status === 200) {
+            const _responseText = response.data;
+            return Promise.resolve<void>(null as any);
+
+        } else if (status === 400) {
+            const _responseText = response.data;
+            let result400: any = null;
+            let resultData400  = _responseText;
+            result400 = RequestExceptionResponse.fromJS(resultData400);
+            return throwException("Bad Request", status, _responseText, _headers, result400);
+
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.data;
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Promise.resolve<void>(null as any);
+    }
+
+    /**
+     * @param body (optional) 
+     * @return Success
+     */
+    deleteSubscriptions(body: number[] | undefined, cancelToken?: CancelToken): Promise<void> {
+        let url_ = this.baseUrl + "/api/AdvertisementNotification/DeleteSubscriptions";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_: AxiosRequestConfig = {
+            data: content_,
+            method: "POST",
+            url: url_,
+            headers: {
+                "Content-Type": "application/json",
+            },
+            cancelToken
+        };
+
+        return this.instance.request(options_).catch((_error: any) => {
+            if (isAxiosError(_error) && _error.response) {
+                return _error.response;
+            } else {
+                throw _error;
+            }
+        }).then((_response: AxiosResponse) => {
+            return this.processDeleteSubscriptions(_response);
+        });
+    }
+
+    protected processDeleteSubscriptions(response: AxiosResponse): Promise<void> {
+        const status = response.status;
+        let _headers: any = {};
+        if (response.headers && typeof response.headers === "object") {
+            for (const k in response.headers) {
+                if (response.headers.hasOwnProperty(k)) {
+                    _headers[k] = response.headers[k];
+                }
+            }
+        }
+        if (status === 200) {
+            const _responseText = response.data;
+            return Promise.resolve<void>(null as any);
+
+        } else if (status === 400) {
+            const _responseText = response.data;
+            let result400: any = null;
+            let resultData400  = _responseText;
+            result400 = RequestExceptionResponse.fromJS(resultData400);
+            return throwException("Bad Request", status, _responseText, _headers, result400);
+
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.data;
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Promise.resolve<void>(null as any);
     }
 }
 
@@ -3757,6 +4257,74 @@ export interface ICreateOrEditAdvertisementRequest {
     imageOrder?: ImageDto[] | undefined;
 }
 
+export class CreateOrEditNotificationSubscriptionRequest implements ICreateOrEditNotificationSubscriptionRequest {
+    id?: number | undefined;
+    title!: string;
+    keywords?: string | undefined;
+    paidTime?: PostTimeDto | undefined;
+    categoryId!: number;
+    validTo?: Date | undefined;
+    attributeValues?: Int32StringKeyValuePair[] | undefined;
+
+    constructor(data?: ICreateOrEditNotificationSubscriptionRequest) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.title = _data["title"];
+            this.keywords = _data["keywords"];
+            this.paidTime = _data["paidTime"] ? PostTimeDto.fromJS(_data["paidTime"]) : <any>undefined;
+            this.categoryId = _data["categoryId"];
+            this.validTo = _data["validTo"] ? new Date(_data["validTo"].toString()) : <any>undefined;
+            if (Array.isArray(_data["attributeValues"])) {
+                this.attributeValues = [] as any;
+                for (let item of _data["attributeValues"])
+                    this.attributeValues!.push(Int32StringKeyValuePair.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): CreateOrEditNotificationSubscriptionRequest {
+        data = typeof data === 'object' ? data : {};
+        let result = new CreateOrEditNotificationSubscriptionRequest();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["title"] = this.title;
+        data["keywords"] = this.keywords;
+        data["paidTime"] = this.paidTime ? this.paidTime.toJSON() : <any>undefined;
+        data["categoryId"] = this.categoryId;
+        data["validTo"] = this.validTo ? this.validTo.toISOString() : <any>undefined;
+        if (Array.isArray(this.attributeValues)) {
+            data["attributeValues"] = [];
+            for (let item of this.attributeValues)
+                data["attributeValues"].push(item.toJSON());
+        }
+        return data;
+    }
+}
+
+export interface ICreateOrEditNotificationSubscriptionRequest {
+    id?: number | undefined;
+    title: string;
+    keywords?: string | undefined;
+    paidTime?: PostTimeDto | undefined;
+    categoryId: number;
+    validTo?: Date | undefined;
+    attributeValues?: Int32StringKeyValuePair[] | undefined;
+}
+
 export class DataTableQuery implements IDataTableQuery {
     draw?: number;
     start?: number | undefined;
@@ -3961,11 +4529,11 @@ export interface IEditUserInfo {
     profileImage?: any | undefined;
 }
 
-export class ExtendAdvertisementRequest implements IExtendAdvertisementRequest {
-    advertisementIds!: number[];
+export class ExtendRequest implements IExtendRequest {
+    ids!: number[];
     extendTime!: PostTimeDto;
 
-    constructor(data?: IExtendAdvertisementRequest) {
+    constructor(data?: IExtendRequest) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
@@ -3973,43 +4541,43 @@ export class ExtendAdvertisementRequest implements IExtendAdvertisementRequest {
             }
         }
         if (!data) {
-            this.advertisementIds = [];
+            this.ids = [];
             this.extendTime = new PostTimeDto();
         }
     }
 
     init(_data?: any) {
         if (_data) {
-            if (Array.isArray(_data["advertisementIds"])) {
-                this.advertisementIds = [] as any;
-                for (let item of _data["advertisementIds"])
-                    this.advertisementIds!.push(item);
+            if (Array.isArray(_data["ids"])) {
+                this.ids = [] as any;
+                for (let item of _data["ids"])
+                    this.ids!.push(item);
             }
             this.extendTime = _data["extendTime"] ? PostTimeDto.fromJS(_data["extendTime"]) : new PostTimeDto();
         }
     }
 
-    static fromJS(data: any): ExtendAdvertisementRequest {
+    static fromJS(data: any): ExtendRequest {
         data = typeof data === 'object' ? data : {};
-        let result = new ExtendAdvertisementRequest();
+        let result = new ExtendRequest();
         result.init(data);
         return result;
     }
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        if (Array.isArray(this.advertisementIds)) {
-            data["advertisementIds"] = [];
-            for (let item of this.advertisementIds)
-                data["advertisementIds"].push(item);
+        if (Array.isArray(this.ids)) {
+            data["ids"] = [];
+            for (let item of this.ids)
+                data["ids"].push(item);
         }
         data["extendTime"] = this.extendTime ? this.extendTime.toJSON() : <any>undefined;
         return data;
     }
 }
 
-export interface IExtendAdvertisementRequest {
-    advertisementIds: number[];
+export interface IExtendRequest {
+    ids: number[];
     extendTime: PostTimeDto;
 }
 
@@ -4373,6 +4941,126 @@ export class NotFoundResult implements INotFoundResult {
 
 export interface INotFoundResult {
     statusCode?: number;
+}
+
+export class NotificationSubscriptionItem implements INotificationSubscriptionItem {
+    id?: number;
+    title?: string | undefined;
+    keywords?: string | undefined;
+    isActive?: boolean;
+    createdAt?: Date;
+    validTo?: Date;
+    categoryName?: string | undefined;
+
+    constructor(data?: INotificationSubscriptionItem) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.title = _data["title"];
+            this.keywords = _data["keywords"];
+            this.isActive = _data["isActive"];
+            this.createdAt = _data["createdAt"] ? new Date(_data["createdAt"].toString()) : <any>undefined;
+            this.validTo = _data["validTo"] ? new Date(_data["validTo"].toString()) : <any>undefined;
+            this.categoryName = _data["categoryName"];
+        }
+    }
+
+    static fromJS(data: any): NotificationSubscriptionItem {
+        data = typeof data === 'object' ? data : {};
+        let result = new NotificationSubscriptionItem();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["title"] = this.title;
+        data["keywords"] = this.keywords;
+        data["isActive"] = this.isActive;
+        data["createdAt"] = this.createdAt ? this.createdAt.toISOString() : <any>undefined;
+        data["validTo"] = this.validTo ? this.validTo.toISOString() : <any>undefined;
+        data["categoryName"] = this.categoryName;
+        return data;
+    }
+}
+
+export interface INotificationSubscriptionItem {
+    id?: number;
+    title?: string | undefined;
+    keywords?: string | undefined;
+    isActive?: boolean;
+    createdAt?: Date;
+    validTo?: Date;
+    categoryName?: string | undefined;
+}
+
+export class NotificationSubscriptionItemDataTableQueryResponse implements INotificationSubscriptionItemDataTableQueryResponse {
+    draw?: number;
+    recordsTotal?: number;
+    recordsFiltered?: number;
+    data?: NotificationSubscriptionItem[] | undefined;
+    error?: string | undefined;
+
+    constructor(data?: INotificationSubscriptionItemDataTableQueryResponse) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.draw = _data["draw"];
+            this.recordsTotal = _data["recordsTotal"];
+            this.recordsFiltered = _data["recordsFiltered"];
+            if (Array.isArray(_data["data"])) {
+                this.data = [] as any;
+                for (let item of _data["data"])
+                    this.data!.push(NotificationSubscriptionItem.fromJS(item));
+            }
+            this.error = _data["error"];
+        }
+    }
+
+    static fromJS(data: any): NotificationSubscriptionItemDataTableQueryResponse {
+        data = typeof data === 'object' ? data : {};
+        let result = new NotificationSubscriptionItemDataTableQueryResponse();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["draw"] = this.draw;
+        data["recordsTotal"] = this.recordsTotal;
+        data["recordsFiltered"] = this.recordsFiltered;
+        if (Array.isArray(this.data)) {
+            data["data"] = [];
+            for (let item of this.data)
+                data["data"].push(item.toJSON());
+        }
+        data["error"] = this.error;
+        return data;
+    }
+}
+
+export interface INotificationSubscriptionItemDataTableQueryResponse {
+    draw?: number;
+    recordsTotal?: number;
+    recordsFiltered?: number;
+    data?: NotificationSubscriptionItem[] | undefined;
+    error?: string | undefined;
 }
 
 export class OkResult implements IOkResult {
@@ -4845,6 +5533,97 @@ export interface ISendMessageRequest {
     chatId: number;
     text: string;
     attachments?: any[] | undefined;
+}
+
+export class SetActiveStatusRequest implements ISetActiveStatusRequest {
+    ids!: number[];
+    isActive!: boolean;
+
+    constructor(data?: ISetActiveStatusRequest) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+        if (!data) {
+            this.ids = [];
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            if (Array.isArray(_data["ids"])) {
+                this.ids = [] as any;
+                for (let item of _data["ids"])
+                    this.ids!.push(item);
+            }
+            this.isActive = _data["isActive"];
+        }
+    }
+
+    static fromJS(data: any): SetActiveStatusRequest {
+        data = typeof data === 'object' ? data : {};
+        let result = new SetActiveStatusRequest();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        if (Array.isArray(this.ids)) {
+            data["ids"] = [];
+            for (let item of this.ids)
+                data["ids"].push(item);
+        }
+        data["isActive"] = this.isActive;
+        return data;
+    }
+}
+
+export interface ISetActiveStatusRequest {
+    ids: number[];
+    isActive: boolean;
+}
+
+export class SubscriptionFormInfo implements ISubscriptionFormInfo {
+    subscription?: CreateOrEditNotificationSubscriptionRequest | undefined;
+    categoryInfo?: CategoryFormInfo | undefined;
+
+    constructor(data?: ISubscriptionFormInfo) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.subscription = _data["subscription"] ? CreateOrEditNotificationSubscriptionRequest.fromJS(_data["subscription"]) : <any>undefined;
+            this.categoryInfo = _data["categoryInfo"] ? CategoryFormInfo.fromJS(_data["categoryInfo"]) : <any>undefined;
+        }
+    }
+
+    static fromJS(data: any): SubscriptionFormInfo {
+        data = typeof data === 'object' ? data : {};
+        let result = new SubscriptionFormInfo();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["subscription"] = this.subscription ? this.subscription.toJSON() : <any>undefined;
+        data["categoryInfo"] = this.categoryInfo ? this.categoryInfo.toJSON() : <any>undefined;
+        return data;
+    }
+}
+
+export interface ISubscriptionFormInfo {
+    subscription?: CreateOrEditNotificationSubscriptionRequest | undefined;
+    categoryInfo?: CategoryFormInfo | undefined;
 }
 
 export class T implements IT {

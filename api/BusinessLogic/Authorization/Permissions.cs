@@ -22,6 +22,12 @@ public enum Permissions
     ViewMessages,
     SendMessage,
 
+    //Advertisement notification subscriptions
+    ViewAdvertisementNotificationSubscriptions,
+    CreateAdvertisementNotificationSubscription,
+    EditAdvertisementNotificationSubscriptions,
+    DeleteAdvertisementNotificationSubscriptions,
+
     //Manage all users
     ViewUsers
 }

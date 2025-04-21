@@ -4,7 +4,6 @@ using BusinessLogic.Constants;
 using BusinessLogic.Dto;
 using BusinessLogic.Dto.Advertisement;
 using BusinessLogic.Dto.DataTableQuery;
-using BusinessLogic.Dto.Time;
 using BusinessLogic.Entities;
 using BusinessLogic.Exceptions;
 using BusinessLogic.Helpers;
@@ -14,6 +13,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Web.Dto.Advertisement;
+using Web.Dto.Common;
 using Web.Dto.User;
 using Web.Helpers;
 
@@ -191,12 +191,12 @@ public class AdvertisementController(
 
     [HasPermission(Permissions.EditOwnedAdvertisement)]
     [HttpPost]
-    public async Task SetIsActiveAdvertisements(IEnumerable<int> advertisementIds, bool isActive)
+    public async Task SetIsActiveAdvertisements(SetActiveStatusRequest request)
     {
         var userId = User.GetUserId() ?? throw new ApiException([CustomErrorCodes.UserNotFound]);
         await _advertisementService
-            .Where(a => a.OwnerId == userId && advertisementIds.Contains(a.Id))
-            .UpdateFromQueryAsync(a => new Advertisement() { IsActive = isActive });
+            .Where(a => a.OwnerId == userId && request.Ids.Contains(a.Id))
+            .UpdateFromQueryAsync(a => new Advertisement() { IsActive = request.IsActive });
     }
 
     [HasPermission(Permissions.DeleteOwnedAdvertisement)]
@@ -253,9 +253,9 @@ public class AdvertisementController(
     [ProducesResponseType<AdvertisementFormInfo>(StatusCodes.Status200OK)]
     [ProducesResponseType<RequestExceptionResponse>(StatusCodes.Status400BadRequest)]
     [HttpPost]
-    public async Task ExtendAdvertisements(ExtendAdvertisementRequest request)
+    public async Task ExtendAdvertisements(ExtendRequest request)
     {
-        await _advertisementService.ExtendAdvertisement(User.GetUserId()!.Value, request.AdvertisementIds, request.ExtendTime);
+        await _advertisementService.ExtendAdvertisement(User.GetUserId()!.Value, request.Ids, request.ExtendTime);
     }
 
     [AllowAnonymous]

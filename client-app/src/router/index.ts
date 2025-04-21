@@ -157,6 +157,45 @@ const router = createRouter({
         requiresPermission: Permissions[Permissions.ViewMessages]
       }
     },
+    {
+      path: '/advertisement-notification-subscriptions',
+      redirect: { name: 'manageAdvertisementNotificationSubscription' },
+      children: [
+        {
+          path: 'manage',
+          name: 'manageAdvertisementNotificationSubscription',
+          component: () =>
+            import('../views/advertisement-notification-subscriptions/ManageSubscriptions.vue'),
+          meta: {
+            requiresPermission: Permissions[Permissions.ViewAdvertisementNotificationSubscriptions]
+          }
+        },
+        {
+          path: 'create',
+          name: 'createAdvertisementNotificationSubscription',
+          component: () =>
+            import(
+              '../views/advertisement-notification-subscriptions/CreateOrEditSubscription.vue'
+            ),
+          meta: {
+            requiresPermission: Permissions[Permissions.CreateAdvertisementNotificationSubscription]
+          }
+        },
+
+        {
+          path: 'edit/:subscriptionId',
+          name: 'editAdvertisementNotificationSubscription',
+          component: () =>
+            import(
+              '../views/advertisement-notification-subscriptions/CreateOrEditSubscription.vue'
+            ),
+          props: (route) => ({ subscriptionId: toNumberOrUndefined(route.params.subscriptionId) }),
+          meta: {
+            requiresPermission: Permissions[Permissions.EditAdvertisementNotificationSubscriptions]
+          }
+        }
+      ]
+    },
 
     //Not found
     {
@@ -190,6 +229,18 @@ router.beforeEach(async (to, _, next) => {
 
 const firstParam = (p: string | string[]) => {
   return Array.isArray(p) ? p[0] : p
+}
+
+const toNumberOrUndefined = (
+  param: string | string[] | LocationQueryValue | LocationQueryValue[]
+) => {
+  const firstParam = Array.isArray(param) ? param[0] : param
+  if (typeof firstParam !== 'string') {
+    return undefined
+  }
+
+  const numberParam = parseInt(firstParam)
+  return isNaN(numberParam) ? undefined : numberParam
 }
 
 export default router

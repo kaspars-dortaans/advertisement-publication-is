@@ -26,7 +26,12 @@
                   ></InputText>
                   <label for="valid-to">{{ l.form.putAdvertisement.validTo }}</label>
                 </FloatLabel>
-                <Button :label="l.actions.extend" severity="secondary" @click="todo" />
+                <Button
+                  :label="l.actions.extend"
+                  severity="secondary"
+                  as="RouterLink"
+                  :to="{ name: 'extend', params: { type: 'advertisement', ids: `[${id}]` } }"
+                />
               </div>
               <template v-else>
                 <FloatLabel variant="on">
@@ -48,27 +53,11 @@
               <Divider />
 
               <!-- Category Select -->
-              <template v-for="(categoryOptions, i) in categorySelectOptions" :key="i">
-                <FloatLabel variant="on">
-                  <Select
-                    :defaultValue="selectedCategories[i]"
-                    :options="categoryOptions"
-                    :invalid="fields.categoryId?.hasError && i === categorySelectOptions.length - 1"
-                    :id="'category-select-' + i"
-                    optionLabel="name"
-                    optionValue="id"
-                    fluid
-                    @change="selectCategory($event, i)"
-                  />
-                  <label :for="'category-select-' + i">{{
-                    i == 0 ? l.form.putAdvertisement.category : l.form.putAdvertisement.subcategory
-                  }}</label>
-                </FloatLabel>
-                <FieldError
-                  v-if="i === categorySelectOptions.length - 1"
-                  :field="fields.categoryId"
-                />
-              </template>
+              <CategorySelect
+                :categoryList="categoryList"
+                :field="fields.categoryId"
+                @selectedCategory="handleSelectedCategory"
+              />
 
               <template v-if="attributeInfo.length || loadingAttributes">
                 <Divider />
@@ -84,7 +73,7 @@
                 </BlockWithSpinner>
               </template>
 
-              <Divider />
+              <Divider v-if="isSmallScreen" />
             </fieldset>
 
             <fieldset class="flex flex-col gap-2 min-w-full lg:min-w-96">
@@ -115,10 +104,9 @@
                 <label for="description-input">{{ l.form.putAdvertisement.description }}</label>
               </FloatLabel>
               <FieldError :field="fields.description" />
-
-              <!-- Images -->
             </fieldset>
 
+            <!-- Images -->
             <fieldset class="lg:min-w-96">
               <MultipleImageUpload
                 v-model="fields.imagesToAdd!.model.value"
@@ -147,16 +135,18 @@ import AttributeInputGroup from '@/components/attribute-input/AttributeInputGrou
 import BackButton from '@/components/BackButton.vue'
 import BlockWithSpinner from '@/components/common/BlockWithSpinner.vue'
 import ResponsiveLayout from '@/components/common/ResponsiveLayout.vue'
+import CategorySelect from '@/components/form/CategorySelect.vue'
 import FieldError from '@/components/form/FieldError.vue'
 import MultipleImageUpload from '@/components/form/MultipleImageUpload.vue'
+import {
+  useManageAttributeInput,
+  useValidateAttributeInput
+} from '@/composables/manage-attribute-input'
 import { createAdvertisementPostTimeSpanOptions } from '@/constants/advertisement-post-time-span'
 import { ImageConstants } from '@/constants/api/ImageConstants'
-import { leaveFormGuard } from '@/utils/confirm-dialog'
 import {
   AdvertisementClient,
   AttributeFormInfo,
-  AttributeValueListItem,
-  CategoryFormInfo,
   CategoryItem,
   CreateOrEditAdvertisementRequest,
   ImageDto,
@@ -166,19 +156,21 @@ import {
 } from '@/services/api-client'
 import { LocaleService } from '@/services/locale-service'
 import type { CreateOrEditAdvertisementForm } from '@/types/forms/create-or-edit-advertisement'
+import type { IImageUploadDto } from '@/types/image/image-upload-dto'
 import { getClient } from '@/utils/client-builder'
+import { leaveFormGuard } from '@/utils/confirm-dialog'
 import { FieldHelper } from '@/utils/field-helper'
+import { useTrackScreenSize } from '@/utils/screen-size'
 import {
   canAddAdvertisementToCategoryValidator,
-  matchArrayElement,
   requiredWhen
 } from '@/validators/custom-validators'
 import { toTypedSchema } from '@vee-validate/yup'
-import { useConfirm, type SelectChangeEvent } from 'primevue'
+import { useConfirm } from 'primevue'
 import { useForm } from 'vee-validate'
 import { computed, onBeforeMount, ref, watch } from 'vue'
 import { onBeforeRouteLeave, useRouter } from 'vue-router'
-import { array, number, object, Schema, string, type AnyObject } from 'yup'
+import { array, number, object, string, type AnyObject } from 'yup'
 
 //Route
 const { push } = useRouter()
@@ -200,18 +192,7 @@ const advertisementService = getClient(AdvertisementClient)
 
 //Reactive data
 const isEdit = computed(() => typeof props.id === 'number' && !isNaN(props.id))
-
 const postTimeOptions = computed(() => createAdvertisementPostTimeSpanOptions(ls))
-
-const loading = ref(0)
-const categoryList = ref<CategoryItem[]>([])
-const selectedCategories = ref<number[]>([])
-const categorySelectOptions = ref<CategoryItem[][]>([])
-
-const loadingAttributes = ref(false)
-const attributeInfo = ref<AttributeFormInfo[]>([])
-const attributeValueLists = ref<AttributeValueListItem[]>([])
-
 const existingAdvertisement = ref<CreateOrEditAdvertisementRequest>()
 const dateFormat = computed(() =>
   Intl.DateTimeFormat(LocaleService.currentLocaleName.value, {
@@ -219,8 +200,12 @@ const dateFormat = computed(() =>
     timeStyle: 'short'
   })
 )
+const categoryList = ref<CategoryItem[]>([])
+const attributeInfo = ref<AttributeFormInfo[]>([])
+const { isSmallScreen } = useTrackScreenSize()
 
 //Forms and fields
+const { addAttributeValidationSchema } = useValidateAttributeInput(attributeInfo)
 const validationSchema = computed(() => {
   let schemaObject: AnyObject = {
     categoryId: number().test(canAddAdvertisementToCategoryValidator(categoryList)),
@@ -234,39 +219,15 @@ const validationSchema = computed(() => {
     imagesToAdd: array().default([])
   }
 
-  //Add attribute validation
-  for (let i = attributeInfo.value.length - 1; i >= 0; i--) {
-    const attribute = attributeInfo.value[i]
-    let validation: Schema | undefined = undefined
-    switch (attribute.attributeValueType) {
-      case ValueTypes.Text:
-        validation = string()
-        break
-      case ValueTypes.Integer:
-        validation = number().integer()
-        break
-      case ValueTypes.Decimal:
-        validation = number()
-        break
-      case ValueTypes.ValueListEntry:
-        validation = number()
-        break
-    }
-
-    if (validation && attribute.valueValidationRegex) {
-      const regexp = new RegExp(attribute.valueValidationRegex)
-      validation = validation.test(matchArrayElement(regexp, attribute.name))
-      schemaObject[`attributeValues[${i}]`] = validation
-    }
-  }
-
+  addAttributeValidationSchema(schemaObject)
   return toTypedSchema(object(schemaObject))
 })
 
 //Change attributeValues type, to allow easier validation and model binding
 const form = useForm<CreateOrEditAdvertisementForm>({ validationSchema })
-const { fields, valuesChanged, defineMultipleFields, handleErrors } = new FieldHelper(form)
-const { values, handleSubmit, isSubmitting, setFieldValue, validateField, resetForm } = form
+const fieldHelper = new FieldHelper(form)
+const { values, handleSubmit, isSubmitting, resetForm } = form
+const { fields, valuesChanged, defineMultipleFields, handleErrors } = fieldHelper
 
 const imageFieldNames: `imagesToAdd.${number}`[] = [
   ...Array(ImageConstants.MaxImageCountPerAdvertisement).keys()
@@ -279,6 +240,22 @@ defineMultipleFields([
   'imagesToAdd',
   ...imageFieldNames
 ])
+
+const {
+  loadingAttributes,
+  loading,
+  attributeValueLists,
+  setCategoryInfo,
+  handleSelectedCategory,
+  loadCategoryInfo,
+  loadCategoryList
+} = useManageAttributeInput<CreateOrEditAdvertisementForm>(
+  form,
+  fieldHelper,
+  categoryList,
+  attributeInfo,
+  advertisementService
+)
 
 //Hooks
 onBeforeMount(() => {
@@ -312,9 +289,7 @@ watch(
       })
       attributeInfo.value = []
       attributeValueLists.value = []
-      selectedCategories.value = []
       existingAdvertisement.value = undefined
-      resetCategoryOptionsLists()
     }
   }
 )
@@ -322,7 +297,7 @@ watch(
 //Methods
 const reloadData = () => {
   loadCategoryList()
-  //If category info was loaded, reload it
+  //If category info was loaded before, reload it
   if (attributeInfo.value.length) {
     loadCategoryInfo(values.categoryId)
   }
@@ -338,16 +313,10 @@ const loadAdvertisementInfo = async () => {
   setCategoryInfo(categoryInfo)
 
   if (!advertisement) {
+    loading.value -= 1
+    //TODO: display error
     return
   }
-
-  let categoryId: number | undefined = advertisement?.categoryId
-  let category: CategoryItem | undefined
-  while ((category = categoryList.value.find((c) => c.id === categoryId)) != null) {
-    selectedCategories.value.unshift(category.id!)
-    categoryId = category.parentCategoryId
-  }
-  resetCategoryOptionsLists()
 
   const attributeValues = advertisement.attributeValues
     ? attributeInfo.value.map((a) => {
@@ -369,108 +338,6 @@ const loadAdvertisementInfo = async () => {
     }
   })
   loading.value -= 1
-}
-
-const loadCategoryList = async () => {
-  loading.value += 1
-  categoryList.value = await advertisementService.getCategories()
-
-  //Check if all selected categories are present and their hierarchy has not changed
-  let clearCategorySelection =
-    !selectedCategories.value.length ||
-    !selectedCategories.value.every((id, i) => {
-      if (id == null) {
-        return true
-      }
-      const category = categoryList.value.find((c) => c.id === id)
-      return category && (i == 0 || selectedCategories.value[i - 1] == category?.parentCategoryId)
-    })
-
-  //Reset category options
-  if (!clearCategorySelection) {
-    resetCategoryOptionsLists()
-  }
-
-  if (clearCategorySelection) {
-    selectedCategories.value = []
-    categorySelectOptions.value = [categoryList.value.filter((c) => c.parentCategoryId == null)]
-  }
-
-  loading.value -= 1
-}
-
-const resetCategoryOptionsLists = () => {
-  categorySelectOptions.value = [categoryList.value.filter((c) => c.parentCategoryId == null)]
-  for (const id of selectedCategories.value) {
-    const childCategories = categoryList.value.filter((c) => c.parentCategoryId === id)
-    if (childCategories.length) {
-      categorySelectOptions.value.push(childCategories)
-    } else {
-      break
-    }
-  }
-}
-
-const loadCategoryInfo = async (categoryId: number) => {
-  loadingAttributes.value = true
-  setFieldValue('attributeValues', [])
-  const result = await advertisementService.getCategoryFormInfo(categoryId)
-  setCategoryInfo(result)
-  loadingAttributes.value = false
-}
-
-const setCategoryInfo = (categoryInfo?: CategoryFormInfo) => {
-  if (categoryInfo?.attributeInfo) {
-    ensureAttributesHaveModels(categoryInfo.attributeInfo)
-  }
-
-  attributeValueLists.value = categoryInfo?.attributeValueLists ?? []
-  attributeInfo.value = categoryInfo?.attributeInfo ?? []
-}
-
-const ensureAttributesHaveModels = (attributeInfo: AttributeFormInfo[]) => {
-  const existingAttributeModelCount = Object.keys(fields).filter((k) =>
-    k.startsWith('attributeValues[')
-  ).length
-
-  if (attributeInfo.length && existingAttributeModelCount < attributeInfo.length) {
-    const fieldNames: `attributeValues.${number}`[] = []
-    for (let i = existingAttributeModelCount; i < attributeInfo.length; i++) {
-      fieldNames.push(`attributeValues.${i}`)
-    }
-    defineMultipleFields(fieldNames)
-  }
-}
-
-const selectCategory = async (e: SelectChangeEvent, i: number) => {
-  const originalValue = selectedCategories.value[i]
-  selectedCategories.value[i] = e.value
-
-  //Return if selected value did not change
-  if (selectedCategories.value.length > i && originalValue === e.value) {
-    return
-  }
-
-  setFieldValue('categoryId', e.value)
-  const categoryIdValidationResult = await validateField('categoryId')
-  if (categoryIdValidationResult.valid) {
-    loadCategoryInfo(values.categoryId)
-  } else {
-    attributeInfo.value = []
-    attributeValueLists.value = []
-  }
-
-  //If one of parent category selection was changed remove selected subcategories
-  if (categorySelectOptions.value.length > i + 1) {
-    categorySelectOptions.value = categorySelectOptions.value.slice(0, i + 1)
-    selectedCategories.value = selectedCategories.value.slice(0, i + 1)
-  }
-
-  //Display select for subcategory, if any
-  const subCategories = categoryList.value.filter((c) => c.parentCategoryId === e.value)
-  if (subCategories.length) {
-    categorySelectOptions.value.push(subCategories)
-  }
 }
 
 const submit = handleSubmit(async () => {
@@ -531,36 +398,35 @@ const submit = handleSubmit(async () => {
     formSubmitted.value = true
     push({ name: 'manageAdvertisements' })
   } catch (e) {
-    //Transform added image index to advertisement image index
-    if (
-      e instanceof RequestExceptionResponse &&
-      'errors' in e &&
-      e.errors &&
-      typeof e.errors === 'object'
-    ) {
-      const addImagesProperty: keyof CreateOrEditAdvertisementForm = 'imagesToAdd'
-      const addImagesErrors = Object.entries(e.errors).filter((e) =>
-        e[0].startsWith(addImagesProperty)
-      )
-      for (const addImageError of addImagesErrors) {
-        const indexInAddedImages = parseInt(
-          addImageError[0].match(/(?<=\[)[^[\]]+(?=\])/)?.[0] ?? ''
-        )
-        if (isNaN(indexInAddedImages)) {
-          continue
-        }
-
-        const imageHash = imagesToAdd[indexInAddedImages].hash
-        const imageIndex = values.imagesToAdd.findIndex((i) => i.hash == imageHash)
-        if (imageIndex > -1) {
-          e.errors[addImagesProperty + '.' + imageIndex] = addImageError[1]
-          delete e.errors[addImageError[0]]
-        }
-      }
-    }
+    mapImageErrorToCorrectIndex(e, imagesToAdd)
     handleErrors(e)
   }
 })
 
-const todo = () => alert('Not implemented yet!')
+const mapImageErrorToCorrectIndex = (e: unknown, images: IImageUploadDto[]) => {
+  if (
+    e instanceof RequestExceptionResponse &&
+    'errors' in e &&
+    e.errors &&
+    typeof e.errors === 'object'
+  ) {
+    const addImagesProperty: keyof CreateOrEditAdvertisementForm = 'imagesToAdd'
+    const addImagesErrors = Object.entries(e.errors).filter((e) =>
+      e[0].startsWith(addImagesProperty)
+    )
+    for (const addImageError of addImagesErrors) {
+      const indexInAddedImages = parseInt(addImageError[0].match(/(?<=\[)[^[\]]+(?=\])/)?.[0] ?? '')
+      if (isNaN(indexInAddedImages)) {
+        continue
+      }
+
+      const imageHash = images[indexInAddedImages].hash
+      const imageIndex = values.imagesToAdd.findIndex((i) => i.hash == imageHash)
+      if (imageIndex > -1) {
+        e.errors[addImagesProperty + '.' + imageIndex] = addImageError[1]
+        delete e.errors[addImageError[0]]
+      }
+    }
+  }
+}
 </script>

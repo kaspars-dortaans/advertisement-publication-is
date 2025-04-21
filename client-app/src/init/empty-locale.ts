@@ -56,11 +56,28 @@ export const emptyLocale = {
     confirmDeleteHeader: '',
     confirmDeleteMessage: ''
   },
+  manageAdvertisementNotificationSubscriptions: {
+    confirmDeleteHeader: '',
+    confirmDeleteMessage: '',
+    title: '',
+    keywords: '',
+    categoryName: '',
+    isActive: '',
+    validTo: '',
+    createdAt: ''
+  },
   form: {
-    extendAdvertisements: {
+    putAdvertisementNotification: {
+      title: '',
+      keywords: '',
+      timePeriod: '',
+      validTo: ''
+    },
+    extend: {
       pageTitle: '',
       timePeriod: '',
-      extendedList: ''
+      extendedAdvertisementList: '',
+      extendedAdvertisementNotificationSubscriptionList: ''
     },
     putAdvertisement: {
       category: '',
@@ -141,7 +158,8 @@ export const emptyLocale = {
     siteLogo: '',
     myAdvertisements: '',
     editAdvertisement: '',
-    messages: ''
+    messages: '',
+    advertisementNotifications: ''
   },
   dataSize: {
     bits: '',

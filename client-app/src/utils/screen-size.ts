@@ -3,12 +3,15 @@
  */
 
 import { computed, onMounted, onUnmounted, ref } from 'vue'
+import { SmallScreenSizeWidthBreakpoint } from '@/constants/screen-size'
 
 /**
  * Composable function to keep track of screen size
  * @returns computed refs of screen size
  */
-export function useTrackScreenSize() {
+export function useTrackScreenSize(
+  smallScreenSizeWidthBreakpoint = SmallScreenSizeWidthBreakpoint
+) {
   const getScreenWidth = () => {
     return window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth
   }
@@ -36,6 +39,9 @@ export function useTrackScreenSize() {
     }
     return heightRef.value
   })
+  const isSmallScreen = computed(() => {
+    return width.value < smallScreenSizeWidthBreakpoint
+  })
 
   onMounted(() => {
     window.addEventListener('resize', handleResize)
@@ -44,5 +50,5 @@ export function useTrackScreenSize() {
     window.removeEventListener('resize', handleResize)
   })
 
-  return { width, height }
+  return { width, height, isSmallScreen }
 }

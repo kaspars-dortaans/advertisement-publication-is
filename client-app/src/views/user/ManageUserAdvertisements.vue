@@ -87,6 +87,7 @@ import {
   AdvertisementClient,
   AdvertisementInfo,
   DataTableQuery,
+  SetActiveStatusRequest,
   TableColumn
 } from '@/services/api-client'
 import { LocaleService } from '@/services/locale-service'
@@ -164,7 +165,9 @@ const setAdvertisementActiveState = async (isActive: boolean) => {
   const ids = selectedAdvertisements.value
     .map((a) => a.id)
     .filter((id) => typeof id === 'number') as number[]
-  await advertisementService.setIsActiveAdvertisements(isActive, ids)
+  await advertisementService.setIsActiveAdvertisements(
+    new SetActiveStatusRequest({ isActive, ids })
+  )
   table.value?.refresh()
 }
 
@@ -183,9 +186,12 @@ const deleteAdvertisements = async () => {
 }
 
 const extendAdvertisements = () => {
-    push({
-        name: 'extendAdvertisements',
-        params: { advertisementIds: JSON.stringify(selectedAdvertisementIds.value) }
-    })
+  push({
+    name: 'extend',
+    params: {
+      ids: JSON.stringify(selectedAdvertisementIds.value),
+      type: 'advertisement'
+    }
+  })
 }
 </script>

@@ -54,6 +54,16 @@
     "confirmDeleteHeader": "Delete advertisement bookmarks",
     "confirmDeleteMessage": "{0} bookmark(s) will be deleted."
   },
+  "manageAdvertisementNotificationSubscriptions": {
+    "confirmDeleteHeader": "Delete advertisement notification subscriptions",
+    "confirmDeleteMessage": "{0} notification subscription(s) will be deleted.",
+    "title": "Title",
+    "keywords": "Keywords",
+    "categoryName": "Category",
+    "isActive": "Active",
+    "validTo": "Valid to",
+    "createdAt": "Created at"
+  },
   "form": {
     "common": {
       "dragAndDropToUpload": "Drag and drop here to upload",
@@ -100,10 +110,17 @@
       "timePeriod": "Time period",
       "validTo": "Valid to"
     },
-    "extendAdvertisements": {
+    "extend": {
       "pageTitle": "Extend advertisements",
       "timePeriod": "Time period",
-      "extendedList": "These advertisements will be extended ({0}):"
+      "extendedAdvertisementList": "These advertisements will be extended ({0}):",
+      "extendedAdvertisementNotificationSubscriptionList": "These advertisements notification subscriptions will be extended ({0}):"
+    },
+    "putAdvertisementNotification": {
+      "title": "Title",
+      "keywords": "Keywords",
+      "timePeriod": "Time period",
+      "validTo": "Valid to"
     }
   },
   "messages": {
@@ -139,7 +156,8 @@
     "siteLogo": "Site logo",
     "myAdvertisements": "My advertisements",
     "editAdvertisement": "Edit advertisement",
-    "messages": "Messages"
+    "messages": "Messages",
+    "advertisementNotifications": "Advertisement notifications"
   },
   "dataSize": {
     "bits": "{0} b",

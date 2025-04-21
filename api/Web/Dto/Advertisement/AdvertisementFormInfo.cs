@@ -1,4 +1,6 @@
-﻿namespace Web.Dto.Advertisement;
+﻿using BusinessLogic.Dto.Advertisement;
+
+namespace Web.Dto.Advertisement;
 
 public class AdvertisementFormInfo
 {

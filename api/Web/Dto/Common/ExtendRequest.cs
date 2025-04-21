@@ -2,12 +2,12 @@
 using BusinessLogic.Dto.Time;
 using System.ComponentModel.DataAnnotations;
 
-namespace Web.Dto.Advertisement;
+namespace Web.Dto.Common;
 
-public class ExtendAdvertisementRequest
+public class ExtendRequest
 {
     [Required(ErrorMessage = CustomErrorCodes.MissingRequired)]
-    public IEnumerable<int> AdvertisementIds { get; set; } = [];
+    public IEnumerable<int> Ids { get; set; } = default!;
 
     [Required(ErrorMessage = CustomErrorCodes.MissingRequired)]
     public PostTimeDto ExtendTime { get; set; } = default!;

@@ -143,6 +143,10 @@ const allRouteItems: INavbarItem[] = [
         showWithoutPermission: true
       },
       {
+        route: 'manageAdvertisementNotificationSubscription',
+        label: 'navigation.advertisementNotifications'
+      },
+      {
         route: 'createAdvertisement',
         label: 'navigation.createAdvertisement',
         showWithoutPermission: true

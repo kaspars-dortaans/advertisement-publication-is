@@ -189,6 +189,8 @@ builder.Services.AddScoped<IAdvertisementService, AdvertisementService>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<IFileService, FileService>();
 builder.Services.AddScoped<IChatService, ChatService>();
+builder.Services.AddScoped<IAdvertisementNotificationSubscriptionService, AdvertisementNotificationSubscriptionService>();
+builder.Services.AddScoped<IAttributeValidatorService, AttributeValidatorService>();
 
 //Helpers
 builder.Services.AddScoped<IStorage, LocalFileStorage>();

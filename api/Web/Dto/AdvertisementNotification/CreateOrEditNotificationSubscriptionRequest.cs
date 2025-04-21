@@ -1,0 +1,23 @@
+﻿using BusinessLogic.Constants;
+using BusinessLogic.Dto.Time;
+using System.ComponentModel.DataAnnotations;
+
+namespace Web.Dto.AdvertisementNotification;
+
+public class CreateOrEditNotificationSubscriptionRequest
+{
+    public int? Id { get; set; }
+
+    [Required(ErrorMessage = CustomErrorCodes.MissingRequired)]
+    public string Title { get; set; } = default!;
+    public string? Keywords { get; set; }
+
+    public PostTimeDto? PaidTime { get; set; }
+
+    [Required(ErrorMessage = CustomErrorCodes.MissingRequired)]
+    public int CategoryId { get; set; }
+
+    public DateTime? ValidTo { get; set; }
+
+    public IEnumerable<KeyValuePair<int, string>> AttributeValues { get; set; } = default!;
+}
