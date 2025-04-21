@@ -317,11 +317,13 @@ public class AdvertisementService(
             .ToListAsync())
             .SelectMany(p => p);
 
-        //TODO: Delete message attachments
+        var attachmentPaths = await _chatService
+            .Where(c => advertisementIds.Any(id => id == c.AdvertisementId))
+            .SelectMany(c => c.ChatMessages.SelectMany(m => m.Attachments.Select(a => a.Path))).ToListAsync();
+        
         await _chatService.DeleteWhereAsync(c => advertisementIds.Any(id => id == c.AdvertisementId));
-
         await Task.WhenAll([
-            _storage.DeleteFiles(imagePaths),
+            _storage.DeleteFiles(imagePaths.Concat(attachmentPaths)),
             DeleteWhereAsync(a => a.OwnerId == userId && advertisementIds.Contains(a.Id))
         ]);
     }
