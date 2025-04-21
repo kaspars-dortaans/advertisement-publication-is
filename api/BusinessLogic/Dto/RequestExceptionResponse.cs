@@ -22,6 +22,6 @@ public class RequestExceptionResponse : ValidationProblemDetails
     public RequestExceptionResponse(IList<string> errorCodes, IDictionary<string, IList<string>> errors)
     {
         ErrorCodes = errorCodes;
-        Errors = errors.Select(x => new KeyValuePair<string, string[]>(x.Key, x.Value.ToArray())).ToDictionary();
+        Errors = errors.Select(x => new KeyValuePair<string, string[]>(x.Key, [.. x.Value])).ToDictionary();
     }
 }

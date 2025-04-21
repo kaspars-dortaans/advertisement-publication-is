@@ -3,12 +3,8 @@ using Microsoft.Extensions.Options;
 
 namespace BusinessLogic.Authorization;
 
-public class PermissionAuthorizationPolicyProvider : DefaultAuthorizationPolicyProvider
+public class PermissionAuthorizationPolicyProvider(IOptions<AuthorizationOptions> options) : DefaultAuthorizationPolicyProvider(options)
 {
-    public PermissionAuthorizationPolicyProvider(IOptions<AuthorizationOptions> options) : base(options)
-    {
-    }
-
     public override async Task<AuthorizationPolicy?> GetPolicyAsync(string policyName)
     {
         var policy =  await base.GetPolicyAsync(policyName);

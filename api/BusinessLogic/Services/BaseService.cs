@@ -4,20 +4,14 @@ using System.Linq.Expressions;
 
 namespace BusinessLogic.Services;
 
-public class BaseService<Entity> : IBaseService<Entity> where Entity : class
+public class BaseService<Entity>(Context dbContext) : IBaseService<Entity> where Entity : class
 {
-    protected DbSet<Entity> DbSet { get; set; }
-    protected Context DbContext { get; set; }
-
-    public BaseService(Context dbContext)
-    {
-        DbContext = dbContext;
-        DbSet = dbContext.Set<Entity>();
-    }
+    protected DbSet<Entity> DbSet { get; set; } = dbContext.Set<Entity>();
+    protected Context DbContext { get; set; } = dbContext;
 
     public IEnumerable<Entity> GetAllList()
     {
-        return DbSet.ToList();
+        return [.. DbSet];
     }
 
     public async Task<IEnumerable<Entity>> GetAllListAsync()

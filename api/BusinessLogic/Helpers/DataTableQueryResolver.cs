@@ -152,7 +152,7 @@ public static class DataTableQueryResolver
             var keySelectorExpressionType = typeof(Expression<>).MakeGenericType(keySelectorType);
             var methodName = order.Direction == Direction.Ascending ? orderAscendingMethodName : orderDescendingMethodName;
 
-            var keySelectorLambda = ReflectionHelper.InvokeGenericMethode<Expression>(
+            var keySelectorLambda = ReflectionHelper.InvokeGenericMethod<Expression>(
                 typeof(ReflectionHelper),
                 nameof(ReflectionHelper.GetKeySelectorLambda),
                 [typeof(string)],
@@ -160,7 +160,7 @@ public static class DataTableQueryResolver
                 [columnName]);
 
 
-            query = ReflectionHelper.InvokeGenericMethode<IOrderedQueryable<Entity>>(
+            query = ReflectionHelper.InvokeGenericMethod<IOrderedQueryable<Entity>>(
                 typeof(Queryable),
                 methodName,
                 [typeof(IQueryable<Entity>), keySelectorExpressionType],

@@ -6,14 +6,9 @@ using System.IdentityModel.Tokens.Jwt;
 
 namespace BusinessLogic.Authorization;
 
-public class PermissionAuthorizationHandler : AuthorizationHandler<PermissionRequirement>
+public class PermissionAuthorizationHandler(IServiceScopeFactory serviceScopeFactory) : AuthorizationHandler<PermissionRequirement>
 {
-    private readonly IServiceScopeFactory _serviceScopeFactory;
-
-    public PermissionAuthorizationHandler(IServiceScopeFactory serviceScopeFactory)
-    {
-        _serviceScopeFactory = serviceScopeFactory;
-    }
+    private readonly IServiceScopeFactory _serviceScopeFactory = serviceScopeFactory;
 
     protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, PermissionRequirement requirement)
     {

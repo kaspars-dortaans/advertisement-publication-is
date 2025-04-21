@@ -16,7 +16,7 @@ public static class ReflectionHelper
     /// <param name="methodParameters"></param>
     /// <param name="currentInstance"></param>
     /// <returns>Invoked method result</returns>
-    public static TResult InvokeGenericMethode<TResult>(Type objType, string methodName, Type[] methodArgumentTypes, Type[] typeParameters, object[] methodParameters, object? currentInstance = null) where TResult : class
+    public static TResult InvokeGenericMethod<TResult>(Type objType, string methodName, Type[] methodArgumentTypes, Type[] typeParameters, object[] methodParameters, object? currentInstance = null) where TResult : class
     {
         var method = objType
             .GetMethods()
@@ -44,7 +44,7 @@ public static class ReflectionHelper
     }
 
     /// <summary>
-    /// Get lambda predicate expression. Which searches for string in objects fields. Object mathes if any of the fields values contains search value, both strings are converted to lowercase. 
+    /// Get lambda predicate expression. Which searches for string in objects fields. Object matches if any of the fields values contains search value, both strings are converted to lowercase. 
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="searchFieldList"></param>
@@ -60,8 +60,8 @@ public static class ReflectionHelper
 
         if (searchFieldList is not null)
         {
-            var toLowerMethod = typeof(string).GetMethod("ToLower", BindingFlags.Public | BindingFlags.Instance, Array.Empty<Type>())!;
-            var containsMethod = typeof(string).GetMethod("Contains", BindingFlags.Public | BindingFlags.Instance, new Type[] { typeof(string) })!;
+            var toLowerMethod = typeof(string).GetMethod("ToLower", BindingFlags.Public | BindingFlags.Instance, [])!;
+            var containsMethod = typeof(string).GetMethod("Contains", BindingFlags.Public | BindingFlags.Instance, [typeof(string)])!;
             var searchValueLowercase = Expression.Call(Expression.Constant(searchValue), toLowerMethod);
 
             foreach (var fieldItem in searchFieldList)
@@ -71,12 +71,12 @@ public static class ReflectionHelper
 
                 if (entityProperty.Type != typeof(string))
                 {
-                    var toStringMethod = entityProperty.Type.GetMethod("ToString", BindingFlags.Public | BindingFlags.Instance, new Type[] { });
+                    var toStringMethod = entityProperty.Type.GetMethod("ToString", BindingFlags.Public | BindingFlags.Instance, []);
                     entityProperty = toStringMethod is not null ? Expression.Call(entityProperty, toStringMethod) : Expression.Constant(string.Empty);
                 }
 
                 var propertyLowercase = Expression.Call(entityProperty, toLowerMethod);
-                var containsExpression = Expression.Call(propertyLowercase, containsMethod, new Expression[] { searchValueLowercase });
+                var containsExpression = Expression.Call(propertyLowercase, containsMethod, [searchValueLowercase]);
 
                 if (combined == null)
                 {
@@ -91,11 +91,11 @@ public static class ReflectionHelper
         }
 
         //create and return the predicate
-        return Expression.Lambda<Func<T, bool>>(combined ?? Expression.Constant(true), new ParameterExpression[] { pe });
+        return Expression.Lambda<Func<T, bool>>(combined ?? Expression.Constant(true), [pe]);
     }
 
     /// <summary>
-    /// Builds expression with lamba function which returns property
+    /// Builds expression with lambda function which returns property
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <typeparam name="TKey"></typeparam>
@@ -108,7 +108,7 @@ public static class ReflectionHelper
 
         var propertyExpression = GetPropertyExpression(pe, fieldName);
 
-        return Expression.Lambda<Func<T, TKey>>(propertyExpression, new ParameterExpression[] { pe });
+        return Expression.Lambda<Func<T, TKey>>(propertyExpression, [pe]);
     }
 
     public static IEnumerable<Type> GetTypesWithAttribute(Assembly assembly, Type attributeType)

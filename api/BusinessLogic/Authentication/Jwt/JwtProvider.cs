@@ -15,12 +15,7 @@ namespace BusinessLogic.Authentication.Jwt
 
         public async Task<string> GetJwtToken(string email, string password)
         {
-            var user = await _userManager.FindByEmailAsync(email);
-            if (user == null)
-            {
-                throw new InvalidCredentialException();
-            }
-
+            var user = await _userManager.FindByEmailAsync(email) ?? throw new InvalidCredentialException();
             if (!await _userManager.CheckPasswordAsync(user, password))
             {
                 throw  new InvalidCredentialException();
