@@ -23,6 +23,7 @@ public class AdvertisementService(
     ICategoryService categoryService,
     IBaseService<AdvertisementBookmark> advertisementBookmarkService,
     IBaseService<Chat> chatService,
+    IAttributeValidatorService attributeValidatorService,
     CookieSettingsHelper cookieSettingHelper,
     IFilePathResolver filePathResolver,
     IStorage storage,
@@ -31,6 +32,7 @@ public class AdvertisementService(
     private readonly ICategoryService _categoryService = categoryService;
     private readonly IBaseService<AdvertisementBookmark> _advertisementBookmarkService = advertisementBookmarkService;
     private readonly IBaseService<Chat> _chatService = chatService;
+    private readonly IAttributeValidatorService _attributeValidatorService = attributeValidatorService;
     private readonly CookieSettingsHelper _cookieSettingHelper = cookieSettingHelper;
     private readonly IFilePathResolver _filePathResolver = filePathResolver;
     private readonly IStorage _storage = storage;
@@ -326,8 +328,13 @@ public class AdvertisementService(
     public async Task CreateAdvertisement(CreateOrEditAdvertisementDto dto, int userId)
     {
         //Validate
-        await ValidateAttributeCategory(dto.CategoryId);
-        var advertisementAttributeValues = await ValidateAdvertisementAttributeValues(dto.AttributeValues, dto.CategoryId);
+        await _attributeValidatorService.ValidateAttributeCategory(dto.CategoryId, nameof(CreateOrEditAdvertisementDto.CategoryId));
+        await _attributeValidatorService.ValidateAdvertisementAttributeValues(dto.AttributeValues, dto.CategoryId, nameof(CreateOrEditAdvertisementDto.AttributeValues));
+        var advertisementAttributeValues = dto.AttributeValues.Select(av => new AdvertisementAttributeValue
+        {
+            AttributeId = av.Key,
+            Value = av.Value,
+        }).ToList();
 
         //Add new entities
         var advertisement = new Advertisement()
@@ -362,9 +369,14 @@ public class AdvertisementService(
         //Validate
         if (dto.CategoryId != compareData.CategoryId)
         {
-            await ValidateAttributeCategory(dto.CategoryId);
+            await _attributeValidatorService.ValidateAttributeCategory(dto.CategoryId, nameof(CreateOrEditAdvertisementDto.CategoryId));
         }
-        var attributeValues = await ValidateAdvertisementAttributeValues(dto.AttributeValues, dto.CategoryId);
+        await _attributeValidatorService.ValidateAdvertisementAttributeValues(dto.AttributeValues, dto.CategoryId, nameof(CreateOrEditAdvertisementDto.AttributeValues));
+        var attributeValues = dto.AttributeValues.Select(av => new AdvertisementAttributeValue
+        {
+            AttributeId = av.Key,
+            Value = av.Value
+        }).ToList();
 
         //Updated entities
         await SynchronizeAdvertisementAttributeValues(dto.Id!.Value, attributeValues, compareData.AttributeAndValueIds.ToList());
