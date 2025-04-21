@@ -1,6 +1,4 @@
-﻿using BusinessLogic.Dto.Advertisement;
-
-namespace Web.Dto.Advertisement;
+﻿namespace BusinessLogic.Dto.Advertisement;
 public class AdvertisementListItem
 {
     public int Id { get; set; }

@@ -18,4 +18,6 @@ public interface IAdvertisementService : IBaseService<Advertisement>
     public Task UpdateAdvertisement(CreateOrEditAdvertisementDto dto, int userId);
     public Task<CreateOrEditAdvertisementDto> GetAdvertisementFormInfo(int advertisementId, int userId);
     public Task ExtendAdvertisement(int userId, IEnumerable<int> advertisementId, PostTimeDto extendTime);
+    public Task<CategoryInfo> GetCategoryInfo(int categoryId);
+    public Task<CategoryFormInfo> GetCategoryFormInfo(int categoryId);
 }

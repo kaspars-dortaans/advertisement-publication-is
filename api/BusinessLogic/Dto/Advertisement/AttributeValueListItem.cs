@@ -1,4 +1,4 @@
-﻿namespace Web.Dto.Advertisement;
+﻿namespace BusinessLogic.Dto.Advertisement;
 
 public class AttributeValueListItem
 {

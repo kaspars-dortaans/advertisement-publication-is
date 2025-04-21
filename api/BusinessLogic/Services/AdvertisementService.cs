@@ -657,4 +657,81 @@ public class AdvertisementService(
         }
         await DbContext.SaveChangesAsync();
     }
+
+    public async Task<CategoryInfo> GetCategoryInfo(int categoryId)
+    {
+        var locale = _cookieSettingHelper.Settings.NormalizedLocale;
+        var categoryAttributes = _categoryService.GetCategoryAndParentAttributes(categoryId);
+        return await _categoryService
+            .Where(c => c.Id == categoryId)
+            .Select(c => new CategoryInfo()
+            {
+                CategoryName = c.LocalisedNames.Localise(locale),
+                AttributeInfo = categoryAttributes
+                    .OrderBy(ca => ca.AttributeOrder)
+                    .Select(ca => new CategoryAttributeInfo()
+                    {
+                        Id = ca.Attribute.Id,
+                        Name = ca.Attribute.AttributeNameLocales.Localise(locale),
+                        Searchable = ca.Attribute.Searchable,
+                        Sortable = ca.Attribute.Sortable,
+                        ValueListId = ca.Attribute.AttributeValueListId,
+                        AttributeFilterType = ca.Attribute.FilterType,
+                        AttributeValueType = ca.Attribute.ValueType,
+                        IconUrl = ca.Attribute.Icon != null ? ca.Attribute.Icon.Path : null
+                    }).ToList(),
+                AttributeValueLists = categoryAttributes
+                    .Select(ca => ca.Attribute)
+                    .Where(a => a.AttributeValueList != null)
+                    .Select(a => new AttributeValueListItem()
+                    {
+                        Id = a.AttributeValueList!.Id,
+                        Name = a.AttributeValueList!.LocalisedNames.Localise(locale),
+                        Entries = a.AttributeValueList!.ListEntries.Select(e => new AttributeValueListEntryItem()
+                        {
+                            Id = e.Id,
+                            Name = e.LocalisedNames.Localise(locale),
+                            OrderIndex = e.OrderIndex
+                        }),
+                    })
+                    .ToList()
+            })
+            .FirstOrDefaultAsync() ?? throw new ApiException([CustomErrorCodes.NotFound]);
+    }
+
+    public async Task<CategoryFormInfo> GetCategoryFormInfo(int categoryId)
+    {
+        var locale = _cookieSettingHelper.Settings.NormalizedLocale;
+        var categoryAttributes = _categoryService.GetCategoryAndParentAttributes(categoryId);
+        return new CategoryFormInfo()
+        {
+            AttributeInfo = await categoryAttributes
+                .OrderBy(ca => ca.AttributeOrder)
+                .Select(ca => new AttributeFormInfo()
+                {
+                    Id = ca.Attribute.Id,
+                    Name = ca.Attribute.AttributeNameLocales.Localise(locale),
+                    ValueListId = ca.Attribute.AttributeValueListId,
+                    AttributeValueType = ca.Attribute.ValueType,
+                    IconUrl = ca.Attribute.Icon != null ? ca.Attribute.Icon.Path : null,
+                    ValueValidationRegex = ca.Attribute.ValueValidationRegex
+                })
+                .ToListAsync(),
+            AttributeValueLists = await categoryAttributes
+                .Select(ca => ca.Attribute)
+                .Where(a => a.AttributeValueList != null)
+                .Select(a => new AttributeValueListItem()
+                {
+                    Id = a.AttributeValueList!.Id,
+                    Name = a.AttributeValueList!.LocalisedNames.Localise(locale),
+                    Entries = a.AttributeValueList!.ListEntries.Select(e => new AttributeValueListEntryItem()
+                    {
+                        Id = e.Id,
+                        Name = e.LocalisedNames.Localise(locale),
+                        OrderIndex = e.OrderIndex
+                    }),
+                })
+                .ToListAsync()
+        };
+    }
 }
