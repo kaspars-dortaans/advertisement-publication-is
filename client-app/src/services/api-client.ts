@@ -4260,7 +4260,7 @@ export interface ICreateOrEditAdvertisementRequest {
 export class CreateOrEditNotificationSubscriptionRequest implements ICreateOrEditNotificationSubscriptionRequest {
     id?: number | undefined;
     title!: string;
-    keywords?: string | undefined;
+    keywords?: string[] | undefined;
     paidTime?: PostTimeDto | undefined;
     categoryId!: number;
     validTo?: Date | undefined;
@@ -4279,7 +4279,11 @@ export class CreateOrEditNotificationSubscriptionRequest implements ICreateOrEdi
         if (_data) {
             this.id = _data["id"];
             this.title = _data["title"];
-            this.keywords = _data["keywords"];
+            if (Array.isArray(_data["keywords"])) {
+                this.keywords = [] as any;
+                for (let item of _data["keywords"])
+                    this.keywords!.push(item);
+            }
             this.paidTime = _data["paidTime"] ? PostTimeDto.fromJS(_data["paidTime"]) : <any>undefined;
             this.categoryId = _data["categoryId"];
             this.validTo = _data["validTo"] ? new Date(_data["validTo"].toString()) : <any>undefined;
@@ -4302,7 +4306,11 @@ export class CreateOrEditNotificationSubscriptionRequest implements ICreateOrEdi
         data = typeof data === 'object' ? data : {};
         data["id"] = this.id;
         data["title"] = this.title;
-        data["keywords"] = this.keywords;
+        if (Array.isArray(this.keywords)) {
+            data["keywords"] = [];
+            for (let item of this.keywords)
+                data["keywords"].push(item);
+        }
         data["paidTime"] = this.paidTime ? this.paidTime.toJSON() : <any>undefined;
         data["categoryId"] = this.categoryId;
         data["validTo"] = this.validTo ? this.validTo.toISOString() : <any>undefined;
@@ -4318,7 +4326,7 @@ export class CreateOrEditNotificationSubscriptionRequest implements ICreateOrEdi
 export interface ICreateOrEditNotificationSubscriptionRequest {
     id?: number | undefined;
     title: string;
-    keywords?: string | undefined;
+    keywords?: string[] | undefined;
     paidTime?: PostTimeDto | undefined;
     categoryId: number;
     validTo?: Date | undefined;
@@ -4946,7 +4954,7 @@ export interface INotFoundResult {
 export class NotificationSubscriptionItem implements INotificationSubscriptionItem {
     id?: number;
     title?: string | undefined;
-    keywords?: string | undefined;
+    keywords?: string[] | undefined;
     isActive?: boolean;
     createdAt?: Date;
     validTo?: Date;
@@ -4965,7 +4973,11 @@ export class NotificationSubscriptionItem implements INotificationSubscriptionIt
         if (_data) {
             this.id = _data["id"];
             this.title = _data["title"];
-            this.keywords = _data["keywords"];
+            if (Array.isArray(_data["keywords"])) {
+                this.keywords = [] as any;
+                for (let item of _data["keywords"])
+                    this.keywords!.push(item);
+            }
             this.isActive = _data["isActive"];
             this.createdAt = _data["createdAt"] ? new Date(_data["createdAt"].toString()) : <any>undefined;
             this.validTo = _data["validTo"] ? new Date(_data["validTo"].toString()) : <any>undefined;
@@ -4984,7 +4996,11 @@ export class NotificationSubscriptionItem implements INotificationSubscriptionIt
         data = typeof data === 'object' ? data : {};
         data["id"] = this.id;
         data["title"] = this.title;
-        data["keywords"] = this.keywords;
+        if (Array.isArray(this.keywords)) {
+            data["keywords"] = [];
+            for (let item of this.keywords)
+                data["keywords"].push(item);
+        }
         data["isActive"] = this.isActive;
         data["createdAt"] = this.createdAt ? this.createdAt.toISOString() : <any>undefined;
         data["validTo"] = this.validTo ? this.validTo.toISOString() : <any>undefined;
@@ -4996,7 +5012,7 @@ export class NotificationSubscriptionItem implements INotificationSubscriptionIt
 export interface INotificationSubscriptionItem {
     id?: number;
     title?: string | undefined;
-    keywords?: string | undefined;
+    keywords?: string[] | undefined;
     isActive?: boolean;
     createdAt?: Date;
     validTo?: Date;

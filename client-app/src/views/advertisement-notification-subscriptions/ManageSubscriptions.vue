@@ -51,7 +51,7 @@
       sortable
     >
       <template #body="slotProps">
-        {{ slotProps.data.keywords?.replaceAll(',', ' ') ?? '' }}
+        {{ slotProps.data.keywords?.join(' ') }}
       </template>
     </Column>
     <Column

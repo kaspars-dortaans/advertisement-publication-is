@@ -20,9 +20,6 @@ public partial class AdvertisementNotificationSubscriptionService(
     private readonly CookieSettingsHelper _cookieSettingHelper = cookieSettingHelper;
     private readonly IAttributeValidatorService _attributeValidatorService = attributeValidatorService;
 
-    [GeneratedRegex("\\s+")]
-    private static partial Regex WhiteSpaceRegex();
-
     public async Task<DataTableQueryResponse<NotificationSubscriptionItem>> GetSubscriptions(DataTableQuery query, int userId)
     {
         var locale = _cookieSettingHelper.Settings.Locale;
@@ -61,7 +58,7 @@ public partial class AdvertisementNotificationSubscriptionService(
         await AddAsync(new AdvertisementNotificationSubscription
         {
             Title = dto.Title,
-            Keywords = WhiteSpaceRegex().Replace(dto.Keywords?.Trim() ?? "", ","),
+            Keywords = dto.Keywords?.ToArray() ?? [],
             IsActive = true,
             CreatedAt = DateTime.UtcNow,
             ValidTo = DateTime.UtcNow.AddDays(dto.PaidTime!.ToDays()),
@@ -117,7 +114,7 @@ public partial class AdvertisementNotificationSubscriptionService(
         }
 
         subscription.Title = dto.Title;
-        subscription.Keywords = dto.Keywords;
+        subscription.Keywords = dto.Keywords?.ToArray();
         subscription.CategoryId = dto.CategoryId;
         subscription.AttributeFilters = newFilterValues;
 
@@ -142,8 +139,4 @@ public partial class AdvertisementNotificationSubscriptionService(
         }
         await DbContext.SaveChangesAsync();
     }
-
-   
-
-    //TODO: Check if advertisement matches any subscription filters
 }

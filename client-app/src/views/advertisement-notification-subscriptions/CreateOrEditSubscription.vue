@@ -193,7 +193,7 @@ const validationSchema = computed(() => {
   let schemaObject: AnyObject = {
     paidTime: object().test(requiredWhen(() => !isEdit.value)),
     title: string().default('').required(),
-    keyword: array(string()).default([]),
+    keywords: array(string()).default([]),
     categoryId: number().test(canAddAdvertisementToCategoryValidator(categoryList)),
     attributeValues: array().default([])
   }
@@ -262,7 +262,7 @@ const loadSubscription = async () => {
     resetForm({
       values: {
         categoryId: subscription.categoryId,
-        keywords: subscription.keywords?.split(','),
+        keywords: subscription.keywords,
         title: subscription.title,
         attributeValues: attributeValues ?? []
       }
@@ -303,10 +303,7 @@ const submit = handleSubmit(async () => {
       categoryId: values.categoryId,
       paidTime: values.paidTime,
       title: values.title,
-      keywords: values.keywords
-        .map((k) => k.trim())
-        .filter((k) => k)
-        .join(','),
+      keywords: values.keywords.map((k) => k.trim()).filter((k) => k),
       attributeValues: attributeValues
     })
 

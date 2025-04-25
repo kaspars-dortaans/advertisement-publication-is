@@ -10,7 +10,7 @@ public class CreateOrEditNotificationSubscriptionRequest
 
     [Required(ErrorMessage = CustomErrorCodes.MissingRequired)]
     public string Title { get; set; } = default!;
-    public string? Keywords { get; set; }
+    public IEnumerable<string>? Keywords { get; set; }
 
     public PostTimeDto? PaidTime { get; set; }
 
