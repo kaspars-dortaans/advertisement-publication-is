@@ -156,7 +156,7 @@ builder.Services.AddHangfire(config =>
 builder.Services.AddHangfireServer();
 
 //Add db
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+var connectionString = builder.Configuration.GetConnectionString("Db");
 builder.Services.AddDbContext<Context>(options =>
     options.UseNpgsql(connectionString)
 );
@@ -193,7 +193,7 @@ builder.Services.AddOptions<JwtProviderOptions>().Bind(builder.Configuration.Get
 builder.Services.AddOptions<StorageOptions>().Bind(builder.Configuration.GetSection("Storage"));
 
 //Add localizaiton
-builder.Services.AddLocalization(opts => opts.ResourcesPath = builder.Configuration["LocalizationResourcePath"]!); 
+builder.Services.AddLocalization(opts => opts.ResourcesPath = "Resources"); 
 
 //Providers
 builder.Services.AddScoped<IJwtProvider, JwtProvider>();
