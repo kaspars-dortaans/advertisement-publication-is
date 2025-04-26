@@ -13,11 +13,13 @@ using ImageMagick;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.Net.Http.Headers;
 using Microsoft.OpenApi.Models;
+using System.Globalization;
 using System.Reflection;
 using System.Text;
 using System.Text.Json.Serialization;
@@ -190,6 +192,9 @@ builder.Services.Configure<IdentityOptions>(options =>
 builder.Services.AddOptions<JwtProviderOptions>().Bind(builder.Configuration.GetSection("Jwt"));
 builder.Services.AddOptions<StorageOptions>().Bind(builder.Configuration.GetSection("Storage"));
 
+//Add localizaiton
+builder.Services.AddLocalization(opts => opts.ResourcesPath = builder.Configuration["LocalizationResourcePath"]!); 
+
 //Providers
 builder.Services.AddScoped<IJwtProvider, JwtProvider>();
 
@@ -231,6 +236,19 @@ app.UseCors(devCORSPolicy);
 app.UseAuthentication();
 app.UseAuthorization();
 
+app.UseRequestLocalization(opts =>
+{
+    opts.RequestCultureProviders = [new CookieRequestCultureProvider()];
+    opts.SupportedCultures = [
+        new CultureInfo("en"),
+        new CultureInfo("lv"),
+    ];
+    opts.SupportedUICultures = [
+        new CultureInfo("en"),
+        new CultureInfo("lv"),
+    ];
+    opts.DefaultRequestCulture = new RequestCulture(culture: "en", uiCulture: "en");
+});
 app.MapControllers();
 app.MapHub<MessageHub>("/hubs/messages");
 
