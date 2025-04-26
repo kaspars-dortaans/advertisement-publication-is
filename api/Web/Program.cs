@@ -7,6 +7,8 @@ using BusinessLogic.Helpers.CookieSettings;
 using BusinessLogic.Helpers.FilePathResolver;
 using BusinessLogic.Helpers.Storage;
 using BusinessLogic.Services;
+using Hangfire;
+using Hangfire.PostgreSql;
 using ImageMagick;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -19,6 +21,7 @@ using Microsoft.OpenApi.Models;
 using System.Reflection;
 using System.Text;
 using System.Text.Json.Serialization;
+using Web.BackgroundJobs;
 using Web.Filters;
 using Web.Hubs;
 using Web.OpenApi;
@@ -82,8 +85,6 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
          }
      };
  });
-//UserId provider for signalR
-builder.Services.AddSingleton<IUserIdProvider, JwtTokenBasedUserIdProvider>();
 
 //Authorization
 builder.Services.AddAuthorization(o =>
@@ -139,6 +140,18 @@ builder.Services.AddSwaggerGen(o =>
     o.OperationFilter<AddFromFormDtoOperationFilter>();
     o.DocumentFilter<IncludeDocumentFilter>();
 });
+
+//UserId provider for signalR
+builder.Services.AddSingleton<IUserIdProvider, JwtTokenBasedUserIdProvider>();
+
+//Add Hangfire
+builder.Services.AddHangfire(config =>
+    config.UseSimpleAssemblyNameTypeSerializer()
+    .UseRecommendedSerializerSettings()
+    .UsePostgreSqlStorage(c =>
+        c.UseNpgsqlConnection(builder.Configuration.GetConnectionString("Db"))));
+
+builder.Services.AddHangfireServer();
 
 //Add db
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");

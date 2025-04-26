@@ -7,9 +7,11 @@ using BusinessLogic.Entities;
 using BusinessLogic.Entities.Files;
 using BusinessLogic.Exceptions;
 using BusinessLogic.Helpers;
+using BusinessLogic.Helpers.BackgroundJobs;
 using BusinessLogic.Helpers.CookieSettings;
 using BusinessLogic.Helpers.FilePathResolver;
 using BusinessLogic.Helpers.Storage;
+using Hangfire;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
@@ -355,6 +357,7 @@ public class AdvertisementService(
         await AddAsync(advertisement);
         await SynchronizeAdvertisementImages(advertisement.Id, dto.ImagesToAdd, dto.ImageOrder, null);
         await UpdateAdvertisementThumbnailImage(advertisement.Id, dto.ImageOrder?.FirstOrDefault()?.Hash);
+        BackgroundJob.Enqueue<IAdvertisementNotificationSender>((s) => s.SendNotifications(advertisement.Id));
     }
 
     public async Task UpdateAdvertisement(CreateOrEditAdvertisementDto dto, int userId)
