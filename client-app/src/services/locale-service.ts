@@ -1,7 +1,7 @@
 import { DefaultLocaleName } from '@/constants/default-locale'
 import { emptyLocale } from '@/init/empty-locale'
 import { usePrimeVue, type PrimeVueLocaleOptions } from 'primevue/config'
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import { Settings } from './settings'
 
 export class LocaleService {
@@ -56,6 +56,12 @@ export class LocaleService {
       this._localeMap.set(localeName, filePath)
       this.localeList.value.push(localeName)
     }
+
+    watch(this._settings.userSettingCookieValue, (settings) => {
+      if (LocaleService.currentLocaleName.value !== settings.locale) {
+        this.loadLocale(settings.locale)
+      }
+    })
   }
 
   /** Get primevue instance */
@@ -67,11 +73,11 @@ export class LocaleService {
 
   /** Try to get saved locale, if not present set to default locale */
   async loadSavedOrDefaultLocaleName() {
-    if (!this._settings.userSettingCookieValue.locale) {
-      this._settings.userSettingCookieValue.locale = this.getBrowserCompatibleLocale()
+    if (!this._settings.userSettingCookieValue.value.locale) {
+      this._settings.userSettingCookieValue.value.locale = this.getBrowserCompatibleLocale()
     }
 
-    const locale = this._settings.userSettingCookieValue.locale
+    const locale = this._settings.userSettingCookieValue.value.locale
     await this.loadLocale(locale)
   }
 
@@ -108,6 +114,7 @@ export class LocaleService {
     const nameNormalized = name.toLocaleUpperCase()
     if (!this.localeList.value.some((value) => value === nameNormalized)) {
       //Locale not found, return
+      console.error(`Could not load locale - "${name}"`)
       return
     }
 
@@ -122,7 +129,7 @@ export class LocaleService {
     const locale = JSON.parse(localeJson)
     this.primevue.config.locale = locale as PrimeVueLocaleOptions
 
-    this._settings.userSettingCookieValue.locale = nameNormalized
+    this._settings.userSettingCookieValue.value.locale = nameNormalized
     LocaleService.currentLocaleName.value = nameNormalized
     LocaleService.currentLocale.value = locale
   }

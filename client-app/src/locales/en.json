@@ -186,6 +186,7 @@
     "PasswordRequiresUpper": "Password requires upper case letters",
     "ComparablePropertyDidNotMatch": "This field did not match {comparableFieldName} field",
     "DuplicateEmail": "This email is already taken",
+    "DuplicateUserName": "This username is already taken",
     "InvalidFileType": "{0}: Invalid file type.",
     "InvalidFileSize": "Invalid file size, file size should be smaller than {1}.",
     "InvalidSizeForFile": "{0}: file size is invalid, file size should be smaller than {1}.",

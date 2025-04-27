@@ -2,11 +2,13 @@
 using BusinessLogic.Entities;
 using BusinessLogic.Exceptions;
 using BusinessLogic.Helpers;
+using BusinessLogic.Helpers.CookieSettings;
 using BusinessLogic.Helpers.FilePathResolver;
 using BusinessLogic.Helpers.Storage;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 namespace BusinessLogic.Services;
 
 public class UserService(
@@ -15,13 +17,15 @@ public class UserService(
     IStorage storage,
     IFilePathResolver filePathResolver,
     IBaseService<Entities.Files.File> fileService,
-    ImageHelper imageHelper) : BaseService<User>(context), IUserService
+    ImageHelper imageHelper,
+    CookieSettingsHelper settingHelper) : BaseService<User>(context), IUserService
 {
     private readonly UserManager<User> _userManager = userManager;
     private readonly IStorage _storage = storage;
     private readonly IFilePathResolver _filePathResolver = filePathResolver;
     private readonly IBaseService<Entities.Files.File> _fileService = fileService;
     private readonly ImageHelper _imageHelper = imageHelper;
+    private readonly CookieSettingsHelper _settingHelper = settingHelper;
 
     /// <summary>
     /// Register new user
@@ -38,6 +42,10 @@ public class UserService(
         if (roles is not null && roles.Any())
         {
             await _userManager.AddToRolesAsync(user, roles);
+        }
+
+        if(!string.IsNullOrEmpty(_settingHelper.Settings.Locale)){
+            await _userManager.AddClaimAsync(user, new Claim(ClaimTypes.Locality, _settingHelper.Settings.Locale));
         }
 
         if (profileImage is not null)

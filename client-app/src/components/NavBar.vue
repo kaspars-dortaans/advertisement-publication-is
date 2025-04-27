@@ -40,7 +40,7 @@
 import defaultProfileImageUrl from '@/assets/images/default-profile-image.svg'
 import logoUrl from '@/assets/images/logo.svg'
 import { NewMessageTimeout } from '@/constants/message'
-import { MessageClient } from '@/services/api-client'
+import { MessageClient, UserClient } from '@/services/api-client'
 import { AuthService } from '@/services/auth-service'
 import { LocaleService } from '@/services/locale-service'
 import type { MessageHub } from '@/services/message-hub'
@@ -57,6 +57,7 @@ const ls = LocaleService.get()
 const l = LocaleService.currentLocale
 const messageService = getClient(MessageClient)
 const messageHub = inject<MessageHub>('messageHub')!
+const userService = getClient(UserClient)
 
 //Reactive data
 const searchInput = ref('')
@@ -83,6 +84,9 @@ const localeItems = computed(() =>
     label: localeName,
     command: () => {
       ls.loadLocale(localeName)
+      if (AuthService.isAuthenticated.value) {
+        userService.setLanguage(localeName)
+      }
     }
   }))
 )

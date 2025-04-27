@@ -2,11 +2,12 @@ import { CookieConstants } from '@/constants/api/CookieConstants'
 import { UserSettingCookieOptions } from '@/constants/cookie-constants'
 import type { ICookieUserSettings } from '@/types/cookie/cookie-user-settings'
 import { getCookie, setCookie } from '@/utils/cookie'
-import { reactive, watch, type Reactive } from 'vue'
+import { ref, watch, type Ref } from 'vue'
+import { AuthService } from './auth-service'
 
 export class Settings {
   private static _instance: Settings
-  public userSettingCookieValue: Reactive<ICookieUserSettings>
+  public userSettingCookieValue: Ref<ICookieUserSettings>
 
   /** Singleton getter */
   static get() {
@@ -18,15 +19,7 @@ export class Settings {
 
   private constructor() {
     //Get and set settings from cookie
-    const settingCookieValue = getCookie(CookieConstants.UserSettingCookieName)
-    const valueObject = settingCookieValue ? (JSON.parse(settingCookieValue) as object) : {}
-
-    const settings = {
-      locale: 'locale' in valueObject && valueObject.locale ? valueObject.locale : '',
-      timeZoneId: Intl.DateTimeFormat().resolvedOptions().timeZone
-    } as ICookieUserSettings
-
-    this.userSettingCookieValue = reactive(settings)
+    this.userSettingCookieValue = ref(this.readCookie())
 
     //On settings change sync cookie value
     watch(
@@ -36,6 +29,19 @@ export class Settings {
       },
       { immediate: true }
     )
+    watch(AuthService.isAuthenticated, () => {
+      this.userSettingCookieValue.value = this.readCookie()
+    })
+  }
+
+  private readCookie = () => {
+    const settingCookieValue = getCookie(CookieConstants.UserSettingCookieName)
+    const valueObject = settingCookieValue ? (JSON.parse(settingCookieValue) as object) : {}
+
+    return {
+      locale: 'locale' in valueObject && valueObject.locale ? valueObject.locale : '',
+      timeZoneId: Intl.DateTimeFormat().resolvedOptions().timeZone
+    } as ICookieUserSettings
   }
 
   private syncCookieValue(value: ICookieUserSettings) {

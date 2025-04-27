@@ -186,6 +186,7 @@
     "PasswordRequiresUpper": "Parolei ir jāsatur lielie burti",
     "ComparablePropertyDidNotMatch": "Šī lauka vērtība nebija vienāda {comparableFieldName} lauka vērtību",
     "DuplicateEmail": "Šis e-pasts jau ir aizņemts",
+    "DuplicateUserName": "Šis lietotājvārds jau ir aizņemts",
     "InvalidFileType": "{0}: Nederīgs faila tips.",
     "InvalidFileSize": "Nederīgs faila lielums, faila izmēram jābūt mazākam par {1}.",
     "InvalidSizeForFile": "{0}: faila lielums nav derīgs, faila lielumam jābūt mazākam par {1}.",

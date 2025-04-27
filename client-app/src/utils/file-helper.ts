@@ -42,7 +42,6 @@ export const downloadAndSaveFile = async (
     //Create link and click it to save file in user device
     const url = URL.createObjectURL(file)
     link.setAttribute('href', url)
-    console.log('file.Name', file.name)
     link.setAttribute('download', file.name)
     link.click()
 

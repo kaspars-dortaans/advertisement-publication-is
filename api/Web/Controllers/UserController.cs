@@ -8,11 +8,14 @@ using BusinessLogic.Dto.DataTableQuery;
 using BusinessLogic.Entities;
 using BusinessLogic.Exceptions;
 using BusinessLogic.Helpers;
+using BusinessLogic.Helpers.CookieSettings;
 using BusinessLogic.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
+using System.Security.Claims;
 using Web.Dto.Login;
 using Web.Dto.User;
 using Web.Helpers;
@@ -26,12 +29,14 @@ public class UserController(
     IUserService userService,
     UserManager<User> userManager,
     IMapper mapper,
-    IJwtProvider jwtProvider) : ControllerBase
+    IJwtProvider jwtProvider,
+    CookieSettingsHelper cookieSettingHelper) : ControllerBase
 {
     private readonly IUserService _userService = userService;
     private readonly UserManager<User> _userManager = userManager;
     private readonly IMapper _mapper = mapper;
     private readonly IJwtProvider _jwtProvider = jwtProvider;
+    private readonly CookieSettingsHelper _cookieSettingHelper = cookieSettingHelper;
 
     [AllowAnonymous]
     [ProducesResponseType<string>(StatusCodes.Status200OK)]
@@ -42,6 +47,15 @@ public class UserController(
         try
         {
             var token = await _jwtProvider.GetJwtToken(request.Email, request.Password);
+
+            var user = await _userManager.FindByEmailAsync(request.Email);
+            var claims = await _userManager.GetClaimsAsync(user!);
+            var localeClaim = claims.FirstOrDefault(c => c.Type == ClaimTypes.Locality);
+            if(localeClaim != null)
+            {
+                _cookieSettingHelper.Settings.Locale = localeClaim.Value;
+                _cookieSettingHelper.AttachToResponse();
+            }
             return token;
         }
         catch (InvalidCredentialException)
@@ -143,4 +157,23 @@ public class UserController(
     {
         await _userService.ChangePassword(User.GetUserId()!.Value, request.CurrentPassword, request.Password);
     }
+
+    [ProducesResponseType<OkResult>(StatusCodes.Status200OK)]
+    [ProducesResponseType<RequestExceptionResponse>(StatusCodes.Status400BadRequest)]
+    [HttpPost]
+    public async Task SetLanguage([MaxLength(4)]string language)
+    {
+        var user = await _userManager.FindByIdAsync("" + User.GetUserId()!.Value) ?? throw new ApiException([CustomErrorCodes.UserNotFound]);
+        var userClaims = await _userManager.GetClaimsAsync(user);
+        var existingLanguageClaim = userClaims.FirstOrDefault(c => c.Type == ClaimTypes.Locality);
+        var newClaim = new Claim(ClaimTypes.Locality, language);
+        if (existingLanguageClaim is not null)
+        {
+            await _userManager.ReplaceClaimAsync(user!, existingLanguageClaim, newClaim);
+        } else
+        {
+            await _userManager.AddClaimAsync(user, newClaim);
+        }
+    }
+
 }
