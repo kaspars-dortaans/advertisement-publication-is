@@ -3,7 +3,9 @@ using BusinessLogic.Authentication.Jwt;
 using BusinessLogic.Authorization;
 using BusinessLogic.Entities;
 using BusinessLogic.Helpers;
+using BusinessLogic.Helpers.BackgroundJobs;
 using BusinessLogic.Helpers.CookieSettings;
+using BusinessLogic.Helpers.EmailClient;
 using BusinessLogic.Helpers.FilePathResolver;
 using BusinessLogic.Helpers.Storage;
 using BusinessLogic.Services;
@@ -65,7 +67,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
      };
      options.MapInboundClaims = false;
 
-     // Based on: https://learn.microsoft.com/en-us/aspnet/core/signalr/authn-and-authz?view=aspnetcore-9.0
+     // Docs: https://learn.microsoft.com/en-us/aspnet/core/signalr/authn-and-authz?view=aspnetcore-9.0
      // Sending the access token in the query string is required when using WebSockets or ServerSentEvents
      // due to a limitation in Browser APIs. We restrict it to only calls to the
      // SignalR hub in this code.
@@ -113,7 +115,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(o =>
 {
     o.UseAllOfToExtendReferenceSchemas();
-    
+
     var bearerScheme = new OpenApiSecurityScheme()
     {
         Name = "Authorization",
@@ -160,11 +162,14 @@ var connectionString = builder.Configuration.GetConnectionString("Db");
 builder.Services.AddDbContext<Context>(options =>
     options.UseNpgsql(connectionString)
 );
-builder.Services.AddDatabaseDeveloperPageExceptionFilter();
+
+if (builder.Environment.IsDevelopment())
+{
+    builder.Services.AddDatabaseDeveloperPageExceptionFilter();
+}
 
 //Add identity
 builder.Services.AddIdentity<User, Role>()
-    .AddRoles<Role>()
     .AddEntityFrameworkStores<Context>();
 
 builder.Services.Configure<IdentityOptions>(options =>
@@ -191,6 +196,7 @@ builder.Services.Configure<IdentityOptions>(options =>
 //Add Options
 builder.Services.AddOptions<JwtProviderOptions>().Bind(builder.Configuration.GetSection("Jwt"));
 builder.Services.AddOptions<StorageOptions>().Bind(builder.Configuration.GetSection("Storage"));
+builder.Services.AddOptions<EmailOptions>().Bind(builder.Configuration.GetSection("Email"));
 
 //Add localizaiton
 builder.Services.AddLocalization(opts => opts.ResourcesPath = "Resources"); 
@@ -213,11 +219,16 @@ builder.Services.AddScoped<IAttributeValidatorService, AttributeValidatorService
 //Helpers
 builder.Services.AddScoped<IStorage, LocalFileStorage>();
 builder.Services.AddScoped<IFilePathResolver, FilePathResolver>();
+builder.Services.AddScoped<IEmailClient, MailKitClient>();
 builder.Services.AddScoped<CookieSettingsHelper>();
 builder.Services.AddScoped<ImageHelper>();
+builder.Services.AddScoped<IAdvertisementNotificationSender, AdvertisementNotificationSender>();
 
 //Db seeding
-builder.Services.AddScoped<DbSeeder>();
+if (builder.Environment.IsDevelopment())
+{
+    builder.Services.AddScoped<DbSeeder>();
+}
 
 //AutoMapper
 builder.Services.AddAutoMapper(Assembly.GetExecutingAssembly());
@@ -250,6 +261,7 @@ app.UseRequestLocalization(opts =>
     opts.DefaultRequestCulture = new RequestCulture(culture: "en", uiCulture: "en");
 });
 app.MapControllers();
+app.MapHangfireDashboard();
 app.MapHub<MessageHub>("/hubs/messages");
 
 if (app.Environment.IsDevelopment())

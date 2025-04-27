@@ -12,6 +12,14 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="BackgroundJobs\AdvertisementNotificationEmailTemplate.html" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="BackgroundJobs\AdvertisementNotificationEmailTemplate.html" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Include="Resources\BackgroundJobs.AdvertisementNotificationSender.lv.resx" />
   </ItemGroup>
 

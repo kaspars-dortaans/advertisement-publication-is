@@ -41,4 +41,15 @@ public static class FileUrlHelper
         }
         return urlHelper.Link(nameof(FileController.GetFile), new { id, getThumbnail = true });
     }
+
+    public static string? GetThumbnailUrl(LinkGenerator linkGenerator, string baseUrl, int? id)
+    {
+        if (id is null)
+        {
+            return null;
+        }
+        var baseUri = new Uri(baseUrl);
+        var endpointRelativePath = linkGenerator.GetPathByName(new DefaultHttpContext(), nameof(FileController.GetFile), new { id, getThumbnail = true }) ?? "";
+        return new Uri(baseUri, endpointRelativePath).ToString();
+    }
 }

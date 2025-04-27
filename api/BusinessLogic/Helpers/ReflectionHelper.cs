@@ -1,4 +1,5 @@
-﻿using System.Linq.Expressions;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Linq.Expressions;
 using System.Reflection;
 
 namespace BusinessLogic.Helpers;
@@ -114,5 +115,52 @@ public static class ReflectionHelper
     public static IEnumerable<Type> GetTypesWithAttribute(Assembly assembly, Type attributeType)
     {
         return assembly.GetTypes().Where(t => t.GetCustomAttributes(attributeType, true).Length > 0).ToList();
+    }
+
+    public static Expression<Func<T, bool>> AndAlso<T>(
+        this Expression<Func<T, bool>> a,
+        Expression<Func<T, bool>> b)
+    {
+        return CombineExpressions(a, b, Expression.AndAlso);
+    }
+
+    public static Expression<Func<T, bool>> OrElse<T>(
+        this Expression<Func<T, bool>> a,
+        Expression<Func<T, bool>> b)
+    {
+        return CombineExpressions(a, b, Expression.OrElse);
+    }
+
+    public static Expression<Func<T, bool>> CombineExpressions<T>(
+        this Expression<Func<T, bool>> a,
+        Expression<Func<T, bool>> b,
+        Func<Expression, Expression, Expression> operation)
+    {
+        var parameter = Expression.Parameter(typeof(T));
+
+        var leftVisitor = new ReplaceExpressionVisitor(a.Parameters[0], parameter);
+        var left = leftVisitor.Visit(a.Body);
+
+        var rightVisitor = new ReplaceExpressionVisitor(b.Parameters[0], parameter);
+        var right = rightVisitor.Visit(b.Body);
+
+        return Expression.Lambda<Func<T, bool>>(
+            operation(left, right), parameter);
+    }
+
+    private class ReplaceExpressionVisitor(Expression oldValue, Expression newValue)
+                : ExpressionVisitor
+    {
+        private readonly Expression _oldValue = oldValue;
+        private readonly Expression _newValue = newValue;
+
+        [return: NotNullIfNotNull(nameof(node))]
+        public override Expression? Visit(Expression? node)
+        {
+            if (node == _oldValue)
+                return _newValue;
+
+            return base.Visit(node);
+        }
     }
 }
