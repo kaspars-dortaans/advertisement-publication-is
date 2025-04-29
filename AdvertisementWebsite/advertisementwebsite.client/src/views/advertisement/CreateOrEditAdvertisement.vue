@@ -352,7 +352,7 @@ const submit = handleSubmit(async () => {
         value: '' + av
       })
     })
-    .filter((i) => i != null)
+    .filter((i) => i != null) as Int32StringKeyValuePair[]
 
   //Transform images for Api call
   const imagesToAdd = values.imagesToAdd.filter((image) => image?.file)

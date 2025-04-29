@@ -296,7 +296,7 @@ const submit = handleSubmit(async () => {
           value: '' + av
         })
       })
-      .filter((i) => i != null)
+      .filter((i) => i != null) as Int32StringKeyValuePair[]
 
     const request = new CreateOrEditNotificationSubscriptionRequest({
       id: props.subscriptionId,

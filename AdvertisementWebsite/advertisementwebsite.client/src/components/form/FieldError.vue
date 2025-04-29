@@ -11,7 +11,7 @@ import { computed } from 'vue'
 
 const props = defineProps<{
   field?: Field<FieldType, DtoType> | undefined
-  messages?: string | string[] | undefined
+  messages?: string | string[] | undefined | null
 }>()
 
 const errorMessages = computed(() => {
