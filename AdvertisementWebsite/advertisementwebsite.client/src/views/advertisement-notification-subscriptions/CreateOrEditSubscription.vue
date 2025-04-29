@@ -23,6 +23,7 @@
                 />
                 <label for="title-input">{{ l.form.putAdvertisementNotification.title }}</label>
               </FloatLabel>
+              <FieldError :field="fields.title" />
 
               <!-- Time period -->
               <div v-if="isEdit" class="flex gap-2">
@@ -193,7 +194,7 @@ const validationSchema = computed(() => {
   let schemaObject: AnyObject = {
     paidTime: object().test(requiredWhen(() => !isEdit.value)),
     title: string().default('').required(),
-    keywords: array(string()).default([]),
+    keywords: array(string()),
     categoryId: number().test(canAddAdvertisementToCategoryValidator(categoryList)),
     attributeValues: array().default([])
   }
