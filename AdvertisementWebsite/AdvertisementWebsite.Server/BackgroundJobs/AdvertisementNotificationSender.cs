@@ -1,12 +1,10 @@
-﻿using BusinessLogic.Dto.Email;
+﻿using AdvertisementWebsite.Server.Helpers;
+using BusinessLogic.Dto.Email;
 using BusinessLogic.Entities;
 using BusinessLogic.Enums;
 using BusinessLogic.Helpers;
 using BusinessLogic.Helpers.BackgroundJobs;
 using BusinessLogic.Helpers.EmailClient;
-using Microsoft.AspNetCore.Hosting.Server;
-using Microsoft.AspNetCore.Hosting.Server.Features;
-using Microsoft.AspNetCore.Http.Features;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using MimeKit.Text;
@@ -14,7 +12,6 @@ using System.Globalization;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Security.Claims;
-using AdvertisementWebsite.Server.Helpers;
 
 namespace AdvertisementWebsite.Server.BackgroundJobs;
 
@@ -24,7 +21,6 @@ public class AdvertisementNotificationSender(
     IStringLocalizer<AdvertisementNotificationSender> localizer,
     IConfiguration configuration,
     LinkGenerator linkGenerator,
-    IServer server,
     ILogger<AdvertisementNotificationSender> logger
 ) : IAdvertisementNotificationSender
 {
@@ -34,7 +30,7 @@ public class AdvertisementNotificationSender(
     private readonly IEmailClient _emailClient = emailClient;
     private readonly LinkGenerator _linkGenerator = linkGenerator;
     private readonly ILogger _logger = logger;
-    private readonly string? _baseUrl = server.Features.GetRequiredFeature<IServerAddressesFeature>()?.Addresses.First();
+    private readonly string? _baseUrl = configuration.GetValue<string>("AppBaseUrl");
 
     /// <summary>
     /// Send notifications to users with notification subscriptions that match newly created advertisement
@@ -89,9 +85,8 @@ public class AdvertisementNotificationSender(
         var template = reader.ReadToEnd();
 
         //Image url
-        var baseUrl = _configuration.GetValue<string>("Frontend:BaseUrl") ?? "";
-        var logoUrl = baseUrl + _configuration.GetValue<string>("Frontend:LogoUrl");
-        var viewAdvertisementUrl = baseUrl + string.Format(
+        var logoUrl = _baseUrl + _configuration.GetValue<string>("Frontend:LogoUrl");
+        var viewAdvertisementUrl = _baseUrl + string.Format(
             _configuration.GetValue<string>("Frontend:ViewAdvertisementUrl") ?? "",
             newAdvertisement.Id);
 
