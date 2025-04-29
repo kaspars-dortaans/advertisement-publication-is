@@ -7,7 +7,6 @@ using BusinessLogic.Exceptions;
 using BusinessLogic.Helpers;
 using BusinessLogic.Helpers.CookieSettings;
 using Microsoft.EntityFrameworkCore;
-using System.Text.RegularExpressions;
 
 namespace BusinessLogic.Services;
 
@@ -28,8 +27,8 @@ public partial class AdvertisementNotificationSubscriptionService(
             {
                 Id = s.Id,
                 Title = s.Title,
-                Keywords = s.Keywords,
-                //Ef could not translate OrderBy with Localise extension method
+                Keywords = s.Keywords == null ? new List<string>() : s.Keywords,
+                //Ef could not translate OrderBy with Localize extension method
                 CategoryName = s.Category.LocalisedNames.First(lt => lt.Locale == locale || lt.Locale == LocalisationConstants.TextNotLocalised).Text,
                 IsActive = s.IsActive,
                 CreatedAt = s.CreatedAt,

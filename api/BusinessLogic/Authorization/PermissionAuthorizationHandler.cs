@@ -2,7 +2,7 @@
 using BusinessLogic.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.DependencyInjection;
-using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 
 namespace BusinessLogic.Authorization;
 
@@ -12,7 +12,7 @@ public class PermissionAuthorizationHandler(IServiceScopeFactory serviceScopeFac
 
     protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, PermissionRequirement requirement)
     {
-        var userIdString = context.User.Claims.FirstOrDefault(c => c.Type == JwtRegisteredClaimNames.Sub)?.Value;
+        var userIdString = context.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
         if (userIdString is null || !int.TryParse(userIdString, out var userId))
         {
             return Task.CompletedTask;

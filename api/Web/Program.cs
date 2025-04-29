@@ -1,5 +1,3 @@
-using BusinessLogic.Authentication;
-using BusinessLogic.Authentication.Jwt;
 using BusinessLogic.Authorization;
 using BusinessLogic.Entities;
 using BusinessLogic.Helpers;
@@ -12,18 +10,16 @@ using BusinessLogic.Services;
 using Hangfire;
 using Hangfire.PostgreSql;
 using ImageMagick;
+using Microsoft.AspNetCore.Authentication.BearerToken;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Localization;
-using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
 using Microsoft.Net.Http.Headers;
 using Microsoft.OpenApi.Models;
 using System.Globalization;
 using System.Reflection;
-using System.Text;
 using System.Text.Json.Serialization;
 using Web.BackgroundJobs;
 using Web.Filters;
@@ -47,60 +43,77 @@ builder.Services.AddCors(options =>
         });
 });
 
-//Authentication
-var jwtIssuer = builder.Configuration.GetSection("Jwt:Issuer").Get<string>();
-var jwtAudience = builder.Configuration.GetSection("Jwt:Audience").Get<string>();
-var jwtKey = builder.Configuration.GetSection("Jwt:SecretKey").Get<string>();
+//Add db
+var connectionString = builder.Configuration.GetConnectionString("Db");
+builder.Services.AddDbContext<Context>(options =>
+    options.UseNpgsql(connectionString)
+);
 
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
- .AddJwtBearer(options =>
- {
-     options.TokenValidationParameters = new TokenValidationParameters
-     {
-         ValidateIssuer = true,
-         ValidateAudience = true,
-         ValidateLifetime = true,
-         ValidateIssuerSigningKey = true,
-         ValidIssuer = jwtIssuer,
-         ValidAudience = jwtAudience,
-         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey!))
-     };
-     options.MapInboundClaims = false;
-
-     // Docs: https://learn.microsoft.com/en-us/aspnet/core/signalr/authn-and-authz?view=aspnetcore-9.0
-     // Sending the access token in the query string is required when using WebSockets or ServerSentEvents
-     // due to a limitation in Browser APIs. We restrict it to only calls to the
-     // SignalR hub in this code.
-     options.Events = new JwtBearerEvents
-     {
-         OnMessageReceived = context =>
-         {
-             var accessToken = context.Request.Query["access_token"];
-
-             // If the request is for our hub...
-             var path = context.HttpContext.Request.Path;
-             if (!string.IsNullOrEmpty(accessToken) &&
-                 (path.StartsWithSegments("/hubs/messages")))
-             {
-                 // Read the token out of the query string
-                 context.Token = accessToken;
-             }
-             return Task.CompletedTask;
-         }
-     };
- });
-
-//Authorization
-builder.Services.AddAuthorization(o =>
+if (builder.Environment.IsDevelopment())
 {
-    o.AddPolicy("Bearer", p => p
-        .AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme)
-        .RequireAuthenticatedUser());
-    o.DefaultPolicy = o.GetPolicy("Bearer")!;
+    builder.Services.AddDatabaseDeveloperPageExceptionFilter();
+}
+
+//Add identity
+builder.Services.AddIdentityApiEndpoints<User>(options =>
+{
+    // Password settings.
+    options.Password.RequireDigit = true;
+    options.Password.RequireLowercase = true;
+    options.Password.RequireNonAlphanumeric = true;
+    options.Password.RequireUppercase = true;
+    options.Password.RequiredLength = 6;
+    options.Password.RequiredUniqueChars = 1;
+
+    // Lockout settings.
+    options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
+    options.Lockout.MaxFailedAccessAttempts = 5;
+    options.Lockout.AllowedForNewUsers = true;
+
+    // User settings.
+    options.User.AllowedUserNameCharacters =
+    "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";
+    options.User.RequireUniqueEmail = true;
+})
+    .AddRoles<Role>()
+    .AddEntityFrameworkStores<Context>();
+
+//Authentication
+var tokenExpirationInMinutes = builder.Configuration.GetSection("AuthToken:TokenExpirationTimeInMinutes").Get<int>();
+var refreshTokenExpirationInMinutes = builder.Configuration.GetSection("AuthToken:RefreshTokenExpirationTimeInMinutes").Get<int>();
+builder.Services.Configure<BearerTokenOptions>(IdentityConstants.BearerScheme, options =>
+{
+    options.BearerTokenExpiration = TimeSpan.FromMinutes(tokenExpirationInMinutes);
+    options.RefreshTokenExpiration = TimeSpan.FromMinutes(refreshTokenExpirationInMinutes);
+
+    // Docs: https://learn.microsoft.com/en-us/aspnet/core/signalr/authn-and-authz?view=aspnetcore-9.0
+    // Sending the access token in the query string is required when using WebSockets or ServerSentEvents
+    // due to a limitation in Browser APIs. We restrict it to only calls to the
+    // SignalR hub in this code.
+    options.Events = new BearerTokenEvents
+    {
+        OnMessageReceived = context =>
+        {
+            var accessToken = context.Request.Query["access_token"];
+
+            // If the request is for our hub...
+            var path = context.HttpContext.Request.Path;
+            if (!string.IsNullOrEmpty(accessToken) &&
+                (path.StartsWithSegments("/hubs/messages")))
+            {
+                // Read the token out of the query string
+                context.Token = accessToken;
+            }
+            return Task.CompletedTask;
+        }
+    };
 });
+
+//Authorization 
 builder.Services.AddSingleton<IAuthorizationHandler, PermissionAuthorizationHandler>();
 builder.Services.AddSingleton<IAuthorizationPolicyProvider, PermissionAuthorizationPolicyProvider>();
 
+//Controllers
 builder.Services
     .AddControllers(options =>
         {
@@ -145,9 +158,6 @@ builder.Services.AddSwaggerGen(o =>
     o.DocumentFilter<IncludeDocumentFilter>();
 });
 
-//UserId provider for signalR
-builder.Services.AddSingleton<IUserIdProvider, JwtTokenBasedUserIdProvider>();
-
 //Add Hangfire
 builder.Services.AddHangfire(config =>
     config.UseSimpleAssemblyNameTypeSerializer()
@@ -157,52 +167,12 @@ builder.Services.AddHangfire(config =>
 
 builder.Services.AddHangfireServer();
 
-//Add db
-var connectionString = builder.Configuration.GetConnectionString("Db");
-builder.Services.AddDbContext<Context>(options =>
-    options.UseNpgsql(connectionString)
-);
-
-if (builder.Environment.IsDevelopment())
-{
-    builder.Services.AddDatabaseDeveloperPageExceptionFilter();
-}
-
-//Add identity
-builder.Services.AddIdentity<User, Role>()
-    .AddEntityFrameworkStores<Context>();
-
-builder.Services.Configure<IdentityOptions>(options =>
-{
-    // Password settings.
-    options.Password.RequireDigit = true;
-    options.Password.RequireLowercase = true;
-    options.Password.RequireNonAlphanumeric = true;
-    options.Password.RequireUppercase = true;
-    options.Password.RequiredLength = 6;
-    options.Password.RequiredUniqueChars = 1;
-
-    // Lockout settings.
-    options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
-    options.Lockout.MaxFailedAccessAttempts = 5;
-    options.Lockout.AllowedForNewUsers = true;
-
-    // User settings.
-    options.User.AllowedUserNameCharacters =
-    "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";
-    options.User.RequireUniqueEmail = true;
-});
-
 //Add Options
-builder.Services.AddOptions<JwtProviderOptions>().Bind(builder.Configuration.GetSection("Jwt"));
 builder.Services.AddOptions<StorageOptions>().Bind(builder.Configuration.GetSection("Storage"));
 builder.Services.AddOptions<EmailOptions>().Bind(builder.Configuration.GetSection("Email"));
 
-//Add localizaiton
-builder.Services.AddLocalization(opts => opts.ResourcesPath = "Resources"); 
-
-//Providers
-builder.Services.AddScoped<IJwtProvider, JwtProvider>();
+//Add localization
+builder.Services.AddLocalization(opts => opts.ResourcesPath = "Resources");
 
 //Register services here
 builder.Services.AddSignalR();

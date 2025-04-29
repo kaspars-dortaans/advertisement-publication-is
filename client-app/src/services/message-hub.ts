@@ -48,7 +48,7 @@ export class MessageHub {
   private buildConnection() {
     this.connection = new signalR.HubConnectionBuilder()
       .withUrl(import.meta.env.VITE_API_URL + 'hubs/messages', {
-        accessTokenFactory: () => this.authService.jwtToken!
+        accessTokenFactory: () => this.authService.tokenInfo?.accessToken!
       })
       .withAutomaticReconnect()
       .build()

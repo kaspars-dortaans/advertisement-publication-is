@@ -15,6 +15,6 @@ public static class ClaimExtensions
 
     public static int? GetUserId(this ClaimsPrincipal userClaims)
     {
-        return GetClaimValueInt(userClaims, JwtRegisteredClaimNames.Sub);
+        return GetClaimValueInt(userClaims, ClaimTypes.NameIdentifier);
     }
 }

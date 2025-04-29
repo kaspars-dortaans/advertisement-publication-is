@@ -27,7 +27,7 @@ export class Settings {
       (value) => {
         this.syncCookieValue(value)
       },
-      { immediate: true }
+      { immediate: true, deep: true }
     )
     watch(AuthService.isAuthenticated, () => {
       this.userSettingCookieValue.value = this.readCookie()

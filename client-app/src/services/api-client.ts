@@ -2337,8 +2337,8 @@ export class UserClient {
      * @param body (optional) 
      * @return Success
      */
-    authenticate(body: LoginDto | undefined, cancelToken?: CancelToken): Promise<string> {
-        let url_ = this.baseUrl + "/api/User/Authenticate";
+    login(body: LoginDto | undefined, cancelToken?: CancelToken): Promise<AccessTokenResponse> {
+        let url_ = this.baseUrl + "/api/User/Login";
         url_ = url_.replace(/[?&]$/, "");
 
         const content_ = JSON.stringify(body);
@@ -2361,11 +2361,11 @@ export class UserClient {
                 throw _error;
             }
         }).then((_response: AxiosResponse) => {
-            return this.processAuthenticate(_response);
+            return this.processLogin(_response);
         });
     }
 
-    protected processAuthenticate(response: AxiosResponse): Promise<string> {
+    protected processLogin(response: AxiosResponse): Promise<AccessTokenResponse> {
         const status = response.status;
         let _headers: any = {};
         if (response.headers && typeof response.headers === "object") {
@@ -2379,9 +2379,8 @@ export class UserClient {
             const _responseText = response.data;
             let result200: any = null;
             let resultData200  = _responseText;
-                result200 = resultData200 !== undefined ? resultData200 : <any>null;
-    
-            return Promise.resolve<string>(result200);
+            result200 = AccessTokenResponse.fromJS(resultData200);
+            return Promise.resolve<AccessTokenResponse>(result200);
 
         } else if (status === 400) {
             const _responseText = response.data;
@@ -2394,15 +2393,73 @@ export class UserClient {
             const _responseText = response.data;
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
         }
-        return Promise.resolve<string>(null as any);
+        return Promise.resolve<AccessTokenResponse>(null as any);
+    }
+
+    /**
+     * @return Success
+     */
+    logout( cancelToken?: CancelToken): Promise<Ok> {
+        let url_ = this.baseUrl + "/api/User/Logout";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: AxiosRequestConfig = {
+            method: "GET",
+            url: url_,
+            headers: {
+                "Accept": "text/plain"
+            },
+            cancelToken
+        };
+
+        return this.instance.request(options_).catch((_error: any) => {
+            if (isAxiosError(_error) && _error.response) {
+                return _error.response;
+            } else {
+                throw _error;
+            }
+        }).then((_response: AxiosResponse) => {
+            return this.processLogout(_response);
+        });
+    }
+
+    protected processLogout(response: AxiosResponse): Promise<Ok> {
+        const status = response.status;
+        let _headers: any = {};
+        if (response.headers && typeof response.headers === "object") {
+            for (const k in response.headers) {
+                if (response.headers.hasOwnProperty(k)) {
+                    _headers[k] = response.headers[k];
+                }
+            }
+        }
+        if (status === 200) {
+            const _responseText = response.data;
+            let result200: any = null;
+            let resultData200  = _responseText;
+            result200 = Ok.fromJS(resultData200);
+            return Promise.resolve<Ok>(result200);
+
+        } else if (status === 400) {
+            const _responseText = response.data;
+            let result400: any = null;
+            let resultData400  = _responseText;
+            result400 = RequestExceptionResponse.fromJS(resultData400);
+            return throwException("Bad Request", status, _responseText, _headers, result400);
+
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.data;
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Promise.resolve<Ok>(null as any);
     }
 
     /**
      * @param body (optional) 
      * @return Success
      */
-    getUserList(body: DataTableQuery | undefined, cancelToken?: CancelToken): Promise<UserListItemDataTableQueryResponse> {
-        let url_ = this.baseUrl + "/api/User/GetUserList";
+    refresh(body: RefreshRequest | undefined, cancelToken?: CancelToken): Promise<AccessTokenResponse> {
+        let url_ = this.baseUrl + "/api/User/Refresh";
         url_ = url_.replace(/[?&]$/, "");
 
         const content_ = JSON.stringify(body);
@@ -2425,11 +2482,11 @@ export class UserClient {
                 throw _error;
             }
         }).then((_response: AxiosResponse) => {
-            return this.processGetUserList(_response);
+            return this.processRefresh(_response);
         });
     }
 
-    protected processGetUserList(response: AxiosResponse): Promise<UserListItemDataTableQueryResponse> {
+    protected processRefresh(response: AxiosResponse): Promise<AccessTokenResponse> {
         const status = response.status;
         let _headers: any = {};
         if (response.headers && typeof response.headers === "object") {
@@ -2443,14 +2500,21 @@ export class UserClient {
             const _responseText = response.data;
             let result200: any = null;
             let resultData200  = _responseText;
-            result200 = UserListItemDataTableQueryResponse.fromJS(resultData200);
-            return Promise.resolve<UserListItemDataTableQueryResponse>(result200);
+            result200 = AccessTokenResponse.fromJS(resultData200);
+            return Promise.resolve<AccessTokenResponse>(result200);
+
+        } else if (status === 401) {
+            const _responseText = response.data;
+            let result401: any = null;
+            let resultData401  = _responseText;
+            result401 = UnauthorizedHttpResult.fromJS(resultData401);
+            return throwException("Unauthorized", status, _responseText, _headers, result401);
 
         } else if (status !== 200 && status !== 204) {
             const _responseText = response.data;
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
         }
-        return Promise.resolve<UserListItemDataTableQueryResponse>(null as any);
+        return Promise.resolve<AccessTokenResponse>(null as any);
     }
 
     /**
@@ -2966,6 +3030,110 @@ export class UserClient {
         }
         return Promise.resolve<OkResult>(null as any);
     }
+
+    /**
+     * @param body (optional) 
+     * @return Success
+     */
+    getUserList(body: DataTableQuery | undefined, cancelToken?: CancelToken): Promise<UserListItemDataTableQueryResponse> {
+        let url_ = this.baseUrl + "/api/User/GetUserList";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_: AxiosRequestConfig = {
+            data: content_,
+            method: "POST",
+            url: url_,
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "text/plain"
+            },
+            cancelToken
+        };
+
+        return this.instance.request(options_).catch((_error: any) => {
+            if (isAxiosError(_error) && _error.response) {
+                return _error.response;
+            } else {
+                throw _error;
+            }
+        }).then((_response: AxiosResponse) => {
+            return this.processGetUserList(_response);
+        });
+    }
+
+    protected processGetUserList(response: AxiosResponse): Promise<UserListItemDataTableQueryResponse> {
+        const status = response.status;
+        let _headers: any = {};
+        if (response.headers && typeof response.headers === "object") {
+            for (const k in response.headers) {
+                if (response.headers.hasOwnProperty(k)) {
+                    _headers[k] = response.headers[k];
+                }
+            }
+        }
+        if (status === 200) {
+            const _responseText = response.data;
+            let result200: any = null;
+            let resultData200  = _responseText;
+            result200 = UserListItemDataTableQueryResponse.fromJS(resultData200);
+            return Promise.resolve<UserListItemDataTableQueryResponse>(result200);
+
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.data;
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Promise.resolve<UserListItemDataTableQueryResponse>(null as any);
+    }
+}
+
+export class AccessTokenResponse implements IAccessTokenResponse {
+    readonly tokenType?: string | undefined;
+    accessToken?: string | undefined;
+    expiresIn?: number;
+    refreshToken?: string | undefined;
+
+    constructor(data?: IAccessTokenResponse) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            (<any>this).tokenType = _data["tokenType"];
+            this.accessToken = _data["accessToken"];
+            this.expiresIn = _data["expiresIn"];
+            this.refreshToken = _data["refreshToken"];
+        }
+    }
+
+    static fromJS(data: any): AccessTokenResponse {
+        data = typeof data === 'object' ? data : {};
+        let result = new AccessTokenResponse();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["tokenType"] = this.tokenType;
+        data["accessToken"] = this.accessToken;
+        data["expiresIn"] = this.expiresIn;
+        data["refreshToken"] = this.refreshToken;
+        return data;
+    }
+}
+
+export interface IAccessTokenResponse {
+    tokenType?: string | undefined;
+    accessToken?: string | undefined;
+    expiresIn?: number;
+    refreshToken?: string | undefined;
 }
 
 export class AdvertisementDto implements IAdvertisementDto {
@@ -5142,6 +5310,42 @@ export interface INotificationSubscriptionItemDataTableQueryResponse {
     error?: string | undefined;
 }
 
+export class Ok implements IOk {
+    readonly statusCode?: number;
+
+    constructor(data?: IOk) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            (<any>this).statusCode = _data["statusCode"];
+        }
+    }
+
+    static fromJS(data: any): Ok {
+        data = typeof data === 'object' ? data : {};
+        let result = new Ok();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["statusCode"] = this.statusCode;
+        return data;
+    }
+}
+
+export interface IOk {
+    statusCode?: number;
+}
+
 export class OkResult implements IOkResult {
     statusCode?: number;
 
@@ -5316,6 +5520,42 @@ export interface IPublicUserInfoDto {
     phoneNumber?: string | undefined;
     linkToUserSite?: string | undefined;
     profileImageUrl?: string | undefined;
+}
+
+export class RefreshRequest implements IRefreshRequest {
+    refreshToken?: string | undefined;
+
+    constructor(data?: IRefreshRequest) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.refreshToken = _data["refreshToken"];
+        }
+    }
+
+    static fromJS(data: any): RefreshRequest {
+        data = typeof data === 'object' ? data : {};
+        let result = new RefreshRequest();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["refreshToken"] = this.refreshToken;
+        return data;
+    }
+}
+
+export interface IRefreshRequest {
+    refreshToken?: string | undefined;
 }
 
 export class RegisterDto implements IRegisterDto {
@@ -5785,6 +6025,42 @@ export interface ITableColumn {
     searchable?: boolean;
     orderable?: boolean;
     search?: SearchQuery | undefined;
+}
+
+export class UnauthorizedHttpResult implements IUnauthorizedHttpResult {
+    readonly statusCode?: number;
+
+    constructor(data?: IUnauthorizedHttpResult) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            (<any>this).statusCode = _data["statusCode"];
+        }
+    }
+
+    static fromJS(data: any): UnauthorizedHttpResult {
+        data = typeof data === 'object' ? data : {};
+        let result = new UnauthorizedHttpResult();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["statusCode"] = this.statusCode;
+        return data;
+    }
+}
+
+export interface IUnauthorizedHttpResult {
+    statusCode?: number;
 }
 
 export class UserInfo implements IUserInfo {
