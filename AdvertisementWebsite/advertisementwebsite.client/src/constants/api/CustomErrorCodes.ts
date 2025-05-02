@@ -25,4 +25,5 @@ export class CustomErrorCodes {
   static readonly AdvertisementNotActive = "AdvertisementNotActive"
   static readonly UserNotOwnerOfAdvertisement = "UserNotOwnerOfAdvertisement"
   static readonly ChatAlreadyExists = "ChatAlreadyExists"
+  static readonly TotalsDoesNotMatch = "TotalsDoesNotMatch"
 }

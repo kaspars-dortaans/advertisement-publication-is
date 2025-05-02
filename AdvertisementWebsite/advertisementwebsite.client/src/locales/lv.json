@@ -1,4 +1,5 @@
 {
+  "title": "Sludinājumu portāls",
   "true": "Jā",
   "false": "Nē",
   "actions": {
@@ -19,7 +20,10 @@
     "deactivate": "Deaktivizēt",
     "view": "Skatīt",
     "leave": "Pamest",
-    "stay": "Palikt"
+    "stay": "Palikt",
+    "publish": "Publicēt",
+    "pay": "Maksāt",
+    "subscribe": "Abonēt"
   },
   "dataTable": {
     "pageReportTemplate": "{1} līdz {2} no {3}",
@@ -44,7 +48,7 @@
   "manageAdvertisements": {
     "title": "Nosaukums",
     "categoryName": "Kategorija",
-    "isActive": "Ir aktīvs",
+    "status": "Statuss",
     "validTo": "Derīgs līdz",
     "createdAt": "Izveidots",
     "confirmDeleteHeader": "Izdzēst sludinājumus",
@@ -60,9 +64,16 @@
     "title": "Nosaukums",
     "keywords": "Atslēgvārdi",
     "categoryName": "Kategorija",
-    "isActive": "Ir aktīvs",
+    "status": "Statuss",
     "validTo": "Derīgs līdz",
     "createdAt": "Izveidots"
+  },
+  "makePayment": {
+    "paymentOptions": "Maksājumu veidi",
+    "totalAmount": "Kopsumma",
+    "title": "Nosaukums",
+    "timePeriod": "Laika periods",
+    "price": "Cena"
   },
   "form": {
     "common": {
@@ -111,10 +122,11 @@
       "validTo": "Derīgs līdz"
     },
     "extend": {
-      "pageTitle": "Pagarināt sludinājumus",
       "timePeriod": "Laika periods",
-      "extendedAdvertisementList": "Šie sludinājumi tiks pagarināti ({0}):",
-      "extendedAdvertisementNotificationSubscriptionList": "Šie sludinājumu paziņojumu abonementi tiks pagarināti ({0}):"
+      "advertisement": "sludinājumi",
+      "advertisementNotificationSubscription": "sludinājumu paziņojumu abonementi",
+      "extendText": "Šie {0} tiks pagarināti ({1}):",
+      "createText": "Šie {0} tiks izveidoti ({1}):"
     },
     "putAdvertisementNotification": {
       "title": "Nosaukums",
@@ -157,7 +169,8 @@
     "myAdvertisements": "Mani sludinājumi",
     "editAdvertisement": "Rediģēt sludinājumu",
     "messages": "Sarakstes",
-    "advertisementNotifications": "Sludinājumu paziņojumu abonementi"
+    "advertisementNotifications": "Sludinājumu paziņojumu abonementi",
+    "makePayment": "Veikt maksājumu"
   },
   "dataSize": {
     "bits": "{0} biti",
@@ -172,7 +185,20 @@
     "weeks": "{1} nedēļas",
     "months": "{2} mēneši"
   },
+  "paymentSubjectStatus": {
+    "Active": "Aktīvs",
+    "Inactive": "Neaktīvs",
+    "Expired": "Beidzies",
+    "Draft": "Melnraksts"
+  },
+  "paymentType": {
+    "CreateAdvertisement": "Izveidot sludinājumu",
+    "ExtendAdvertisement": "Pagarināt sludinājumu",
+    "CreateAdvertisementNotificationSubscription": "Izveidot sludinājumu paziņojumu abonementu",
+    "ExtendAdvertisementNotificationSubscription": "Pagarināt sludinājumu paziņojumu abonementu"
+  },
   "errors": {
+    "errorOccurred": "Notika kļūda",
     "FieldNotValid": "{0} lauka vērtība nav derīga",
     "Required": "Šis lauks ir obligāts",
     "RequiredField": "{fieldName} lauks ir obligāts",

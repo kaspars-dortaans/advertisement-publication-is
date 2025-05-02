@@ -17,7 +17,7 @@ public class CreateOrEditAdvertisementDto
     /// <summary>
     /// Displayed on edit, readonly
     /// </summary>
-    public DateTime? ValidTo { get; set; }
+    public DateTime? ValidToDate { get; set; }
 
     public string Title { get; set; } = default!;
 

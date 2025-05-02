@@ -3,6 +3,7 @@ using BusinessLogic.Dto.AdvertisementNotifications;
 using BusinessLogic.Dto.DataTableQuery;
 using BusinessLogic.Dto.Time;
 using BusinessLogic.Entities;
+using BusinessLogic.Enums;
 using BusinessLogic.Exceptions;
 using BusinessLogic.Helpers;
 using BusinessLogic.Helpers.CookieSettings;
@@ -30,9 +31,14 @@ public partial class AdvertisementNotificationSubscriptionService(
                 Keywords = s.Keywords == null ? new List<string>() : s.Keywords,
                 //Ef could not translate OrderBy with Localize extension method
                 CategoryName = s.Category.LocalisedNames.First(lt => lt.Locale == locale || lt.Locale == LocalisationConstants.TextNotLocalised).Text,
-                IsActive = s.IsActive,
-                CreatedAt = s.CreatedAt,
-                ValidTo = s.ValidTo
+                Status = s.ValidToDate == null ? PaymentSubjectStatus.Draft
+                    : (s.ValidToDate < DateTime.UtcNow
+                        ? PaymentSubjectStatus.Expired
+                        : s.IsActive
+                            ? PaymentSubjectStatus.Active
+                            : PaymentSubjectStatus.Inactive),
+                CreatedDate = s.CreatedDate,
+                ValidToDate = s.ValidToDate
             });
         return await DataTableQueryResolver.ResolveDataTableQuery(itemQuery, query);
     }
@@ -43,7 +49,7 @@ public partial class AdvertisementNotificationSubscriptionService(
             .Select(s => new KeyValuePair<int, string>(s.Id, s.Title));
     }
 
-    public async Task CreateSubscription(CreateOrEditSubscription dto, int userId)
+    public async Task<int> CreateSubscription(CreateOrEditSubscription dto, int userId)
     {
         await _attributeValidatorService.ValidateAttributeCategory(dto.CategoryId, nameof(CreateOrEditSubscription.CategoryId));
         await _attributeValidatorService.ValidateAdvertisementAttributeValues(dto.AttributeValues, dto.CategoryId, nameof(CreateOrEditSubscription.AttributeValues));
@@ -54,17 +60,17 @@ public partial class AdvertisementNotificationSubscriptionService(
             Value = av.Value,
         });
 
-        await AddAsync(new AdvertisementNotificationSubscription
+        var subscription = await AddAsync(new AdvertisementNotificationSubscription
         {
             Title = dto.Title,
             Keywords = dto.Keywords?.ToArray() ?? [],
             IsActive = true,
-            CreatedAt = DateTime.UtcNow,
-            ValidTo = DateTime.UtcNow.AddDays(dto.PaidTime!.ToDays()),
             CategoryId = dto.CategoryId,
             OwnerId = userId,
             AttributeFilters = filterValues.ToList()
         });
+
+        return subscription.Id;
     }
 
     public async Task<CreateOrEditSubscription> GetSubscriptionInfo(int subscriptionId, int userId)
@@ -76,7 +82,7 @@ public partial class AdvertisementNotificationSubscriptionService(
                 CategoryId = s.CategoryId,
                 Keywords = s.Keywords,
                 Title = s.Title,
-                ValidTo = s.ValidTo,
+                ValidToDate = s.ValidToDate,
                 AttributeValues = s.AttributeFilters.Select(av => new KeyValuePair<int, string>(av.AttributeId, av.Value))
             })
             .FirstOrDefaultAsync()) ?? throw new ApiException([CustomErrorCodes.NotFound]);
@@ -126,14 +132,13 @@ public partial class AdvertisementNotificationSubscriptionService(
         var subscriptions = await Where(s => s.OwnerId == userId && subscriptionIds.Contains(s.Id)).ToListAsync();
         foreach (var subscription in subscriptions)
         {
-            if (subscription.ValidTo > DateTime.UtcNow)
+            if (subscription.ValidToDate != null && subscription.ValidToDate > DateTime.UtcNow)
             {
-                subscription.ValidTo = subscription.ValidTo.AddDays(extendDays);
+                subscription.ValidToDate = subscription.ValidToDate.Value.AddDays(extendDays);
             }
             else
             {
-                subscription.CreatedAt = DateTime.UtcNow;
-                subscription.ValidTo = DateTime.UtcNow.AddDays(extendDays);
+                subscription.ValidToDate = DateTime.UtcNow.AddDays(extendDays);
             }
         }
         await DbContext.SaveChangesAsync();

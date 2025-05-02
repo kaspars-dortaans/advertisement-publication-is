@@ -17,23 +17,7 @@
           <div class="flex flex-col lg:flex-row lg:justify-center flex-wrap gap-3">
             <fieldset class="flex flex-col gap-2 min-w-full lg:min-w-60">
               <!-- Time period -->
-              <div v-if="isEdit" class="flex gap-2">
-                <FloatLabel variant="on" class="flex-1">
-                  <InputText
-                    :defaultValue="dateFormat.format(existingAdvertisement?.validTo)"
-                    disabled
-                    fluid
-                  ></InputText>
-                  <label for="valid-to">{{ l.form.putAdvertisement.validTo }}</label>
-                </FloatLabel>
-                <Button
-                  :label="l.actions.extend"
-                  severity="secondary"
-                  as="RouterLink"
-                  :to="{ name: 'extend', params: { type: 'advertisement', ids: `[${id}]` } }"
-                />
-              </div>
-              <template v-else>
+              <template v-if="!isEdit">
                 <FloatLabel variant="on">
                   <Select
                     v-model="fields.postTime!.model"
@@ -49,6 +33,26 @@
                 </FloatLabel>
                 <FieldError :field="fields.postTime" />
               </template>
+
+              <div v-else-if="existingAdvertisement?.validToDate" class="flex gap-2">
+                <FloatLabel variant="on" class="flex-1">
+                  <InputText
+                    :defaultValue="dateFormat.format(existingAdvertisement?.validToDate)"
+                    disabled
+                    fluid
+                  ></InputText>
+                  <label for="valid-to">{{ l.form.putAdvertisement.validTo }}</label>
+                </FloatLabel>
+                <Button
+                  :label="l.actions.extend"
+                  severity="secondary"
+                  as="RouterLink"
+                  :to="{
+                    name: 'extend',
+                    params: { type: PaymentType.ExtendAdvertisement, ids: `[${id}]` }
+                  }"
+                />
+              </div>
 
               <Divider />
 
@@ -142,6 +146,7 @@ import {
   useManageAttributeInput,
   useValidateAttributeInput
 } from '@/composables/manage-attribute-input'
+import { usePaymentState } from '@/composables/payment-store'
 import { createAdvertisementPostTimeSpanOptions } from '@/constants/advertisement-post-time-span'
 import { ImageConstants } from '@/constants/api/ImageConstants'
 import {
@@ -151,6 +156,8 @@ import {
   CreateOrEditAdvertisementRequest,
   ImageDto,
   Int32StringKeyValuePair,
+  NewPaymentItem,
+  PaymentType,
   RequestExceptionResponse,
   ValueTypes
 } from '@/services/api-client'
@@ -203,6 +210,7 @@ const dateFormat = computed(() =>
 const categoryList = ref<CategoryItem[]>([])
 const attributeInfo = ref<AttributeFormInfo[]>([])
 const { isSmallScreen } = useTrackScreenSize()
+const paymentState = usePaymentState()
 
 //Forms and fields
 const { addAttributeValidationSchema } = useValidateAttributeInput(attributeInfo)
@@ -382,21 +390,30 @@ const submit = handleSubmit(async () => {
         imagesToAddFileParameter,
         imageOrder
       )
+      formSubmitted.value = true
+      push({ name: 'manageAdvertisements' })
     } else {
-      await advertisementService.createAdvertisement(
+      const id = await advertisementService.createAdvertisement(
         undefined,
         values.categoryId,
         attributeValues,
-        values.postTime,
+        undefined,
         undefined,
         values.title,
         values.description,
         imagesToAddFileParameter,
         imageOrder
       )
+      formSubmitted.value = true
+      paymentState.value.paymentItems = [
+        new NewPaymentItem({
+          paymentSubjectId: id,
+          type: PaymentType.CreateAdvertisement,
+          timePeriod: values.postTime!
+        })
+      ]
+      push({ name: 'makePayment' })
     }
-    formSubmitted.value = true
-    push({ name: 'manageAdvertisements' })
   } catch (e) {
     mapImageErrorToCorrectIndex(e, imagesToAdd)
     handleErrors(e)

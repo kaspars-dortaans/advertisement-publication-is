@@ -100,7 +100,7 @@ public class AdvertisementController(
     }
 
     [HasPermission(Permissions.EditAdvertisementBookmark)]
-    [ProducesResponseType<PublicUserInfoDto>(StatusCodes.Status200OK)]
+    [ProducesResponseType<OkResult>(StatusCodes.Status200OK)]
     [ProducesResponseType<RequestExceptionResponse>(StatusCodes.Status400BadRequest)]
     [HttpPost]
     public async Task BookmarkAdvertisement(BookmarkAdvertisementRequest request)
@@ -172,7 +172,7 @@ public class AdvertisementController(
     }
 
     [AllowAnonymous]
-    [ProducesResponseType<PublicUserInfoDto>(StatusCodes.Status200OK)]
+    [ProducesResponseType<OkResult>(StatusCodes.Status200OK)]
     [ProducesResponseType<RequestExceptionResponse>(StatusCodes.Status400BadRequest)]
     [HttpPost]
     public async Task ReportAdvertisement(ReportAdvertisementRequest request)
@@ -207,21 +207,14 @@ public class AdvertisementController(
     }
 
     [HasPermission(Permissions.CreateAdvertisement)]
-    [ProducesResponseType<PublicUserInfoDto>(StatusCodes.Status200OK)]
+    [ProducesResponseType<int>(StatusCodes.Status200OK)]
     [ProducesResponseType<RequestExceptionResponse>(StatusCodes.Status400BadRequest)]
     [HttpPost]
-    public async Task CreateAdvertisement([FromForm] CreateOrEditAdvertisementRequest request)
+    public async Task<int> CreateAdvertisement([FromForm] CreateOrEditAdvertisementRequest request)
     {
-        if (request.PostTime is null)
-        {
-            throw new ApiException([], new Dictionary<string, IList<string>>
-            {
-                { nameof(CreateOrEditAdvertisementRequest.PostTime), [CustomErrorCodes.MissingRequired] }
-            });
-        }
         var userId = User.GetUserId()!.Value;
         var advertisementDto = _mapper.Map<CreateOrEditAdvertisementDto>(request);
-        await _advertisementService.CreateAdvertisement(advertisementDto, userId);
+        return await _advertisementService.CreateAdvertisement(advertisementDto, userId);
     }
 
     [HasPermission(Permissions.EditOwnedAdvertisement)]
@@ -240,7 +233,7 @@ public class AdvertisementController(
     }
 
     [HasPermission(Permissions.EditOwnedAdvertisement)]
-    [ProducesResponseType<AdvertisementFormInfo>(StatusCodes.Status200OK)]
+    [ProducesResponseType<OkResult>(StatusCodes.Status200OK)]
     [ProducesResponseType<RequestExceptionResponse>(StatusCodes.Status400BadRequest)]
     [HttpPost]
     public async Task EditAdvertisement([FromForm] CreateOrEditAdvertisementRequest request)
@@ -249,19 +242,21 @@ public class AdvertisementController(
         await _advertisementService.UpdateAdvertisement(dto, User.GetUserId()!.Value);
     }
 
-    [HasPermission(Permissions.EditOwnedAdvertisement)]
-    [ProducesResponseType<AdvertisementFormInfo>(StatusCodes.Status200OK)]
-    [ProducesResponseType<RequestExceptionResponse>(StatusCodes.Status400BadRequest)]
-    [HttpPost]
-    public async Task ExtendAdvertisements(ExtendRequest request)
-    {
-        await _advertisementService.ExtendAdvertisement(User.GetUserId()!.Value, request.Ids, request.ExtendTime);
-    }
-
     [AllowAnonymous]
     [HttpGet]
     public async Task<CategoryFormInfo> GetCategoryFormInfo(int categoryId)
     {
         return await _advertisementService.GetCategoryFormInfo(categoryId);
+    }
+
+    [ProducesResponseType<IEnumerable<KeyValuePair<int, string>>>(StatusCodes.Status200OK)]
+    [ProducesResponseType<RequestExceptionResponse>(StatusCodes.Status400BadRequest)]
+    [HttpPost]
+    public async Task<IEnumerable<KeyValuePair<int, string>>> GetAdvertisementLookupByIds(IEnumerable<int> ids)
+    {
+        return await _advertisementService
+            .Where(a => ids.Contains(a.Id))
+            .Select(a => new KeyValuePair<int, string>(a.Id, a.Title))
+            .ToListAsync();
     }
 }

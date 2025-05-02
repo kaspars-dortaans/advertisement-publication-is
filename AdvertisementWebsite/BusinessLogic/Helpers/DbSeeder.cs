@@ -1,18 +1,33 @@
 ﻿using BusinessLogic.Authorization;
 using BusinessLogic.Entities;
+using BusinessLogic.Enums;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Logging;
 using System.Linq.Expressions;
 using Attribute = BusinessLogic.Entities.Attribute;
 
 namespace BusinessLogic.Helpers;
 
-public class DbSeeder(Context context, UserManager<User> userManager, RoleManager<Role> roleManager)
+public class DbSeeder(Context context, UserManager<User> userManager, RoleManager<Role> roleManager, ILogger<DbSeeder> logger)
 {
     private readonly Context _context = context;
     private readonly UserManager<User> _userManager = userManager;
     private readonly RoleManager<Role> _roleManager = roleManager;
+    private readonly ILogger _logger = logger;
 
     public async Task Seed()
+    {
+        try
+        {
+            await TrySeed();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError("Error during database seeding: {message}", ex.Message);
+        }
+    }
+
+    private async Task TrySeed()
     {
         //Add permissions
         var permissions = ((IEnumerable<Permissions>)Enum.GetValues(typeof(Permissions)))
@@ -47,7 +62,7 @@ public class DbSeeder(Context context, UserManager<User> userManager, RoleManage
             PermissionId = p.Id,
             RoleId = adminRole.Id
         }).ToList();
-        
+
         AddIfNotExistsMultiple(
             adminRolePermissions,
             pConst => p => pConst.RoleId == p.RoleId && pConst.PermissionId == p.PermissionId);
@@ -301,7 +316,7 @@ public class DbSeeder(Context context, UserManager<User> userManager, RoleManage
                 AdvertisementText = "Text body",
                 CategoryId = 4,
                 OwnerId = adminUser.Id,
-                PostedDate = DateTime.UtcNow,
+                CreatedDate = DateTime.UtcNow,
                 ValidToDate = DateTime.UtcNow.AddMonths(1),
                 ViewCount = 0,
                 AttributeValues =
@@ -325,7 +340,7 @@ public class DbSeeder(Context context, UserManager<User> userManager, RoleManage
                 AdvertisementText = "Text body 2",
                 CategoryId = 4,
                 OwnerId = adminUser.Id,
-                PostedDate = DateTime.UtcNow,
+                CreatedDate = DateTime.UtcNow,
                 ValidToDate = DateTime.UtcNow.AddMonths(1),
                 ViewCount = 0,
                 AttributeValues =
@@ -345,6 +360,28 @@ public class DbSeeder(Context context, UserManager<User> userManager, RoleManage
         };
 
         AddIfNotExistsMultiple(advertisements, aConst => a => aConst.Title == a.Title);
+
+        //Costs
+        List<Cost> costs = [
+            new(){
+                Type = CostType.CreateAdvertisement,
+                Amount = 1
+            },
+            new(){
+                Type = CostType.AdvertisementPerDay,
+                Amount = 0.05m
+            },
+            new(){
+                Type = CostType.CreateAdvertisementNotificationSubscription,
+                Amount = 2
+            },
+            new(){
+                Type = CostType.SubscriptionPerDay,
+                Amount = 0.1m
+            }
+        ];
+
+        AddIfNotExistsMultiple(costs, cConst => c => cConst.Type == c.Type);
     }
 
     private void AddIfNotExists<T>(T entity, Expression<Func<T, bool>> predicate) where T : class

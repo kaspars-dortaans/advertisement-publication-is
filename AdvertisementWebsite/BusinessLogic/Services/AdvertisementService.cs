@@ -7,11 +7,9 @@ using BusinessLogic.Entities;
 using BusinessLogic.Entities.Files;
 using BusinessLogic.Exceptions;
 using BusinessLogic.Helpers;
-using BusinessLogic.Helpers.BackgroundJobs;
 using BusinessLogic.Helpers.CookieSettings;
 using BusinessLogic.Helpers.FilePathResolver;
 using BusinessLogic.Helpers.Storage;
-using Hangfire;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
@@ -48,7 +46,7 @@ public class AdvertisementService(
                 AdvertisementText = a.AdvertisementText,
                 Title = a.Title,
                 CategoryId = a.CategoryId,
-                PostedDate = a.PostedDate,
+                CreatedDate = a.CreatedDate,
                 ViewCount = a.ViewCount,
                 MaskedAdvertiserEmail = a.Owner.IsEmailPublic ? a.Owner.Email : null,
                 MaskedAdvertiserPhoneNumber = a.Owner.IsPhoneNumberPublic ? a.Owner.PhoneNumber : null,
@@ -127,7 +125,7 @@ public class AdvertisementService(
                 CategoryId = a.CategoryId,
                 //Ef could not translate OrderBy with Localise extension method
                 CategoryName = a.Category.LocalisedNames.First(lt => lt.Locale == locale || lt.Locale == LocalisationConstants.TextNotLocalised).Text,
-                PostedDate = a.PostedDate,
+                CreatedDate = a.CreatedDate,
                 Title = a.Title,
                 AdvertisementText = a.AdvertisementText,
                 ThumbnailImageId = a.ThumbnailImageId,
@@ -175,7 +173,7 @@ public class AdvertisementService(
     /// <returns></returns>
     private IQueryable<Advertisement> GetActiveAdvertisements()
     {
-        return DbSet.Where(a => a.ValidToDate > DateTime.UtcNow && a.IsActive);
+        return DbSet.Where(a => a.ValidToDate.HasValue && a.ValidToDate.Value > DateTime.UtcNow && a.IsActive);
     }
 
     /// <summary>
@@ -304,9 +302,15 @@ public class AdvertisementService(
                 Title = a.Title,
                 //Ef could not translate OrderBy with Localise extension method
                 CategoryName = a.Category.LocalisedNames.First(lt => lt.Locale == locale || lt.Locale == LocalisationConstants.TextNotLocalised).Text,
-                IsActive = a.IsActive,
-                ValidTo = a.ValidToDate,
-                CreatedAt = a.PostedDate
+                Status = a.ValidToDate == null 
+                    ? Enums.PaymentSubjectStatus.Draft 
+                    : (a.ValidToDate < DateTime.UtcNow 
+                        ? Enums.PaymentSubjectStatus.Expired 
+                        : a.IsActive 
+                            ? Enums.PaymentSubjectStatus.Active 
+                            : Enums.PaymentSubjectStatus.Inactive),
+                ValidToDate = a.ValidToDate,
+                CreatedAtDate = a.CreatedDate
             });
 
         return await advertisementInfoQuery.ResolveDataTableQuery(tableQuery);
@@ -330,7 +334,7 @@ public class AdvertisementService(
         ]);
     }
 
-    public async Task CreateAdvertisement(CreateOrEditAdvertisementDto dto, int userId)
+    public async Task<int> CreateAdvertisement(CreateOrEditAdvertisementDto dto, int userId)
     {
         //Validate
         await _attributeValidatorService.ValidateAttributeCategory(dto.CategoryId, nameof(CreateOrEditAdvertisementDto.CategoryId));
@@ -349,15 +353,13 @@ public class AdvertisementService(
             CategoryId = dto.CategoryId,
             OwnerId = userId,
             AttributeValues = advertisementAttributeValues,
-            PostedDate = DateTime.UtcNow,
-            ValidToDate = DateTime.UtcNow.AddDays(dto.PostTime.ToDays()),
             ViewCount = 0,
             IsActive = true
         };
         await AddAsync(advertisement);
         await SynchronizeAdvertisementImages(advertisement.Id, dto.ImagesToAdd, dto.ImageOrder, null);
         await UpdateAdvertisementThumbnailImage(advertisement.Id, dto.ImageOrder?.FirstOrDefault()?.Hash);
-        BackgroundJob.Enqueue<IAdvertisementNotificationSender>((s) => s.SendNotifications(advertisement.Id));
+        return advertisement.Id;
     }
 
     public async Task UpdateAdvertisement(CreateOrEditAdvertisementDto dto, int userId)
@@ -541,7 +543,7 @@ public class AdvertisementService(
                 Id = a.Id,
                 CategoryId = a.CategoryId,
                 AttributeValues = a.AttributeValues.Select(av => new KeyValuePair<int, string>(av.AttributeId, av.Value)),
-                ValidTo = a.ValidToDate,
+                ValidToDate = a.ValidToDate,
                 Title = a.Title,
                 Description = a.AdvertisementText,
                 ImageOrder = a.Images.OrderBy(i => i.Order).Select(i => new ImageDto
@@ -567,14 +569,13 @@ public class AdvertisementService(
 
         foreach (var advertisement in advertisements)
         {
-            if (DateTime.UtcNow > advertisement.ValidToDate)
+            if (advertisement.ValidToDate == null || DateTime.UtcNow > advertisement.ValidToDate)
             {
-                advertisement.PostedDate = DateTime.UtcNow;
                 advertisement.ValidToDate = DateTime.UtcNow.AddDays(extendTime.ToDays());
             }
             else
             {
-                advertisement.ValidToDate = advertisement.ValidToDate.AddDays(extendTime.ToDays());
+                advertisement.ValidToDate = advertisement.ValidToDate.Value.AddDays(extendTime.ToDays());
             }
         }
         await DbContext.SaveChangesAsync();

@@ -26,26 +26,7 @@
               <FieldError :field="fields.title" />
 
               <!-- Time period -->
-              <div v-if="isEdit" class="flex gap-2">
-                <FloatLabel variant="on" class="flex-1">
-                  <InputText
-                    :defaultValue="dateFormat.format(existingSubscription?.validTo)"
-                    disabled
-                    fluid
-                  ></InputText>
-                  <label for="valid-to">{{ l.form.putAdvertisementNotification.validTo }}</label>
-                </FloatLabel>
-                <Button
-                  :label="l.actions.extend"
-                  severity="secondary"
-                  as="RouterLink"
-                  :to="{
-                    name: 'extend',
-                    params: { type: 'notificationSubscription', ids: `[${subscriptionId}]` }
-                  }"
-                />
-              </div>
-              <template v-else>
+              <template v-if="!isEdit">
                 <FloatLabel variant="on">
                   <Select
                     v-model="fields.paidTime!.model"
@@ -63,6 +44,28 @@
                 </FloatLabel>
                 <FieldError :field="fields.paidTime" />
               </template>
+              <div v-else-if="existingSubscription?.validToDate" class="flex gap-2">
+                <FloatLabel variant="on" class="flex-1">
+                  <InputText
+                    :defaultValue="dateFormat.format(existingSubscription?.validToDate)"
+                    disabled
+                    fluid
+                  ></InputText>
+                  <label for="valid-to">{{ l.form.putAdvertisementNotification.validTo }}</label>
+                </FloatLabel>
+                <Button
+                  :label="l.actions.extend"
+                  severity="secondary"
+                  as="RouterLink"
+                  :to="{
+                    name: 'extend',
+                    params: {
+                      type: PaymentType.ExtendAdvertisementNotificationSubscription,
+                      ids: `[${subscriptionId}]`
+                    }
+                  }"
+                />
+              </div>
 
               <!-- Keywords -->
               <FloatLabel variant="on">
@@ -129,6 +132,7 @@ import {
   useManageAttributeInput,
   useValidateAttributeInput
 } from '@/composables/manage-attribute-input'
+import { usePaymentState } from '@/composables/payment-store'
 import { createAdvertisementPostTimeSpanOptions } from '@/constants/advertisement-post-time-span'
 import {
   AdvertisementClient,
@@ -137,6 +141,8 @@ import {
   CategoryItem,
   CreateOrEditNotificationSubscriptionRequest,
   Int32StringKeyValuePair,
+  NewPaymentItem,
+  PaymentType,
   ValueTypes
 } from '@/services/api-client'
 import { LocaleService } from '@/services/locale-service'
@@ -187,6 +193,7 @@ const dateFormat = computed(() =>
   })
 )
 const { isSmallScreen } = useTrackScreenSize()
+const paymentState = usePaymentState()
 
 //Form and fields
 const { addAttributeValidationSchema } = useValidateAttributeInput(attributeInfo)
@@ -302,19 +309,27 @@ const submit = handleSubmit(async () => {
     const request = new CreateOrEditNotificationSubscriptionRequest({
       id: props.subscriptionId,
       categoryId: values.categoryId,
-      paidTime: values.paidTime,
       title: values.title,
-      keywords: values.keywords.map((k) => k.trim()).filter((k) => k),
+      keywords: values.keywords?.map((k) => k.trim())?.filter((k) => k) ?? [],
       attributeValues: attributeValues
     })
 
     if (isEdit.value) {
       await advertisementNotificationService.editSubscriptionsPost(request)
+      formSubmitted.value = true
+      push({ name: 'manageAdvertisementNotificationSubscription' })
     } else {
-      await advertisementNotificationService.createSubscriptions(request)
+      const id = await advertisementNotificationService.createSubscriptions(request)
+      paymentState.value.paymentItems = [
+        new NewPaymentItem({
+          paymentSubjectId: id,
+          type: PaymentType.CreateAdvertisementNotificationSubscription,
+          timePeriod: values.paidTime!
+        })
+      ]
+      formSubmitted.value = true
+      push({ name: 'makePayment' })
     }
-    formSubmitted.value = true
-    push({ name: 'manageAdvertisementNotificationSubscription' })
   } catch (error) {
     handleErrors(error)
   }

@@ -28,4 +28,5 @@ public static class CustomErrorCodes
     public const string AdvertisementNotActive = "AdvertisementNotActive";
     public const string UserNotOwnerOfAdvertisement = "UserNotOwnerOfAdvertisement";
     public const string ChatAlreadyExists = "ChatAlreadyExists";
+    public const string TotalsDoesNotMatch = "TotalsDoesNotMatch";
 }

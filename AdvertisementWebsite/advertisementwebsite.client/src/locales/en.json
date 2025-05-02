@@ -1,4 +1,5 @@
 {
+  "title": "Advertisement website",
   "true": "Yes",
   "false": "No",
   "actions": {
@@ -19,7 +20,10 @@
     "deactivate": "Deactivate",
     "view": "View",
     "leave": "Leave",
-    "stay": "Stay"
+    "stay": "Stay",
+    "publish": "Publish",
+    "pay": "Pay",
+    "subscribe": "Subscribe"
   },
   "dataTable": {
     "pageReportTemplate": "{1} to {2} of {3}",
@@ -44,7 +48,7 @@
   "manageAdvertisements": {
     "title": "Title",
     "categoryName": "Category",
-    "isActive": "Active",
+    "status": "Status",
     "validTo": "Valid to",
     "createdAt": "Created at",
     "confirmDeleteHeader": "Delete advertisements",
@@ -60,9 +64,17 @@
     "title": "Title",
     "keywords": "Keywords",
     "categoryName": "Category",
-    "isActive": "Active",
+    "status": "Status",
     "validTo": "Valid to",
     "createdAt": "Created at"
+  },
+  "makePayment": {
+    "paymentOptions": "Payment options",
+    "paymentItems": "Payment items",
+    "totalAmount": "Total amount: {0}",
+    "title": "Title",
+    "timePeriod": "Time period",
+    "price": "Price"
   },
   "form": {
     "common": {
@@ -111,10 +123,11 @@
       "validTo": "Valid to"
     },
     "extend": {
-      "pageTitle": "Extend advertisements",
       "timePeriod": "Time period",
-      "extendedAdvertisementList": "These advertisements will be extended ({0}):",
-      "extendedAdvertisementNotificationSubscriptionList": "These advertisements notification subscriptions will be extended ({0}):"
+      "advertisement": "advertisements",
+      "advertisementNotificationSubscription": "advertisement notification subscriptions",
+      "extendText": "These {0} will be extended ({1}):",
+      "createText": "These {0} will be created ({1}):"
     },
     "putAdvertisementNotification": {
       "title": "Title",
@@ -157,7 +170,8 @@
     "myAdvertisements": "My advertisements",
     "editAdvertisement": "Edit advertisement",
     "messages": "Messages",
-    "advertisementNotifications": "Advertisement notifications"
+    "advertisementNotifications": "Advertisement notifications",
+    "makePayment": "Make payment"
   },
   "dataSize": {
     "bits": "{0} b",
@@ -172,7 +186,20 @@
     "weeks": "{0} weeks",
     "months": "{0} months"
   },
+  "paymentSubjectStatus": {
+    "Active": "Active",
+    "Inactive": "Inactive",
+    "Expired": "Expired",
+    "Draft": "Draft"
+  },
+  "paymentType": {
+    "CreateAdvertisement": "Create advertisement",
+    "ExtendAdvertisement": "Extend advertisement",
+    "CreateAdvertisementNotificationSubscription": "Create advertisement notification subscription",
+    "ExtendAdvertisementNotificationSubscription": "Extend advertisement notification subscription"
+  },
   "errors": {
+    "errorOccurred": "Error occurred",
     "FieldNotValid": "{0} field is not valid",
     "Required": "This field is required",
     "RequiredField": "{fieldName} is a required field",

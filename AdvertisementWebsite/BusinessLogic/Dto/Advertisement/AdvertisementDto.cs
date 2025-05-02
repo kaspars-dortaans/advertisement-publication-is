@@ -6,7 +6,7 @@ public class AdvertisementDto
     public int Id { get; set; }
     public string Title { get; set; } = default!;
     public string AdvertisementText { get; set; } = default!;
-    public DateTime PostedDate { get; set; }
+    public DateTime? CreatedDate { get; set; }
     public int ViewCount { get; set; }
     public bool? IsBookmarked { get; set; }
     public IEnumerable<AttributeValueItem> Attributes { get; set; } = [];

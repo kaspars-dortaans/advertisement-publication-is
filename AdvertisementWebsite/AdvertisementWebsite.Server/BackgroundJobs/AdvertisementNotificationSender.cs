@@ -152,7 +152,7 @@ public class AdvertisementNotificationSender(
         var attributeIds = newAdvertisement.AttributeValues.Select(av => av.AttributeId).ToList();
 
         Expression<Func<AdvertisementNotificationSubscription, bool>> validSubscription = 
-            s => s.IsActive && s.ValidTo > newAdvertisement.PostedDate;
+            s => s.IsActive && s.ValidToDate > newAdvertisement.CreatedDate;
 
         Expression<Func<AdvertisementNotificationSubscription, bool>> keywordExp = s =>
             s.Keywords == null

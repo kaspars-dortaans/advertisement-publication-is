@@ -28,6 +28,10 @@ public enum Permissions
     EditAdvertisementNotificationSubscriptions,
     DeleteAdvertisementNotificationSubscriptions,
 
+    //Payment
+    ViewPayments,
+    MakePayment,
+
     //Manage all users
     ViewUsers
 }

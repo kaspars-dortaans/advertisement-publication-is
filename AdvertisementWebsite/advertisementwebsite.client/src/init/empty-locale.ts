@@ -3,6 +3,7 @@
 export const emptyLocale = {
   false: '',
   true: '',
+  title: '',
   actions: {
     choose: '',
     cancel: '',
@@ -22,6 +23,9 @@ export const emptyLocale = {
     view: '',
     leave: '',
     stay: '',
+    publish: '',
+    pay: '',
+    subscribe: '',
   },
   dataTable: {
     pageReportTemplate: '',
@@ -46,7 +50,7 @@ export const emptyLocale = {
   manageAdvertisements: {
     title: '',
     categoryName: '',
-    isActive: '',
+    status: '',
     validTo: '',
     createdAt: '',
     confirmDeleteHeader: '',
@@ -62,9 +66,16 @@ export const emptyLocale = {
     title: '',
     keywords: '',
     categoryName: '',
-    isActive: '',
+    status: '',
     validTo: '',
     createdAt: ''
+  },
+  makePayment: {
+    paymentOptions: '',
+    totalAmount: '',
+    title: '',
+    timePeriod: '',
+    price: ''
   },
   form: {
     putAdvertisementNotification: {
@@ -74,10 +85,11 @@ export const emptyLocale = {
       validTo: ''
     },
     extend: {
-      pageTitle: '',
       timePeriod: '',
-      extendedAdvertisementList: '',
-      extendedAdvertisementNotificationSubscriptionList: ''
+      advertisement: '',
+      advertisementNotificationSubscription: '',
+      extendText: '',
+      createText: ''
     },
     putAdvertisement: {
       category: '',
@@ -159,7 +171,8 @@ export const emptyLocale = {
     myAdvertisements: '',
     editAdvertisement: '',
     messages: '',
-    advertisementNotifications: ''
+    advertisementNotifications: '',
+    makePayment: ''
   },
   dataSize: {
     bits: '',
@@ -174,7 +187,20 @@ export const emptyLocale = {
     weeks: '',
     months: ''
   },
+  paymentSubjectStatus: {
+    Active: '',
+    Inactive: '',
+    Expired: '',
+    Draft: ''
+  },
+  paymentType: {
+    CreateAdvertisement: '',
+    ExtendAdvertisement: '',
+    CreateAdvertisementNotificationSubscription: '',
+    ExtendAdvertisementNotificationSubscription: ''
+  },
   errors: {
+    errorOccurred: '',
     FieldNotValid: '',
     Required: '',
     RequiredField: '',

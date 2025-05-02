@@ -195,6 +195,15 @@ const router = createRouter({
       ]
     },
 
+    {
+      path: '/make-payment',
+      name: 'makePayment',
+      component: () => import('../views/payments/MakePayment.vue'),
+      meta: {
+        requiresPermission: Permissions[Permissions.MakePayment]
+      }
+    },
+
     //Not found
     {
       path: '/:all(.*)*',

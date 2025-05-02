@@ -5,21 +5,14 @@
         <template #header>
           <div class="panel-title-container">
             <BackButton :defaultTo="{ name: 'home' }" />
-            <h3 class="page-title">{{ l.form.extend.pageTitle }}</h3>
+            <h3 class="page-title">{{ title }}</h3>
           </div>
         </template>
         <form class="flex gap-3 flex-col" @submit="submit">
           <Panel v-if="extendItems?.length" toggleable>
             <template #header>
               <p>
-                {{
-                  ls.l(
-                    type === 'advertisement'
-                      ? 'form.extend.extendedAdvertisementList'
-                      : 'form.extend.extendedAdvertisementNotificationSubscriptionList',
-                    ids.length
-                  )
-                }}
+                {{ text }}
               </p>
             </template>
             <ul class="list-disc pl-4">
@@ -49,7 +42,7 @@
               icon=""
               :default-to="{ name: 'manageAdvertisements' }"
             />
-            <Button type="submit" :loading="isSubmitting">{{ l.actions.extend }}</Button>
+            <Button type="submit" :loading="isSubmitting" :label="actionText" />
           </div>
         </form>
       </Panel>
@@ -62,15 +55,16 @@ import BackButton from '@/components/BackButton.vue'
 import BlockWithSpinner from '@/components/common/BlockWithSpinner.vue'
 import ResponsiveLayout from '@/components/common/ResponsiveLayout.vue'
 import FieldError from '@/components/form/FieldError.vue'
+import { usePaymentState } from '@/composables/payment-store'
 import { createAdvertisementPostTimeSpanOptions } from '@/constants/advertisement-post-time-span'
 import {
   AdvertisementClient,
   AdvertisementNotificationClient,
-  AdvertisementQuery,
-  ExtendRequest,
-  Int32StringKeyValuePair
+  Int32StringKeyValuePair,
+  NewPaymentItem,
+  PaymentType,
+  PostTimeDto
 } from '@/services/api-client'
-import { AppNavigation } from '@/services/app-navigation'
 import { LocaleService } from '@/services/locale-service'
 import { getClient } from '@/utils/client-builder'
 import { FieldHelper } from '@/utils/field-helper'
@@ -86,7 +80,7 @@ const { push } = useRouter()
 //Props
 const props = defineProps<{
   ids: number[]
-  type: 'advertisement' | 'notificationSubscription'
+  type: PaymentType
 }>()
 
 //Services
@@ -94,7 +88,6 @@ const l = LocaleService.currentLocale
 const ls = LocaleService.get()
 const advertisementService = getClient(AdvertisementClient)
 const advertisementNotificationService = getClient(AdvertisementNotificationClient)
-const navigation = AppNavigation.get()
 
 //Reactive data
 const timeOptions = computed(() => {
@@ -102,9 +95,13 @@ const timeOptions = computed(() => {
 })
 const loading = ref(false)
 const extendItems = ref<Int32StringKeyValuePair[]>()
+const paymentState = usePaymentState()
+const text = ref('')
+const title = ref('')
+const actionText = ref('')
 
 //Forms and fields
-const form = useForm<ExtendRequest>({
+const form = useForm({
   validationSchema: toTypedSchema(
     object({
       extendTime: object({
@@ -124,9 +121,13 @@ defineField('extendTime')
 //Hooks
 onBeforeMount(async () => {
   loading.value = true
+  setPageText()
 
-  if (props.type === 'advertisement') {
-    extendItems.value = await loadAdvertisementItems()
+  if (
+    props.type === PaymentType.CreateAdvertisement ||
+    props.type === PaymentType.ExtendAdvertisement
+  ) {
+    extendItems.value = await advertisementService.getAdvertisementLookupByIds(props.ids)
   } else {
     extendItems.value = await advertisementNotificationService.getSubscriptionsLookupByIds(
       props.ids
@@ -137,41 +138,50 @@ onBeforeMount(async () => {
 })
 
 //Methods
-const loadAdvertisementItems = async () => {
-  const advertisementItems = await advertisementService.getAdvertisements(
-    new AdvertisementQuery({
-      advertisementIds: props.ids,
-      order: [],
-      columns: [],
-      attributeSearch: [],
-      attributeOrder: []
-    })
-  )
-  return (
-    advertisementItems.data?.map(
-      (a) =>
-        new Int32StringKeyValuePair({
-          key: a.id,
-          value: a.title
-        })
-    ) ?? []
-  )
+const setPageText = () => {
+  const length = extendItems.value?.length ?? 0
+  title.value = ls.l('paymentType.' + props.type)
+  switch (props.type) {
+    case PaymentType.CreateAdvertisement:
+      text.value = ls.l('form.extend.createText', ls.l('form.extend.advertisement'), length)
+      actionText.value = ls.l('actions.create')
+      break
+    case PaymentType.ExtendAdvertisement:
+      text.value = ls.l('form.extend.extendText', ls.l('form.extend.advertisement'), length)
+      actionText.value = ls.l('actions.extend')
+      break
+    case PaymentType.CreateAdvertisementNotificationSubscription:
+      text.value = ls.l(
+        'form.extend.createText',
+        ls.l('form.extend.advertisementNotificationSubscription'),
+        length
+      )
+      actionText.value = ls.l('actions.create')
+      break
+    case PaymentType.ExtendAdvertisementNotificationSubscription:
+      text.value = ls.l(
+        'form.extend.extendText',
+        ls.l('form.extend.advertisementNotificationSubscription'),
+        length
+      )
+      actionText.value = ls.l('actions.extend')
+      break
+  }
 }
 
 const submit = handleSubmit(async () => {
   try {
-    const request = new ExtendRequest({
-      ids: props.ids,
-      extendTime: values.extendTime
-    })
+    const timePeriod = new PostTimeDto(values.extendTime!)
+    paymentState.value.paymentItems = extendItems.value!.map(
+      (i) =>
+        new NewPaymentItem({
+          paymentSubjectId: i.key!,
+          timePeriod,
+          type: props.type
+        })
+    )
 
-    if (props.type === 'advertisement') {
-      await advertisementService.extendAdvertisements(request)
-    } else {
-      await advertisementNotificationService.extendSubscriptions(new ExtendRequest(request))
-    }
-
-    push(navigation.hasPrevious() ? navigation.getPreviousFullPath : { name: 'home' })
+    push({ name: 'makePayment' })
   } catch (e) {
     handleErrors(e)
   }

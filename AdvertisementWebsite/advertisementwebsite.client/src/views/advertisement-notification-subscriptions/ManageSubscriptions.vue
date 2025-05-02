@@ -11,13 +11,13 @@
       <div class="flex flex-wrap justify-end gap-2">
         <Button
           :label="l.actions.deactivate"
-          :disabled="!selectedRows.length || allSelectedAreInactive"
+          :disabled="!selectedRows.length || !atLeastOneSelectedIsActive"
           severity="secondary"
           @click="setActiveState(false)"
         />
         <Button
           :label="l.actions.activate"
-          :disabled="!selectedRows.length || allSelectedAreActive"
+          :disabled="!selectedRows.length || !atLeastOneSelectedIsInactive"
           severity="primary"
           @click="setActiveState(true)"
         />
@@ -29,7 +29,7 @@
         />
         <Button
           :label="l.actions.extend"
-          :disabled="!selectedRows.length"
+          :disabled="!selectedRows.length || allSelectedAreDrafts"
           severity="secondary"
           @click="extend"
         />
@@ -59,36 +59,46 @@
       :header="l.manageAdvertisementNotificationSubscriptions.categoryName"
       sortable
     />
-    <Column
-      field="isActive"
-      :header="l.manageAdvertisementNotificationSubscriptions.isActive"
-      sortable
-    >
+    <Column field="status" :header="l.manageAdvertisementNotificationSubscriptions.status" sortable>
       <template #body="slotProps">
         <Badge
-          :severity="slotProps.data.isActive ? 'primary' : 'secondary'"
-          :value="ls.l(slotProps.data.isActive + '')"
+          :severity="statusSeverity[slotProps.data.status]"
+          :value="
+            ls.l(
+              'paymentSubjectStatus.' +
+                PaymentSubjectStatus[slotProps.data.status as PaymentSubjectStatus]
+            )
+          "
         />
       </template>
     </Column>
     <Column
-      field="validTo"
+      field="validToDate"
       :header="l.manageAdvertisementNotificationSubscriptions.validTo"
       sortable
     >
-      <template #body="slotProps">{{ dateFormat.format(slotProps.data.validTo) }}</template>
+      <template #body="slotProps">{{
+        slotProps.data.validToDate != null ? dateFormat.format(slotProps.data.validToDate) : ''
+      }}</template>
     </Column>
     <Column
-      field="createdAt"
+      field="createdDate"
       :header="l.manageAdvertisementNotificationSubscriptions.createdAt"
       sortable
     >
-      <template #body="slotProps">{{ dateFormat.format(slotProps.data.createdAt) }}</template>
+      <template #body="slotProps">{{
+        slotProps.data.createdDate ? dateFormat.format(slotProps.data.createdDate) : ''
+      }}</template>
     </Column>
 
     <Column>
       <template #body="slotProps">
         <div class="space-x-2 space-y-2">
+          <Button
+            v-if="slotProps.data.status === PaymentSubjectStatus.Draft"
+            :label="l.actions.subscribe"
+            @click="subscribe(slotProps.data)"
+          />
           <Button
             :label="l.actions.edit"
             as="RouterLink"
@@ -105,10 +115,13 @@
 
 <script lang="ts" setup>
 import LazyLoadedTable from '@/components/common/LazyLoadedTable.vue'
+import { statusSeverity } from '@/constants/status-severity'
 import {
   AdvertisementNotificationClient,
   DataTableQuery,
   NotificationSubscriptionItem,
+  PaymentSubjectStatus,
+  PaymentType,
   SetActiveStatusRequest,
   TableColumn
 } from '@/services/api-client'
@@ -151,26 +164,33 @@ const columns: TableColumn[] = [
     searchable: true
   }),
   new TableColumn({
-    data: 'isActive',
-    name: 'manageAdvertisementNotificationSubscriptions.isActive',
+    data: 'status',
+    name: 'manageAdvertisementNotificationSubscriptions.status',
     orderable: true
   }),
   new TableColumn({
-    data: 'validTo',
-    name: 'manageAdvertisementNotificationSubscriptions.validTo',
+    data: 'validToDate',
+    name: 'manageAdvertisementNotificationSubscriptions.validToDate',
     orderable: true
   }),
   new TableColumn({
-    data: 'createdAt',
-    name: 'manageAdvertisementNotificationSubscriptions.createdAt',
+    data: 'createdDate',
+    name: 'manageAdvertisementNotificationSubscriptions.createdDate',
     orderable: true
   })
 ]
 
 //Reactive data
 const selectedRows = ref<NotificationSubscriptionItem[]>([])
-const allSelectedAreActive = computed(() => selectedRows.value.every((r) => r.isActive))
-const allSelectedAreInactive = computed(() => selectedRows.value.every((r) => !r.isActive))
+const atLeastOneSelectedIsActive = computed(() =>
+  selectedRows.value.some((r) => r.status === PaymentSubjectStatus.Active)
+)
+const atLeastOneSelectedIsInactive = computed(() =>
+  selectedRows.value.some((r) => r.status === PaymentSubjectStatus.Inactive)
+)
+const allSelectedAreDrafts = computed(() =>
+  selectedRows.value.every((a) => a.status == PaymentSubjectStatus.Draft)
+)
 const loading = ref(false)
 const dateFormat = computed(() =>
   Intl.DateTimeFormat(LocaleService.currentLocaleName.value, {
@@ -188,7 +208,13 @@ const setActiveState = async (isActive: boolean) => {
   loading.value = true
   await subscriptionService.setSubscriptionActiveStatus(
     new SetActiveStatusRequest({
-      ids: selectedRows.value.map((i) => i.id!),
+      ids: selectedRows.value
+        .filter(
+          (r) =>
+            (isActive && r.status === PaymentSubjectStatus.Inactive) ||
+            (!isActive && r.status === PaymentSubjectStatus.Active)
+        )
+        .map((i) => i.id!),
       isActive
     })
   )
@@ -216,8 +242,20 @@ const extend = () => {
   push({
     name: 'extend',
     params: {
-      ids: JSON.stringify(selectedRows.value.map((r) => r.id!)),
-      type: 'notificationSubscription'
+      ids: JSON.stringify(
+        selectedRows.value.filter((r) => r.status !== PaymentSubjectStatus.Draft).map((r) => r.id!)
+      ),
+      type: PaymentType.ExtendAdvertisementNotificationSubscription
+    }
+  })
+}
+
+const subscribe = (row: NotificationSubscriptionItem) => {
+  push({
+    name: 'extend',
+    params: {
+      ids: '[' + row.id + ']',
+      type: PaymentType.CreateAdvertisementNotificationSubscription
     }
   })
 }

@@ -9,7 +9,14 @@ public interface IAdvertisementNotificationSubscriptionService : IBaseService<Ad
 {
     public Task<DataTableQueryResponse<NotificationSubscriptionItem>> GetSubscriptions(DataTableQuery query, int userId);
     public IQueryable<KeyValuePair<int, string>> GetLookupByIds(IEnumerable<int> ids, int userId);
-    public Task CreateSubscription(CreateOrEditSubscription dto, int userId);
+    
+    /// <summary>
+    /// Create new subscription draft. "Created date" and "valid to date" are not assigned.
+    /// </summary>
+    /// <param name="dto"></param>
+    /// <param name="userId"></param>
+    /// <returns></returns>
+    public Task<int> CreateSubscription(CreateOrEditSubscription dto, int userId);
     public Task<CreateOrEditSubscription> GetSubscriptionInfo(int subscriptionId, int userId);
     public Task EditSubscription(CreateOrEditSubscription dto, int userId);
     public Task ExtendSubscriptions(IEnumerable<int> subscriptionIds, PostTimeDto time, int userId);

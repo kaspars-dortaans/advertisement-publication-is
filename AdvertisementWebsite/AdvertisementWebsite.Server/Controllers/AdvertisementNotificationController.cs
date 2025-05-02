@@ -50,22 +50,14 @@ public class AdvertisementNotificationController(
     }
 
     [HasPermission(Permissions.CreateAdvertisementNotificationSubscription)]
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType<int>(StatusCodes.Status200OK)]
     [ProducesResponseType<RequestExceptionResponse>(StatusCodes.Status400BadRequest)]
     [HttpPost]
-    public async Task CreateSubscriptions(CreateOrEditNotificationSubscriptionRequest request)
+    public async Task<int> CreateSubscriptions(CreateOrEditNotificationSubscriptionRequest request)
     {
-        if (request.PaidTime == null)
-        {
-            throw new ApiException([], new Dictionary<string, IList<string>>
-            {
-                { nameof(CreateOrEditNotificationSubscriptionRequest.PaidTime), [CustomErrorCodes.MissingRequired] }
-            });
-        }
-
         var userId = User.GetUserId()!.Value;
         var dto = _mapper.Map<CreateOrEditSubscription>(request);
-        await _subscriptionService.CreateSubscription(dto, userId);
+        return await _subscriptionService.CreateSubscription(dto, userId);
     }
 
     [HasPermission(Permissions.EditAdvertisementNotificationSubscriptions)]
@@ -102,16 +94,6 @@ public class AdvertisementNotificationController(
         await _subscriptionService.EditSubscription(dto, userId);
     }
 
-    [HasPermission(Permissions.EditAdvertisementNotificationSubscriptions)]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType<RequestExceptionResponse>(StatusCodes.Status400BadRequest)]
-    [HttpPost]
-    public async Task ExtendSubscriptions(ExtendRequest request)
-    {
-        var userId = User.GetUserId()!.Value;
-        await _subscriptionService.ExtendSubscriptions(request.Ids, request.ExtendTime, userId);
-    }
-         
     [HasPermission(Permissions.EditAdvertisementNotificationSubscriptions)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType<RequestExceptionResponse>(StatusCodes.Status400BadRequest)]

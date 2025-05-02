@@ -17,7 +17,7 @@ public class CreateOrEditNotificationSubscriptionRequest
     [Required(ErrorMessage = CustomErrorCodes.MissingRequired)]
     public int CategoryId { get; set; }
 
-    public DateTime? ValidTo { get; set; }
+    public DateTime? ValidToDate { get; set; }
 
     public IEnumerable<KeyValuePair<int, string>> AttributeValues { get; set; } = default!;
 }

@@ -27,10 +27,11 @@ using AdvertisementWebsite.Server.Hubs;
 using AdvertisementWebsite.Server.OpenApi;
 
 var builder = WebApplication.CreateBuilder(args);
+var services = builder.Services;
 
 //CORS
 var devCORSPolicy = "DevCORSPolicy";
-builder.Services.AddCors(options =>
+services.AddCors(options =>
 {
     options.AddPolicy(name: devCORSPolicy,
         policy =>
@@ -45,17 +46,17 @@ builder.Services.AddCors(options =>
 
 //Add db
 var connectionString = builder.Configuration.GetConnectionString("Db");
-builder.Services.AddDbContext<Context>(options =>
+services.AddDbContext<Context>(options =>
     options.UseNpgsql(connectionString)
 );
 
 if (builder.Environment.IsDevelopment())
 {
-    builder.Services.AddDatabaseDeveloperPageExceptionFilter();
+    services.AddDatabaseDeveloperPageExceptionFilter();
 }
 
 //Add identity
-builder.Services.AddIdentityApiEndpoints<User>(options =>
+services.AddIdentityApiEndpoints<User>(options =>
 {
     // Password settings.
     options.Password.RequireDigit = true;
@@ -81,7 +82,7 @@ builder.Services.AddIdentityApiEndpoints<User>(options =>
 //Authentication
 var tokenExpirationInMinutes = builder.Configuration.GetSection("AuthToken:TokenExpirationTimeInMinutes").Get<int>();
 var refreshTokenExpirationInMinutes = builder.Configuration.GetSection("AuthToken:RefreshTokenExpirationTimeInMinutes").Get<int>();
-builder.Services.Configure<BearerTokenOptions>(IdentityConstants.BearerScheme, options =>
+services.Configure<BearerTokenOptions>(IdentityConstants.BearerScheme, options =>
 {
     options.BearerTokenExpiration = TimeSpan.FromMinutes(tokenExpirationInMinutes);
     options.RefreshTokenExpiration = TimeSpan.FromMinutes(refreshTokenExpirationInMinutes);
@@ -110,11 +111,11 @@ builder.Services.Configure<BearerTokenOptions>(IdentityConstants.BearerScheme, o
 });
 
 //Authorization 
-builder.Services.AddSingleton<IAuthorizationHandler, PermissionAuthorizationHandler>();
-builder.Services.AddSingleton<IAuthorizationPolicyProvider, PermissionAuthorizationPolicyProvider>();
+services.AddSingleton<IAuthorizationHandler, PermissionAuthorizationHandler>();
+services.AddSingleton<IAuthorizationPolicyProvider, PermissionAuthorizationPolicyProvider>();
 
 //Controllers
-builder.Services
+services
     .AddControllers(options =>
         {
             //Add request filters
@@ -126,8 +127,8 @@ builder.Services
 if (builder.Environment.IsDevelopment())
 {
     // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-    builder.Services.AddEndpointsApiExplorer();
-    builder.Services.AddSwaggerGen(o =>
+    services.AddEndpointsApiExplorer();
+    services.AddSwaggerGen(o =>
     {
         o.UseAllOfToExtendReferenceSchemas();
 
@@ -162,49 +163,50 @@ if (builder.Environment.IsDevelopment())
 }
 
 //Add Hangfire
-builder.Services.AddHangfire(config =>
+services.AddHangfire(config =>
     config.UseSimpleAssemblyNameTypeSerializer()
     .UseRecommendedSerializerSettings()
     .UsePostgreSqlStorage(c =>
         c.UseNpgsqlConnection(builder.Configuration.GetConnectionString("Db"))));
 
-builder.Services.AddHangfireServer();
+services.AddHangfireServer();
 
 //Add Options
-builder.Services.AddOptions<StorageOptions>().Bind(builder.Configuration.GetSection("Storage"));
-builder.Services.AddOptions<EmailOptions>().Bind(builder.Configuration.GetSection("Email"));
+services.AddOptions<StorageOptions>().Bind(builder.Configuration.GetSection("Storage"));
+services.AddOptions<EmailOptions>().Bind(builder.Configuration.GetSection("Email"));
 
 //Add localization
-builder.Services.AddLocalization(opts => opts.ResourcesPath = "Resources");
+services.AddLocalization(opts => opts.ResourcesPath = "Resources");
 
 //Register services here
-builder.Services.AddSignalR();
+services.AddSignalR();
 
-builder.Services.AddScoped(typeof(IBaseService<>), typeof(BaseService<>));
-builder.Services.AddScoped<IUserService, UserService>();
-builder.Services.AddScoped<IAdvertisementService, AdvertisementService>();
-builder.Services.AddScoped<ICategoryService, CategoryService>();
-builder.Services.AddScoped<IFileService, FileService>();
-builder.Services.AddScoped<IChatService, ChatService>();
-builder.Services.AddScoped<IAdvertisementNotificationSubscriptionService, AdvertisementNotificationSubscriptionService>();
-builder.Services.AddScoped<IAttributeValidatorService, AttributeValidatorService>();
+services.AddScoped(typeof(IBaseService<>), typeof(BaseService<>));
+services.AddScoped<IUserService, UserService>();
+services.AddScoped<IAdvertisementService, AdvertisementService>();
+services.AddScoped<ICategoryService, CategoryService>();
+services.AddScoped<IFileService, FileService>();
+services.AddScoped<IChatService, ChatService>();
+services.AddScoped<IAdvertisementNotificationSubscriptionService, AdvertisementNotificationSubscriptionService>();
+services.AddScoped<IAttributeValidatorService, AttributeValidatorService>();
+services.AddScoped<IPaymentService, PaymentService>();
 
 //Helpers
-builder.Services.AddScoped<IStorage, LocalFileStorage>();
-builder.Services.AddScoped<IFilePathResolver, FilePathResolver>();
-builder.Services.AddScoped<IEmailClient, MailKitClient>();
-builder.Services.AddScoped<CookieSettingsHelper>();
-builder.Services.AddScoped<ImageHelper>();
-builder.Services.AddScoped<IAdvertisementNotificationSender, AdvertisementNotificationSender>();
+services.AddScoped<IStorage, LocalFileStorage>();
+services.AddScoped<IFilePathResolver, FilePathResolver>();
+services.AddScoped<IEmailClient, MailKitClient>();
+services.AddScoped<CookieSettingsHelper>();
+services.AddScoped<ImageHelper>();
+services.AddScoped<IAdvertisementNotificationSender, AdvertisementNotificationSender>();
 
 //Db seeding
 if (builder.Environment.IsDevelopment())
 {
-    builder.Services.AddScoped<DbSeeder>();
+    services.AddScoped<DbSeeder>();
 }
 
 //AutoMapper
-builder.Services.AddAutoMapper(Assembly.GetExecutingAssembly());
+services.AddAutoMapper(Assembly.GetExecutingAssembly());
 
 //Initialize libs
 MagickNET.Initialize();

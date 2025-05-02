@@ -29,6 +29,8 @@ import Password from 'primevue/password'
 import Select from 'primevue/select'
 import Textarea from 'primevue/textarea'
 import AutoComplete from 'primevue/autocomplete'
+import Listbox from 'primevue/listbox'
+import Checkbox from 'primevue/checkbox'
 
 //Data
 import Column from 'primevue/column'
@@ -45,8 +47,8 @@ import TabPanels from 'primevue/tabpanels'
 import TabPanel from 'primevue/tabpanel'
 
 //Message
-import Checkbox from 'primevue/checkbox'
 import Message from 'primevue/message'
+import ToastService from 'primevue/toastservice'
 
 //Media
 import Galleria from 'primevue/galleria'
@@ -169,6 +171,7 @@ export function initPrimeVue(app: App<Element>) {
   app.component('FloatLabel', FloatLabel)
   app.component('Select', Select)
   app.component('AutoComplete', AutoComplete)
+  app.component('Listbox', Listbox)
 
   //Data
   app.component('Tree', Tree)
@@ -186,6 +189,7 @@ export function initPrimeVue(app: App<Element>) {
 
   //Message
   app.component('Message', Message)
+  app.use(ToastService)
 
   //Media
   app.component('Image', Image)

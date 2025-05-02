@@ -37,14 +37,14 @@ namespace BusinessLogic.Migrations
                     b.Property<int>("CategoryId")
                         .HasColumnType("integer");
 
+                    b.Property<DateTime?>("CreatedDate")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<bool>("IsActive")
                         .HasColumnType("boolean");
 
                     b.Property<int>("OwnerId")
                         .HasColumnType("integer");
-
-                    b.Property<DateTime>("PostedDate")
-                        .HasColumnType("timestamp with time zone");
 
                     b.Property<int?>("ThumbnailImageId")
                         .HasColumnType("integer");
@@ -53,7 +53,7 @@ namespace BusinessLogic.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<DateTime>("ValidToDate")
+                    b.Property<DateTime?>("ValidToDate")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<int>("ViewCount")
@@ -123,7 +123,7 @@ namespace BusinessLogic.Migrations
                     b.Property<int>("CategoryId")
                         .HasColumnType("integer");
 
-                    b.Property<DateTime>("CreatedAt")
+                    b.Property<DateTime?>("CreatedDate")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<bool>("IsActive")
@@ -139,7 +139,7 @@ namespace BusinessLogic.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<DateTime>("ValidTo")
+                    b.Property<DateTime?>("ValidToDate")
                         .HasColumnType("timestamp with time zone");
 
                     b.HasKey("Id");
@@ -265,22 +265,6 @@ namespace BusinessLogic.Migrations
                     b.ToTable("CategoryAttributes");
                 });
 
-            modelBuilder.Entity("BusinessLogic.Entities.CategoryIdsResult", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.HasKey("Id");
-
-                    b.ToTable("_", null, t =>
-                        {
-                            t.ExcludeFromMigrations();
-                        });
-                });
-
             modelBuilder.Entity("BusinessLogic.Entities.Chat", b =>
                 {
                     b.Property<int>("Id")
@@ -312,6 +296,41 @@ namespace BusinessLogic.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("ChatUser");
+                });
+
+            modelBuilder.Entity("BusinessLogic.Entities.Cost", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<decimal>("Amount")
+                        .HasColumnType("numeric");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Costs");
+                });
+
+            modelBuilder.Entity("BusinessLogic.Entities.DbFunctionDto.CategoryIdsResult", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.HasKey("Id");
+
+                    b.ToTable("_", null, t =>
+                        {
+                            t.ExcludeFromMigrations();
+                        });
                 });
 
             modelBuilder.Entity("BusinessLogic.Entities.Files.File", b =>
@@ -347,7 +366,7 @@ namespace BusinessLogic.Migrations
                     b.UseTphMappingStrategy();
                 });
 
-            modelBuilder.Entity("BusinessLogic.Entities.LocaleText", b =>
+            modelBuilder.Entity("BusinessLogic.Entities.LocaleTexts.LocaleText", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -435,6 +454,61 @@ namespace BusinessLogic.Migrations
                     b.HasIndex("SubscriptionId");
 
                     b.ToTable("NotificationSubscriptionValues");
+                });
+
+            modelBuilder.Entity("BusinessLogic.Entities.Payments.Payment", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<decimal>("Amount")
+                        .HasColumnType("numeric");
+
+                    b.Property<int>("PayerId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PayerId");
+
+                    b.ToTable("Payments");
+                });
+
+            modelBuilder.Entity("BusinessLogic.Entities.Payments.PaymentItem", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("PaymentId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("PaymentSubjectId")
+                        .HasColumnType("integer");
+
+                    b.Property<decimal>("Price")
+                        .HasColumnType("numeric");
+
+                    b.Property<int>("TimePeriodInDays")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PaymentId");
+
+                    b.ToTable("PaymentItem");
                 });
 
             modelBuilder.Entity("BusinessLogic.Entities.Permission", b =>
@@ -756,9 +830,9 @@ namespace BusinessLogic.Migrations
                     b.HasDiscriminator().HasValue("MessageAttachment");
                 });
 
-            modelBuilder.Entity("BusinessLogic.Entities.AttributeNameLocaleText", b =>
+            modelBuilder.Entity("BusinessLogic.Entities.LocaleTexts.LocaleTexts.AttributeNameLocaleText", b =>
                 {
-                    b.HasBaseType("BusinessLogic.Entities.LocaleText");
+                    b.HasBaseType("BusinessLogic.Entities.LocaleTexts.LocaleText");
 
                     b.Property<int>("AttributeId")
                         .HasColumnType("integer");
@@ -768,9 +842,9 @@ namespace BusinessLogic.Migrations
                     b.HasDiscriminator().HasValue("AttributeNameLocaleText");
                 });
 
-            modelBuilder.Entity("BusinessLogic.Entities.AttributeValueListEntryLocaleText", b =>
+            modelBuilder.Entity("BusinessLogic.Entities.LocaleTexts.LocaleTexts.AttributeValueListEntryLocaleText", b =>
                 {
-                    b.HasBaseType("BusinessLogic.Entities.LocaleText");
+                    b.HasBaseType("BusinessLogic.Entities.LocaleTexts.LocaleText");
 
                     b.Property<int>("AttributeValueListEntryId")
                         .HasColumnType("integer");
@@ -780,9 +854,9 @@ namespace BusinessLogic.Migrations
                     b.HasDiscriminator().HasValue("AttributeValueListEntryLocaleText");
                 });
 
-            modelBuilder.Entity("BusinessLogic.Entities.AttributeValueListLocaleText", b =>
+            modelBuilder.Entity("BusinessLogic.Entities.LocaleTexts.LocaleTexts.AttributeValueListLocaleText", b =>
                 {
-                    b.HasBaseType("BusinessLogic.Entities.LocaleText");
+                    b.HasBaseType("BusinessLogic.Entities.LocaleTexts.LocaleText");
 
                     b.Property<int>("AttributeValueListId")
                         .HasColumnType("integer");
@@ -792,9 +866,9 @@ namespace BusinessLogic.Migrations
                     b.HasDiscriminator().HasValue("AttributeValueListLocaleText");
                 });
 
-            modelBuilder.Entity("BusinessLogic.Entities.CategoryNameLocaleText", b =>
+            modelBuilder.Entity("BusinessLogic.Entities.LocaleTexts.LocaleTexts.CategoryNameLocaleText", b =>
                 {
-                    b.HasBaseType("BusinessLogic.Entities.LocaleText");
+                    b.HasBaseType("BusinessLogic.Entities.LocaleTexts.LocaleText");
 
                     b.Property<int>("CategoryId")
                         .HasColumnType("integer");
@@ -1041,6 +1115,28 @@ namespace BusinessLogic.Migrations
                     b.Navigation("Subscription");
                 });
 
+            modelBuilder.Entity("BusinessLogic.Entities.Payments.Payment", b =>
+                {
+                    b.HasOne("BusinessLogic.Entities.User", "Payer")
+                        .WithMany()
+                        .HasForeignKey("PayerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Payer");
+                });
+
+            modelBuilder.Entity("BusinessLogic.Entities.Payments.PaymentItem", b =>
+                {
+                    b.HasOne("BusinessLogic.Entities.Payments.Payment", "Payment")
+                        .WithMany("Items")
+                        .HasForeignKey("PaymentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Payment");
+                });
+
             modelBuilder.Entity("BusinessLogic.Entities.RolePermission", b =>
                 {
                     b.HasOne("BusinessLogic.Entities.Permission", "Permission")
@@ -1139,7 +1235,7 @@ namespace BusinessLogic.Migrations
                     b.Navigation("Message");
                 });
 
-            modelBuilder.Entity("BusinessLogic.Entities.AttributeNameLocaleText", b =>
+            modelBuilder.Entity("BusinessLogic.Entities.LocaleTexts.LocaleTexts.AttributeNameLocaleText", b =>
                 {
                     b.HasOne("BusinessLogic.Entities.Attribute", null)
                         .WithMany("AttributeNameLocales")
@@ -1148,7 +1244,7 @@ namespace BusinessLogic.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("BusinessLogic.Entities.AttributeValueListEntryLocaleText", b =>
+            modelBuilder.Entity("BusinessLogic.Entities.LocaleTexts.LocaleTexts.AttributeValueListEntryLocaleText", b =>
                 {
                     b.HasOne("BusinessLogic.Entities.AttributeValueListEntry", "ListEntry")
                         .WithMany("LocalisedNames")
@@ -1159,7 +1255,7 @@ namespace BusinessLogic.Migrations
                     b.Navigation("ListEntry");
                 });
 
-            modelBuilder.Entity("BusinessLogic.Entities.AttributeValueListLocaleText", b =>
+            modelBuilder.Entity("BusinessLogic.Entities.LocaleTexts.LocaleTexts.AttributeValueListLocaleText", b =>
                 {
                     b.HasOne("BusinessLogic.Entities.AttributeValueList", "ValueList")
                         .WithMany("LocalisedNames")
@@ -1170,7 +1266,7 @@ namespace BusinessLogic.Migrations
                     b.Navigation("ValueList");
                 });
 
-            modelBuilder.Entity("BusinessLogic.Entities.CategoryNameLocaleText", b =>
+            modelBuilder.Entity("BusinessLogic.Entities.LocaleTexts.LocaleTexts.CategoryNameLocaleText", b =>
                 {
                     b.HasOne("BusinessLogic.Entities.Category", null)
                         .WithMany("LocalisedNames")
@@ -1253,6 +1349,11 @@ namespace BusinessLogic.Migrations
             modelBuilder.Entity("BusinessLogic.Entities.Message", b =>
                 {
                     b.Navigation("Attachments");
+                });
+
+            modelBuilder.Entity("BusinessLogic.Entities.Payments.Payment", b =>
+                {
+                    b.Navigation("Items");
                 });
 
             modelBuilder.Entity("BusinessLogic.Entities.Role", b =>

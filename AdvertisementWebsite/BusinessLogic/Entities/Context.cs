@@ -1,6 +1,7 @@
 ﻿using BusinessLogic.Entities.DbFunctionDto;
 using BusinessLogic.Entities.Files;
 using BusinessLogic.Entities.LocaleTexts;
+using BusinessLogic.Entities.Payments;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
@@ -22,6 +23,8 @@ public class Context(DbContextOptions<Context> options) : IdentityDbContext<User
     public virtual DbSet<RuleViolationReport> RuleViolationReports { get; set; }
     public virtual DbSet<AdvertisementNotificationSubscription> NotificationSubscriptions { get; set; }
     public virtual DbSet<NotificationSubscriptionAttributeValue> NotificationSubscriptionValues { get; set; }
+    public virtual DbSet<Payment> Payments { get; set; }
+    public virtual DbSet<Cost> Costs { get; set; }
 
 
     //Files and images

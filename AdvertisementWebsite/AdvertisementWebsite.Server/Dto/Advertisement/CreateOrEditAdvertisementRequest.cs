@@ -20,7 +20,7 @@ public class CreateOrEditAdvertisementRequest
     /// <summary>
     /// Displayed on edit, readonly
     /// </summary>
-    public DateTime? ValidTo { get; set; }
+    public DateTime? ValidToDate { get; set; }
 
     [Required(ErrorMessage = CustomErrorCodes.MissingRequired)]
     public string Title { get; set; } = default!;

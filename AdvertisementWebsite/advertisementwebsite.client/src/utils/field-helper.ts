@@ -1,4 +1,6 @@
 import { RequestExceptionResponse } from '@/services/api-client'
+import { LocaleService } from '@/services/locale-service'
+import { useToast } from 'primevue'
 import type {
   BaseFieldProps,
   FormContext,
@@ -85,6 +87,8 @@ export class FieldHelper<TValues extends GenericObject> {
   protected _isFieldDirty: (path: TPath<TValues>) => boolean
   protected _errors: ErrorsProperty<TValues>
   protected _meta: ComputedRef<FormMeta<TValues>>
+  protected _toast = useToast()
+  protected _ls = LocaleService.get()
 
   fields: Fields<TValues> = {}
 
@@ -142,7 +146,16 @@ export class FieldHelper<TValues extends GenericObject> {
 
   handleErrors = (errorObj: unknown) => {
     if (!(errorObj instanceof RequestExceptionResponse)) {
-      throw errorObj
+      this._toast.add({
+        summary: this._ls.l('errors.errorOccurred'),
+        detail:
+          typeof errorObj === 'object' && errorObj && 'message' in errorObj && errorObj.message
+            ? errorObj.message
+            : '',
+        severity: 'error',
+        group: 'tr'
+      })
+      return
     }
 
     //Handle field validation errors

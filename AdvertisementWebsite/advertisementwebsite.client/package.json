@@ -19,6 +19,7 @@
     "@microsoft/signalr": "^8.0.7",
     "@tsconfig/node22": "^22.0.1",
     "@vee-validate/yup": "^4.13.2",
+    "@vueuse/core": "^13.1.0",
     "axios": "^1.7.2",
     "nswag": "^14.0.8",
     "primeicons": "^7.0.0",

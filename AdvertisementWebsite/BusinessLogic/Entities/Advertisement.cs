@@ -1,12 +1,13 @@
 ﻿using BusinessLogic.Entities.Files;
+using BusinessLogic.Entities.Payments;
 
 namespace BusinessLogic.Entities;
 
-public class Advertisement
+public class Advertisement : IPaymentItemSubject
 {
     public int Id { get; set; }
-    public DateTime PostedDate { get; set; }
-    public DateTime ValidToDate { get; set; }
+    public DateTime? CreatedDate { get; set; }
+    public DateTime? ValidToDate { get; set; }
     public string Title { get; set; } = default!;
     public string AdvertisementText { get; set; } = default!;
     public int ViewCount { get; set; }

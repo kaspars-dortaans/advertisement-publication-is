@@ -11,13 +11,13 @@
       <div class="flex flex-wrap justify-end gap-2">
         <Button
           :label="l.actions.deactivate"
-          :disabled="!selectedAdvertisements.length || allSelectedAdvertisementsAreInactive"
+          :disabled="!selectedAdvertisements.length || !atLeastOneSelectedIsActive"
           severity="secondary"
           @click="setAdvertisementActiveState(false)"
         />
         <Button
           :label="l.actions.activate"
-          :disabled="!selectedAdvertisements.length || allSelectedAdvertisementsAreActive"
+          :disabled="!selectedAdvertisements.length || !atLeastOneSelectedIsInactive"
           severity="primary"
           @click="setAdvertisementActiveState(true)"
         />
@@ -29,7 +29,7 @@
         />
         <Button
           :label="l.actions.extend"
-          :disabled="!selectedAdvertisements.length"
+          :disabled="!selectedAdvertisements.length || allSelectedAreDrafts"
           severity="secondary"
           @click="extendAdvertisements"
         />
@@ -46,24 +46,38 @@
 
     <Column field="title" :header="l.manageAdvertisements.title" sortable />
     <Column field="categoryName" :header="l.manageAdvertisements.categoryName" sortable />
-    <Column field="isActive" :header="l.manageAdvertisements.isActive" sortable>
+    <Column field="status" :header="l.manageAdvertisements.status" sortable>
       <template #body="slotProps">
         <Badge
-          :severity="slotProps.data.isActive ? 'primary' : 'secondary'"
-          :value="ls.l(slotProps.data.isActive + '')"
+          :severity="statusSeverity[slotProps.data.status]"
+          :value="
+            ls.l(
+              'paymentSubjectStatus.' +
+                PaymentSubjectStatus[slotProps.data.status as PaymentSubjectStatus]
+            )
+          "
         />
       </template>
     </Column>
-    <Column field="validTo" :header="l.manageAdvertisements.validTo" sortable>
-      <template #body="slotProps">{{ dateFormat.format(slotProps.data.validTo) }}</template>
+    <Column field="validToDate" :header="l.manageAdvertisements.validTo" sortable>
+      <template #body="slotProps">{{
+        slotProps.data.validToDate != null ? dateFormat.format(slotProps.data.validToDate) : ''
+      }}</template>
     </Column>
-    <Column field="createdAt" :header="l.manageAdvertisements.createdAt" sortable>
-      <template #body="slotProps">{{ dateFormat.format(slotProps.data.createdAt) }}</template>
+    <Column field="createdAtDate" :header="l.manageAdvertisements.createdAt" sortable>
+      <template #body="slotProps">{{
+        slotProps.data.createdAtDate != null ? dateFormat.format(slotProps.data.createdAtDate) : ''
+      }}</template>
     </Column>
 
     <Column>
       <template #body="slotProps">
         <div class="space-x-2 space-y-2">
+          <Button
+            v-if="slotProps.data.status == PaymentSubjectStatus.Draft"
+            :label="l.actions.publish"
+            @click="publishAdvertisement(slotProps.data)"
+          />
           <Button
             :label="l.actions.edit"
             as="RouterLink"
@@ -83,10 +97,13 @@
 
 <script setup lang="ts">
 import LazyLoadedTable from '@/components/common/LazyLoadedTable.vue'
+import { statusSeverity } from '@/constants/status-severity'
 import {
   AdvertisementClient,
   AdvertisementInfo,
   DataTableQuery,
+  PaymentSubjectStatus,
+  PaymentType,
   SetActiveStatusRequest,
   TableColumn
 } from '@/services/api-client'
@@ -108,15 +125,14 @@ const confirm = useConfirm()
 
 //Reactive data
 const selectedAdvertisements = ref<AdvertisementInfo[]>([])
-const selectedAdvertisementIds = computed(
-  () =>
-    selectedAdvertisements.value.map((a) => a.id).filter((id) => typeof id === 'number') as number[]
+const atLeastOneSelectedIsActive = computed(() =>
+  selectedAdvertisements.value.some((a) => a.status == PaymentSubjectStatus.Active)
 )
-const allSelectedAdvertisementsAreActive = computed(() =>
-  selectedAdvertisements.value.every((a) => a.isActive)
+const atLeastOneSelectedIsInactive = computed(() =>
+  selectedAdvertisements.value.some((a) => a.status == PaymentSubjectStatus.Inactive)
 )
-const allSelectedAdvertisementsAreInactive = computed(() =>
-  selectedAdvertisements.value.every((a) => !a.isActive)
+const allSelectedAreDrafts = computed(() =>
+  selectedAdvertisements.value.every((a) => a.status == PaymentSubjectStatus.Draft)
 )
 const loading = ref(false)
 const dateFormat = computed(() =>
@@ -139,17 +155,17 @@ const columns: TableColumn[] = [
     orderable: true
   }),
   new TableColumn({
-    data: 'isActive',
-    name: 'manageAdvertisements.isActive',
+    data: 'status',
+    name: 'manageAdvertisements.status',
     orderable: true
   }),
   new TableColumn({
-    data: 'validTo',
+    data: 'validToDate',
     name: 'manageAdvertisements.validTo',
     orderable: true
   }),
   new TableColumn({
-    data: 'createdAt',
+    data: 'createdAtDate',
     name: 'manageAdvertisements.createdAt',
     orderable: true
   })
@@ -163,8 +179,12 @@ const advertisementSource = (query: DataTableQuery) => {
 const setAdvertisementActiveState = async (isActive: boolean) => {
   loading.value = true
   const ids = selectedAdvertisements.value
-    .map((a) => a.id)
-    .filter((id) => typeof id === 'number') as number[]
+    .filter(
+      (r) =>
+        (isActive && r.status === PaymentSubjectStatus.Inactive) ||
+        (!isActive && r.status === PaymentSubjectStatus.Active)
+    )
+    .map((a) => a.id!)
   await advertisementService.setIsActiveAdvertisements(
     new SetActiveStatusRequest({ isActive, ids })
   )
@@ -181,16 +201,30 @@ const confirmDeleteAdvertisements = () => {
 
 const deleteAdvertisements = async () => {
   loading.value = true
-  await advertisementService.deleteAdvertisements(selectedAdvertisementIds.value)
+  await advertisementService.deleteAdvertisements(selectedAdvertisements.value.map((a) => a.id!))
   table.value?.refresh()
 }
 
 const extendAdvertisements = () => {
+  const advertisementIds = selectedAdvertisements.value
+    .filter((a) => a.status !== PaymentSubjectStatus.Draft)
+    .map((a) => a.id!)
+
   push({
     name: 'extend',
     params: {
-      ids: JSON.stringify(selectedAdvertisementIds.value),
-      type: 'advertisement'
+      ids: JSON.stringify(advertisementIds),
+      type: PaymentType.ExtendAdvertisement
+    }
+  })
+}
+
+const publishAdvertisement = (data: AdvertisementInfo) => {
+  push({
+    name: 'extend',
+    params: {
+      ids: '[' + data.id + ']',
+      type: PaymentType.CreateAdvertisement
     }
   })
 }
