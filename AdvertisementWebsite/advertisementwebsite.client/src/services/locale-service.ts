@@ -3,11 +3,13 @@ import { emptyLocale } from '@/init/empty-locale'
 import { usePrimeVue, type PrimeVueLocaleOptions } from 'primevue/config'
 import { ref, watch } from 'vue'
 import { Settings } from './settings'
+import { useTitle } from '@vueuse/core'
 
 export class LocaleService {
   private static _instance: LocaleService
   private _primevue: ReturnType<typeof usePrimeVue> | undefined
   private _settings: Settings
+  private _title = useTitle()
 
   /** Object for locale loading */
   private _localeFiles: { [key: string]: () => Promise<unknown> } = import.meta.glob(
@@ -132,6 +134,7 @@ export class LocaleService {
     this._settings.userSettingCookieValue.value.locale = nameNormalized
     LocaleService.currentLocaleName.value = nameNormalized
     LocaleService.currentLocale.value = locale
+    this._title.value = this.l('title')
   }
 
   /** Localize and format multiple strings */
