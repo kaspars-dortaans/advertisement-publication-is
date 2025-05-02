@@ -5,7 +5,6 @@ import type { Router } from 'vue-router'
 export const axiosInstance = axios.create()
 
 export const initAxios = (router: Router) => {
-  axiosInstance.defaults.baseURL = import.meta.env.VITE_API_URL
   axiosInstance.defaults.withCredentials = true
 
   const ls = LocaleService.get()

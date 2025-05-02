@@ -373,7 +373,7 @@ const generateConstants = async (c: GenerateConstantsConfig) => {
 
 const config: GenerateConstantsConfig = {
   destinationFolder: './src/constants/api/',
-  apiProjectPath: '../api/',
+  apiProjectPath: '../',
   excludeFolders: ['.vs', 'bin', 'obj'],
   allowedExtensions: ['.cs'],
   requiredClassKeywords: ['public', 'class'],
