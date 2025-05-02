@@ -1,4 +1,5 @@
 ﻿using BusinessLogic.Entities.Files;
+using BusinessLogic.Entities.LocaleTexts;
 using BusinessLogic.Enums;
 
 namespace BusinessLogic.Entities;

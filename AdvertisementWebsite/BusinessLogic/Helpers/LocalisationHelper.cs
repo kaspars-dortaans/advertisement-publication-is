@@ -1,5 +1,5 @@
 ﻿using BusinessLogic.Constants;
-using BusinessLogic.Entities;
+using BusinessLogic.Entities.LocaleTexts;
 
 namespace BusinessLogic.Helpers;
 

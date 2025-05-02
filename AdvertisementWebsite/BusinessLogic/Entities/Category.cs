@@ -1,4 +1,6 @@
-﻿namespace BusinessLogic.Entities;
+﻿using BusinessLogic.Entities.LocaleTexts;
+
+namespace BusinessLogic.Entities;
 
 public class Category
 {

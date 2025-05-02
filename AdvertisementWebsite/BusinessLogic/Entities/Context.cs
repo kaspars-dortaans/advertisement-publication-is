@@ -1,4 +1,6 @@
-﻿using BusinessLogic.Entities.Files;
+﻿using BusinessLogic.Entities.DbFunctionDto;
+using BusinessLogic.Entities.Files;
+using BusinessLogic.Entities.LocaleTexts;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
