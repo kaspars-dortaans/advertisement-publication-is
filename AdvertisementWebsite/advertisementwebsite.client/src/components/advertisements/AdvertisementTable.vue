@@ -87,15 +87,10 @@
               <div class="flex flex-col gap-2">
                 <h4>{{ slotProps.data.title }}</h4>
                 <p class="line-clamp-2">{{ slotProps.data.advertisementText }}</p>
-                <div class="flex flex-row flex-wrap gap-2">
-                  <span
-                    v-for="attribute in slotProps.data.attributeValues"
-                    :key="slotProps.data.id + '-' + attribute.attributeId"
-                    :title="attribute.attributeName"
-                  >
-                    {{ attribute.valueName ?? attribute.value }}</span
-                  >
-                </div>
+                <AttributeValuesList
+                  :advertisementId="slotProps.data.id"
+                  :attributeValues="slotProps.data.attributeValues"
+                />
               </div>
             </div>
           </Panel>
@@ -140,6 +135,7 @@ import {
   type DataTableSortMeta
 } from 'primevue'
 import { computed, onMounted, ref, watch, type ComputedRef } from 'vue'
+import AttributeValuesList from './AttributeValuesList.vue'
 
 const props = defineProps<{
   advertisementSource: (

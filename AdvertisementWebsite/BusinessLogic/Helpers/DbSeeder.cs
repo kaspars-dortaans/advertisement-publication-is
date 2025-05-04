@@ -317,7 +317,8 @@ public class DbSeeder(Context context, UserManager<User> userManager, RoleManage
             {
                 Searchable = true,
                 Sortable = false,
-                ValueType = Enums.ValueTypes.Integer,
+                ValueType = ValueTypes.Integer,
+                ShowOnListItem = true,
                 AttributeNameLocales =
                 [
                     new()
@@ -344,7 +345,8 @@ public class DbSeeder(Context context, UserManager<User> userManager, RoleManage
             {
                 Searchable = false,
                 Sortable = true,
-                ValueType = Enums.ValueTypes.ValueListEntry,
+                ValueType = ValueTypes.ValueListEntry,
+                ShowOnListItem = true,
                 AttributeNameLocales =
                 [
                     new()

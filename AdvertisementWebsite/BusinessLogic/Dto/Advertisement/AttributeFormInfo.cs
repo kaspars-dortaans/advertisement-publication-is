@@ -9,6 +9,6 @@ public class AttributeFormInfo
     public int Order { get; set; }
     public string? ValueValidationRegex { get; set; }
     public int? ValueListId { get; set; }
-    public string? IconUrl { get; set; }
+    public string? IconName { get; set; }
     public ValueTypes AttributeValueType { get; set; } = default!;
 }

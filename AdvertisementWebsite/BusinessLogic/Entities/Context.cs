@@ -31,7 +31,6 @@ public class Context(DbContextOptions<Context> options) : IdentityDbContext<User
     public virtual DbSet<Files.File> Files { get; set; }
     public virtual DbSet<Image> Images { get; set; }
     public virtual DbSet<UserImage> UserImages { get; set; }
-    public virtual DbSet<SystemImage> SystemImages { get; set; }
     public virtual DbSet<AdvertisementImage> AdvertisementImages { get; set; }
     
     //Locale texts

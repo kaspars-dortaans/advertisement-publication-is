@@ -19,5 +19,6 @@ public class AttributeValueItem
     public string Value { get; set; } = default!;
     //For value list entry name
     public string? ValueName { get; set; } = default!;
+    public string? IconName { get; set; }
 }
 

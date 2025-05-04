@@ -57,6 +57,7 @@ public class AdvertisementService(
                     AttributeId = v.AttributeId,
                     AttributeName = v.Attribute.AttributeNameLocales.Localise(locale),
                     Value = v.Value,
+                    IconName = v.Attribute.IconName,
                     ValueName = v.Attribute.ValueType == Enums.ValueTypes.ValueListEntry && v.Attribute.AttributeValueList != null
                         ? v.Attribute.AttributeValueList.ListEntries.First(entry => entry.Id == Convert.ToInt16(v.Value)).LocalisedNames.Localise(locale)
                         : null
@@ -122,12 +123,14 @@ public class AdvertisementService(
                 AdvertisementText = a.AdvertisementText,
                 ThumbnailImageId = a.ThumbnailImageId,
                 AttributeValues = a.AttributeValues
+                    .Where(v => v.Attribute.ShowOnListItem)
                     .OrderBy(v => v.Attribute.CategoryAttributes.First(ca => ca.CategoryId == v.Advertisement.CategoryId).AttributeOrder)
                     .Select(v => new AttributeValueItem
                     {
                         AttributeId = v.AttributeId,
                         AttributeName = v.Attribute.AttributeNameLocales.Localise(locale),
                         Value = v.Value,
+                        IconName = v.Attribute.IconName,
                         ValueName = v.Attribute.ValueType == Enums.ValueTypes.ValueListEntry && v.Attribute.AttributeValueList != null
                         ? v.Attribute.AttributeValueList.ListEntries.First(entry => entry.Id == Convert.ToInt16(v.Value)).LocalisedNames.Localise(locale)
                         : null

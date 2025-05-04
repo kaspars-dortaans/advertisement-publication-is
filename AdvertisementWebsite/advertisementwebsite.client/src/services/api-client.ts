@@ -3904,7 +3904,7 @@ export class AttributeFormInfo implements IAttributeFormInfo {
     order?: number;
     valueValidationRegex?: string | undefined;
     valueListId?: number | undefined;
-    iconUrl?: string | undefined;
+    iconName?: string | undefined;
     attributeValueType?: ValueTypes;
 
     constructor(data?: IAttributeFormInfo) {
@@ -3923,7 +3923,7 @@ export class AttributeFormInfo implements IAttributeFormInfo {
             this.order = _data["order"];
             this.valueValidationRegex = _data["valueValidationRegex"];
             this.valueListId = _data["valueListId"];
-            this.iconUrl = _data["iconUrl"];
+            this.iconName = _data["iconName"];
             this.attributeValueType = _data["attributeValueType"];
         }
     }
@@ -3942,7 +3942,7 @@ export class AttributeFormInfo implements IAttributeFormInfo {
         data["order"] = this.order;
         data["valueValidationRegex"] = this.valueValidationRegex;
         data["valueListId"] = this.valueListId;
-        data["iconUrl"] = this.iconUrl;
+        data["iconName"] = this.iconName;
         data["attributeValueType"] = this.attributeValueType;
         return data;
     }
@@ -3954,7 +3954,7 @@ export interface IAttributeFormInfo {
     order?: number;
     valueValidationRegex?: string | undefined;
     valueListId?: number | undefined;
-    iconUrl?: string | undefined;
+    iconName?: string | undefined;
     attributeValueType?: ValueTypes;
 }
 
@@ -4047,6 +4047,7 @@ export class AttributeValueItem implements IAttributeValueItem {
     attributeName?: string | undefined;
     value?: string | undefined;
     valueName?: string | undefined;
+    iconName?: string | undefined;
 
     constructor(data?: IAttributeValueItem) {
         if (data) {
@@ -4063,6 +4064,7 @@ export class AttributeValueItem implements IAttributeValueItem {
             this.attributeName = _data["attributeName"];
             this.value = _data["value"];
             this.valueName = _data["valueName"];
+            this.iconName = _data["iconName"];
         }
     }
 
@@ -4079,6 +4081,7 @@ export class AttributeValueItem implements IAttributeValueItem {
         data["attributeName"] = this.attributeName;
         data["value"] = this.value;
         data["valueName"] = this.valueName;
+        data["iconName"] = this.iconName;
         return data;
     }
 }
@@ -4088,6 +4091,7 @@ export interface IAttributeValueItem {
     attributeName?: string | undefined;
     value?: string | undefined;
     valueName?: string | undefined;
+    iconName?: string | undefined;
 }
 
 export class AttributeValueListEntryItem implements IAttributeValueListEntryItem {
@@ -4281,7 +4285,7 @@ export class CategoryAttributeInfo implements ICategoryAttributeInfo {
     searchable?: boolean;
     order?: number;
     valueListId?: number | undefined;
-    iconUrl?: string | undefined;
+    iconName?: string | undefined;
     attributeValueType?: ValueTypes;
     attributeFilterType?: FilterType;
 
@@ -4302,7 +4306,7 @@ export class CategoryAttributeInfo implements ICategoryAttributeInfo {
             this.searchable = _data["searchable"];
             this.order = _data["order"];
             this.valueListId = _data["valueListId"];
-            this.iconUrl = _data["iconUrl"];
+            this.iconName = _data["iconName"];
             this.attributeValueType = _data["attributeValueType"];
             this.attributeFilterType = _data["attributeFilterType"];
         }
@@ -4323,7 +4327,7 @@ export class CategoryAttributeInfo implements ICategoryAttributeInfo {
         data["searchable"] = this.searchable;
         data["order"] = this.order;
         data["valueListId"] = this.valueListId;
-        data["iconUrl"] = this.iconUrl;
+        data["iconName"] = this.iconName;
         data["attributeValueType"] = this.attributeValueType;
         data["attributeFilterType"] = this.attributeFilterType;
         return data;
@@ -4337,7 +4341,7 @@ export interface ICategoryAttributeInfo {
     searchable?: boolean;
     order?: number;
     valueListId?: number | undefined;
-    iconUrl?: string | undefined;
+    iconName?: string | undefined;
     attributeValueType?: ValueTypes;
     attributeFilterType?: FilterType;
 }

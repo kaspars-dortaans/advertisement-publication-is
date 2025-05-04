@@ -59,7 +59,7 @@ public class CategoryService(Context dbContext,
                         ValueListId = ca.Attribute.AttributeValueListId,
                         AttributeFilterType = ca.Attribute.FilterType,
                         AttributeValueType = ca.Attribute.ValueType,
-                        IconUrl = ca.Attribute.Icon != null ? ca.Attribute.Icon.Path : null
+                        IconName = ca.Attribute.IconName
                     }).ToList(),
                 AttributeValueLists = categoryAttributes
                     .Select(ca => ca.Attribute)
@@ -94,7 +94,7 @@ public class CategoryService(Context dbContext,
                     Name = ca.Attribute.AttributeNameLocales.Localise(locale),
                     ValueListId = ca.Attribute.AttributeValueListId,
                     AttributeValueType = ca.Attribute.ValueType,
-                    IconUrl = ca.Attribute.Icon != null ? ca.Attribute.Icon.Path : null,
+                    IconName = ca.Attribute.IconName,
                     ValueValidationRegex = ca.Attribute.ValueValidationRegex
                 })
                 .ToListAsync(),

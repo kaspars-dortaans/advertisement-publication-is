@@ -43,16 +43,14 @@
               <img :src="slotProps.item.url" class="object-contain max-w-full max-h-full" />
             </template>
           </Galleria>
+
           <div class="overflow-y-auto h-full">
             <p class="whitespace-pre-line">{{ advertisement.advertisementText }}</p>
-            <div class="flex flex-row flex-wrap gap-2">
-              <span
-                v-for="attribute in advertisement.attributes"
-                :key="attribute.attributeId"
-                :title="attribute.attributeName"
-                >{{ attribute.valueName ?? attribute.value }}</span
-              >
-            </div>
+            <AttributeValuesList
+              class="mt-3"
+              :advertisementId="advertisement.id"
+              :attributeValues="advertisement.attributes"
+            />
           </div>
         </div>
 
@@ -141,6 +139,7 @@ import { useRouter } from 'vue-router'
 import { AuthService } from '@/services/auth-service'
 import BlockWithSpinner from '@/components/common/BlockWithSpinner.vue'
 import ResponsiveLayout from '@/components/common/ResponsiveLayout.vue'
+import AttributeValuesList from '@/components/advertisements/AttributeValuesList.vue'
 
 //Props
 const props = defineProps<{ id: number }>()

@@ -1,5 +1,4 @@
-﻿using BusinessLogic.Entities.Files;
-using BusinessLogic.Entities.LocaleTexts;
+﻿using BusinessLogic.Entities.LocaleTexts;
 using BusinessLogic.Enums;
 
 namespace BusinessLogic.Entities;
@@ -13,9 +12,9 @@ public class Attribute
     public int? AttributeValueListId { get; set; }
     public bool Sortable { get; set; }
     public bool Searchable { get; set; }
-    public int? IconId { get; set; }
+    public string? IconName { get; set; }
+    public bool ShowOnListItem { get; set; }
 
-    public SystemImage? Icon { get; set; }
     public AttributeValueList? AttributeValueList { get; set; }
     public ICollection<Category> UsedInCategories { get; set; } = default!;
     public ICollection<CategoryAttribute> CategoryAttributes { get; set; } = default!;
