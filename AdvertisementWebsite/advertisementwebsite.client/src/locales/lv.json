@@ -84,7 +84,7 @@
     "date": "Datums",
     "amount": "Summa",
     "paymentItemCount": "Preču skaits",
-    "totalForTimePeriod": "Kopsummā samaksāts",
+    "totalForTimePeriod": "Kopsummā samaksāts: {0}",
     "timePeriod": "Laik periods"
   },
   "form": {
@@ -220,24 +220,8 @@
     "Piektdiena",
     "Sestdiena"
   ],
-  "dayNamesShort": [
-    "Sv",
-    "P",
-    "O",
-    "T",
-    "C",
-    "Pk",
-    "S"
-  ],
-  "dayNamesMin": [
-    "Sv",
-    "P",
-    "O",
-    "T",
-    "C",
-    "Pk",
-    "S"
-  ],
+  "dayNamesShort": ["Sv", "P", "O", "T", "C", "Pk", "S"],
+  "dayNamesMin": ["Sv", "P", "O", "T", "C", "Pk", "S"],
   "monthNames": [
     "Janvāris",
     "Februāris",
