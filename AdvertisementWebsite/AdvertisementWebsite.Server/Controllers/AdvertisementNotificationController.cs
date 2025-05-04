@@ -21,12 +21,12 @@ namespace AdvertisementWebsite.Server.Controllers;
 [Route("api/[controller]/[action]")]
 public class AdvertisementNotificationController(
     IAdvertisementNotificationSubscriptionService subscriptionService,
-    IAdvertisementService advertisementService,
+    ICategoryService categoryService,
     IMapper mapper
     ) : ControllerBase
 {
     private readonly IAdvertisementNotificationSubscriptionService _subscriptionService = subscriptionService;
-    private readonly IAdvertisementService _advertisementService = advertisementService;
+    private readonly ICategoryService _categoryService = categoryService;
     private readonly IMapper _mapper = mapper;
 
     [HasPermission(Permissions.ViewAdvertisementNotificationSubscriptions)]
@@ -71,7 +71,7 @@ public class AdvertisementNotificationController(
         return new SubscriptionFormInfo
         {
             Subscription = _mapper.Map<CreateOrEditNotificationSubscriptionRequest>(subscriptionFormInfo),
-            CategoryInfo = await _advertisementService.GetCategoryFormInfo(subscriptionFormInfo.CategoryId)
+            CategoryInfo = await _categoryService.GetCategoryFormInfo(subscriptionFormInfo.CategoryId)
         };
     }
 

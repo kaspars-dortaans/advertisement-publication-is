@@ -102,14 +102,6 @@ public class AdvertisementService(
         return ResolveAdvertisementDataTableRequest(request, advertisementQuery);
     }
 
-    public IQueryable<int> GetCategoryListFromAdvertisementIds(IEnumerable<int> ids)
-    {
-        return GetActiveAdvertisements()
-            .Where(a => ids.Contains(a.Id))
-            .GroupBy(a => a.CategoryId)
-            .Select(g => g.Key);
-    }
-
     /// <summary>
     /// Select <see cref="AdvertisementListItemDto"/> from <see cref="Advertisement"/>
     /// </summary>
@@ -171,9 +163,9 @@ public class AdvertisementService(
     /// Returns filtered advertisements which are allowed to be shown publicly
     /// </summary>
     /// <returns></returns>
-    private IQueryable<Advertisement> GetActiveAdvertisements()
+    public static IQueryable<Advertisement> GetActiveAdvertisements(IQueryable<Advertisement> query)
     {
-        return DbSet.Where(a => a.ValidToDate.HasValue && a.ValidToDate.Value > DateTime.UtcNow && a.IsActive);
+        return query.Where(a => a.ValidToDate.HasValue && a.ValidToDate.Value > DateTime.UtcNow && a.IsActive);
     }
 
     /// <summary>
@@ -183,7 +175,7 @@ public class AdvertisementService(
     /// <returns></returns>
     private IQueryable<Advertisement> GetBaseFilteredAdvertisements(AdvertisementQuery request)
     {
-        var advertisementQuery = GetActiveAdvertisements()
+        var advertisementQuery = GetActiveAdvertisements(DbSet)
                     .Filter(request.AdvertisementOwnerId, a => a.OwnerId == request.AdvertisementOwnerId)
                     .Filter(request.AdvertisementIds, a => request.AdvertisementIds!.Contains(a.Id));
 
@@ -302,12 +294,12 @@ public class AdvertisementService(
                 Title = a.Title,
                 //Ef could not translate OrderBy with Localise extension method
                 CategoryName = a.Category.LocalisedNames.First(lt => lt.Locale == locale || lt.Locale == LocalisationConstants.TextNotLocalised).Text,
-                Status = a.ValidToDate == null 
-                    ? Enums.PaymentSubjectStatus.Draft 
-                    : (a.ValidToDate < DateTime.UtcNow 
-                        ? Enums.PaymentSubjectStatus.Expired 
-                        : a.IsActive 
-                            ? Enums.PaymentSubjectStatus.Active 
+                Status = a.ValidToDate == null
+                    ? Enums.PaymentSubjectStatus.Draft
+                    : (a.ValidToDate < DateTime.UtcNow
+                        ? Enums.PaymentSubjectStatus.Expired
+                        : a.IsActive
+                            ? Enums.PaymentSubjectStatus.Active
                             : Enums.PaymentSubjectStatus.Inactive),
                 ValidToDate = a.ValidToDate,
                 CreatedAtDate = a.CreatedDate
@@ -326,7 +318,7 @@ public class AdvertisementService(
         var attachmentPaths = await _chatService
             .Where(c => advertisementIds.Any(id => id == c.AdvertisementId))
             .SelectMany(c => c.ChatMessages.SelectMany(m => m.Attachments.Select(a => a.Path))).ToListAsync();
-        
+
         await _chatService.DeleteWhereAsync(c => advertisementIds.Any(id => id == c.AdvertisementId));
         await Task.WhenAll([
             _storage.DeleteFiles(imagePaths.Concat(attachmentPaths)),
@@ -579,82 +571,5 @@ public class AdvertisementService(
             }
         }
         await DbContext.SaveChangesAsync();
-    }
-
-    public async Task<CategoryInfo> GetCategoryInfo(int categoryId)
-    {
-        var locale = _cookieSettingHelper.Settings.NormalizedLocale;
-        var categoryAttributes = _categoryService.GetCategoryAndParentAttributes(categoryId);
-        return await _categoryService
-            .Where(c => c.Id == categoryId)
-            .Select(c => new CategoryInfo()
-            {
-                CategoryName = c.LocalisedNames.Localise(locale),
-                AttributeInfo = categoryAttributes
-                    .OrderBy(ca => ca.AttributeOrder)
-                    .Select(ca => new CategoryAttributeInfo()
-                    {
-                        Id = ca.Attribute.Id,
-                        Name = ca.Attribute.AttributeNameLocales.Localise(locale),
-                        Searchable = ca.Attribute.Searchable,
-                        Sortable = ca.Attribute.Sortable,
-                        ValueListId = ca.Attribute.AttributeValueListId,
-                        AttributeFilterType = ca.Attribute.FilterType,
-                        AttributeValueType = ca.Attribute.ValueType,
-                        IconUrl = ca.Attribute.Icon != null ? ca.Attribute.Icon.Path : null
-                    }).ToList(),
-                AttributeValueLists = categoryAttributes
-                    .Select(ca => ca.Attribute)
-                    .Where(a => a.AttributeValueList != null)
-                    .Select(a => new AttributeValueListItem()
-                    {
-                        Id = a.AttributeValueList!.Id,
-                        Name = a.AttributeValueList!.LocalisedNames.Localise(locale),
-                        Entries = a.AttributeValueList!.ListEntries.Select(e => new AttributeValueListEntryItem()
-                        {
-                            Id = e.Id,
-                            Name = e.LocalisedNames.Localise(locale),
-                            OrderIndex = e.OrderIndex
-                        }),
-                    })
-                    .ToList()
-            })
-            .FirstOrDefaultAsync() ?? throw new ApiException([CustomErrorCodes.NotFound]);
-    }
-
-    public async Task<CategoryFormInfo> GetCategoryFormInfo(int categoryId)
-    {
-        var locale = _cookieSettingHelper.Settings.NormalizedLocale;
-        var categoryAttributes = _categoryService.GetCategoryAndParentAttributes(categoryId);
-        return new CategoryFormInfo()
-        {
-            AttributeInfo = await categoryAttributes
-                .OrderBy(ca => ca.AttributeOrder)
-                .Select(ca => new AttributeFormInfo()
-                {
-                    Id = ca.Attribute.Id,
-                    Name = ca.Attribute.AttributeNameLocales.Localise(locale),
-                    ValueListId = ca.Attribute.AttributeValueListId,
-                    AttributeValueType = ca.Attribute.ValueType,
-                    IconUrl = ca.Attribute.Icon != null ? ca.Attribute.Icon.Path : null,
-                    ValueValidationRegex = ca.Attribute.ValueValidationRegex
-                })
-                .ToListAsync(),
-            AttributeValueLists = await categoryAttributes
-                .Select(ca => ca.Attribute)
-                .Where(a => a.AttributeValueList != null)
-                .Select(a => new AttributeValueListItem()
-                {
-                    Id = a.AttributeValueList!.Id,
-                    Name = a.AttributeValueList!.LocalisedNames.Localise(locale),
-                    Entries = a.AttributeValueList!.ListEntries.Select(e => new AttributeValueListEntryItem()
-                    {
-                        Id = e.Id,
-                        Name = e.LocalisedNames.Localise(locale),
-                        OrderIndex = e.OrderIndex
-                    }),
-                })
-                .ToListAsync()
-        };
     }
 }

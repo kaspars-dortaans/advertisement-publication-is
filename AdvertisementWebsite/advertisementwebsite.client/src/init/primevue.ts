@@ -100,6 +100,7 @@ const customPassTrough = {
 
   dataTable: {
     root: 'flex flex-col flex-nowrap',
+    header: 'rounded-t-[inherit]',
     tableContainer: 'flex-auto',
     //Incorrect colspan fix
     rowGroupHeaderCell: (opts: DataTablePassThroughMethodOptions) => {

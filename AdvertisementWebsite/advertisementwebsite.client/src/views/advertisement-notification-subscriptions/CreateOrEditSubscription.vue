@@ -135,9 +135,9 @@ import {
 import { usePaymentState } from '@/composables/payment-store'
 import { createAdvertisementPostTimeSpanOptions } from '@/constants/advertisement-post-time-span'
 import {
-  AdvertisementClient,
   AdvertisementNotificationClient,
   AttributeFormInfo,
+  CategoryClient,
   CategoryItem,
   CreateOrEditNotificationSubscriptionRequest,
   Int32StringKeyValuePair,
@@ -178,7 +178,7 @@ onBeforeRouteLeave((_to, _from, next) =>
 const l = LocaleService.currentLocale
 const ls = LocaleService.get()
 const advertisementNotificationService = getClient(AdvertisementNotificationClient)
-const advertisementService = getClient(AdvertisementClient)
+const categoryService = getClient(CategoryClient)
 
 //Reactive data
 const isEdit = computed(() => typeof props.subscriptionId === 'number')
@@ -229,7 +229,7 @@ const {
   fieldHelper,
   categoryList,
   attributeInfo,
-  advertisementService
+  categoryService
 )
 
 //Hooks

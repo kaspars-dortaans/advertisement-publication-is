@@ -152,6 +152,7 @@ import { ImageConstants } from '@/constants/api/ImageConstants'
 import {
   AdvertisementClient,
   AttributeFormInfo,
+  CategoryClient,
   CategoryItem,
   CreateOrEditAdvertisementRequest,
   ImageDto,
@@ -196,6 +197,7 @@ const props = defineProps<{
 const l = LocaleService.currentLocale
 const ls = LocaleService.get()
 const advertisementService = getClient(AdvertisementClient)
+const categoryService = getClient(CategoryClient)
 
 //Reactive data
 const isEdit = computed(() => typeof props.id === 'number' && !isNaN(props.id))
@@ -262,7 +264,7 @@ const {
   fieldHelper,
   categoryList,
   attributeInfo,
-  advertisementService
+  categoryService
 )
 
 //Hooks

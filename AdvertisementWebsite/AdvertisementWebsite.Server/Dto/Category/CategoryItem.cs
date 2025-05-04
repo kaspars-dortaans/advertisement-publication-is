@@ -1,4 +1,4 @@
-﻿namespace AdvertisementWebsite.Server.Dto.Advertisement;
+﻿namespace AdvertisementWebsite.Server.Dto.Category;
 
 public class CategoryItem
 {

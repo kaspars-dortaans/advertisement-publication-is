@@ -18,6 +18,7 @@ import {
 import {
   AdvertisementClient,
   AdvertisementQuery,
+  CategoryClient,
   Int32StringKeyValuePair
 } from '@/services/api-client'
 import { LocaleService } from '@/services/locale-service'
@@ -28,6 +29,7 @@ import { onBeforeMount, ref, watch } from 'vue'
 
 //Services
 const advertisementService = getClient(AdvertisementClient)
+const categoryService = getClient(CategoryClient)
 const l = LocaleService.currentLocale
 
 //Reactive data
@@ -50,14 +52,14 @@ onBeforeMount(async () => {
     .sort((a, b) => (a.timeStamp > b.timeStamp ? -1 : 1)) //Sort descending
     .map((r) => r.id)
 
-  advertisementCategories.value = await advertisementService.getCategoryListFromAdvertisementIds(
+  advertisementCategories.value = await categoryService.getCategoryListFromAdvertisementIds(
     advertisementIds.value
   )
 })
 
 //watchers
 watch(LocaleService.currentLocale, async () => {
-  advertisementCategories.value = await advertisementService.getCategoryListFromAdvertisementIds(
+  advertisementCategories.value = await categoryService.getCategoryListFromAdvertisementIds(
     advertisementIds.value
   )
 })

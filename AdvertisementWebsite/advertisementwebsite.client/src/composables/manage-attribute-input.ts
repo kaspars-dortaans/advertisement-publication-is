@@ -1,5 +1,5 @@
 import {
-  AdvertisementClient,
+  CategoryClient,
   CategoryFormInfo,
   CategoryItem,
   ValueTypes,
@@ -51,7 +51,7 @@ export const useManageAttributeInput = <F extends formType>(
   fieldHelper: FieldHelper<F>,
   categoryList: Ref<CategoryItem[]>,
   attributeInfo: Ref<AttributeFormInfo[]>,
-  advertisementService: AdvertisementClient
+  categoryService: CategoryClient
 ) => {
   const { setFieldValue, validateField, values } = form
 
@@ -61,7 +61,7 @@ export const useManageAttributeInput = <F extends formType>(
 
   const loadCategoryList = async () => {
     loading.value += 1
-    categoryList.value = await advertisementService.getCategories()
+    categoryList.value = await categoryService.getCategories()
     loading.value -= 1
   }
 
@@ -69,7 +69,7 @@ export const useManageAttributeInput = <F extends formType>(
     const loadFlag = attributeInfo.value.length ? loadingAttributes : loading
     loadFlag.value = true
     setFieldValue('attributeValues' as Path<F>, [] as PathValue<F, Path<F>>)
-    const result = await advertisementService.getCategoryFormInfo(categoryId)
+    const result = await categoryService.getCategoryFormInfo(categoryId)
     setCategoryInfo(result)
     loadFlag.value = false
   }

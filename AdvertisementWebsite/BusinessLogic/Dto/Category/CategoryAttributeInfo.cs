@@ -1,6 +1,6 @@
 ﻿using BusinessLogic.Enums;
 
-namespace BusinessLogic.Dto.Advertisement;
+namespace BusinessLogic.Dto.Category;
 
 public class CategoryAttributeInfo
 {

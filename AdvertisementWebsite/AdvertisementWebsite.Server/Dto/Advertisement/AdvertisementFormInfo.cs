@@ -1,4 +1,4 @@
-﻿using BusinessLogic.Dto.Advertisement;
+﻿using BusinessLogic.Dto.Category;
 
 namespace AdvertisementWebsite.Server.Dto.Advertisement;
 

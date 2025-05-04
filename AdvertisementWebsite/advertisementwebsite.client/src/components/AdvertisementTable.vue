@@ -118,13 +118,13 @@ import DynamicFilter from '@/components/filters/DynamicFilter.vue'
 import { Direction } from '@/constants/api/Direction'
 import { DefaultPageSize, PageSizeOptions, PaginatorTemplate } from '@/constants/data-table'
 import {
-  AdvertisementClient,
   AdvertisementListItem,
   AdvertisementListItemDataTableQueryResponse,
   AdvertisementQuery,
   AttributeOrderQuery,
   AttributeSearchQuery,
   AttributeValueItem,
+  CategoryClient,
   CategoryInfo,
   Int32StringKeyValuePair
 } from '@/services/api-client'
@@ -153,7 +153,7 @@ const props = defineProps<{
 }>()
 
 // Services
-const advertisementService = getClient(AdvertisementClient)
+const categoryService = getClient(CategoryClient)
 const l = LocaleService.currentLocale
 
 // Table Constants
@@ -292,7 +292,7 @@ const loadCategoryInfo = async () => {
   if (!selectedCategoryId.value) {
     return
   }
-  categoryInfo.value = await advertisementService.getCategoryInfo(selectedCategoryId.value)
+  categoryInfo.value = await categoryService.getCategoryInfo(selectedCategoryId.value)
 }
 
 const loadAdvertisements = async () => {

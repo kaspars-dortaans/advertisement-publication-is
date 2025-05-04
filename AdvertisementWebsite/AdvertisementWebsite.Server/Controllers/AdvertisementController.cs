@@ -116,44 +116,6 @@ public class AdvertisementController(
         await _advertisementBookmarkService.DeleteWhereAsync(ab => ab.BookmarkOwnerId == userId && ids.Contains(ab.BookmarkedAdvertisementId));
     }
 
-    [AllowAnonymous]
-    [HttpGet]
-    public async Task<IEnumerable<CategoryItem>> GetCategories()
-    {
-        return await _categoryService
-            .GetAll()
-            .Select(c => new CategoryItem()
-            {
-                Id = c.Id,
-                ParentCategoryId = c.ParentCategoryId,
-                AdvertisementCount = c.AdvertisementCount,
-                CanContainAdvertisements = c.CanContainAdvertisements,
-                Name = c.LocalisedNames.Localise(_cookieSettingsHelper.Settings.NormalizedLocale),
-            })
-            .ToListAsync();
-    }
-
-    [AllowAnonymous]
-    [HttpGet]
-    public async Task<CategoryInfo> GetCategoryInfo(int categoryId)
-    {
-        return await _advertisementService.GetCategoryInfo(categoryId);
-    }
-
-    [AllowAnonymous]
-    [HttpPost]
-    public async Task<IEnumerable<KeyValuePair<int, string>>> GetCategoryListFromAdvertisementIds(IEnumerable<int> advertisementIds)
-    {
-        var advertisementCategoryIds = _advertisementService.GetCategoryListFromAdvertisementIds(advertisementIds);
-        var locale = _cookieSettingsHelper.Settings.NormalizedLocale;
-        var categoryList = await _categoryService
-            .Where(c => advertisementCategoryIds.Contains(c.Id))
-            .Select(c => new KeyValuePair<int, string>(c.Id, c.LocalisedNames.Localise(locale)))
-            .ToListAsync();
-
-        return categoryList;
-    }
-
     [HasPermission(Permissions.ViewAdvertisementBookmarks)]
     [HttpGet]
     public async Task<IEnumerable<KeyValuePair<int, string>>> GetBookmarkedAdvertisementCategoryList()
@@ -227,7 +189,7 @@ public class AdvertisementController(
         return new AdvertisementFormInfo
         {
             Advertisement = advertisementValues,
-            CategoryInfo = await GetCategoryFormInfo(dto.CategoryId)
+            CategoryInfo = await _categoryService.GetCategoryFormInfo(dto.CategoryId)
         };
     }
 
@@ -239,13 +201,6 @@ public class AdvertisementController(
     {
         var dto = _mapper.Map<CreateOrEditAdvertisementDto>(request);
         await _advertisementService.UpdateAdvertisement(dto, User.GetUserId()!.Value);
-    }
-
-    [AllowAnonymous]
-    [HttpGet]
-    public async Task<CategoryFormInfo> GetCategoryFormInfo(int categoryId)
-    {
-        return await _advertisementService.GetCategoryFormInfo(categoryId);
     }
 
     [ProducesResponseType<IEnumerable<KeyValuePair<int, string>>>(StatusCodes.Status200OK)]

@@ -12,7 +12,7 @@
 </template>
 
 <script setup lang="ts">
-import { AdvertisementClient, CategoryItem } from '@/services/api-client'
+import { CategoryClient, CategoryItem } from '@/services/api-client'
 import { LocaleService } from '@/services/locale-service'
 import { buildNodeHierarchy } from '@/utils/build-node-hierarchy'
 import { getClient } from '@/utils/client-builder'
@@ -24,7 +24,7 @@ const model = defineModel()
 const selectedCategoryNameModel = defineModel('selectedCategoryName')
 
 // Services
-const advertisementService = getClient(AdvertisementClient)
+const categoryService = getClient(CategoryClient)
 const l = LocaleService.currentLocale
 
 // Reactive data
@@ -54,7 +54,7 @@ const loadCategories = async () => {
       }
     } as TreeNode
   ]
-  const categories = await advertisementService.getCategories()
+  const categories = await categoryService.getCategories()
   categoryNodes.value = [
     ...categoryNodes.value,
     ...buildNodeHierarchy<CategoryItem, TreeNode>(

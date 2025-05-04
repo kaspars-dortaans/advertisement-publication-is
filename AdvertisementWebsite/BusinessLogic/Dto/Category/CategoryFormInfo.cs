@@ -1,4 +1,6 @@
-﻿namespace BusinessLogic.Dto.Advertisement;
+﻿using BusinessLogic.Dto.Advertisement;
+
+namespace BusinessLogic.Dto.Category;
 
 public class CategoryFormInfo
 {
