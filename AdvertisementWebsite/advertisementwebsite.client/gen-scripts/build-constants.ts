@@ -138,9 +138,19 @@ const extractConstants = async (
         tokens.length >= requiredFieldKeywords.length + 1 && //plus field name
         requiredFieldKeywords.every((keyword) => tokens.some((t) => t === keyword))
       ) {
+        let value = statement.slice(assignment[0].length + 3).trim() //plus regex match length
+
+        if (value.length) {
+          if (value.match(/(?<!["'].*)([^"']*\.+)/gm)) {
+            const valueTokens = value.split('.')
+            value = valueTokens[valueTokens.length - 1]
+            value = '"' + value[0].toLocaleLowerCase() + value.substring(1) + '"'
+          }
+        }
+
         collectionStack[collectionStack.length - 1].constants.push({
           name: tokens[tokens.length - 1], //statement is used to preserve value if it was also split by regex
-          value: statement.slice(assignment[0].length + 3), //plus regex match length
+          value,
           comment: false
         })
       }
