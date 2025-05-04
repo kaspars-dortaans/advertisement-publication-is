@@ -2,7 +2,6 @@
 
 public class DataTableQuery
 {
-    public int Draw { get; set; }
     public int? Start { get; set; }
     public int? Length { get; set; }
     public SearchQuery? Search { get; set; } = default!;
@@ -26,8 +25,9 @@ public class TableColumn
 {
     public string Data { get; set; } = default!;
     public string Name { get; set; } = default!;
-    public bool Searchable { get; set; }
-    public bool Orderable { get; set; }
+    public bool Searchable { get; set; } = false;
+    public bool Orderable { get; set; } = false;
+    public bool Aggregate { get; set; } = false;
     public SearchQuery? Search { get; set; }
 }
 

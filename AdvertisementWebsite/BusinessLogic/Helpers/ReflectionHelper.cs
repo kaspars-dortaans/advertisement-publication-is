@@ -1,11 +1,29 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
 using System.Reflection;
+using Z.EntityFramework.Plus;
 
 namespace BusinessLogic.Helpers;
 
 public static class ReflectionHelper
 {
+    /// <summary>
+    /// Invokes Generic method from passed type, method is searched by name, argument count and type parameter count. Tries to cast result to result generic type.
+    /// </summary>
+    /// <typeparam name="TResult"></typeparam>
+    /// <param name="objType"></param>
+    /// <param name="methodName"></param>
+    /// <param name="methodArgumentTypes"></param>
+    /// <param name="typeParameters"></param>
+    /// <param name="methodParameters"></param>
+    /// <param name="currentInstance"></param>
+    /// <returns>Invoked method result or null if could not cast to result type</returns>
+    public static TResult InvokeGenericMethod<TResult>(Type objType, string methodName, Type[] methodArgumentTypes, Type[] typeParameters, object[] methodParameters, object? currentInstance = null) where TResult : class
+    {
+        var result = InvokeGenericMethod(objType, methodName, methodArgumentTypes, typeParameters, methodParameters, currentInstance);
+        return (result as TResult)!;
+    }
+
     /// <summary>
     /// Invokes Generic method from passed type, method is searched by name, argument count and type parameter count
     /// </summary>
@@ -17,17 +35,109 @@ public static class ReflectionHelper
     /// <param name="methodParameters"></param>
     /// <param name="currentInstance"></param>
     /// <returns>Invoked method result</returns>
-    public static TResult InvokeGenericMethod<TResult>(Type objType, string methodName, Type[] methodArgumentTypes, Type[] typeParameters, object[] methodParameters, object? currentInstance = null) where TResult : class
+    public static object? InvokeGenericMethod(Type objType, string methodName, Type[] methodArgumentTypes, Type[] typeParameters, object[] methodParameters, object? currentInstance = null)
     {
-        var method = objType
-            .GetMethods()
-            .Where(m => m.Name == methodName && m.GetGenericArguments().Length == typeParameters.Length && m.GetParameters().Length == methodArgumentTypes.Length)
-            .First();
+        var methods = objType.GetMethods().Where(m => m.Name == methodName);
 
-        var generic = method!.MakeGenericMethod(typeParameters);
-        var result = generic.Invoke(currentInstance, methodParameters);
-        return (result as TResult)!;
+        MethodInfo methodInfo = null!;
+        foreach (var method in methods)
+        {
+            var genericArguments = method.GetGenericArguments();
+            if (genericArguments.Length != typeParameters.Length)
+            {
+                continue;
+            }
+
+            var parameters = method.GetParameters();
+            if (methodArgumentTypes.Length != parameters.Length)
+            {
+                continue;
+            }
+
+            var continueFlag = false;
+            for (var i = 0; i < parameters.Length; i++)
+            {
+                if (!parameters[i].ParameterType.Equals(methodArgumentTypes[i])
+                    && !(parameters[i].ParameterType.IsGenericType && MatchGenericTypes(parameters[i].ParameterType, methodArgumentTypes[i])))
+                {
+                    continueFlag = true;
+                    break;
+                }
+            }
+
+            if (!continueFlag)
+            {
+                methodInfo = method;
+                break;
+            }
+        }
+
+        var generic = methodInfo.MakeGenericMethod(typeParameters);
+        return generic.Invoke(currentInstance, methodParameters);
     }
+
+    /// <summary>
+    /// Compare two generic types.
+    /// </summary>
+    /// <param name="a"></param>
+    /// <param name="b"></param>
+    /// <returns></returns>
+    public static bool MatchGenericTypes(Type a, Type b)
+    {
+       
+        var aGenericDefinition = a.GetGenericTypeDefinition();
+       
+        //Try tp match base type definitions in case type is derived class
+        var baseType = b;
+        var typesMatched = false;
+        while (baseType != null)
+        {
+            Type bBaseTypeGenericDefinition;
+            if (baseType.IsGenericType)
+            {
+                bBaseTypeGenericDefinition = baseType.GetGenericTypeDefinition();
+                baseType = baseType.BaseType;
+            }
+            else
+            {
+                bBaseTypeGenericDefinition = baseType;
+                baseType = null;
+            }
+
+            if(aGenericDefinition == bBaseTypeGenericDefinition)
+            {
+                typesMatched = true;
+                break;
+            }
+        }
+
+        if (!typesMatched)
+        {
+            return false;
+        }
+
+        //Compare generic arguments
+        var aArguments = a.GetGenericArguments();
+        var bArguments = b.GetGenericArguments();
+        if (aArguments.Length != bArguments.Length)
+        {
+            return false;
+        }
+
+        for (var i = 0; i < aArguments.Length; i++)
+        {
+            var equalTypes = aArguments[i] == bArguments[i];
+            //TODO: find a way to check is argument is assignable to generic parameter
+            var assignableGenericParameter = aArguments[i].IsGenericParameter;//&& aArguments[i].IsAssignableFrom(bArguments[i]);
+            var equalGenericTypes = aArguments[i].IsGenericType && MatchGenericTypes(aArguments[i], bArguments[i]);
+            if (!equalTypes && !assignableGenericParameter && !equalGenericTypes)
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+
 
     /// <summary>
     /// Builds property expression ()
