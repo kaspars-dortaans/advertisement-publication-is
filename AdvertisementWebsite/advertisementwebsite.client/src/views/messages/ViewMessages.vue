@@ -64,6 +64,7 @@
               ref="chatMessages"
             />
             <form
+              v-if="allowedToSendMessages"
               class="flex-none flex flex-row flex-wrap items-end gap-2 mt-auto"
               @submit="sendMessage"
             >
@@ -111,6 +112,7 @@ import AttachmentUpload from '@/components/messages/AttachmentUpload.vue'
 import ChatMenu from '@/components/messages/ChatMenu.vue'
 import ChatMessages from '@/components/messages/ChatMessages.vue'
 import { AttachmentsConstants } from '@/constants/api/AttachmentsConstants'
+import { Permissions } from '@/constants/api/Permissions'
 import { NewMessageTimeout } from '@/constants/message'
 import {
   ChatListItemDto,
@@ -158,6 +160,7 @@ const loadingMessages = ref(false)
 const sendingMessage = ref(false)
 const { isSmallScreen } = useTrackScreenSize()
 const focusOnMenu = ref(false)
+const allowedToSendMessages = computed(() => AuthService.hasPermission(Permissions.SendMessage))
 
 const chatMenuItems = ref<IChatMenuItem[]>([])
 const otherUserAdvertisementChats = computed(() => {

@@ -42,54 +42,90 @@ const router = createRouter({
       component: () => import('../views/user/ViewUser.vue'),
       props: (route) => ({ id: toNumberOrUndefined(route.params.id) })
     },
+
+    //Advertisements
     {
-      path: '/recently-viewed-advertisements',
-      name: 'recentlyViewedAdvertisements',
-      component: () => import('../views/advertisements/RecentlyViewedAdvertisements.vue')
-    },
-    {
-      path: '/search',
-      name: 'searchAdvertisements',
-      component: () => import('../views/advertisements/SearchAdvertisement.vue'),
-      props: (route) => ({ search: route.query?.search })
-    },
-    {
-      path: '/advertisement/create',
-      name: 'createAdvertisement',
-      component: () => import('../views/advertisement/CreateOrEditAdvertisement.vue'),
-      meta: {
-        requiresPermission: Permissions[Permissions.CreateAdvertisement]
-      }
-    },
-    {
-      path: '/advertisement/:id/',
-      redirect: (route) => ({ name: 'viewAdvertisement', params: route.params }),
+      path: '/advertisements',
+      redirect: { name: 'viewAdvertisements' },
       children: [
         {
+          path: 'search',
+          name: 'searchAdvertisements',
+          component: () => import('../views/advertisements/SearchAdvertisement.vue'),
+          props: (route) => ({ search: route.query?.search })
+        },
+        {
           path: 'view',
-          name: 'viewAdvertisement',
-          component: () => import('../views/advertisement/ViewAdvertisement.vue'),
-          props: (route) => ({ id: toNumberOrUndefined(route.params.id) })
+          name: 'viewAdvertisements',
+          component: () => import('../views/advertisements/ViewAdvertisements.vue')
         },
         {
-          path: 'report',
-          name: 'reportAdvertisement',
-          component: () => import('../views/advertisement/ReportAdvertisement.vue'),
-          props: (route) => ({ id: toNumberOrUndefined(route.params.id) })
+          path: 'recently-viewed',
+          name: 'recentlyViewedAdvertisements',
+          component: () => import('../views/advertisements/RecentlyViewedAdvertisements.vue')
         },
         {
-          path: 'edit',
-          name: 'editAdvertisement',
-          component: () => import('../views/advertisement/CreateOrEditAdvertisement.vue'),
-          props: (route) => ({ id: toNumberOrUndefined(route.params.id) })
+          path: 'bookmarked',
+          name: 'bookmarkedAdvertisements',
+          component: () => import('../views/advertisements/BookmarkedAdvertisements.vue'),
+          meta: {
+            requiresPermission: Permissions.ViewAdvertisementBookmarks
+          }
+        },
+        {
+          path: '/manage',
+          name: 'manageAdvertisements',
+          component: () => import('../views/user/ManageUserAdvertisements.vue'),
+          meta: {
+            requiresPermission: Permissions.ViewOwnedAdvertisements
+          }
         }
       ]
     },
+
+    //Advertisement
     {
-      path: '/advertisements/view',
-      name: 'viewAdvertisements',
-      component: () => import('../views/advertisements/ViewAdvertisements.vue')
+      path: '/advertisement',
+      redirect: { name: 'viewAdvertisements' },
+      children: [
+        {
+          path: 'create',
+          name: 'createAdvertisement',
+          component: () => import('../views/advertisement/CreateOrEditAdvertisement.vue'),
+          meta: {
+            requiresPermission: Permissions.CreateOwnedAdvertisement
+          }
+        },
+        {
+          path: ':id/',
+          redirect: (route) => ({ name: 'viewAdvertisement', params: route.params }),
+          children: [
+            {
+              path: 'view',
+              name: 'viewAdvertisement',
+              component: () => import('../views/advertisement/ViewAdvertisement.vue'),
+              props: (route) => ({ id: toNumberOrUndefined(route.params.id) })
+            },
+            {
+              path: 'report',
+              name: 'reportAdvertisement',
+              component: () => import('../views/advertisement/ReportAdvertisement.vue'),
+              props: (route) => ({ id: toNumberOrUndefined(route.params.id) })
+            },
+            {
+              path: 'edit',
+              name: 'editAdvertisement',
+              component: () => import('../views/advertisement/CreateOrEditAdvertisement.vue'),
+              props: (route) => ({ id: toNumberOrUndefined(route.params.id) }),
+              meta: {
+                requiresPermission: Permissions.EditOwnedAdvertisement
+              }
+            }
+          ]
+        }
+      ]
     },
+
     {
       path: '/extend/:type/:ids',
       name: 'extend',
@@ -102,44 +138,37 @@ const router = createRouter({
 
     {
       path: '/profile-info',
-      name: 'profileInfo',
-      component: () => import('../views/user/ProfileInfo.vue'),
-      meta: {
-        requiresPermission: Permissions[Permissions.ViewProfileInfo]
-      }
+      redirect: { name: 'profileInfo' },
+      children: [
+        {
+          path: 'view',
+          name: 'profileInfo',
+          component: () => import('../views/user/ProfileInfo.vue'),
+          meta: {
+            requiresPermission: Permissions.ViewOwnProfileInfo
+          }
+        },
+        {
+          path: 'edit',
+          name: 'editProfileInfo',
+          component: () => import('../views/user/EditProfileInfo.vue'),
+          meta: {
+            requiresPermission: Permissions.EditOwnProfileInfo
+          }
+        }
+      ]
     },
-    {
-      path: '/edit-profile-info',
-      name: 'editProfileInfo',
-      component: () => import('../views/user/EditProfileInfo.vue'),
-      meta: {
-        requiresPermission: Permissions[Permissions.EditProfileInfo]
-      }
-    },
+
     {
       path: '/change-password',
       name: 'changePassword',
       component: () => import('../views/user/ChangePassword.vue'),
       meta: {
-        requiresPermission: Permissions[Permissions.ChangePassword]
+        requiresPermission: Permissions.ChangeOwnPassword
       }
     },
-    {
-      path: '/bookmarked-advertisements',
-      name: 'bookmarkedAdvertisements',
-      component: () => import('../views/advertisements/BookmarkedAdvertisements.vue'),
-      meta: {
-        requiresPermission: Permissions[Permissions.ViewAdvertisementBookmarks]
-      }
-    },
-    {
-      path: '/manage-advertisements',
-      name: 'manageAdvertisements',
-      component: () => import('../views/user/ManageUserAdvertisements.vue'),
-      meta: {
-        requiresPermission: Permissions[Permissions.ViewOwnedAdvertisements]
-      }
-    },
+
+    //Messages
     {
       path: '/view-messages/:chatId?',
       name: 'viewMessages',
@@ -152,9 +181,11 @@ const router = createRouter({
         }
       },
       meta: {
-        requiresPermission: Permissions[Permissions.ViewMessages]
+        requiresPermission: Permissions.ViewMessages
       }
     },
+
+    //User advertisement notification subscription
     {
       path: '/advertisement-notification-subscriptions',
       redirect: { name: 'manageAdvertisementNotificationSubscription' },
@@ -165,7 +196,7 @@ const router = createRouter({
           component: () =>
             import('../views/advertisement-notification-subscriptions/ManageSubscriptions.vue'),
           meta: {
-            requiresPermission: Permissions[Permissions.ViewAdvertisementNotificationSubscriptions]
+            requiresPermission: Permissions.ViewOwnedAdvertisementNotificationSubscriptions
           }
         },
         {
@@ -176,7 +207,7 @@ const router = createRouter({
               '../views/advertisement-notification-subscriptions/CreateOrEditSubscription.vue'
             ),
           meta: {
-            requiresPermission: Permissions[Permissions.CreateAdvertisementNotificationSubscription]
+            requiresPermission: Permissions.CreateOwnedAdvertisementNotificationSubscription
           }
         },
 
@@ -189,12 +220,13 @@ const router = createRouter({
             ),
           props: (route) => ({ subscriptionId: toNumberOrUndefined(route.params.subscriptionId) }),
           meta: {
-            requiresPermission: Permissions[Permissions.EditAdvertisementNotificationSubscriptions]
+            requiresPermission: Permissions.EditOwnedAdvertisementNotificationSubscriptions
           }
         }
       ]
     },
 
+    //User payments
     {
       path: '/payments',
       redirect: { name: 'viewPayments' },
@@ -204,7 +236,7 @@ const router = createRouter({
           name: 'makePayment',
           component: () => import('../views/payments/MakePayment.vue'),
           meta: {
-            requiresPermission: Permissions[Permissions.MakePayment]
+            requiresPermission: Permissions.MakePayment
           }
         },
         {
@@ -212,7 +244,7 @@ const router = createRouter({
           name: 'viewPayments',
           component: () => import('../views/payments/ViewPayments.vue'),
           meta: {
-            requiresPermission: Permissions[Permissions.ViewPayments]
+            requiresPermission: Permissions.ViewOwnPayments
           }
         },
         {
@@ -221,7 +253,7 @@ const router = createRouter({
           component: () => import('../views/payments/ViewPayment.vue'),
           props: (route) => ({ paymentId: toNumberOrUndefined(route.params.paymentId) }),
           meta: {
-            requiresPermission: Permissions[Permissions.ViewPayments]
+            requiresPermission: Permissions.ViewOwnPayments
           }
         }
       ]
@@ -239,17 +271,19 @@ const router = createRouter({
 //Add route permission guard
 router.beforeEach(async (to, _, next) => {
   const requiresPermission = to.meta?.requiresPermission
-  if (
-    typeof requiresPermission !== 'string' ||
-    (await AuthService.hasPermission(requiresPermission))
-  ) {
-    next()
-  } else {
-    if (AuthService.isAuthenticated.value) {
-      next({ name: 'notFound' })
+  if (requiresPermission) {
+    await AuthService.permissionsPromise.value
+    if (AuthService.hasPermission(requiresPermission as Permissions)) {
+      next()
     } else {
-      next({ name: 'login', query: { redirect: 'true' } })
+      if (AuthService.isAuthenticated.value) {
+        next({ name: 'notFound' })
+      } else {
+        next({ name: 'login', query: { redirect: 'true' } })
+      }
     }
+  } else {
+    next()
   }
 })
 

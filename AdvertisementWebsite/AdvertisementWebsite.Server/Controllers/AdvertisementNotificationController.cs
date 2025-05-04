@@ -29,7 +29,7 @@ public class AdvertisementNotificationController(
     private readonly ICategoryService _categoryService = categoryService;
     private readonly IMapper _mapper = mapper;
 
-    [HasPermission(Permissions.ViewAdvertisementNotificationSubscriptions)]
+    [HasPermission(Permissions.ViewOwnedAdvertisementNotificationSubscriptions)]
     [ProducesResponseType<DataTableQueryResponse<NotificationSubscriptionItem>>(StatusCodes.Status200OK)]
     [ProducesResponseType<RequestExceptionResponse>(StatusCodes.Status400BadRequest)]
     [HttpPost]
@@ -39,7 +39,7 @@ public class AdvertisementNotificationController(
         return await _subscriptionService.GetSubscriptions(query, userId);
     }
 
-    [HasPermission(Permissions.ViewAdvertisementNotificationSubscriptions)]
+    [HasPermission(Permissions.ViewOwnedAdvertisementNotificationSubscriptions)]
     [ProducesResponseType<IEnumerable<KeyValuePair<int, string>>>(StatusCodes.Status200OK)]
     [ProducesResponseType<RequestExceptionResponse>(StatusCodes.Status400BadRequest)]
     [HttpPost]
@@ -49,7 +49,7 @@ public class AdvertisementNotificationController(
         return await _subscriptionService.GetLookupByIds(ids, userId).ToListAsync();
     }
 
-    [HasPermission(Permissions.CreateAdvertisementNotificationSubscription)]
+    [HasPermission(Permissions.CreateOwnedAdvertisementNotificationSubscription)]
     [ProducesResponseType<int>(StatusCodes.Status200OK)]
     [ProducesResponseType<RequestExceptionResponse>(StatusCodes.Status400BadRequest)]
     [HttpPost]
@@ -60,7 +60,7 @@ public class AdvertisementNotificationController(
         return await _subscriptionService.CreateSubscription(dto, userId);
     }
 
-    [HasPermission(Permissions.EditAdvertisementNotificationSubscriptions)]
+    [HasPermission(Permissions.EditOwnedAdvertisementNotificationSubscriptions)]
     [ProducesResponseType<SubscriptionFormInfo>(StatusCodes.Status200OK)]
     [ProducesResponseType<RequestExceptionResponse>(StatusCodes.Status400BadRequest)]
     [HttpGet]
@@ -75,7 +75,7 @@ public class AdvertisementNotificationController(
         };
     }
 
-    [HasPermission(Permissions.EditAdvertisementNotificationSubscriptions)]
+    [HasPermission(Permissions.EditOwnedAdvertisementNotificationSubscriptions)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType<RequestExceptionResponse>(StatusCodes.Status400BadRequest)]
     [HttpPost]
@@ -94,7 +94,7 @@ public class AdvertisementNotificationController(
         await _subscriptionService.EditSubscription(dto, userId);
     }
 
-    [HasPermission(Permissions.EditAdvertisementNotificationSubscriptions)]
+    [HasPermission(Permissions.EditOwnedAdvertisementNotificationSubscriptions)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType<RequestExceptionResponse>(StatusCodes.Status400BadRequest)]
     [HttpPost]
@@ -106,7 +106,7 @@ public class AdvertisementNotificationController(
             .UpdateFromQueryAsync(a => new AdvertisementNotificationSubscription() { IsActive = request.IsActive });
     }
 
-    [HasPermission(Permissions.DeleteAdvertisementNotificationSubscriptions)]
+    [HasPermission(Permissions.DeleteOwnedAdvertisementNotificationSubscriptions)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType<RequestExceptionResponse>(StatusCodes.Status400BadRequest)]
     [HttpPost]

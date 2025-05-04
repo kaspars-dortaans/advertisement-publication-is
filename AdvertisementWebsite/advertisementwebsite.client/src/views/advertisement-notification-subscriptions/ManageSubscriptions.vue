@@ -22,6 +22,7 @@
           @click="setActiveState(true)"
         />
         <Button
+          v-if="isAllowedToDelete"
           :label="l.actions.delete"
           :disabled="!selectedRows.length"
           severity="danger"
@@ -34,6 +35,7 @@
           @click="extend"
         />
         <Button
+          v-if="isAllowedToCreate"
           :label="l.actions.create"
           severity="primary"
           as="RouterLink"
@@ -100,6 +102,7 @@
             @click="subscribe(slotProps.data)"
           />
           <Button
+            v-if="isAllowedToEdit"
             :label="l.actions.edit"
             as="RouterLink"
             :to="{
@@ -115,6 +118,7 @@
 
 <script lang="ts" setup>
 import LazyLoadedTable from '@/components/common/LazyLoadedTable.vue'
+import { Permissions } from '@/constants/api/Permissions'
 import { statusSeverity } from '@/constants/status-severity'
 import {
   AdvertisementNotificationClient,
@@ -125,6 +129,7 @@ import {
   SetActiveStatusRequest,
   TableColumn
 } from '@/services/api-client'
+import { AuthService } from '@/services/auth-service'
 import { LocaleService } from '@/services/locale-service'
 import { getClient } from '@/utils/client-builder'
 import { confirmDelete } from '@/utils/confirm-dialog'
@@ -197,6 +202,15 @@ const dateFormat = computed(() =>
     dateStyle: 'short',
     timeStyle: 'short'
   })
+)
+const isAllowedToCreate = computed(() =>
+  AuthService.hasPermission(Permissions.CreateOwnedAdvertisementNotificationSubscription)
+)
+const isAllowedToEdit = computed(() =>
+  AuthService.hasPermission(Permissions.EditOwnedAdvertisementNotificationSubscriptions)
+)
+const isAllowedToDelete = computed(() =>
+  AuthService.hasPermission(Permissions.DeleteOwnedAdvertisementNotificationSubscriptions)
 )
 
 //Methods

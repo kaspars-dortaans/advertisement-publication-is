@@ -52,27 +52,124 @@ public class DbSeeder(Context context, UserManager<User> userManager, RoleManage
             }
         }
 
-        var allRoles = _roleManager.Roles.ToList();
+        var adminRole = _context.Roles.First(r => r.Name == Enum.GetName(Roles.Admin));
+        var defaultAdminPermissionList = new List<Permissions>() {
+            //Manage own profile
+            Permissions.ViewOwnProfileInfo,
+            Permissions.EditOwnProfileInfo,
+            Permissions.ChangeOwnPassword,
 
-        //Add all permissions to admin role
-        //TODO: Assign appropriate permissions to roles
-        var adminRole = _context.Roles.First(r => r.Name == nameof(Roles.Admin));
-        var adminRolePermissions = _context.Permissions.Select(p => new RolePermission()
-        {
-            PermissionId = p.Id,
-            RoleId = adminRole.Id
-        }).ToList();
+            //Manage own advertisement bookmarks
+            Permissions.ViewAdvertisementBookmarks,
+            Permissions.BookmarkAdvertisement,
+            Permissions.EditAdvertisementBookmark,
+
+            //Messages
+            Permissions.ViewMessages,
+            Permissions.SendMessage,
+
+            //Payment
+            Permissions.ViewSystemPayments,
+
+            //Manage categories
+            Permissions.CreateCategory,
+            Permissions.EditCategory,
+            Permissions.DeleteCategory,
+
+            //Manage attributes
+            Permissions.ViewAllAttributes,
+            Permissions.CreateAttribute,
+            Permissions.EditAttribute,
+            Permissions.DeleteAttribute,
+
+            //Manage users
+            Permissions.ViewAllUsers,
+            Permissions.CreateUser,
+            Permissions.EditAnyUser,
+            Permissions.DeleteAnyUser,
+
+            //Manage roles
+            Permissions.ViewAllRoles,
+            Permissions.AddRole,
+            Permissions.EditRole,
+            Permissions.DeleteRole,
+
+            //Manage permissions
+            Permissions.ViewAllPermissions,
+            Permissions.AddPermission,
+            Permissions.EditPermission,
+            Permissions.DeletePermission,
+
+            //Manage advertisements
+            Permissions.CreateAdvertisement,
+            Permissions.ViewAllAdvertisements,
+            Permissions.EditAnyAdvertisement,
+            Permissions.DeleteAnyAdvertisement,
+
+            //Manage advertisement notification subscriptions
+            Permissions.CreateAdvertisementNotificationSubscription,
+            Permissions.ViewAllAdvertisementNotificationSubscriptions,
+            Permissions.EditAnyAdvertisementNotificationSubscription,
+            Permissions.DeleteAnyAdvertisementNotificationSubscription,
+
+            //Rule violation reports
+            Permissions.ViewRuleViolationReports,
+            Permissions.ResolveRuleViolationReport,
+        }.Select(p => Enum.GetName(p)).ToList();
+
+        var adminRolePermissions = _context.Permissions
+            .Where(p => defaultAdminPermissionList.Any(permissionName => permissionName == p.Name))
+            .Select(p => new RolePermission()
+            {
+                PermissionId = p.Id,
+                RoleId = adminRole.Id
+            }).ToList();
 
         AddIfNotExistsMultiple(
             adminRolePermissions,
             pConst => p => pConst.RoleId == p.RoleId && pConst.PermissionId == p.PermissionId);
 
-        var userRole = _context.Roles.First(r => r.Name == nameof(Roles.User));
-        var userRolePermissions = _context.Permissions.Select(p => new RolePermission()
+        var userRole = _context.Roles.First(r => r.Name == Enum.GetName(Roles.User));
+        var defaultUserRolePermissionList = new List<Permissions>()
         {
-            PermissionId = p.Id,
-            RoleId = userRole.Id
-        }).ToList();
+            //Manage own profile
+            Permissions.ViewOwnProfileInfo,
+            Permissions.EditOwnProfileInfo,
+            Permissions.ChangeOwnPassword,
+
+            //Manage own advertisement bookmarks
+            Permissions.ViewAdvertisementBookmarks,
+            Permissions.BookmarkAdvertisement,
+            Permissions.EditAdvertisementBookmark,
+
+            //Manage own advertisements
+            Permissions.CreateOwnedAdvertisement,
+            Permissions.ViewOwnedAdvertisements,
+            Permissions.EditOwnedAdvertisement,
+            Permissions.DeleteOwnedAdvertisement,
+
+            //Messages
+            Permissions.ViewMessages,
+            Permissions.SendMessage,
+
+            //Manage own advertisement notification subscriptions
+            Permissions.ViewOwnedAdvertisementNotificationSubscriptions,
+            Permissions.CreateOwnedAdvertisementNotificationSubscription,
+            Permissions.EditOwnedAdvertisementNotificationSubscriptions,
+            Permissions.DeleteOwnedAdvertisementNotificationSubscriptions,
+
+            //Payment
+            Permissions.ViewOwnPayments,
+            Permissions.MakePayment
+        }.Select(p => Enum.GetName(p)).ToList();
+
+        var userRolePermissions = _context.Permissions
+            .Where(p => defaultUserRolePermissionList.Any(permissionName => permissionName == p.Name))
+            .Select(p => new RolePermission()
+            {
+                PermissionId = p.Id,
+                RoleId = userRole.Id
+            }).ToList();
 
         AddIfNotExistsMultiple(
             userRolePermissions,
@@ -94,10 +191,29 @@ public class DbSeeder(Context context, UserManager<User> userManager, RoleManage
 
         }
 
-        //Seed roles for dev testing user
+        //Seed roles for dev admin user
         var adminUser = (await _userManager.FindByEmailAsync(adminEmail))!;
-        var allRoleNames = _roleManager.Roles.Select(r => r.Name!).ToList();
-        await _userManager.AddToRolesAsync(adminUser, allRoleNames);
+        await _userManager.AddToRolesAsync(adminUser, [Enum.GetName(Roles.Admin)!]);
+
+        //Seed regular user
+        var userEmail = "user@test.org";
+        if ((await _userManager.FindByEmailAsync(userEmail)) is null)
+        {
+            var res = await _userManager.CreateAsync(new User()
+            {
+                FirstName = "Test",
+                LastName = "Test",
+                UserName = "Test",
+                Email = userEmail,
+                IsEmailPublic = true,
+                IsPhoneNumberPublic = true,
+            }, "!23Qwe");
+
+        }
+
+        //Seed roles for dev regular user
+        var user = (await _userManager.FindByEmailAsync(userEmail))!;
+        await _userManager.AddToRolesAsync(user, [Enum.GetName(Roles.User)!]);
 
         //Add advertisement categories
         var categories = new List<Category>()

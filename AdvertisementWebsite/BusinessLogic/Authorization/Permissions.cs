@@ -2,18 +2,18 @@
 
 public enum Permissions
 {
-    //User profile
-    ViewProfileInfo = 0,
-    EditProfileInfo,
-    ChangePassword,
+    //Manage own profile
+    ViewOwnProfileInfo = 0,
+    EditOwnProfileInfo,
+    ChangeOwnPassword,
 
-    //Advertisement bookmarks
+    //Manage own advertisement bookmarks
     ViewAdvertisementBookmarks,
     BookmarkAdvertisement,
     EditAdvertisementBookmark,
     
-    //Advertisement
-    CreateAdvertisement,
+    //Manage own advertisements
+    CreateOwnedAdvertisement,
     ViewOwnedAdvertisements,
     EditOwnedAdvertisement,
     DeleteOwnedAdvertisement,
@@ -22,16 +22,59 @@ public enum Permissions
     ViewMessages,
     SendMessage,
 
-    //Advertisement notification subscriptions
-    ViewAdvertisementNotificationSubscriptions,
-    CreateAdvertisementNotificationSubscription,
-    EditAdvertisementNotificationSubscriptions,
-    DeleteAdvertisementNotificationSubscriptions,
+    //Manage own advertisement notification subscriptions
+    ViewOwnedAdvertisementNotificationSubscriptions,
+    CreateOwnedAdvertisementNotificationSubscription,
+    EditOwnedAdvertisementNotificationSubscriptions,
+    DeleteOwnedAdvertisementNotificationSubscriptions,
 
     //Payment
-    ViewPayments,
+    ViewOwnPayments,
     MakePayment,
+    ViewSystemPayments,
 
-    //Manage all users
-    ViewUsers
+    //Manage categories
+    CreateCategory,
+    EditCategory,
+    DeleteCategory,
+
+    //Manage attributes
+    ViewAllAttributes,
+    CreateAttribute,
+    EditAttribute,
+    DeleteAttribute,
+
+    //Manage users
+    ViewAllUsers,
+    CreateUser,
+    EditAnyUser,
+    DeleteAnyUser,
+    
+    //Manage roles
+    ViewAllRoles,
+    AddRole,
+    EditRole,
+    DeleteRole,
+
+    //Manage permissions
+    ViewAllPermissions,
+    AddPermission,
+    EditPermission,
+    DeletePermission,
+
+    //Manage advertisements
+    CreateAdvertisement,
+    ViewAllAdvertisements,
+    EditAnyAdvertisement,
+    DeleteAnyAdvertisement,
+
+    //Manage advertisement notification subscriptions
+    CreateAdvertisementNotificationSubscription,
+    ViewAllAdvertisementNotificationSubscriptions,
+    EditAnyAdvertisementNotificationSubscription,
+    DeleteAnyAdvertisementNotificationSubscription,
+
+    //Rule violation reports
+    ViewRuleViolationReports,
+    ResolveRuleViolationReport,
 }

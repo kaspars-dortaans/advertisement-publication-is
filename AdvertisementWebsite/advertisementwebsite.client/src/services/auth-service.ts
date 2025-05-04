@@ -4,6 +4,7 @@ import { getClient } from '@/utils/client-builder'
 import { ref } from 'vue'
 import { RefreshRequest, UserClient, UserInfo, type LoginDto } from './api-client'
 import type { ITokenInfo } from '@/types/auth/token-info'
+import { Permissions } from '@/constants/api/Permissions'
 
 export class AuthService {
   /** Singleton instance */
@@ -120,7 +121,7 @@ export class AuthService {
       AuthService.permissions.value = await AuthService.permissionsPromise.value
       AuthService.profileInfo.value = await AuthService.profileInfoPromise.value
       AuthService.isAuthenticated.value = true
-    } catch (e) {
+    } catch {
       this.logout()
     }
   }
@@ -166,7 +167,7 @@ export class AuthService {
       }
       this._setRefreshTimeout(response.expiresIn!)
       this._updateToken(tokenInfo)
-    } catch (e) {
+    } catch {
       this.logout()
     }
   }
@@ -182,14 +183,12 @@ export class AuthService {
   }
 
   /** Check if current user has permission */
-  static async hasPermission(requiresPermission: string) {
-    const permissions = await AuthService.permissionsPromise.value
-    if (!requiresPermission) {
-      return true
-    } else if (!AuthService.isAuthenticated.value) {
+  static hasPermission(requiresPermission: Permissions) {
+    const permissions = AuthService.permissions.value
+    if (!AuthService.isAuthenticated.value) {
       return false
     } else {
-      return permissions.some((p) => p === requiresPermission)
+      return permissions.some((p) => p === Permissions[requiresPermission])
     }
   }
 }

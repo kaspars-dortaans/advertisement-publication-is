@@ -144,7 +144,7 @@ public class UserController(
         return Ok(res);
     }
 
-    [HasPermission(Permissions.ViewProfileInfo)]
+    [HasPermission(Permissions.ViewOwnProfileInfo)]
     [HttpGet]
     public async Task<UserInfo> GetUserInfo()
     {
@@ -156,7 +156,7 @@ public class UserController(
         return _mapper.Map<UserInfo>(user, opt => opt.Items[nameof(Url)] = Url);
     }
 
-    [HasPermission(Permissions.EditProfileInfo)]
+    [HasPermission(Permissions.EditOwnProfileInfo)]
     [ProducesResponseType<OkResult>(StatusCodes.Status200OK)]
     [ProducesResponseType<RequestExceptionResponse>(StatusCodes.Status400BadRequest)]
     [HttpPost]
@@ -184,7 +184,7 @@ public class UserController(
         return permissionNames;
     }
 
-    [HasPermission(Permissions.ChangePassword)]
+    [HasPermission(Permissions.ChangeOwnPassword)]
     [ProducesResponseType<OkResult>(StatusCodes.Status200OK)]
     [ProducesResponseType<RequestExceptionResponse>(StatusCodes.Status400BadRequest)]
     [HttpPost]
@@ -212,7 +212,7 @@ public class UserController(
         }
     }
 
-    [HasPermission(Permissions.ViewUsers)]
+    [HasPermission(Permissions.ViewAllUsers)]
     [HttpPost]
     public async Task<DataTableQueryResponse<UserListItem>> GetUserList(DataTableQuery query)
     {

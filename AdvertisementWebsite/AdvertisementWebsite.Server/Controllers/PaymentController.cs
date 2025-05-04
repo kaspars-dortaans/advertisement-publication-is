@@ -23,7 +23,7 @@ public class PaymentController(
     private readonly IPaymentService _paymentService = paymentService;
     private readonly IMapper _mapper = mapper;
 
-    [HasPermission(Permissions.ViewPayments)]
+    [HasPermission(Permissions.ViewOwnPayments)]
     [ProducesResponseType<DataTableQueryResponse<PaymentListItem>>(StatusCodes.Status200OK)]
     [ProducesResponseType<RequestExceptionResponse>(StatusCodes.Status400BadRequest)]
     [HttpPost]
@@ -32,7 +32,7 @@ public class PaymentController(
         return await _paymentService.GetUserPayments(query, User.GetUserId()!.Value);
     }
 
-    [HasPermission(Permissions.ViewPayments)]
+    [HasPermission(Permissions.ViewOwnPayments)]
     [ProducesResponseType<PriceInfo>(StatusCodes.Status200OK)]
     [ProducesResponseType<RequestExceptionResponse>(StatusCodes.Status400BadRequest)]
     [HttpPost]

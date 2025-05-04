@@ -144,7 +144,7 @@ const allRouteItems: INavbarItem[] = [
       {
         route: 'bookmarkedAdvertisements',
         label: 'navigation.savedAdvertisements',
-        showWithoutPermission: true
+        showForUnauthenticated: true
       },
       {
         route: 'manageAdvertisementNotificationSubscription',
@@ -153,7 +153,7 @@ const allRouteItems: INavbarItem[] = [
       {
         route: 'createAdvertisement',
         label: 'navigation.createAdvertisement',
-        showWithoutPermission: true
+        showForUnauthenticated: true
       },
       {
         route: 'manageAdvertisements',
@@ -243,11 +243,10 @@ const filterRoutes = (
       const route = routes.find((r) => r.name === i.route)
       const requiresPermission = route?.meta.requiresPermission
       const hasPermission =
-        typeof requiresPermission === 'string'
-          ? userPermissions.some((p) => p === requiresPermission)
-          : true
+        typeof requiresPermission !== 'number' ||
+        AuthService.hasPermission(requiresPermission as number)
 
-      if (hasPermission || i.showWithoutPermission) {
+      if (hasPermission || (i.showForUnauthenticated && !AuthService.isAuthenticated.value)) {
         return {
           label: i.label,
           route: i.route,

@@ -167,7 +167,7 @@ public class AdvertisementController(
         await _advertisementService.RemoveAdvertisements(advertisementIds, User.GetUserId()!.Value);
     }
 
-    [HasPermission(Permissions.CreateAdvertisement)]
+    [HasPermission(Permissions.CreateOwnedAdvertisement)]
     [ProducesResponseType<int>(StatusCodes.Status200OK)]
     [ProducesResponseType<RequestExceptionResponse>(StatusCodes.Status400BadRequest)]
     [HttpPost]

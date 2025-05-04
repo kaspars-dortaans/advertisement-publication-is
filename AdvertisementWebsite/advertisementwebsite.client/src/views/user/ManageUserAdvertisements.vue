@@ -22,6 +22,7 @@
           @click="setAdvertisementActiveState(true)"
         />
         <Button
+          v-if="isAllowedToDelete"
           :label="l.actions.delete"
           :disabled="!selectedAdvertisements.length"
           severity="danger"
@@ -34,6 +35,7 @@
           @click="extendAdvertisements"
         />
         <Button
+          v-if="isAllowedToCreate"
           :label="l.actions.create"
           severity="primary"
           as="RouterLink"
@@ -79,6 +81,7 @@
             @click="publishAdvertisement(slotProps.data)"
           />
           <Button
+            v-if="isAllowedToEdit"
             :label="l.actions.edit"
             as="RouterLink"
             :to="{ name: 'editAdvertisement', params: { id: '' + slotProps.data.id } }"
@@ -97,6 +100,7 @@
 
 <script setup lang="ts">
 import LazyLoadedTable from '@/components/common/LazyLoadedTable.vue'
+import { Permissions } from '@/constants/api/Permissions'
 import { statusSeverity } from '@/constants/status-severity'
 import {
   AdvertisementClient,
@@ -107,6 +111,7 @@ import {
   SetActiveStatusRequest,
   TableColumn
 } from '@/services/api-client'
+import { AuthService } from '@/services/auth-service'
 import { LocaleService } from '@/services/locale-service'
 import { getClient } from '@/utils/client-builder'
 import { confirmDelete } from '@/utils/confirm-dialog'
@@ -140,6 +145,15 @@ const dateFormat = computed(() =>
     dateStyle: 'short',
     timeStyle: 'short'
   })
+)
+const isAllowedToCreate = computed(() =>
+  AuthService.hasPermission(Permissions.CreateOwnedAdvertisement)
+)
+const isAllowedToEdit = computed(() =>
+  AuthService.hasPermission(Permissions.EditOwnedAdvertisement)
+)
+const isAllowedToDelete = computed(() =>
+  AuthService.hasPermission(Permissions.DeleteOwnedAdvertisement)
 )
 
 const columns: TableColumn[] = [
