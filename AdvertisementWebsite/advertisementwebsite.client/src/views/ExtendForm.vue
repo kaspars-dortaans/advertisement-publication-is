@@ -51,7 +51,7 @@
 </template>
 
 <script lang="ts" setup>
-import BackButton from '@/components/BackButton.vue'
+import BackButton from '@/components/common/BackButton.vue'
 import BlockWithSpinner from '@/components/common/BlockWithSpinner.vue'
 import ResponsiveLayout from '@/components/common/ResponsiveLayout.vue'
 import FieldError from '@/components/form/FieldError.vue'

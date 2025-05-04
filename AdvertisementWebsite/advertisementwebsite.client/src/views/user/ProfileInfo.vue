@@ -63,7 +63,7 @@
 
 <script setup lang="ts">
 import defaultProfileImageUrl from '@/assets/images/default-profile-image.svg'
-import BackButton from '@/components/BackButton.vue'
+import BackButton from '@/components/common/BackButton.vue'
 import BlockWithSpinner from '@/components/common/BlockWithSpinner.vue'
 import ResponsiveLayout from '@/components/common/ResponsiveLayout.vue'
 import { AuthService } from '@/services/auth-service'

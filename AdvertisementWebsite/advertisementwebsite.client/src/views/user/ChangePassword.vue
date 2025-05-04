@@ -67,7 +67,7 @@ import { toTypedSchema } from '@vee-validate/yup'
 import { object, string } from 'yup'
 import { FieldHelper } from '@/utils/field-helper'
 import { getClient } from '@/utils/client-builder'
-import BackButton from '@/components/BackButton.vue'
+import BackButton from '@/components/common/BackButton.vue'
 import FieldError from '@/components/form/FieldError.vue'
 import { useRouter } from 'vue-router'
 
