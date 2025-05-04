@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import fs from 'fs'
 
 import { DefaultLocaleName } from '../src/constants/default-locale'
@@ -9,6 +10,7 @@ type PropertyDescriptor = {
   parentName?: string
   value?: string
   name: string
+  isArray: boolean
   entries: [string, any][]
 }
 
@@ -40,48 +42,59 @@ const buildEmptyLocale = (locale: object) => {
  */
 const stringifyJsObjectEmpty = (obj: object) => {
   const objectProperties: PropertyDescriptor[] = [
-    { depth: 0, parentName: '', name: '', entries: Object.entries(obj).reverse() }
+    { depth: 0, parentName: '', name: '', entries: Object.entries(obj).reverse(), isArray: false }
   ]
   const resultStrings: string[] = []
   const singleIndentation = '  '
 
-  let lastDepth = 0
-  let lastParentName: string | undefined = 'NoParentName'
   let property: PropertyDescriptor | undefined
+  let lastProperty: PropertyDescriptor = {
+    depth: 0,
+    name: 'NoName',
+    entries: [],
+    isArray: false,
+    parentName: 'NoParentName'
+  }
   while ((property = objectProperties.pop())) {
     const indentation = singleIndentation.repeat(property.depth)
-    if (property.depth < lastDepth || lastParentName === property.parentName) {
-      printClosingBrackets(lastDepth, property.depth, true, resultStrings)
+    const openBracket = property.isArray ? '[' : '{'
+    const closingBracket = lastProperty.isArray ? ']' : '}'
+    if (property.depth < lastProperty.depth || lastProperty.parentName === property.parentName) {
+      printClosingBrackets(lastProperty.depth, property.depth, true, resultStrings, closingBracket)
     }
 
-    resultStrings.push(indentation + (property.name ? property.name + ': {\n' : '{\n'))
-
+    resultStrings.push(
+      indentation + (property.name ? property.name + ': ' : '') + `${openBracket}\n`
+    )
     if (property.entries) {
       for (let i = 0; i < property.entries.length; i++) {
-        if (typeof property.entries[i][1] === 'object' && property.entries[i][1] != null) {
+        if (
+          typeof property.entries[i][1] === 'object' &&
+          property.entries[i][1] != null &&
+          !property.isArray
+        ) {
           objectProperties.push({
             depth: property.depth + 1,
             parentName: property.name,
             name: property.entries[i][0],
-            entries: Object.entries(property.entries[i][1])
+            entries: Object.entries(property.entries[i][1]),
+            isArray: Array.isArray(property.entries[i][1])
           })
         } else {
           resultStrings.push(
             indentation +
               singleIndentation +
-              property.entries[i][0] +
-              `: ''${(lastDepth === 0 && objectProperties.length) || i < property.entries.length - 1 ? ',' : ''}\n`
+              `${property.isArray ? '' : property.entries[i][0] + ':'} ''${(lastProperty.depth === 0 && objectProperties.length) || i < property.entries.length - 1 ? ',' : ''}\n`
           )
         }
       }
     }
 
-    lastDepth = property.depth
-    lastParentName = property.parentName
+    lastProperty = property
   }
 
-  if (lastDepth) {
-    printClosingBrackets(lastDepth, 0, false, resultStrings)
+  if (lastProperty.depth) {
+    printClosingBrackets(lastProperty.depth, 0, false, resultStrings)
   }
 
   return resultStrings.join('')
@@ -91,9 +104,10 @@ const printClosingBrackets = (
   fromDepth: number,
   toDepth: number,
   addComma: boolean,
-  resultArray: string[]
+  resultArray: string[],
+  bracket = '}'
 ) => {
-  const closingBracketString = '}' + (addComma ? ',\n' : '\n')
+  const closingBracketString = bracket + (addComma ? ',\n' : '\n')
   for (let i = fromDepth; i >= toDepth; i--) {
     const indentation = '  '.repeat(i)
     resultArray.push(indentation + closingBracketString)
@@ -144,6 +158,7 @@ const convertToDescriptor = (
   return entries.map((e) => ({
     depth: parentDepth + 1,
     entries: typeof e[1] === 'object' ? Object.entries(e[1]) : [],
+    isArray: Array.isArray(e[1]),
     name: e[0],
     value: e[1]
   }))
@@ -195,7 +210,7 @@ const matchObjectStructure = (sourceObj: object, targetObj: object) => {
       )
 
       // resultObject assign object value
-      const newProperty = {}
+      const newProperty = sourceProperty.isArray ? [] : {}
       resultObjectPropertyStack[resultObjectPropertyStack.length - 1][sourceProperty.name] =
         newProperty
       resultObjectPropertyStack.push(newProperty)

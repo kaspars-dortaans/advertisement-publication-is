@@ -213,61 +213,61 @@ export const emptyLocale = {
     CreateAdvertisementNotificationSubscription: '',
     ExtendAdvertisementNotificationSubscription: ''
   },
-  dayNames: {
-    0: '',
-    1: '',
-    2: '',
-    3: '',
-    4: '',
-    5: '',
-    6: ''
-  },
-  dayNamesShort: {
-    0: '',
-    1: '',
-    2: '',
-    3: '',
-    4: '',
-    5: '',
-    6: ''
-  },
-  dayNamesMin: {
-    0: '',
-    1: '',
-    2: '',
-    3: '',
-    4: '',
-    5: '',
-    6: ''
-  },
-  monthNames: {
-    0: '',
-    1: '',
-    2: '',
-    3: '',
-    4: '',
-    5: '',
-    6: '',
-    7: '',
-    8: '',
-    9: '',
-    10: '',
-    11: ''
-  },
-  monthNamesShort: {
-    0: '',
-    1: '',
-    2: '',
-    3: '',
-    4: '',
-    5: '',
-    6: '',
-    7: '',
-    8: '',
-    9: '',
-    10: '',
-    11: ''
-  },
+  dayNames: [
+     '',
+     '',
+     '',
+     '',
+     '',
+     '',
+     ''
+  ],
+  dayNamesShort: [
+     '',
+     '',
+     '',
+     '',
+     '',
+     '',
+     ''
+  ],
+  dayNamesMin: [
+     '',
+     '',
+     '',
+     '',
+     '',
+     '',
+     ''
+  ],
+  monthNames: [
+     '',
+     '',
+     '',
+     '',
+     '',
+     '',
+     '',
+     '',
+     '',
+     '',
+     '',
+     ''
+  ],
+  monthNamesShort: [
+     '',
+     '',
+     '',
+     '',
+     '',
+     '',
+     '',
+     '',
+     '',
+     '',
+     '',
+     ''
+  ],
   errors: {
     errorOccurred: '',
     FieldNotValid: '',

@@ -220,8 +220,24 @@
     "Piektdiena",
     "Sestdiena"
   ],
-  "dayNamesShort": ["Sv", "P", "O", "T", "C", "Pk", "S"],
-  "dayNamesMin": ["Sv", "P", "O", "T", "C", "Pk", "S"],
+  "dayNamesShort": [
+    "Sv",
+    "P",
+    "O",
+    "T",
+    "C",
+    "Pk",
+    "S"
+  ],
+  "dayNamesMin": [
+    "Sv",
+    "P",
+    "O",
+    "T",
+    "C",
+    "Pk",
+    "S"
+  ],
   "monthNames": [
     "Janvāris",
     "Februāris",
