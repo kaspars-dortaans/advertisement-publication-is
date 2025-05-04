@@ -108,10 +108,8 @@
                 <label for="description-input">{{ l.form.putAdvertisement.description }}</label>
               </FloatLabel>
               <FieldError :field="fields.description" />
-            </fieldset>
 
-            <!-- Images -->
-            <fieldset class="lg:min-w-96">
+              <!-- Images -->
               <MultipleImageUpload
                 v-model="fields.imagesToAdd!.model.value"
                 :maxImageCount="ImageConstants.MaxImageCountPerAdvertisement"

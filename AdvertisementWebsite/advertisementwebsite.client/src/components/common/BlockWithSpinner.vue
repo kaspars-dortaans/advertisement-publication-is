@@ -1,5 +1,5 @@
 <template>
-  <BlockUI :blocked="loading">
+  <BlockUI :blocked="loading" class="max-w-full">
     <slot></slot>
     <ComponentSpinner :show="loading" />
   </BlockUI>

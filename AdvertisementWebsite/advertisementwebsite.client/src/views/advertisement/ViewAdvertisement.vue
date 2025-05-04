@@ -29,18 +29,20 @@
           </div>
         </template>
 
-        <div class="flex flex-row gap-5 flex-wrap md:flex-nowrap h-full items-center">
+        <div class="flex flex-col items-center gap-5 h-full">
           <Galleria
             v-if="advertisement.imageURLs?.length"
             :value="advertisement.imageURLs"
-            :showThumbnails="false"
-            :showIndicators="true"
+            :showThumbnails="true"
             :showItemNavigators="true"
             :circular="true"
             containerClass="w-full sm:w-full md:max-w-sm lg:max-w-xl flex-shrink-0 max-h-full flex"
           >
             <template #item="slotProps">
               <img :src="slotProps.item.url" class="object-contain max-w-full max-h-full" />
+            </template>
+            <template #thumbnail="slotProps">
+              <img :src="slotProps.item.thumbnailUrl" />
             </template>
           </Galleria>
 
@@ -120,7 +122,7 @@
 </template>
 
 <script setup lang="ts">
-import BackButton from '@/components/BackButton.vue'
+import BackButton from '@/components/common/BackButton.vue'
 import {
   AdvertisementHistoryStorageKey,
   AdvertisementHistoryTimeSpanInMiliSeconds
