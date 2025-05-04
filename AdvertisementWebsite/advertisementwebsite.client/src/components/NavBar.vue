@@ -162,6 +162,10 @@ const allRouteItems: INavbarItem[] = [
     ] as INavbarItem[]
   },
   {
+    label: 'navigation.viewPayments',
+    route: 'viewPayments'
+  },
+  {
     icon: 'pi pi-envelope',
     route: 'viewMessages',
     badgeValue: unreadMessageCountPositive

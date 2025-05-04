@@ -9,6 +9,7 @@
       :currentPageReportTemplate="pageReportTemplate"
       :paginatorTemplate="PaginatorTemplate"
       :totalRecords="totalRecordCount"
+      :selectionMode="selectionMode"
       sortMode="multiple"
       class="bg-white flex-1 lg:flex-none rounded-none lg:rounded-md"
       removableSort
@@ -16,6 +17,7 @@
       lazy
       @page="pageTable"
       @sort="sortTable"
+      @rowSelect="emitRowSelect"
     >
       <template v-if="$slots.header" #header>
         <slot name="header"></slot>
@@ -38,17 +40,24 @@ import {
   type IDataTableQueryResponse_1
 } from '@/services/api-client'
 import { getPageReportTemplate } from '@/utils/data-table'
-import type { DataTablePageEvent, DataTableSortEvent, DataTableSortMeta } from 'primevue'
+import type {
+  DataTablePageEvent,
+  DataTableRowSelectEvent,
+  DataTableSortEvent,
+  DataTableSortMeta
+} from 'primevue'
 import { onBeforeMount, ref } from 'vue'
 
 const props = defineProps<{
   dataSource: (query: DataTableQuery) => Promise<IDataTableQueryResponse_1>
   columns: TableColumn[]
+  selectionMode?: 'single' | 'multiple'
 }>()
 
 //Output
 const selectedRecords = defineModel<T[]>('selection')
 const loading = defineModel<boolean>('loading')
+const emit = defineEmits(['rowSelect'])
 
 //Reactive data
 const tableRecords = ref<T[]>([])
@@ -112,6 +121,10 @@ const loadTableRecords = async () => {
   selectedRecords.value = []
 
   loading.value = false
+}
+
+const emitRowSelect = (e: DataTableRowSelectEvent) => {
+  emit('rowSelect', e)
 }
 
 defineExpose({ refresh: loadTableRecords })

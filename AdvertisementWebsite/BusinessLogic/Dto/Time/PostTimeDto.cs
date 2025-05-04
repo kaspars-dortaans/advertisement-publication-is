@@ -10,4 +10,18 @@ public class PostTimeDto
     {
         return Months * 30 + Weeks * 7 + Days;
     }
+
+    public PostTimeDto()
+    { }
+
+    public PostTimeDto(int timePeriodInDays)
+    {
+        Months = timePeriodInDays / 30;
+        timePeriodInDays %= 30;
+
+        Weeks = timePeriodInDays / 7;
+        timePeriodInDays %= 7;
+
+        Days = timePeriodInDays;
+    }
 }

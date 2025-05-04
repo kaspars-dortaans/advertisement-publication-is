@@ -196,12 +196,35 @@ const router = createRouter({
     },
 
     {
-      path: '/make-payment',
-      name: 'makePayment',
-      component: () => import('../views/payments/MakePayment.vue'),
-      meta: {
-        requiresPermission: Permissions[Permissions.MakePayment]
-      }
+      path: '/payments',
+      redirect: { name: 'viewPayments' },
+      children: [
+        {
+          path: 'pay',
+          name: 'makePayment',
+          component: () => import('../views/payments/MakePayment.vue'),
+          meta: {
+            requiresPermission: Permissions[Permissions.MakePayment]
+          }
+        },
+        {
+          path: 'view',
+          name: 'viewPayments',
+          component: () => import('../views/payments/ViewPayments.vue'),
+          meta: {
+            requiresPermission: Permissions[Permissions.ViewPayments]
+          }
+        },
+        {
+          path: 'view/:paymentId',
+          name: 'viewPayment',
+          component: () => import('../views/payments/ViewPayment.vue'),
+          props: (route) => ({ paymentId: toNumberOrUndefined(route.params.paymentId) }),
+          meta: {
+            requiresPermission: Permissions[Permissions.ViewPayments]
+          }
+        }
+      ]
     },
 
     //Not found

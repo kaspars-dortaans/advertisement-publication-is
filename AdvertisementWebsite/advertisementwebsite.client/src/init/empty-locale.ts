@@ -71,11 +71,23 @@ export const emptyLocale = {
     createdAt: ''
   },
   makePayment: {
-    paymentOptions: '',
+    paymentOptions: ''
+  },
+  paymentDetails: {
+    date: '',
+    paymentItems: '',
     totalAmount: '',
     title: '',
     timePeriod: '',
     price: ''
+  },
+  viewPayments: {
+    id: '',
+    date: '',
+    amount: '',
+    paymentItemCount: '',
+    totalForTimePeriod: '',
+    timePeriod: ''
   },
   form: {
     putAdvertisementNotification: {
@@ -172,7 +184,9 @@ export const emptyLocale = {
     editAdvertisement: '',
     messages: '',
     advertisementNotifications: '',
-    makePayment: ''
+    makePayment: '',
+    viewPayments: '',
+    paymentDetails: ''
   },
   dataSize: {
     bits: '',
@@ -198,6 +212,61 @@ export const emptyLocale = {
     ExtendAdvertisement: '',
     CreateAdvertisementNotificationSubscription: '',
     ExtendAdvertisementNotificationSubscription: ''
+  },
+  dayNames: {
+    0: '',
+    1: '',
+    2: '',
+    3: '',
+    4: '',
+    5: '',
+    6: ''
+  },
+  dayNamesShort: {
+    0: '',
+    1: '',
+    2: '',
+    3: '',
+    4: '',
+    5: '',
+    6: ''
+  },
+  dayNamesMin: {
+    0: '',
+    1: '',
+    2: '',
+    3: '',
+    4: '',
+    5: '',
+    6: ''
+  },
+  monthNames: {
+    0: '',
+    1: '',
+    2: '',
+    3: '',
+    4: '',
+    5: '',
+    6: '',
+    7: '',
+    8: '',
+    9: '',
+    10: '',
+    11: ''
+  },
+  monthNamesShort: {
+    0: '',
+    1: '',
+    2: '',
+    3: '',
+    4: '',
+    5: '',
+    6: '',
+    7: '',
+    8: '',
+    9: '',
+    10: '',
+    11: ''
   },
   errors: {
     errorOccurred: '',

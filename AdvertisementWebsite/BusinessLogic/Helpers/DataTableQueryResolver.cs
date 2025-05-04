@@ -7,9 +7,7 @@ namespace BusinessLogic.Helpers;
 
 public static class DataTableQueryResolver
 {
-
-    //Implement data table query support per https://datatables.net/manual/server-side
-    public static async Task<DataTableQueryResponse<Entity>> ResolveDataTableQuery<Entity>(this IQueryable<Entity> query, DataTableQuery request, DataTableQueryConfig<Entity>? config = null) where Entity : class
+    public static async Task<DataTableQueryResponse<Entity>> ResolveDataTableQuery<Entity>(this IQueryable<Entity> query, DataTableQuery request, DataTableQueryConfig<Entity>? config = null) where Entity : class, new()
     {
         //Total record count
         var totalRecords = query.DeferredCount().FutureValue();
@@ -38,6 +36,11 @@ public static class DataTableQueryResolver
         //Filtered record count
         var filteredRecordCount = query.DeferredCount().FutureValue();
 
+        //Aggregates
+        var aggregates = request.Columns
+            .Where(c => c.Aggregate)
+            .ToDictionary(c => c.Name, c => BuildAggregateFunction(query, c));
+
         //Order
         var orderApplied = false;
         if (request.Order.Any())
@@ -63,13 +66,16 @@ public static class DataTableQueryResolver
         }
 
         var queryResult = await query.Future().ToListAsync();
-        return new DataTableQueryResponse<Entity>()
+        var response = new DataTableQueryResponse<Entity>()
         {
-            Draw = request.Draw,
             RecordsTotal = totalRecords.Value,
             RecordsFiltered = filteredRecordCount.Value,
-            Data = queryResult
+            Data = queryResult,
+            Aggregates = new Dictionary<string, dynamic>(aggregates
+                .Where(p => p.Value != null)
+                .Select(p => new KeyValuePair<string, dynamic>(p.Key, p.Value!.Value)))
         };
+        return response;
     }
 
     /// <summary>
@@ -92,7 +98,8 @@ public static class DataTableQueryResolver
             Error = response.Error,
             RecordsFiltered = response.RecordsFiltered,
             RecordsTotal = response.RecordsTotal,
-            Data = mapper.Map<IEnumerable<TDestination>>(response.Data, opts)
+            Data = mapper.Map<IEnumerable<TDestination>>(response.Data, opts),
+            Aggregates = response.Aggregates
         };
     }
 
@@ -170,5 +177,42 @@ public static class DataTableQueryResolver
 
             return true;
         }
+    }
+
+    static dynamic? BuildAggregateFunction<Entity>(IQueryable<Entity> query, TableColumn column)
+    {
+        var entityType = typeof(Entity);
+        var propertyType = entityType.GetProperty(column.Data, BindingFlags.IgnoreCase | BindingFlags.Instance | BindingFlags.Public)?.PropertyType;
+        if (propertyType == null)
+        {
+            return null;
+        }
+        var keySelector = ReflectionHelper.InvokeGenericMethod<object>(
+            typeof(ReflectionHelper),
+            nameof(ReflectionHelper.GetKeySelectorLambda),
+            [typeof(string)],
+            [entityType, propertyType],
+            [column.Data]);
+
+        var deferredQuery = ReflectionHelper.InvokeGenericMethod(
+            typeof(QueryDeferredExtensions),
+            nameof(QueryDeferredExtensions.DeferredSum),
+            [typeof(IQueryable<Entity>), keySelector.GetType()],
+            [entityType],
+            [query, keySelector]);
+
+        if (deferredQuery == null)
+        {
+            return null;
+        }
+
+        var futureValue = ReflectionHelper.InvokeGenericMethod(
+            typeof(QueryFutureExtensions),
+            nameof(QueryFutureExtensions.FutureValue),
+            [deferredQuery.GetType()],
+            [propertyType],
+            [deferredQuery]);
+
+        return futureValue;
     }
 }

@@ -31,6 +31,7 @@ import Textarea from 'primevue/textarea'
 import AutoComplete from 'primevue/autocomplete'
 import Listbox from 'primevue/listbox'
 import Checkbox from 'primevue/checkbox'
+import DatePicker from 'primevue/datepicker'
 
 //Data
 import Column from 'primevue/column'
@@ -172,6 +173,7 @@ export function initPrimeVue(app: App<Element>) {
   app.component('Select', Select)
   app.component('AutoComplete', AutoComplete)
   app.component('Listbox', Listbox)
+  app.component('DatePicker', DatePicker)
 
   //Data
   app.component('Tree', Tree)

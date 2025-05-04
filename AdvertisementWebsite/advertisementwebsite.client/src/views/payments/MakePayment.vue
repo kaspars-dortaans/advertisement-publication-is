@@ -7,32 +7,7 @@
         <h3 class="page-title">{{ l.navigation.makePayment }}</h3>
         <div class="flex-1 flex flex-col lg:flex-row items-center lg:items-stretch gap-3">
           <Message v-if="formErrors" severity="error">{{ formErrors }}</Message>
-          <div class="flex flex-col gap-2">
-            <h4 class="font-semibold">{{ l.makePayment.paymentItems }}</h4>
-            <div class="lg:overflow-y-auto space-y-2">
-              <div
-                v-for="paymentItem in priceInfo?.items"
-                class="p-2 border border-black rounded-md min-w-96"
-              >
-                <h5 class="font-semibold">{{ l.paymentType[paymentItem.type!] }}</h5>
-                <dl class="grid grid-cols-[auto_auto] gap-x-3">
-                  <dt>{{ l.makePayment.title }}</dt>
-                  <dd>{{ paymentItem.title }}</dd>
-
-                  <dt>{{ l.makePayment.timePeriod }}</dt>
-                  <dd>{{ getPostTimeTitle(ls, paymentItem.timePeriod) }}</dd>
-
-                  <dt>{{ l.makePayment.price }}</dt>
-                  <dd>{{ currencyFormat.format(paymentItem.price!) }}</dd>
-                </dl>
-              </div>
-            </div>
-            <h4 class="font-semibold text-lg">
-              {{
-                ls.l('makePayment.totalAmount', currencyFormat.format(priceInfo?.totalAmount ?? 0))
-              }}
-            </h4>
-          </div>
+          <PaymentDetails :paymentInfo="priceInfo" />
 
           <form class="flex flex-col space-y-2" @submit="pay">
             <h4 class="font-semibold">{{ l.makePayment.paymentOptions }}</h4>
@@ -72,8 +47,8 @@
 import BlockWithSpinner from '@/components/common/BlockWithSpinner.vue'
 import ResponsiveLayout from '@/components/common/ResponsiveLayout.vue'
 import FieldError from '@/components/form/FieldError.vue'
+import PaymentDetails from '@/components/payment/PaymentDetails.vue'
 import { usePaymentState } from '@/composables/payment-store'
-import { getPostTimeTitle } from '@/constants/advertisement-post-time-span'
 import {
   Int32StringKeyValuePair,
   MakePaymentRequest,
@@ -86,7 +61,6 @@ import { LocaleService } from '@/services/locale-service'
 import { getClient } from '@/utils/client-builder'
 import { FieldHelper } from '@/utils/field-helper'
 import { toTypedSchema } from '@vee-validate/yup'
-import { computed } from '@vue/reactivity'
 import { useForm } from 'vee-validate'
 import { onBeforeMount, ref } from 'vue'
 import { useRouter } from 'vue-router'
@@ -96,7 +70,6 @@ import { number, object } from 'yup'
 
 //Services
 const l = LocaleService.currentLocale
-const ls = LocaleService.get()
 const paymentService = getClient(PaymentClient)
 const { push } = useRouter()
 
@@ -104,12 +77,7 @@ const { push } = useRouter()
 const loading = ref(false)
 const paymentState = usePaymentState()
 const priceInfo = ref<PriceInfo | undefined>()
-const currencyFormat = computed(() =>
-  Intl.NumberFormat(LocaleService.currentLocaleName.value, {
-    style: 'currency',
-    currency: 'EUR'
-  })
-)
+
 //Payment option mockup data
 const paymentOptions = ref([
   new Int32StringKeyValuePair({ key: 0, value: '/src/assets/images/swedbank-logo.png' }),

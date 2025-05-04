@@ -69,11 +69,23 @@
     "createdAt": "Izveidots"
   },
   "makePayment": {
-    "paymentOptions": "Maksājumu veidi",
+    "paymentOptions": "Maksājumu veidi"
+  },
+  "paymentDetails": {
+    "date": "Datums",
+    "paymentItems": "Preces",
     "totalAmount": "Kopsumma",
     "title": "Nosaukums",
     "timePeriod": "Laika periods",
     "price": "Cena"
+  },
+  "viewPayments": {
+    "id": "Nr.",
+    "date": "Datums",
+    "amount": "Summa",
+    "paymentItemCount": "Preču skaits",
+    "totalForTimePeriod": "Kopsummā samaksāts",
+    "timePeriod": "Laik periods"
   },
   "form": {
     "common": {
@@ -170,7 +182,9 @@
     "editAdvertisement": "Rediģēt sludinājumu",
     "messages": "Sarakstes",
     "advertisementNotifications": "Sludinājumu paziņojumu abonementi",
-    "makePayment": "Veikt maksājumu"
+    "makePayment": "Veikt maksājumu",
+    "viewPayments": "Skatīt maksājumus",
+    "paymentDetails": "Maksājuma pārskats"
   },
   "dataSize": {
     "bits": "{0} biti",
@@ -197,6 +211,45 @@
     "CreateAdvertisementNotificationSubscription": "Izveidot sludinājumu paziņojumu abonementu",
     "ExtendAdvertisementNotificationSubscription": "Pagarināt sludinājumu paziņojumu abonementu"
   },
+  "dayNames": [
+    "Svētdiena",
+    "Pirmdiena",
+    "Otrdiena",
+    "Trešdiena",
+    "Ceturtdiena",
+    "Piektdiena",
+    "Sestdiena"
+  ],
+  "dayNamesShort": ["Sv", "P", "O", "T", "C", "Pk", "S"],
+  "dayNamesMin": ["Sv", "P", "O", "T", "C", "Pk", "S"],
+  "monthNames": [
+    "Janvāris",
+    "Februāris",
+    "Marts",
+    "Aprīlis",
+    "Maijs",
+    "Jūnijs",
+    "Jūlijs",
+    "Augusts",
+    "Septembris",
+    "Oktobris",
+    "Novembris",
+    "Decembris"
+  ],
+  "monthNamesShort": [
+    "Janv",
+    "Febr",
+    "Marts",
+    "Apr",
+    "Maijs",
+    "Jūn",
+    "Jūl",
+    "Aug",
+    "Sept",
+    "Okt",
+    "Nov",
+    "Dec"
+  ],
   "errors": {
     "errorOccurred": "Notika kļūda",
     "FieldNotValid": "{0} lauka vērtība nav derīga",

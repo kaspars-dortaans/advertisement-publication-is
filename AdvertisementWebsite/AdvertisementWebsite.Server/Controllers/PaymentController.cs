@@ -3,6 +3,7 @@ using AdvertisementWebsite.Server.Helpers;
 using AutoMapper;
 using BusinessLogic.Authorization;
 using BusinessLogic.Dto;
+using BusinessLogic.Dto.DataTableQuery;
 using BusinessLogic.Dto.Payment;
 using BusinessLogic.Services;
 using Microsoft.AspNetCore.Authorization;
@@ -21,8 +22,24 @@ public class PaymentController(
 {
     private readonly IPaymentService _paymentService = paymentService;
     private readonly IMapper _mapper = mapper;
-    
-    //TODO: Get payments for current user
+
+    [HasPermission(Permissions.ViewPayments)]
+    [ProducesResponseType<DataTableQueryResponse<PaymentListItem>>(StatusCodes.Status200OK)]
+    [ProducesResponseType<RequestExceptionResponse>(StatusCodes.Status400BadRequest)]
+    [HttpPost]
+    public async Task<DataTableQueryResponse<PaymentListItem>> GetUserPayments(PaymentDataTableQuery query)
+    {
+        return await _paymentService.GetUserPayments(query, User.GetUserId()!.Value);
+    }
+
+    [HasPermission(Permissions.ViewPayments)]
+    [ProducesResponseType<PriceInfo>(StatusCodes.Status200OK)]
+    [ProducesResponseType<RequestExceptionResponse>(StatusCodes.Status400BadRequest)]
+    [HttpPost]
+    public async Task<PriceInfo> GetUserPayment(int paymentId)
+    {
+        return await _paymentService.GetPriceInfo(paymentId, User.GetUserId()!.Value);
+    }
 
     [HasPermission(Permissions.MakePayment)]
     [ProducesResponseType<PriceInfo>(StatusCodes.Status200OK)]

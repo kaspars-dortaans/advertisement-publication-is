@@ -13,7 +13,8 @@
     "format": "prettier --write src/",
     "gen:api-client": " cd gen-scripts/nswag && nswag.bat",
     "gen:locales": "tsx ./gen-scripts/build-locales.ts",
-    "gen:constants": "tsx ./gen-scripts/build-constants.ts"
+    "gen:constants": "tsx ./gen-scripts/build-constants.ts",
+    "gen:all": "run-p gen:api-client gen:constants gen:locales"
   },
   "dependencies": {
     "@microsoft/signalr": "^8.0.7",

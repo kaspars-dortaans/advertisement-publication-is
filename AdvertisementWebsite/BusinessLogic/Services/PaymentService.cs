@@ -1,9 +1,12 @@
 ﻿using BusinessLogic.Constants;
+using BusinessLogic.Dto.DataTableQuery;
 using BusinessLogic.Dto.Payment;
+using BusinessLogic.Dto.Time;
 using BusinessLogic.Entities;
 using BusinessLogic.Entities.Payments;
 using BusinessLogic.Enums;
 using BusinessLogic.Exceptions;
+using BusinessLogic.Helpers;
 using BusinessLogic.Helpers.BackgroundJobs;
 using Hangfire;
 using Microsoft.EntityFrameworkCore;
@@ -13,6 +16,27 @@ namespace BusinessLogic.Services;
 
 public class PaymentService(Context dbContext) : BaseService<Payment>(dbContext), IPaymentService
 {
+    public Task<DataTableQueryResponse<PaymentListItem>> GetUserPayments(PaymentDataTableQuery request, int userId)
+    {
+        var query = Where(p => p.PayerId == userId)
+            .Select(p => new PaymentListItem
+            {
+                Id = p.Id,
+                Amount = p.Amount,
+                Date = p.Date,
+                PaymentItemCount = p.Items.Count()
+            });
+
+        return DataTableQueryResolver.ResolveDataTableQuery(query, request, new DataTableQueryConfig<PaymentListItem>
+        {
+            AdditionalFilter = (query) =>
+            {
+                return query.Filter(request.FromDate, p => p.Date > request.FromDate)
+                    .Filter(request.ToDate, p => p.Date < request.ToDate);
+            }
+        });
+    }
+
     public async Task<PriceInfo> GetPriceInfo(IEnumerable<PaymentItemDto> items, int userId)
     {
         //Assign prices
@@ -45,10 +69,11 @@ public class PaymentService(Context dbContext) : BaseService<Payment>(dbContext)
                 title = subscriptionTitles.FirstOrDefault(s => s.Id == item.PaymentSubjectId)?.Title;
             }
 
-            if(title == null)
+            if (title == null)
             {
                 notFoundItems.Add(item);
-            } else
+            }
+            else
             {
                 item.Title = title;
             }
@@ -61,6 +86,25 @@ public class PaymentService(Context dbContext) : BaseService<Payment>(dbContext)
         };
     }
 
+    public async Task<PriceInfo> GetPriceInfo(int paymentId, int userId)
+    {
+        return (await Where(p => p.Id == paymentId && p.PayerId == userId)
+            .Select(p => new PriceInfo
+            {
+                TotalAmount = p.Amount,
+                Date = p.Date,
+                Items = p.Items.Select(i => new PaymentItemDto
+                {
+                    PaymentSubjectId = i.PaymentSubjectId,
+                    Price = i.Price,
+                    Title = i.Title,
+                    TimePeriod = new PostTimeDto(i.TimePeriodInDays),
+                    Type = i.Type
+                })
+            })
+            .FirstOrDefaultAsync()) ?? throw new ApiException([CustomErrorCodes.NotFound]);
+    }
+
     public async Task MakePayment(IEnumerable<PaymentItemDto> items, decimal confirmTotalAmount, int userId)
     {
         /* 
@@ -70,7 +114,7 @@ public class PaymentService(Context dbContext) : BaseService<Payment>(dbContext)
 
         //Make sure totals match
         var (total, advertisementIds, subscriptionIds) = await ProcessPaymentItems(items);
-        if(total != confirmTotalAmount)
+        if (total != confirmTotalAmount)
         {
             throw new ApiException([CustomErrorCodes.TotalsDoesNotMatch]);
         }
@@ -85,18 +129,19 @@ public class PaymentService(Context dbContext) : BaseService<Payment>(dbContext)
         var createdAdvertisementIds = new List<int>();
 
         //Update advertisements and subscriptions
-        foreach(var item in items)
+        foreach (var item in items)
         {
             bool createAction = item.Type == PaymentType.CreateAdvertisement || item.Type == PaymentType.CreateAdvertisementNotificationSubscription;
             IPaymentItemSubject paymentItemSubject;
-            if(item.Type == PaymentType.CreateAdvertisement || item.Type == PaymentType.ExtendAdvertisement)
+            if (item.Type == PaymentType.CreateAdvertisement || item.Type == PaymentType.ExtendAdvertisement)
             {
                 paymentItemSubject = advertisements.First(a => a.Id == item.PaymentSubjectId);
                 if (createAction)
                 {
                     createdAdvertisementIds.Add(paymentItemSubject.Id);
                 }
-            } else
+            }
+            else
             {
                 paymentItemSubject = subscriptions.First(s => s.Id == item.PaymentSubjectId);
             }
@@ -122,6 +167,7 @@ public class PaymentService(Context dbContext) : BaseService<Payment>(dbContext)
         {
             Amount = total,
             PayerId = userId,
+            Date = DateTime.UtcNow,
             Items = items.Select(i => new PaymentItem
             {
                 PaymentSubjectId = i.PaymentSubjectId,
@@ -136,7 +182,7 @@ public class PaymentService(Context dbContext) : BaseService<Payment>(dbContext)
         await DbContext.SaveChangesAsync();
 
         //Send advertisement notifications
-        foreach(var id in createdAdvertisementIds)
+        foreach (var id in createdAdvertisementIds)
         {
             BackgroundJob.Enqueue<IAdvertisementNotificationSender>((s) => s.SendNotifications(id));
         }

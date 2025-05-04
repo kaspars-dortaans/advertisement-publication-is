@@ -1,3 +1,6 @@
+using AdvertisementWebsite.Server.Dto.Advertisement;
+using AdvertisementWebsite.Server.Dto.Common;
+using AdvertisementWebsite.Server.Helpers;
 using AutoMapper;
 using BusinessLogic.Authorization;
 using BusinessLogic.Constants;
@@ -12,10 +15,6 @@ using BusinessLogic.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using AdvertisementWebsite.Server.Dto.Advertisement;
-using AdvertisementWebsite.Server.Dto.Common;
-using AdvertisementWebsite.Server.Dto.User;
-using AdvertisementWebsite.Server.Helpers;
 
 namespace AdvertisementWebsite.Server.Controllers;
 

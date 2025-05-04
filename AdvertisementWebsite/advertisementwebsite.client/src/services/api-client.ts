@@ -2291,6 +2291,132 @@ export class PaymentClient {
      * @param body (optional) 
      * @return OK
      */
+    getUserPayments(body: PaymentDataTableQuery | undefined, cancelToken?: CancelToken): Promise<PaymentListItemDataTableQueryResponse> {
+        let url_ = this.baseUrl + "/api/Payment/GetUserPayments";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_: AxiosRequestConfig = {
+            data: content_,
+            method: "POST",
+            url: url_,
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "text/plain"
+            },
+            cancelToken
+        };
+
+        return this.instance.request(options_).catch((_error: any) => {
+            if (isAxiosError(_error) && _error.response) {
+                return _error.response;
+            } else {
+                throw _error;
+            }
+        }).then((_response: AxiosResponse) => {
+            return this.processGetUserPayments(_response);
+        });
+    }
+
+    protected processGetUserPayments(response: AxiosResponse): Promise<PaymentListItemDataTableQueryResponse> {
+        const status = response.status;
+        let _headers: any = {};
+        if (response.headers && typeof response.headers === "object") {
+            for (const k in response.headers) {
+                if (response.headers.hasOwnProperty(k)) {
+                    _headers[k] = response.headers[k];
+                }
+            }
+        }
+        if (status === 200) {
+            const _responseText = response.data;
+            let result200: any = null;
+            let resultData200  = _responseText;
+            result200 = PaymentListItemDataTableQueryResponse.fromJS(resultData200);
+            return Promise.resolve<PaymentListItemDataTableQueryResponse>(result200);
+
+        } else if (status === 400) {
+            const _responseText = response.data;
+            let result400: any = null;
+            let resultData400  = _responseText;
+            result400 = RequestExceptionResponse.fromJS(resultData400);
+            return throwException("Bad Request", status, _responseText, _headers, result400);
+
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.data;
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Promise.resolve<PaymentListItemDataTableQueryResponse>(null as any);
+    }
+
+    /**
+     * @param paymentId (optional) 
+     * @return OK
+     */
+    getUserPayment(paymentId: number | undefined, cancelToken?: CancelToken): Promise<PriceInfo> {
+        let url_ = this.baseUrl + "/api/Payment/GetUserPayment?";
+        if (paymentId === null)
+            throw new Error("The parameter 'paymentId' cannot be null.");
+        else if (paymentId !== undefined)
+            url_ += "paymentId=" + encodeURIComponent("" + paymentId) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: AxiosRequestConfig = {
+            method: "POST",
+            url: url_,
+            headers: {
+                "Accept": "text/plain"
+            },
+            cancelToken
+        };
+
+        return this.instance.request(options_).catch((_error: any) => {
+            if (isAxiosError(_error) && _error.response) {
+                return _error.response;
+            } else {
+                throw _error;
+            }
+        }).then((_response: AxiosResponse) => {
+            return this.processGetUserPayment(_response);
+        });
+    }
+
+    protected processGetUserPayment(response: AxiosResponse): Promise<PriceInfo> {
+        const status = response.status;
+        let _headers: any = {};
+        if (response.headers && typeof response.headers === "object") {
+            for (const k in response.headers) {
+                if (response.headers.hasOwnProperty(k)) {
+                    _headers[k] = response.headers[k];
+                }
+            }
+        }
+        if (status === 200) {
+            const _responseText = response.data;
+            let result200: any = null;
+            let resultData200  = _responseText;
+            result200 = PriceInfo.fromJS(resultData200);
+            return Promise.resolve<PriceInfo>(result200);
+
+        } else if (status === 400) {
+            const _responseText = response.data;
+            let result400: any = null;
+            let resultData400  = _responseText;
+            result400 = RequestExceptionResponse.fromJS(resultData400);
+            return throwException("Bad Request", status, _responseText, _headers, result400);
+
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.data;
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Promise.resolve<PriceInfo>(null as any);
+    }
+
+    /**
+     * @param body (optional) 
+     * @return OK
+     */
     calculatePrices(body: NewPaymentItem[] | undefined, cancelToken?: CancelToken): Promise<PriceInfo> {
         let url_ = this.baseUrl + "/api/Payment/CalculatePrices";
         url_ = url_.replace(/[?&]$/, "");
@@ -3427,6 +3553,7 @@ export class AdvertisementInfoDataTableQueryResponse implements IAdvertisementIn
     recordsTotal?: number;
     recordsFiltered?: number;
     data?: AdvertisementInfo[] | undefined;
+    aggregates?: { [key: string]: any; } | undefined;
     error?: string | undefined;
 
     constructor(data?: IAdvertisementInfoDataTableQueryResponse) {
@@ -3447,6 +3574,13 @@ export class AdvertisementInfoDataTableQueryResponse implements IAdvertisementIn
                 this.data = [] as any;
                 for (let item of _data["data"])
                     this.data!.push(AdvertisementInfo.fromJS(item));
+            }
+            if (_data["aggregates"]) {
+                this.aggregates = {} as any;
+                for (let key in _data["aggregates"]) {
+                    if (_data["aggregates"].hasOwnProperty(key))
+                        (<any>this.aggregates)![key] = _data["aggregates"][key];
+                }
             }
             this.error = _data["error"];
         }
@@ -3469,6 +3603,13 @@ export class AdvertisementInfoDataTableQueryResponse implements IAdvertisementIn
             for (let item of this.data)
                 data["data"].push(item ? item.toJSON() : <any>undefined);
         }
+        if (this.aggregates) {
+            data["aggregates"] = {};
+            for (let key in this.aggregates) {
+                if (this.aggregates.hasOwnProperty(key))
+                    (<any>data["aggregates"])[key] = (<any>this.aggregates)[key];
+            }
+        }
         data["error"] = this.error;
         return data;
     }
@@ -3479,6 +3620,7 @@ export interface IAdvertisementInfoDataTableQueryResponse {
     recordsTotal?: number;
     recordsFiltered?: number;
     data?: AdvertisementInfo[] | undefined;
+    aggregates?: { [key: string]: any; } | undefined;
     error?: string | undefined;
 }
 
@@ -3559,6 +3701,7 @@ export class AdvertisementListItemDataTableQueryResponse implements IAdvertiseme
     recordsTotal?: number;
     recordsFiltered?: number;
     data?: AdvertisementListItem[] | undefined;
+    aggregates?: { [key: string]: any; } | undefined;
     error?: string | undefined;
 
     constructor(data?: IAdvertisementListItemDataTableQueryResponse) {
@@ -3579,6 +3722,13 @@ export class AdvertisementListItemDataTableQueryResponse implements IAdvertiseme
                 this.data = [] as any;
                 for (let item of _data["data"])
                     this.data!.push(AdvertisementListItem.fromJS(item));
+            }
+            if (_data["aggregates"]) {
+                this.aggregates = {} as any;
+                for (let key in _data["aggregates"]) {
+                    if (_data["aggregates"].hasOwnProperty(key))
+                        (<any>this.aggregates)![key] = _data["aggregates"][key];
+                }
             }
             this.error = _data["error"];
         }
@@ -3601,6 +3751,13 @@ export class AdvertisementListItemDataTableQueryResponse implements IAdvertiseme
             for (let item of this.data)
                 data["data"].push(item ? item.toJSON() : <any>undefined);
         }
+        if (this.aggregates) {
+            data["aggregates"] = {};
+            for (let key in this.aggregates) {
+                if (this.aggregates.hasOwnProperty(key))
+                    (<any>data["aggregates"])[key] = (<any>this.aggregates)[key];
+            }
+        }
         data["error"] = this.error;
         return data;
     }
@@ -3611,11 +3768,11 @@ export interface IAdvertisementListItemDataTableQueryResponse {
     recordsTotal?: number;
     recordsFiltered?: number;
     data?: AdvertisementListItem[] | undefined;
+    aggregates?: { [key: string]: any; } | undefined;
     error?: string | undefined;
 }
 
 export class AdvertisementQuery implements IAdvertisementQuery {
-    draw?: number;
     start?: number | undefined;
     length?: number | undefined;
     search?: SearchQuery | undefined;
@@ -3638,7 +3795,6 @@ export class AdvertisementQuery implements IAdvertisementQuery {
 
     init(_data?: any) {
         if (_data) {
-            this.draw = _data["draw"];
             this.start = _data["start"];
             this.length = _data["length"];
             this.search = _data["search"] ? SearchQuery.fromJS(_data["search"]) : <any>undefined;
@@ -3681,7 +3837,6 @@ export class AdvertisementQuery implements IAdvertisementQuery {
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        data["draw"] = this.draw;
         data["start"] = this.start;
         data["length"] = this.length;
         data["search"] = this.search ? this.search.toJSON() : <any>undefined;
@@ -3717,7 +3872,6 @@ export class AdvertisementQuery implements IAdvertisementQuery {
 }
 
 export interface IAdvertisementQuery {
-    draw?: number;
     start?: number | undefined;
     length?: number | undefined;
     search?: SearchQuery | undefined;
@@ -4659,7 +4813,6 @@ export interface ICreateOrEditNotificationSubscriptionRequest {
 }
 
 export class DataTableQuery implements IDataTableQuery {
-    draw?: number;
     start?: number | undefined;
     length?: number | undefined;
     search?: SearchQuery | undefined;
@@ -4677,7 +4830,6 @@ export class DataTableQuery implements IDataTableQuery {
 
     init(_data?: any) {
         if (_data) {
-            this.draw = _data["draw"];
             this.start = _data["start"];
             this.length = _data["length"];
             this.search = _data["search"] ? SearchQuery.fromJS(_data["search"]) : <any>undefined;
@@ -4703,7 +4855,6 @@ export class DataTableQuery implements IDataTableQuery {
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        data["draw"] = this.draw;
         data["start"] = this.start;
         data["length"] = this.length;
         data["search"] = this.search ? this.search.toJSON() : <any>undefined;
@@ -4722,7 +4873,6 @@ export class DataTableQuery implements IDataTableQuery {
 }
 
 export interface IDataTableQuery {
-    draw?: number;
     start?: number | undefined;
     length?: number | undefined;
     search?: SearchQuery | undefined;
@@ -4735,6 +4885,7 @@ export class DataTableQueryResponse_1 implements IDataTableQueryResponse_1 {
     recordsTotal?: number;
     recordsFiltered?: number;
     data?: T[] | undefined;
+    aggregates?: { [key: string]: any; } | undefined;
     error?: string | undefined;
 
     constructor(data?: IDataTableQueryResponse_1) {
@@ -4755,6 +4906,13 @@ export class DataTableQueryResponse_1 implements IDataTableQueryResponse_1 {
                 this.data = [] as any;
                 for (let item of _data["data"])
                     this.data!.push(T.fromJS(item));
+            }
+            if (_data["aggregates"]) {
+                this.aggregates = {} as any;
+                for (let key in _data["aggregates"]) {
+                    if (_data["aggregates"].hasOwnProperty(key))
+                        (<any>this.aggregates)![key] = _data["aggregates"][key];
+                }
             }
             this.error = _data["error"];
         }
@@ -4777,6 +4935,13 @@ export class DataTableQueryResponse_1 implements IDataTableQueryResponse_1 {
             for (let item of this.data)
                 data["data"].push(item ? item.toJSON() : <any>undefined);
         }
+        if (this.aggregates) {
+            data["aggregates"] = {};
+            for (let key in this.aggregates) {
+                if (this.aggregates.hasOwnProperty(key))
+                    (<any>data["aggregates"])[key] = (<any>this.aggregates)[key];
+            }
+        }
         data["error"] = this.error;
         return data;
     }
@@ -4787,6 +4952,7 @@ export interface IDataTableQueryResponse_1 {
     recordsTotal?: number;
     recordsFiltered?: number;
     data?: T[] | undefined;
+    aggregates?: { [key: string]: any; } | undefined;
     error?: string | undefined;
 }
 
@@ -5395,6 +5561,7 @@ export class NotificationSubscriptionItemDataTableQueryResponse implements INoti
     recordsTotal?: number;
     recordsFiltered?: number;
     data?: NotificationSubscriptionItem[] | undefined;
+    aggregates?: { [key: string]: any; } | undefined;
     error?: string | undefined;
 
     constructor(data?: INotificationSubscriptionItemDataTableQueryResponse) {
@@ -5415,6 +5582,13 @@ export class NotificationSubscriptionItemDataTableQueryResponse implements INoti
                 this.data = [] as any;
                 for (let item of _data["data"])
                     this.data!.push(NotificationSubscriptionItem.fromJS(item));
+            }
+            if (_data["aggregates"]) {
+                this.aggregates = {} as any;
+                for (let key in _data["aggregates"]) {
+                    if (_data["aggregates"].hasOwnProperty(key))
+                        (<any>this.aggregates)![key] = _data["aggregates"][key];
+                }
             }
             this.error = _data["error"];
         }
@@ -5437,6 +5611,13 @@ export class NotificationSubscriptionItemDataTableQueryResponse implements INoti
             for (let item of this.data)
                 data["data"].push(item ? item.toJSON() : <any>undefined);
         }
+        if (this.aggregates) {
+            data["aggregates"] = {};
+            for (let key in this.aggregates) {
+                if (this.aggregates.hasOwnProperty(key))
+                    (<any>data["aggregates"])[key] = (<any>this.aggregates)[key];
+            }
+        }
         data["error"] = this.error;
         return data;
     }
@@ -5447,6 +5628,7 @@ export interface INotificationSubscriptionItemDataTableQueryResponse {
     recordsTotal?: number;
     recordsFiltered?: number;
     data?: NotificationSubscriptionItem[] | undefined;
+    aggregates?: { [key: string]: any; } | undefined;
     error?: string | undefined;
 }
 
@@ -5562,6 +5744,82 @@ export interface IOrderQuery {
     direction?: string | undefined;
 }
 
+export class PaymentDataTableQuery implements IPaymentDataTableQuery {
+    start?: number | undefined;
+    length?: number | undefined;
+    search?: SearchQuery | undefined;
+    order?: OrderQuery[] | undefined;
+    columns?: TableColumn[] | undefined;
+    fromDate?: Date | undefined;
+    toDate?: Date | undefined;
+
+    constructor(data?: IPaymentDataTableQuery) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.start = _data["start"];
+            this.length = _data["length"];
+            this.search = _data["search"] ? SearchQuery.fromJS(_data["search"]) : <any>undefined;
+            if (Array.isArray(_data["order"])) {
+                this.order = [] as any;
+                for (let item of _data["order"])
+                    this.order!.push(OrderQuery.fromJS(item));
+            }
+            if (Array.isArray(_data["columns"])) {
+                this.columns = [] as any;
+                for (let item of _data["columns"])
+                    this.columns!.push(TableColumn.fromJS(item));
+            }
+            this.fromDate = _data["fromDate"] ? new Date(_data["fromDate"].toString()) : <any>undefined;
+            this.toDate = _data["toDate"] ? new Date(_data["toDate"].toString()) : <any>undefined;
+        }
+    }
+
+    static fromJS(data: any): PaymentDataTableQuery {
+        data = typeof data === 'object' ? data : {};
+        let result = new PaymentDataTableQuery();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["start"] = this.start;
+        data["length"] = this.length;
+        data["search"] = this.search ? this.search.toJSON() : <any>undefined;
+        if (Array.isArray(this.order)) {
+            data["order"] = [];
+            for (let item of this.order)
+                data["order"].push(item ? item.toJSON() : <any>undefined);
+        }
+        if (Array.isArray(this.columns)) {
+            data["columns"] = [];
+            for (let item of this.columns)
+                data["columns"].push(item ? item.toJSON() : <any>undefined);
+        }
+        data["fromDate"] = this.fromDate ? this.fromDate.toISOString() : <any>undefined;
+        data["toDate"] = this.toDate ? this.toDate.toISOString() : <any>undefined;
+        return data;
+    }
+}
+
+export interface IPaymentDataTableQuery {
+    start?: number | undefined;
+    length?: number | undefined;
+    search?: SearchQuery | undefined;
+    order?: OrderQuery[] | undefined;
+    columns?: TableColumn[] | undefined;
+    fromDate?: Date | undefined;
+    toDate?: Date | undefined;
+}
+
 export class PaymentItemDto implements IPaymentItemDto {
     paymentSubjectId?: number;
     type?: PaymentType;
@@ -5612,6 +5870,134 @@ export interface IPaymentItemDto {
     title?: string | undefined;
     price?: number;
     timePeriod?: PostTimeDto | undefined;
+}
+
+export class PaymentListItem implements IPaymentListItem {
+    id?: number;
+    amount?: number;
+    payerId?: number;
+    date?: Date;
+    paymentItemCount?: number;
+
+    constructor(data?: IPaymentListItem) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.amount = _data["amount"];
+            this.payerId = _data["payerId"];
+            this.date = _data["date"] ? new Date(_data["date"].toString()) : <any>undefined;
+            this.paymentItemCount = _data["paymentItemCount"];
+        }
+    }
+
+    static fromJS(data: any): PaymentListItem {
+        data = typeof data === 'object' ? data : {};
+        let result = new PaymentListItem();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["amount"] = this.amount;
+        data["payerId"] = this.payerId;
+        data["date"] = this.date ? this.date.toISOString() : <any>undefined;
+        data["paymentItemCount"] = this.paymentItemCount;
+        return data;
+    }
+}
+
+export interface IPaymentListItem {
+    id?: number;
+    amount?: number;
+    payerId?: number;
+    date?: Date;
+    paymentItemCount?: number;
+}
+
+export class PaymentListItemDataTableQueryResponse implements IPaymentListItemDataTableQueryResponse {
+    draw?: number;
+    recordsTotal?: number;
+    recordsFiltered?: number;
+    data?: PaymentListItem[] | undefined;
+    aggregates?: { [key: string]: any; } | undefined;
+    error?: string | undefined;
+
+    constructor(data?: IPaymentListItemDataTableQueryResponse) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.draw = _data["draw"];
+            this.recordsTotal = _data["recordsTotal"];
+            this.recordsFiltered = _data["recordsFiltered"];
+            if (Array.isArray(_data["data"])) {
+                this.data = [] as any;
+                for (let item of _data["data"])
+                    this.data!.push(PaymentListItem.fromJS(item));
+            }
+            if (_data["aggregates"]) {
+                this.aggregates = {} as any;
+                for (let key in _data["aggregates"]) {
+                    if (_data["aggregates"].hasOwnProperty(key))
+                        (<any>this.aggregates)![key] = _data["aggregates"][key];
+                }
+            }
+            this.error = _data["error"];
+        }
+    }
+
+    static fromJS(data: any): PaymentListItemDataTableQueryResponse {
+        data = typeof data === 'object' ? data : {};
+        let result = new PaymentListItemDataTableQueryResponse();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["draw"] = this.draw;
+        data["recordsTotal"] = this.recordsTotal;
+        data["recordsFiltered"] = this.recordsFiltered;
+        if (Array.isArray(this.data)) {
+            data["data"] = [];
+            for (let item of this.data)
+                data["data"].push(item ? item.toJSON() : <any>undefined);
+        }
+        if (this.aggregates) {
+            data["aggregates"] = {};
+            for (let key in this.aggregates) {
+                if (this.aggregates.hasOwnProperty(key))
+                    (<any>data["aggregates"])[key] = (<any>this.aggregates)[key];
+            }
+        }
+        data["error"] = this.error;
+        return data;
+    }
+}
+
+export interface IPaymentListItemDataTableQueryResponse {
+    draw?: number;
+    recordsTotal?: number;
+    recordsFiltered?: number;
+    data?: PaymentListItem[] | undefined;
+    aggregates?: { [key: string]: any; } | undefined;
+    error?: string | undefined;
 }
 
 export enum PaymentSubjectStatus {
@@ -5675,6 +6061,7 @@ export interface IPostTimeDto {
 export class PriceInfo implements IPriceInfo {
     items?: PaymentItemDto[] | undefined;
     totalAmount?: number;
+    date?: Date | undefined;
 
     constructor(data?: IPriceInfo) {
         if (data) {
@@ -5693,6 +6080,7 @@ export class PriceInfo implements IPriceInfo {
                     this.items!.push(PaymentItemDto.fromJS(item));
             }
             this.totalAmount = _data["totalAmount"];
+            this.date = _data["date"] ? new Date(_data["date"].toString()) : <any>undefined;
         }
     }
 
@@ -5711,6 +6099,7 @@ export class PriceInfo implements IPriceInfo {
                 data["items"].push(item ? item.toJSON() : <any>undefined);
         }
         data["totalAmount"] = this.totalAmount;
+        data["date"] = this.date ? this.date.toISOString() : <any>undefined;
         return data;
     }
 }
@@ -5718,6 +6107,7 @@ export class PriceInfo implements IPriceInfo {
 export interface IPriceInfo {
     items?: PaymentItemDto[] | undefined;
     totalAmount?: number;
+    date?: Date | undefined;
 }
 
 export class PublicUserInfoDto implements IPublicUserInfoDto {
@@ -6234,6 +6624,7 @@ export class TableColumn implements ITableColumn {
     name?: string | undefined;
     searchable?: boolean;
     orderable?: boolean;
+    aggregate?: boolean;
     search?: SearchQuery | undefined;
 
     constructor(data?: ITableColumn) {
@@ -6251,6 +6642,7 @@ export class TableColumn implements ITableColumn {
             this.name = _data["name"];
             this.searchable = _data["searchable"];
             this.orderable = _data["orderable"];
+            this.aggregate = _data["aggregate"];
             this.search = _data["search"] ? SearchQuery.fromJS(_data["search"]) : <any>undefined;
         }
     }
@@ -6268,6 +6660,7 @@ export class TableColumn implements ITableColumn {
         data["name"] = this.name;
         data["searchable"] = this.searchable;
         data["orderable"] = this.orderable;
+        data["aggregate"] = this.aggregate;
         data["search"] = this.search ? this.search.toJSON() : <any>undefined;
         return data;
     }
@@ -6278,6 +6671,7 @@ export interface ITableColumn {
     name?: string | undefined;
     searchable?: boolean;
     orderable?: boolean;
+    aggregate?: boolean;
     search?: SearchQuery | undefined;
 }
 
@@ -6438,6 +6832,7 @@ export class UserListItemDataTableQueryResponse implements IUserListItemDataTabl
     recordsTotal?: number;
     recordsFiltered?: number;
     data?: UserListItem[] | undefined;
+    aggregates?: { [key: string]: any; } | undefined;
     error?: string | undefined;
 
     constructor(data?: IUserListItemDataTableQueryResponse) {
@@ -6458,6 +6853,13 @@ export class UserListItemDataTableQueryResponse implements IUserListItemDataTabl
                 this.data = [] as any;
                 for (let item of _data["data"])
                     this.data!.push(UserListItem.fromJS(item));
+            }
+            if (_data["aggregates"]) {
+                this.aggregates = {} as any;
+                for (let key in _data["aggregates"]) {
+                    if (_data["aggregates"].hasOwnProperty(key))
+                        (<any>this.aggregates)![key] = _data["aggregates"][key];
+                }
             }
             this.error = _data["error"];
         }
@@ -6480,6 +6882,13 @@ export class UserListItemDataTableQueryResponse implements IUserListItemDataTabl
             for (let item of this.data)
                 data["data"].push(item ? item.toJSON() : <any>undefined);
         }
+        if (this.aggregates) {
+            data["aggregates"] = {};
+            for (let key in this.aggregates) {
+                if (this.aggregates.hasOwnProperty(key))
+                    (<any>data["aggregates"])[key] = (<any>this.aggregates)[key];
+            }
+        }
         data["error"] = this.error;
         return data;
     }
@@ -6490,6 +6899,7 @@ export interface IUserListItemDataTableQueryResponse {
     recordsTotal?: number;
     recordsFiltered?: number;
     data?: UserListItem[] | undefined;
+    aggregates?: { [key: string]: any; } | undefined;
     error?: string | undefined;
 }
 
