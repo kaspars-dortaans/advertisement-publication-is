@@ -79,10 +79,10 @@
       <template #body="slotProps">
         <RouterLink :to="{ name: 'viewAdvertisement', params: { id: slotProps.data.id } }">
           <Panel class="hover:brightness-95">
-            <div class="flex flex-row gap-2 items-center">
+            <div class="flex flex-row gap-4 items-center">
               <img
-                :src="slotProps.data.thumbnailImageUrl"
-                class="flex-none w-28 h-28 object-cover"
+                :src="slotProps.data.thumbnailImageUrl ?? defaultAdvertisementThumbnail"
+                class="flex-none w-28 h-28 object-cover rounded-md"
               />
               <div class="flex flex-col gap-2">
                 <h4>{{ slotProps.data.title }}</h4>
@@ -136,6 +136,7 @@ import {
 } from 'primevue'
 import { computed, onMounted, ref, watch, type ComputedRef } from 'vue'
 import AttributeValuesList from './AttributeValuesList.vue'
+import defaultAdvertisementThumbnail from '@/assets/images/image-gallery.png'
 
 const props = defineProps<{
   advertisementSource: (
