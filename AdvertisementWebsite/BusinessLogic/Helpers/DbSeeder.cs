@@ -72,6 +72,7 @@ public class DbSeeder(Context context, UserManager<User> userManager, RoleManage
             Permissions.ViewSystemPayments,
 
             //Manage categories
+            Permissions.ViewCategories,
             Permissions.CreateCategory,
             Permissions.EditCategory,
             Permissions.DeleteCategory,

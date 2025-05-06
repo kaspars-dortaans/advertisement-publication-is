@@ -259,6 +259,42 @@ const router = createRouter({
       ]
     },
 
+    //Category
+    {
+      path: '/categories',
+      redirect: { name: 'manageCategories' },
+      children: [
+        {
+          path: 'view',
+          name: 'manageCategories',
+          component: () => import('../views/categories/ManageCategories.vue'),
+          meta: {
+            requiresPermission: Permissions.ViewCategories
+          }
+        },
+        {
+          path: 'create/:parentCategoryId?',
+          name: 'createCategory',
+          component: () => import('../views/categories/CategoryForm.vue'),
+          props: (route) => ({
+            parentCategoryId: toNumberOrUndefined(route.params.parentCategoryId)
+          }),
+          meta: {
+            requiresPermission: Permissions.CreateCategory
+          }
+        },
+        {
+          path: 'edit/:categoryId',
+          name: 'editCategory',
+          component: () => import('../views/categories/CategoryForm.vue'),
+          props: (route) => ({ categoryId: toNumberOrUndefined(route.params.categoryId) }),
+          meta: {
+            requiresPermission: Permissions.EditCategory
+          }
+        }
+      ]
+    },
+
     //Not found
     {
       path: '/:all(.*)*',

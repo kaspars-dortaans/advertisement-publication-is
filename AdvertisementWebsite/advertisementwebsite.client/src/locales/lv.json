@@ -145,6 +145,13 @@
       "keywords": "Atslēgvārdi",
       "timePeriod": "Laika periods",
       "validTo": "Derīgs līdz"
+    },
+    "categoryForm": {
+      "title": "Nosaukums",
+      "parentCategory": "Virs kategorija",
+      "addCategoryAttributes": "Pievienot atribūtus kategorijai",
+      "attributeOrderList": "Kategorija atribūtu secība",
+      "canContainAdvertisements": "Var saturēt sludinājumus"
     }
   },
   "messages": {
@@ -159,6 +166,11 @@
     "userAdvertisementChats": "Mani sludinājumi",
     "otherUserAdvertisementChats": "Citi",
     "viewAdvertisement": "Skatīt sludinājumu"
+  },
+  "manageCategories": {
+    "manageCategories": "Pārvaldīt kategorijas",
+    "confirmCategoryDeleteHeader": "Izdzēst kategoriju",
+    "confirmCategoryDeleteText": "'{0}' kategorija tiks izdzēsta. Kategorijai kopā ir {1} apakškategoriju."
   },
   "imageUpload": {
     "uploadImages": "Augšupielādēt",
@@ -184,7 +196,11 @@
     "advertisementNotifications": "Sludinājumu paziņojumu abonementi",
     "makePayment": "Veikt maksājumu",
     "viewPayments": "Skatīt maksājumus",
-    "paymentDetails": "Maksājuma pārskats"
+    "paymentDetails": "Maksājuma pārskats",
+    "manage": "Pārvaldīt",
+    "manageCategories": "Pārvaldīt kategorijas",
+    "createCategory": "Izveidot kategoriju",
+    "editCategory": "Rediģēt kategoriju"
   },
   "dataSize": {
     "bits": "{0} biti",
@@ -220,8 +236,24 @@
     "Piektdiena",
     "Sestdiena"
   ],
-  "dayNamesShort": ["Sv", "P", "O", "T", "C", "Pk", "S"],
-  "dayNamesMin": ["Sv", "P", "O", "T", "C", "Pk", "S"],
+  "dayNamesShort": [
+    "Sv",
+    "P",
+    "O",
+    "T",
+    "C",
+    "Pk",
+    "S"
+  ],
+  "dayNamesMin": [
+    "Sv",
+    "P",
+    "O",
+    "T",
+    "C",
+    "Pk",
+    "S"
+  ],
   "monthNames": [
     "Janvāris",
     "Februāris",

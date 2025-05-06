@@ -32,6 +32,7 @@ import AutoComplete from 'primevue/autocomplete'
 import Listbox from 'primevue/listbox'
 import Checkbox from 'primevue/checkbox'
 import DatePicker from 'primevue/datepicker'
+import ToggleSwitch from 'primevue/toggleswitch'
 
 //Data
 import Column from 'primevue/column'
@@ -175,6 +176,7 @@ export function initPrimeVue(app: App<Element>) {
   app.component('AutoComplete', AutoComplete)
   app.component('Listbox', Listbox)
   app.component('DatePicker', DatePicker)
+  app.component('ToggleSwitch', ToggleSwitch)
 
   //Data
   app.component('Tree', Tree)

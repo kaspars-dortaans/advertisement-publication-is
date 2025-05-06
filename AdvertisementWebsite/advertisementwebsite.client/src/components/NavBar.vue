@@ -132,6 +132,7 @@ const profileRoutes = computed(() => {
 const allRouteItems: INavbarItem[] = [
   {
     label: 'navigation.advertisements',
+    doNotShowWithoutItems: true,
     items: [
       {
         route: 'viewAdvertisements',
@@ -160,6 +161,16 @@ const allRouteItems: INavbarItem[] = [
         label: 'navigation.myAdvertisements'
       }
     ] as INavbarItem[]
+  },
+  {
+    label: 'navigation.manage',
+    doNotShowWithoutItems: true,
+    items: [
+      {
+        route: 'manageCategories',
+        label: 'navigation.manageCategories'
+      }
+    ]
   },
   {
     label: 'navigation.viewPayments',
@@ -247,16 +258,19 @@ const filterRoutes = (
         AuthService.hasPermission(requiresPermission as number)
 
       if (hasPermission || (i.showForUnauthenticated && !AuthService.isAuthenticated.value)) {
-        return {
-          label: i.label,
-          route: i.route,
-          icon: i.icon,
-          badgeValue: i.badgeValue,
-          items: i.items?.length ? filterRoutes(i.items, routes, userPermissions) : i.items
-        } as INavbarItem
-      } else {
-        return null
+        const items = i.items?.length ? filterRoutes(i.items, routes, userPermissions) : []
+        if (items.length || !i.doNotShowWithoutItems) {
+          return {
+            label: i.label,
+            route: i.route,
+            icon: i.icon,
+            badgeValue: i.badgeValue,
+            items: items
+          } as INavbarItem
+        }
       }
+
+      return null
     })
     .filter((i) => i != null) as INavbarItem[]
 }

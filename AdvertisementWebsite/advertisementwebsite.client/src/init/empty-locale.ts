@@ -90,6 +90,13 @@ export const emptyLocale = {
     timePeriod: ''
   },
   form: {
+    categoryForm: {
+      title: '',
+      parentCategory: '',
+      addCategoryAttributes: '',
+      attributeOrderList: '',
+      canContainAdvertisements: ''
+    },
     putAdvertisementNotification: {
       title: '',
       keywords: '',
@@ -162,6 +169,11 @@ export const emptyLocale = {
     otherUserAdvertisementChats: '',
     viewAdvertisement: ''
   },
+  manageCategories: {
+    manageCategories: '',
+    confirmCategoryDeleteHeader: '',
+    confirmCategoryDeleteText: ''
+  },
   imageUpload: {
     uploadImages: '',
     imagesUploaded: '',
@@ -186,7 +198,11 @@ export const emptyLocale = {
     advertisementNotifications: '',
     makePayment: '',
     viewPayments: '',
-    paymentDetails: ''
+    paymentDetails: '',
+    manage: '',
+    manageCategories: '',
+    createCategory: '',
+    editCategory: ''
   },
   dataSize: {
     bits: '',

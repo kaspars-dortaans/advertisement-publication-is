@@ -10,5 +10,6 @@ public interface ICategoryService : IBaseService<Category>
     public IQueryable<CategoryAttribute> GetCategoryAndParentAttributes(int categoryId);
     public IQueryable<int> GetCategoryListFromAdvertisementIds(IEnumerable<int> ids);
     public Task<CategoryInfo> GetCategoryInfo(int categoryId);
-    public Task<CategoryFormInfo> GetCategoryFormInfo(int categoryId);
+    public Task<CategoryAttributeListData> GetCategoryFormInfo(int categoryId);
+    public Task UpdateCategory(Category category);
 }

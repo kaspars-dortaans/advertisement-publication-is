@@ -23,7 +23,9 @@ export enum Permissions {
   //Payment
   ViewOwnPayments,
   MakePayment,
+  ViewSystemPayments,
   //Manage categories
+  ViewCategories,
   CreateCategory,
   EditCategory,
   DeleteCategory,

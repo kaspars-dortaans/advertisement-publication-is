@@ -145,6 +145,13 @@
       "keywords": "Keywords",
       "timePeriod": "Time period",
       "validTo": "Valid to"
+    },
+    "categoryForm": {
+      "title": "Title",
+      "parentCategory": "Parent category",
+      "addCategoryAttributes": "Add category attributes",
+      "attributeOrderList": "Category attribute order",
+      "canContainAdvertisements": "Can contain advertisements"
     }
   },
   "messages": {
@@ -159,6 +166,11 @@
     "userAdvertisementChats": "My advertisements",
     "otherUserAdvertisementChats": "Other",
     "viewAdvertisement": "View advertisement"
+  },
+  "manageCategories": {
+    "manageCategories": "Manage categories",
+    "confirmCategoryDeleteHeader": "Delete category",
+    "confirmCategoryDeleteText": "'{0}' category will be deleted. Category has {1} subcategories in total."
   },
   "imageUpload": {
     "uploadImages": "Upload",
@@ -184,7 +196,11 @@
     "advertisementNotifications": "Advertisement notifications",
     "makePayment": "Make payment",
     "viewPayments": "View Payments",
-    "paymentDetails": "Payment details"
+    "paymentDetails": "Payment details",
+    "manage": "Manage",
+    "manageCategories": "Manage categories",
+    "createCategory": "Create category",
+    "editCategory": "Edit category"
   },
   "dataSize": {
     "bits": "{0} b",

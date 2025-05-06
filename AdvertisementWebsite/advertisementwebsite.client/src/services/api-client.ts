@@ -1600,6 +1600,122 @@ export class CategoryClient {
     }
 
     /**
+     * @return OK
+     */
+    getCategoryLookup( cancelToken?: CancelToken): Promise<Int32StringKeyValuePair[]> {
+        let url_ = this.baseUrl + "/api/Category/GetCategoryLookup";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: AxiosRequestConfig = {
+            method: "GET",
+            url: url_,
+            headers: {
+                "Accept": "text/plain"
+            },
+            cancelToken
+        };
+
+        return this.instance.request(options_).catch((_error: any) => {
+            if (isAxiosError(_error) && _error.response) {
+                return _error.response;
+            } else {
+                throw _error;
+            }
+        }).then((_response: AxiosResponse) => {
+            return this.processGetCategoryLookup(_response);
+        });
+    }
+
+    protected processGetCategoryLookup(response: AxiosResponse): Promise<Int32StringKeyValuePair[]> {
+        const status = response.status;
+        let _headers: any = {};
+        if (response.headers && typeof response.headers === "object") {
+            for (const k in response.headers) {
+                if (response.headers.hasOwnProperty(k)) {
+                    _headers[k] = response.headers[k];
+                }
+            }
+        }
+        if (status === 200) {
+            const _responseText = response.data;
+            let result200: any = null;
+            let resultData200  = _responseText;
+            if (Array.isArray(resultData200)) {
+                result200 = [] as any;
+                for (let item of resultData200)
+                    result200!.push(Int32StringKeyValuePair.fromJS(item));
+            }
+            else {
+                result200 = <any>null;
+            }
+            return Promise.resolve<Int32StringKeyValuePair[]>(result200);
+
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.data;
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Promise.resolve<Int32StringKeyValuePair[]>(null as any);
+    }
+
+    /**
+     * @return OK
+     */
+    getAttributeLookup( cancelToken?: CancelToken): Promise<Int32StringKeyValuePair[]> {
+        let url_ = this.baseUrl + "/api/Category/GetAttributeLookup";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: AxiosRequestConfig = {
+            method: "GET",
+            url: url_,
+            headers: {
+                "Accept": "text/plain"
+            },
+            cancelToken
+        };
+
+        return this.instance.request(options_).catch((_error: any) => {
+            if (isAxiosError(_error) && _error.response) {
+                return _error.response;
+            } else {
+                throw _error;
+            }
+        }).then((_response: AxiosResponse) => {
+            return this.processGetAttributeLookup(_response);
+        });
+    }
+
+    protected processGetAttributeLookup(response: AxiosResponse): Promise<Int32StringKeyValuePair[]> {
+        const status = response.status;
+        let _headers: any = {};
+        if (response.headers && typeof response.headers === "object") {
+            for (const k in response.headers) {
+                if (response.headers.hasOwnProperty(k)) {
+                    _headers[k] = response.headers[k];
+                }
+            }
+        }
+        if (status === 200) {
+            const _responseText = response.data;
+            let result200: any = null;
+            let resultData200  = _responseText;
+            if (Array.isArray(resultData200)) {
+                result200 = [] as any;
+                for (let item of resultData200)
+                    result200!.push(Int32StringKeyValuePair.fromJS(item));
+            }
+            else {
+                result200 = <any>null;
+            }
+            return Promise.resolve<Int32StringKeyValuePair[]>(result200);
+
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.data;
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Promise.resolve<Int32StringKeyValuePair[]>(null as any);
+    }
+
+    /**
      * @param categoryId (optional) 
      * @return OK
      */
@@ -1722,7 +1838,126 @@ export class CategoryClient {
      * @param categoryId (optional) 
      * @return OK
      */
-    getCategoryFormInfo(categoryId: number | undefined, cancelToken?: CancelToken): Promise<CategoryFormInfo> {
+    getCategoryAttributeInfo(categoryId: number | undefined, cancelToken?: CancelToken): Promise<CategoryAttributeListData> {
+        let url_ = this.baseUrl + "/api/Category/GetCategoryAttributeInfo?";
+        if (categoryId === null)
+            throw new Error("The parameter 'categoryId' cannot be null.");
+        else if (categoryId !== undefined)
+            url_ += "categoryId=" + encodeURIComponent("" + categoryId) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: AxiosRequestConfig = {
+            method: "GET",
+            url: url_,
+            headers: {
+                "Accept": "text/plain"
+            },
+            cancelToken
+        };
+
+        return this.instance.request(options_).catch((_error: any) => {
+            if (isAxiosError(_error) && _error.response) {
+                return _error.response;
+            } else {
+                throw _error;
+            }
+        }).then((_response: AxiosResponse) => {
+            return this.processGetCategoryAttributeInfo(_response);
+        });
+    }
+
+    protected processGetCategoryAttributeInfo(response: AxiosResponse): Promise<CategoryAttributeListData> {
+        const status = response.status;
+        let _headers: any = {};
+        if (response.headers && typeof response.headers === "object") {
+            for (const k in response.headers) {
+                if (response.headers.hasOwnProperty(k)) {
+                    _headers[k] = response.headers[k];
+                }
+            }
+        }
+        if (status === 200) {
+            const _responseText = response.data;
+            let result200: any = null;
+            let resultData200  = _responseText;
+            result200 = CategoryAttributeListData.fromJS(resultData200);
+            return Promise.resolve<CategoryAttributeListData>(result200);
+
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.data;
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Promise.resolve<CategoryAttributeListData>(null as any);
+    }
+
+    /**
+     * @param body (optional) 
+     * @return OK
+     */
+    createCategory(body: PutCategoryRequest | undefined, cancelToken?: CancelToken): Promise<OkResult> {
+        let url_ = this.baseUrl + "/api/Category/CreateCategory";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_: AxiosRequestConfig = {
+            data: content_,
+            method: "POST",
+            url: url_,
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "text/plain"
+            },
+            cancelToken
+        };
+
+        return this.instance.request(options_).catch((_error: any) => {
+            if (isAxiosError(_error) && _error.response) {
+                return _error.response;
+            } else {
+                throw _error;
+            }
+        }).then((_response: AxiosResponse) => {
+            return this.processCreateCategory(_response);
+        });
+    }
+
+    protected processCreateCategory(response: AxiosResponse): Promise<OkResult> {
+        const status = response.status;
+        let _headers: any = {};
+        if (response.headers && typeof response.headers === "object") {
+            for (const k in response.headers) {
+                if (response.headers.hasOwnProperty(k)) {
+                    _headers[k] = response.headers[k];
+                }
+            }
+        }
+        if (status === 200) {
+            const _responseText = response.data;
+            let result200: any = null;
+            let resultData200  = _responseText;
+            result200 = OkResult.fromJS(resultData200);
+            return Promise.resolve<OkResult>(result200);
+
+        } else if (status === 400) {
+            const _responseText = response.data;
+            let result400: any = null;
+            let resultData400  = _responseText;
+            result400 = RequestExceptionResponse.fromJS(resultData400);
+            return throwException("Bad Request", status, _responseText, _headers, result400);
+
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.data;
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Promise.resolve<OkResult>(null as any);
+    }
+
+    /**
+     * @param categoryId (optional) 
+     * @return OK
+     */
+    getCategoryFormInfo(categoryId: number | undefined, cancelToken?: CancelToken): Promise<PutCategoryRequest> {
         let url_ = this.baseUrl + "/api/Category/GetCategoryFormInfo?";
         if (categoryId === null)
             throw new Error("The parameter 'categoryId' cannot be null.");
@@ -1750,7 +1985,7 @@ export class CategoryClient {
         });
     }
 
-    protected processGetCategoryFormInfo(response: AxiosResponse): Promise<CategoryFormInfo> {
+    protected processGetCategoryFormInfo(response: AxiosResponse): Promise<PutCategoryRequest> {
         const status = response.status;
         let _headers: any = {};
         if (response.headers && typeof response.headers === "object") {
@@ -1764,14 +1999,147 @@ export class CategoryClient {
             const _responseText = response.data;
             let result200: any = null;
             let resultData200  = _responseText;
-            result200 = CategoryFormInfo.fromJS(resultData200);
-            return Promise.resolve<CategoryFormInfo>(result200);
+            result200 = PutCategoryRequest.fromJS(resultData200);
+            return Promise.resolve<PutCategoryRequest>(result200);
+
+        } else if (status === 400) {
+            const _responseText = response.data;
+            let result400: any = null;
+            let resultData400  = _responseText;
+            result400 = RequestExceptionResponse.fromJS(resultData400);
+            return throwException("Bad Request", status, _responseText, _headers, result400);
 
         } else if (status !== 200 && status !== 204) {
             const _responseText = response.data;
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
         }
-        return Promise.resolve<CategoryFormInfo>(null as any);
+        return Promise.resolve<PutCategoryRequest>(null as any);
+    }
+
+    /**
+     * @param body (optional) 
+     * @return OK
+     */
+    editCategory(body: PutCategoryRequest | undefined, cancelToken?: CancelToken): Promise<OkResult> {
+        let url_ = this.baseUrl + "/api/Category/EditCategory";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_: AxiosRequestConfig = {
+            data: content_,
+            method: "POST",
+            url: url_,
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "text/plain"
+            },
+            cancelToken
+        };
+
+        return this.instance.request(options_).catch((_error: any) => {
+            if (isAxiosError(_error) && _error.response) {
+                return _error.response;
+            } else {
+                throw _error;
+            }
+        }).then((_response: AxiosResponse) => {
+            return this.processEditCategory(_response);
+        });
+    }
+
+    protected processEditCategory(response: AxiosResponse): Promise<OkResult> {
+        const status = response.status;
+        let _headers: any = {};
+        if (response.headers && typeof response.headers === "object") {
+            for (const k in response.headers) {
+                if (response.headers.hasOwnProperty(k)) {
+                    _headers[k] = response.headers[k];
+                }
+            }
+        }
+        if (status === 200) {
+            const _responseText = response.data;
+            let result200: any = null;
+            let resultData200  = _responseText;
+            result200 = OkResult.fromJS(resultData200);
+            return Promise.resolve<OkResult>(result200);
+
+        } else if (status === 400) {
+            const _responseText = response.data;
+            let result400: any = null;
+            let resultData400  = _responseText;
+            result400 = RequestExceptionResponse.fromJS(resultData400);
+            return throwException("Bad Request", status, _responseText, _headers, result400);
+
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.data;
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Promise.resolve<OkResult>(null as any);
+    }
+
+    /**
+     * @param body (optional) 
+     * @return OK
+     */
+    deleteCategory(body: number[] | undefined, cancelToken?: CancelToken): Promise<OkResult> {
+        let url_ = this.baseUrl + "/api/Category/DeleteCategory";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_: AxiosRequestConfig = {
+            data: content_,
+            method: "POST",
+            url: url_,
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "text/plain"
+            },
+            cancelToken
+        };
+
+        return this.instance.request(options_).catch((_error: any) => {
+            if (isAxiosError(_error) && _error.response) {
+                return _error.response;
+            } else {
+                throw _error;
+            }
+        }).then((_response: AxiosResponse) => {
+            return this.processDeleteCategory(_response);
+        });
+    }
+
+    protected processDeleteCategory(response: AxiosResponse): Promise<OkResult> {
+        const status = response.status;
+        let _headers: any = {};
+        if (response.headers && typeof response.headers === "object") {
+            for (const k in response.headers) {
+                if (response.headers.hasOwnProperty(k)) {
+                    _headers[k] = response.headers[k];
+                }
+            }
+        }
+        if (status === 200) {
+            const _responseText = response.data;
+            let result200: any = null;
+            let resultData200  = _responseText;
+            result200 = OkResult.fromJS(resultData200);
+            return Promise.resolve<OkResult>(result200);
+
+        } else if (status === 400) {
+            const _responseText = response.data;
+            let result400: any = null;
+            let resultData400  = _responseText;
+            result400 = RequestExceptionResponse.fromJS(resultData400);
+            return throwException("Bad Request", status, _responseText, _headers, result400);
+
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.data;
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Promise.resolve<OkResult>(null as any);
     }
 }
 
@@ -3468,7 +3836,7 @@ export interface IAdvertisementDto {
 
 export class AdvertisementFormInfo implements IAdvertisementFormInfo {
     advertisement?: CreateOrEditAdvertisementRequest | undefined;
-    categoryInfo?: CategoryFormInfo | undefined;
+    categoryInfo?: CategoryAttributeListData | undefined;
 
     constructor(data?: IAdvertisementFormInfo) {
         if (data) {
@@ -3482,7 +3850,7 @@ export class AdvertisementFormInfo implements IAdvertisementFormInfo {
     init(_data?: any) {
         if (_data) {
             this.advertisement = _data["advertisement"] ? CreateOrEditAdvertisementRequest.fromJS(_data["advertisement"]) : <any>undefined;
-            this.categoryInfo = _data["categoryInfo"] ? CategoryFormInfo.fromJS(_data["categoryInfo"]) : <any>undefined;
+            this.categoryInfo = _data["categoryInfo"] ? CategoryAttributeListData.fromJS(_data["categoryInfo"]) : <any>undefined;
         }
     }
 
@@ -3503,7 +3871,7 @@ export class AdvertisementFormInfo implements IAdvertisementFormInfo {
 
 export interface IAdvertisementFormInfo {
     advertisement?: CreateOrEditAdvertisementRequest | undefined;
-    categoryInfo?: CategoryFormInfo | undefined;
+    categoryInfo?: CategoryAttributeListData | undefined;
 }
 
 export class AdvertisementInfo implements IAdvertisementInfo {
@@ -4346,11 +4714,11 @@ export interface ICategoryAttributeInfo {
     attributeFilterType?: FilterType;
 }
 
-export class CategoryFormInfo implements ICategoryFormInfo {
+export class CategoryAttributeListData implements ICategoryAttributeListData {
     attributeInfo?: AttributeFormInfo[] | undefined;
     attributeValueLists?: AttributeValueListItem[] | undefined;
 
-    constructor(data?: ICategoryFormInfo) {
+    constructor(data?: ICategoryAttributeListData) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
@@ -4374,9 +4742,9 @@ export class CategoryFormInfo implements ICategoryFormInfo {
         }
     }
 
-    static fromJS(data: any): CategoryFormInfo {
+    static fromJS(data: any): CategoryAttributeListData {
         data = typeof data === 'object' ? data : {};
-        let result = new CategoryFormInfo();
+        let result = new CategoryAttributeListData();
         result.init(data);
         return result;
     }
@@ -4397,7 +4765,7 @@ export class CategoryFormInfo implements ICategoryFormInfo {
     }
 }
 
-export interface ICategoryFormInfo {
+export interface ICategoryAttributeListData {
     attributeInfo?: AttributeFormInfo[] | undefined;
     attributeValueLists?: AttributeValueListItem[] | undefined;
 }
@@ -6184,6 +6552,78 @@ export interface IPublicUserInfoDto {
     profileImageUrl?: string | undefined;
 }
 
+export class PutCategoryRequest implements IPutCategoryRequest {
+    id?: number | undefined;
+    localizedNames!: StringStringKeyValuePair[];
+    canContainAdvertisements!: boolean;
+    parentCategoryId?: number | undefined;
+    categoryAttributeOrder!: Int32StringKeyValuePair[];
+
+    constructor(data?: IPutCategoryRequest) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+        if (!data) {
+            this.localizedNames = [];
+            this.categoryAttributeOrder = [];
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            if (Array.isArray(_data["localizedNames"])) {
+                this.localizedNames = [] as any;
+                for (let item of _data["localizedNames"])
+                    this.localizedNames!.push(StringStringKeyValuePair.fromJS(item));
+            }
+            this.canContainAdvertisements = _data["canContainAdvertisements"];
+            this.parentCategoryId = _data["parentCategoryId"];
+            if (Array.isArray(_data["categoryAttributeOrder"])) {
+                this.categoryAttributeOrder = [] as any;
+                for (let item of _data["categoryAttributeOrder"])
+                    this.categoryAttributeOrder!.push(Int32StringKeyValuePair.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): PutCategoryRequest {
+        data = typeof data === 'object' ? data : {};
+        let result = new PutCategoryRequest();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        if (Array.isArray(this.localizedNames)) {
+            data["localizedNames"] = [];
+            for (let item of this.localizedNames)
+                data["localizedNames"].push(item ? item.toJSON() : <any>undefined);
+        }
+        data["canContainAdvertisements"] = this.canContainAdvertisements;
+        data["parentCategoryId"] = this.parentCategoryId;
+        if (Array.isArray(this.categoryAttributeOrder)) {
+            data["categoryAttributeOrder"] = [];
+            for (let item of this.categoryAttributeOrder)
+                data["categoryAttributeOrder"].push(item ? item.toJSON() : <any>undefined);
+        }
+        return data;
+    }
+}
+
+export interface IPutCategoryRequest {
+    id?: number | undefined;
+    localizedNames: StringStringKeyValuePair[];
+    canContainAdvertisements: boolean;
+    parentCategoryId?: number | undefined;
+    categoryAttributeOrder: Int32StringKeyValuePair[];
+}
+
 export class RefreshRequest implements IRefreshRequest {
     refreshToken!: string | undefined;
 
@@ -6567,9 +7007,49 @@ export interface ISetActiveStatusRequest {
     isActive: boolean;
 }
 
+export class StringStringKeyValuePair implements IStringStringKeyValuePair {
+    key?: string | undefined;
+    value?: string | undefined;
+
+    constructor(data?: IStringStringKeyValuePair) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.key = _data["key"];
+            this.value = _data["value"];
+        }
+    }
+
+    static fromJS(data: any): StringStringKeyValuePair {
+        data = typeof data === 'object' ? data : {};
+        let result = new StringStringKeyValuePair();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["key"] = this.key;
+        data["value"] = this.value;
+        return data;
+    }
+}
+
+export interface IStringStringKeyValuePair {
+    key?: string | undefined;
+    value?: string | undefined;
+}
+
 export class SubscriptionFormInfo implements ISubscriptionFormInfo {
     subscription?: CreateOrEditNotificationSubscriptionRequest | undefined;
-    categoryInfo?: CategoryFormInfo | undefined;
+    categoryInfo?: CategoryAttributeListData | undefined;
 
     constructor(data?: ISubscriptionFormInfo) {
         if (data) {
@@ -6583,7 +7063,7 @@ export class SubscriptionFormInfo implements ISubscriptionFormInfo {
     init(_data?: any) {
         if (_data) {
             this.subscription = _data["subscription"] ? CreateOrEditNotificationSubscriptionRequest.fromJS(_data["subscription"]) : <any>undefined;
-            this.categoryInfo = _data["categoryInfo"] ? CategoryFormInfo.fromJS(_data["categoryInfo"]) : <any>undefined;
+            this.categoryInfo = _data["categoryInfo"] ? CategoryAttributeListData.fromJS(_data["categoryInfo"]) : <any>undefined;
         }
     }
 
@@ -6604,7 +7084,7 @@ export class SubscriptionFormInfo implements ISubscriptionFormInfo {
 
 export interface ISubscriptionFormInfo {
     subscription?: CreateOrEditNotificationSubscriptionRequest | undefined;
-    categoryInfo?: CategoryFormInfo | undefined;
+    categoryInfo?: CategoryAttributeListData | undefined;
 }
 
 export class T implements IT {

@@ -30,6 +30,7 @@ public class CategoryService(Context dbContext,
         return DbContext.CategoryAttributes
             .Where(ca => ca.CategoryId == categoryId || parentCategoryIds.Contains(ca.CategoryId));
     }
+
     public IQueryable<int> GetCategoryListFromAdvertisementIds(IEnumerable<int> ids)
     {
         return AdvertisementService.GetActiveAdvertisements(DbContext.Advertisements)
@@ -43,7 +44,7 @@ public class CategoryService(Context dbContext,
     {
         var locale = _cookieSettingsHelper.Settings.NormalizedLocale;
         var categoryAttributes = GetCategoryAndParentAttributes(categoryId);
-        return await 
+        return await
             Where(c => c.Id == categoryId)
             .Select(c => new CategoryInfo()
             {
@@ -80,11 +81,11 @@ public class CategoryService(Context dbContext,
             .FirstOrDefaultAsync() ?? throw new ApiException([CustomErrorCodes.NotFound]);
     }
 
-    public async Task<CategoryFormInfo> GetCategoryFormInfo(int categoryId)
+    public async Task<CategoryAttributeListData> GetCategoryFormInfo(int categoryId)
     {
         var locale = _cookieSettingsHelper.Settings.NormalizedLocale;
         var categoryAttributes = GetCategoryAndParentAttributes(categoryId);
-        return new CategoryFormInfo()
+        return new CategoryAttributeListData()
         {
             AttributeInfo = await categoryAttributes
                 .OrderBy(ca => ca.AttributeOrder)
@@ -114,5 +115,33 @@ public class CategoryService(Context dbContext,
                 })
                 .ToListAsync()
         };
+    }
+
+    public async Task UpdateCategory(Category category)
+    {
+        var existingCategory = (await DbSet
+            .Include(c => c.LocalisedNames)
+            .Include(c => c.CategoryAttributes)
+            .FirstOrDefaultAsync(c => c.Id == category.Id)) 
+            ?? throw new ApiException([CustomErrorCodes.NotFound]);
+        
+        if (existingCategory.LocalisedNames != null && existingCategory.LocalisedNames.Count > 0)
+        {
+            foreach (var locName in existingCategory.LocalisedNames)
+            {
+                var updatedName = category.LocalisedNames.FirstOrDefault(l => string.Equals(locName.Locale, l.Locale, StringComparison.CurrentCultureIgnoreCase));
+                if (updatedName != null)
+                {
+                    updatedName.Id = locName.Id;
+                }
+            }
+        }
+
+        existingCategory.LocalisedNames = category.LocalisedNames;
+        existingCategory.ParentCategoryId = category.ParentCategoryId;
+        existingCategory.CanContainAdvertisements = category.CanContainAdvertisements;
+        existingCategory.CategoryAttributes = category.CategoryAttributes;
+
+        await UpdateAsync(existingCategory);
     }
 }

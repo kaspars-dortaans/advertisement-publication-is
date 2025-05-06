@@ -34,6 +34,7 @@ public enum Permissions
     ViewSystemPayments,
 
     //Manage categories
+    ViewCategories,
     CreateCategory,
     EditCategory,
     DeleteCategory,

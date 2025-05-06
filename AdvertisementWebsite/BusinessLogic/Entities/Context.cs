@@ -61,7 +61,8 @@ public class Context(DbContextOptions<Context> options) : IdentityDbContext<User
             .WithMany(c => c.Users)
             .UsingEntity<ChatUser>();
 
-        modelBuilder.Entity<Category>()
+        var categoryBuilder = modelBuilder.Entity<Category>();
+        categoryBuilder
             .HasMany(c => c.Attributes)
             .WithMany(a => a.UsedInCategories)
             .UsingEntity<CategoryAttribute>(
@@ -70,6 +71,12 @@ public class Context(DbContextOptions<Context> options) : IdentityDbContext<User
                 j => j.HasKey(ca => new { ca.CategoryId, ca.AttributeId })
             );
 
+        categoryBuilder
+            .HasOne(c => c.ParentCategory)
+            .WithMany(c => c.ChildCategories)
+            .IsRequired(false)
+            .OnDelete(DeleteBehavior.Cascade);
+    
         var advertisementBuilder = modelBuilder.Entity<Advertisement>();
         advertisementBuilder
             .HasMany(a => a.BookmarksOwners)

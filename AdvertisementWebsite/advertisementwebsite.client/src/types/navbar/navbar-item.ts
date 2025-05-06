@@ -5,4 +5,5 @@ export interface INavbarItem extends MenuItem {
   avatar?: boolean
   showForUnauthenticated?: boolean
   badgeValue?: Ref<number | string> | ComputedRef<number | string>
+  doNotShowWithoutItems?: boolean
 }
