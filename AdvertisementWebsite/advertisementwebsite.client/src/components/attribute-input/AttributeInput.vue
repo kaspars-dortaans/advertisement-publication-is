@@ -8,9 +8,10 @@
       :id="inputId"
       :minFractionDigits="0"
       :maxFractionDigits="valueType === ValueTypes.Decimal ? 5 : 0"
+      :disabled="disabled"
+      :showClear="!disabled"
       optionLabel="name"
       optionValue="id"
-      showClear
       fluid
     ></component>
     <label :for="inputId">{{ props.label }}</label>
@@ -27,6 +28,7 @@ const props = defineProps<{
   label?: string
   valueList?: AttributeValueListItem[]
   invalid?: boolean
+  disabled?: boolean
 }>()
 
 const model = defineModel<string | number>()

@@ -6,6 +6,7 @@
         :options="categoryOptions"
         :invalid="field?.hasError && i === categorySelectOptions.length - 1"
         :id="'category-select-' + i"
+        :disabled="disabled"
         optionLabel="name"
         optionValue="id"
         fluid
@@ -31,6 +32,8 @@ import FieldError from './FieldError.vue'
 const props = defineProps<{
   categoryList: CategoryItem[]
   field?: Field<number, T>
+  value?: number
+  disabled?: boolean
 }>()
 const emit = defineEmits(['selectedCategory'])
 
@@ -97,25 +100,28 @@ watch(
   }
 )
 
-watch(props.field!.model, (newValue) => {
-  const selectedLength = selectedCategories.value.length
-  //If selection has not changed return
-  if (
-    (selectedLength && newValue === selectedCategories.value[selectedLength - 1]) ||
-    (selectedCategories.value[selectedLength - 1] == null &&
-      selectedCategories.value[selectedLength - 2] === newValue)
-  ) {
-    return
-  }
+watch(
+  () => props.field?.model?.value || props.value,
+  (newValue) => {
+    const selectedLength = selectedCategories.value.length
+    //If selection has not changed return
+    if (
+      (selectedLength && newValue === selectedCategories.value[selectedLength - 1]) ||
+      (selectedCategories.value[selectedLength - 1] == null &&
+        selectedCategories.value[selectedLength - 2] === newValue)
+    ) {
+      return
+    }
 
-  //Rebuild selection list
-  selectedCategories.value = []
-  let categoryId: number | undefined = newValue
-  let category: CategoryItem | undefined
-  while ((category = props.categoryList.find((c) => c.id === categoryId)) != null) {
-    selectedCategories.value.unshift(category.id!)
-    categoryId = category.parentCategoryId
+    //Rebuild selection list
+    selectedCategories.value = []
+    let categoryId: number | undefined = newValue
+    let category: CategoryItem | undefined
+    while ((category = props.categoryList.find((c) => c.id === categoryId)) != null) {
+      selectedCategories.value.unshift(category.id!)
+      categoryId = category.parentCategoryId
+    }
+    resetCategoryOptionsLists()
   }
-  resetCategoryOptionsLists()
-})
+)
 </script>

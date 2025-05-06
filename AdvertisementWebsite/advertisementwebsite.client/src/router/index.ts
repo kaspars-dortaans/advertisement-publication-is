@@ -210,7 +210,13 @@ const router = createRouter({
             requiresPermission: Permissions.CreateOwnedAdvertisementNotificationSubscription
           }
         },
-
+        {
+          path: 'view/:subscriptionId',
+          name: 'viewAdvertisementNotificationSubscription',
+          component: () =>
+            import('../views/advertisement-notification-subscriptions/ViewSubscription.vue'),
+          props: (route) => ({ subscriptionId: toNumberOrUndefined(route.params.subscriptionId) })
+        },
         {
           path: 'edit/:subscriptionId',
           name: 'editAdvertisementNotificationSubscription',

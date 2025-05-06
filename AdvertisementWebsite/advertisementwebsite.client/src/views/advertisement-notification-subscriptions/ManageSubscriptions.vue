@@ -110,6 +110,15 @@
               params: { subscriptionId: '' + slotProps.data.id }
             }"
           />
+          <Button
+            :label="l.actions.view"
+            severity="secondary"
+            as="RouterLink"
+            :to="{
+              name: 'viewAdvertisementNotificationSubscription',
+              params: { subscriptionId: '' + slotProps.data.id }
+            }"
+          />
         </div>
       </template>
     </Column>

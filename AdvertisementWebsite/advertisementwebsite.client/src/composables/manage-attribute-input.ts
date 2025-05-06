@@ -1,6 +1,6 @@
 import {
+  CategoryAttributeListData,
   CategoryClient,
-  CategoryFormInfo,
   CategoryItem,
   ValueTypes,
   type AttributeFormInfo,
@@ -8,7 +8,7 @@ import {
 } from '@/services/api-client'
 import { FieldHelper } from '@/utils/field-helper'
 import { matchArrayElement } from '@/validators/custom-validators'
-import { type FormContext, type Path, type PathValue } from 'vee-validate'
+import { type FormContext, type Path, type PathValue, type ValidationResult } from 'vee-validate'
 import { ref, type Ref } from 'vue'
 import { number, Schema, string, type AnyObject } from 'yup'
 
@@ -47,13 +47,24 @@ export const useValidateAttributeInput = (attributeInfo: Ref<AttributeFormInfo[]
 }
 
 export const useManageAttributeInput = <F extends formType>(
-  form: FormContext<F>,
-  fieldHelper: FieldHelper<F>,
   categoryList: Ref<CategoryItem[]>,
   attributeInfo: Ref<AttributeFormInfo[]>,
-  categoryService: CategoryClient
+  categoryService: CategoryClient,
+  form?: FormContext<F>,
+  fieldHelper?: FieldHelper<F>
 ) => {
-  const { setFieldValue, validateField, values } = form
+  let setFieldValueFn: (p: Path<F>, v: PathValue<F, Path<F>>) => void = () => {}
+  let validateFieldFn: (p: Path<F>) => Promise<ValidationResult<unknown>> = () => {
+    return Promise.resolve({ valid: true, errors: [] })
+  }
+  let formValues: F | undefined
+
+  if (form) {
+    const { setFieldValue, validateField, values } = form
+    setFieldValueFn = setFieldValue
+    validateFieldFn = validateField
+    formValues = values
+  }
 
   const loadingAttributes = ref(false)
   const attributeValueLists = ref<AttributeValueListItem[]>([])
@@ -68,25 +79,25 @@ export const useManageAttributeInput = <F extends formType>(
   const loadCategoryInfo = async (categoryId: number) => {
     const loadFlag = attributeInfo.value.length ? loadingAttributes : loading
     loadFlag.value = true
-    setFieldValue('attributeValues' as Path<F>, [] as PathValue<F, Path<F>>)
-    const result = await categoryService.getCategoryFormInfo(categoryId)
+    setFieldValueFn('attributeValues' as Path<F>, [] as PathValue<F, Path<F>>)
+    const result = await categoryService.getCategoryAttributeInfo(categoryId)
     setCategoryInfo(result)
     loadFlag.value = false
   }
 
   const handleSelectedCategory = async (newValue: number) => {
-    setFieldValue('categoryId' as Path<F>, newValue as PathValue<F, Path<F>>)
-    const categoryIdValidationResult = await validateField('categoryId' as Path<F>)
+    setFieldValueFn('categoryId' as Path<F>, newValue as PathValue<F, Path<F>>)
+    const categoryIdValidationResult = await validateFieldFn('categoryId' as Path<F>)
 
-    if (categoryIdValidationResult.valid) {
-      loadCategoryInfo(values.categoryId)
+    if (categoryIdValidationResult.valid && formValues) {
+      loadCategoryInfo(formValues.categoryId)
     } else {
       attributeInfo.value = []
       attributeValueLists.value = []
     }
   }
 
-  const setCategoryInfo = (categoryInfo?: CategoryFormInfo) => {
+  const setCategoryInfo = (categoryInfo?: CategoryAttributeListData) => {
     if (categoryInfo?.attributeInfo) {
       ensureAttributesHaveModels(categoryInfo.attributeInfo)
     }
@@ -96,6 +107,10 @@ export const useManageAttributeInput = <F extends formType>(
   }
 
   const ensureAttributesHaveModels = (attributeInfo: AttributeFormInfo[]) => {
+    if (!fieldHelper) {
+      return
+    }
+
     const existingAttributeModelCount = Object.keys(fieldHelper.fields).filter((k) =>
       k.startsWith('attributeValues[')
     ).length

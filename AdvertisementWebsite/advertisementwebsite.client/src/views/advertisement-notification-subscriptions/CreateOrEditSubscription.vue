@@ -112,8 +112,8 @@
           <Button
             :loading="isSubmitting"
             :label="isEdit ? l.actions.save : l.actions.create"
-            type="submit"
             class="mx-auto"
+            @click="submit"
           />
         </form>
       </Panel>
@@ -225,11 +225,11 @@ const {
   loadCategoryList,
   handleSelectedCategory
 } = useManageAttributeInput<PutNotificationSubscriptionForm>(
-  form,
-  fieldHelper,
   categoryList,
   attributeInfo,
-  categoryService
+  categoryService,
+  form,
+  fieldHelper
 )
 
 //Hooks

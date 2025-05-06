@@ -258,11 +258,11 @@ const {
   loadCategoryInfo,
   loadCategoryList
 } = useManageAttributeInput<CreateOrEditAdvertisementForm>(
-  form,
-  fieldHelper,
   categoryList,
   attributeInfo,
-  categoryService
+  categoryService,
+  form,
+  fieldHelper
 )
 
 //Hooks
