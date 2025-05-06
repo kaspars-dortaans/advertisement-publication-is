@@ -6557,6 +6557,7 @@ export class PutCategoryRequest implements IPutCategoryRequest {
     localizedNames!: StringStringKeyValuePair[];
     canContainAdvertisements!: boolean;
     parentCategoryId?: number | undefined;
+    parentCategoryName?: string | undefined;
     categoryAttributeOrder!: Int32StringKeyValuePair[];
 
     constructor(data?: IPutCategoryRequest) {
@@ -6582,6 +6583,7 @@ export class PutCategoryRequest implements IPutCategoryRequest {
             }
             this.canContainAdvertisements = _data["canContainAdvertisements"];
             this.parentCategoryId = _data["parentCategoryId"];
+            this.parentCategoryName = _data["parentCategoryName"];
             if (Array.isArray(_data["categoryAttributeOrder"])) {
                 this.categoryAttributeOrder = [] as any;
                 for (let item of _data["categoryAttributeOrder"])
@@ -6607,6 +6609,7 @@ export class PutCategoryRequest implements IPutCategoryRequest {
         }
         data["canContainAdvertisements"] = this.canContainAdvertisements;
         data["parentCategoryId"] = this.parentCategoryId;
+        data["parentCategoryName"] = this.parentCategoryName;
         if (Array.isArray(this.categoryAttributeOrder)) {
             data["categoryAttributeOrder"] = [];
             for (let item of this.categoryAttributeOrder)
@@ -6621,6 +6624,7 @@ export interface IPutCategoryRequest {
     localizedNames: StringStringKeyValuePair[];
     canContainAdvertisements: boolean;
     parentCategoryId?: number | undefined;
+    parentCategoryName?: string | undefined;
     categoryAttributeOrder: Int32StringKeyValuePair[];
 }
 

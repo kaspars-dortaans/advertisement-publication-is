@@ -10,6 +10,7 @@
             v-model="model[i]"
             :invalid="invalid"
             :id="'localized-text-input-' + i"
+            :disabled="disabled"
             fluid
           />
           <label :for="'localized-text-input-' + i">{{ locale }} {{ label }}</label>
@@ -27,6 +28,7 @@ const props = defineProps<{
   localeList: string[]
   invalid?: boolean
   label: string
+  disabled?: boolean
 }>()
 const currentTab = ref(0)
 const model = defineModel<string[]>({

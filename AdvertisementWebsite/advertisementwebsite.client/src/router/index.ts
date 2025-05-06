@@ -273,6 +273,17 @@ const router = createRouter({
           }
         },
         {
+          path: 'view/:categoryId',
+          name: 'viewCategory',
+          component: () => import('../views/categories/ViewCategory.vue'),
+          props: (route) => ({
+            categoryId: toNumberOrUndefined(route.params.categoryId)
+          }),
+          meta: {
+            requiresPermission: Permissions.ViewCategories
+          }
+        },
+        {
           path: 'create/:parentCategoryId?',
           name: 'createCategory',
           component: () => import('../views/categories/CategoryForm.vue'),

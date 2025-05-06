@@ -150,7 +150,7 @@
       "title": "Nosaukums",
       "parentCategory": "Virs kategorija",
       "addCategoryAttributes": "Pievienot atribūtus kategorijai",
-      "attributeOrderList": "Kategorija atribūtu secība",
+      "attributeOrderList": "Kategorijas atribūtu secība",
       "canContainAdvertisements": "Var saturēt sludinājumus"
     }
   },
@@ -200,7 +200,8 @@
     "manage": "Pārvaldīt",
     "manageCategories": "Pārvaldīt kategorijas",
     "createCategory": "Izveidot kategoriju",
-    "editCategory": "Rediģēt kategoriju"
+    "editCategory": "Rediģēt kategoriju",
+    "viewCategory": "Skatīt kategoriju"
   },
   "dataSize": {
     "bits": "{0} biti",

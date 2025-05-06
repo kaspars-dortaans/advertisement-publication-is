@@ -15,12 +15,20 @@
           <span>{{ slotProps.node.label }}</span>
           <span :class="{ 'bg-surface-100 rounded-md': slotProps.selected }" @click.stop>
             <Button
+              v-if="isAllowedToCreate"
               icon="pi pi-plus-circle"
               variant="text"
               as="RouterLink"
               :to="{ name: 'createCategory', params: { parentCategoryId: slotProps.node.key } }"
             />
             <Button
+              icon="pi pi-eye"
+              variant="text"
+              as="RouterLink"
+              :to="{ name: 'viewCategory', params: { categoryId: slotProps.node.key } }"
+            />
+            <Button
+              v-if="isAllowedToEdit"
               icon="pi pi-pencil"
               variant="text"
               severity="secondary"
@@ -28,6 +36,7 @@
               :to="{ name: 'editCategory', params: { categoryId: slotProps.node.key } }"
             />
             <Button
+              v-if="isAllowedToDelete"
               icon="pi pi-trash"
               variant="text"
               severity="danger"
@@ -53,7 +62,7 @@
 <script lang="ts" setup>
 import ResponsiveLayout from '@/components/common/ResponsiveLayout.vue'
 import BlockWithSpinner from '@/components/common/BlockWithSpinner.vue'
-import { onBeforeMount, ref, watch } from 'vue'
+import { computed, onBeforeMount, ref, watch } from 'vue'
 import { type TreeNode } from 'primevue/treenode'
 import { getClient } from '@/utils/client-builder'
 import { CategoryClient, CategoryItem } from '@/services/api-client'
@@ -61,6 +70,8 @@ import { buildNodeHierarchy } from '@/utils/build-node-hierarchy'
 import { LocaleService } from '@/services/locale-service'
 import { useConfirm } from 'primevue'
 import { confirmDelete } from '@/utils/confirm-dialog'
+import { AuthService } from '@/services/auth-service'
+import { Permissions } from '@/constants/api/Permissions'
 
 //Services
 const categoryService = getClient(CategoryClient)
@@ -72,6 +83,9 @@ const confirm = useConfirm()
 const loadingCategories = ref(false)
 const categoryNodes = ref<TreeNode[]>([])
 const selectedCategoryNodes = ref({})
+const isAllowedToCreate = computed(() => AuthService.hasPermission(Permissions.CreateCategory))
+const isAllowedToEdit = computed(() => AuthService.hasPermission(Permissions.EditCategory))
+const isAllowedToDelete = computed(() => AuthService.hasPermission(Permissions.DeleteCategory))
 
 //Hooks
 onBeforeMount(() => {

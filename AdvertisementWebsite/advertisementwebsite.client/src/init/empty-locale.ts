@@ -202,7 +202,8 @@ export const emptyLocale = {
     manage: '',
     manageCategories: '',
     createCategory: '',
-    editCategory: ''
+    editCategory: '',
+    viewCategory: ''
   },
   dataSize: {
     bits: '',

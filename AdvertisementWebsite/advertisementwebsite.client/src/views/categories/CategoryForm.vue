@@ -50,8 +50,6 @@
               v-bind="fields.canContainAdvertisements!.attributes"
               :invalid="fields.canContainAdvertisements!.hasError"
               id="can-contain-advertisements-input"
-              fluid
-              @complete="searchCategories"
             />
             <label for="can-contain-advertisements-input">{{
               l.form.categoryForm.canContainAdvertisements

@@ -15,6 +15,11 @@ public class PutCategoryRequest
     public bool CanContainAdvertisements { get; set; }
     
     public int? ParentCategoryId { get; set; }
+    
+    /// <summary>
+    /// Used only to send category name to frontend
+    /// </summary>
+    public string? ParentCategoryName { get; set; }
 
     [Required(ErrorMessage = CustomErrorCodes.MissingRequired)]
     public IEnumerable<KeyValuePair<int, string>> CategoryAttributeOrder { get; set; } = default!;

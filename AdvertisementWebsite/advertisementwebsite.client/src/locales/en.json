@@ -200,7 +200,8 @@
     "manage": "Manage",
     "manageCategories": "Manage categories",
     "createCategory": "Create category",
-    "editCategory": "Edit category"
+    "editCategory": "Edit category",
+    "viewCategory": "View category"
   },
   "dataSize": {
     "bits": "{0} b",

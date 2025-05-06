@@ -1,6 +1,6 @@
 <template>
   <div :class="{ 'p-invalid': invalid }">
-    <FloatLabel variant="on">
+    <FloatLabel v-if="!disabled" variant="on">
       <AutoComplete
         v-model="addAttributeModel"
         :suggestions="suggestedLookups"
@@ -15,7 +15,7 @@
     <Draggable
       v-if="model.length"
       v-model="model"
-      :disabled="false"
+      :disabled="disabled"
       itemKey="key"
       class="flex flex-col gap-2 mt-2"
     >
@@ -24,11 +24,13 @@
       </template>
       <template #item="{ element, index }">
         <p
-          class="inline-flex gap-2 items-center px-2 cursor-pointer bg-surface-100 hover:bg-surface-200 rounded-md"
+          class="inline-flex gap-2 items-center px-2 bg-surface-100 rounded-md"
+          :class="{ 'cursor-pointer hover:bg-surface-200': !disabled }"
         >
           <i class="pi pi-sort" />
           <span>{{ index + 1 }}. {{ element.value }}</span>
           <Button
+            :disabled="disabled"
             class="ml-auto"
             icon="pi pi-trash"
             severity="danger"
@@ -57,6 +59,7 @@ const props = defineProps<{
   inputLabel: string
   listLabel: string
   invalid?: boolean
+  disabled?: boolean
 }>()
 
 const suggestedLookups = ref<Int32StringKeyValuePair[]>([])
