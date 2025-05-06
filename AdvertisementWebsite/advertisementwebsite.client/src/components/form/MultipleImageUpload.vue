@@ -4,7 +4,7 @@
       <p>{{ ls.l('imageUpload.imagesUploaded', images?.length ?? 0, maxImageCount) }}</p>
     </template>
 
-    <draggable
+    <Draggable
       v-model="images"
       :disabled="false"
       itemKey="url"
@@ -44,7 +44,7 @@
           </Button>
         </div>
       </template>
-    </draggable>
+    </Draggable>
 
     <FieldError :messages="allErrors" />
     <input
@@ -67,7 +67,7 @@ import { fileSize, fileType, uniqueFile } from '@/validators/custom-validators'
 import { computed, onBeforeUnmount, ref, useTemplateRef, watch } from 'vue'
 import { mixed, ValidationError } from 'yup'
 import FieldError from './FieldError.vue'
-import draggable from 'vuedraggable'
+import Draggable from 'vuedraggable'
 import { ImageUrl } from '@/services/api-client'
 
 //Props and model

@@ -1,6 +1,6 @@
 <template>
   <ResponsiveLayout>
-    <BlockWithSpinner :loading="loading > 0" class="flex-1 lg:flex-none flex">
+    <BlockWithSpinner :loading="loading" class="flex-1 lg:flex-none flex">
       <Panel class="flex-1 rounded-none lg:rounded-md">
         <template #header>
           <div class="panel-title-container">

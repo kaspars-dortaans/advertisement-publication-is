@@ -85,7 +85,7 @@
                 class="flex-none w-28 h-28 object-cover rounded-md"
               />
               <div class="flex flex-col gap-2">
-                <h4>{{ slotProps.data.title }}</h4>
+                <h4 class="font-semibold">{{ slotProps.data.title }}</h4>
                 <p class="line-clamp-2">{{ slotProps.data.advertisementText }}</p>
                 <AttributeValuesList
                   :advertisementId="slotProps.data.id"
@@ -109,6 +109,7 @@
 </template>
 
 <script setup lang="ts">
+import defaultAdvertisementThumbnail from '@/assets/images/image-gallery-surface-400.png'
 import DynamicFilter from '@/components/filters/DynamicFilter.vue'
 import { Direction } from '@/constants/api/Direction'
 import { DefaultPageSize, PageSizeOptions, PaginatorTemplate } from '@/constants/data-table'
@@ -136,7 +137,6 @@ import {
 } from 'primevue'
 import { computed, onMounted, ref, watch, type ComputedRef } from 'vue'
 import AttributeValuesList from './AttributeValuesList.vue'
-import defaultAdvertisementThumbnail from '@/assets/images/image-gallery.png'
 
 const props = defineProps<{
   advertisementSource: (

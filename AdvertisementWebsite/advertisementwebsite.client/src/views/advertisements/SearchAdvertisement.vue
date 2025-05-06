@@ -1,7 +1,7 @@
 <template>
   <ResponsiveLayout>
     <AdvertisementTable
-      :advertisementSource="(q) => loadAdvertisements(q)"
+      :advertisementSource="(q: DataTableQuery) => loadAdvertisements(q)"
       :groupByCategory="true"
       ref="advertisementTable"
     >
@@ -21,6 +21,7 @@ import BackButton from '@/components/common/BackButton.vue'
 import ResponsiveLayout from '@/components/common/ResponsiveLayout.vue'
 import {
   AdvertisementClient,
+  DataTableQuery,
   SearchQuery,
   TableColumn,
   type AdvertisementQuery
