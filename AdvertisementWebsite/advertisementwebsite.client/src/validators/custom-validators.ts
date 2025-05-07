@@ -49,7 +49,7 @@ export const matchArrayElement = (regexp: RegExp, elementName?: string): TestFun
     const match = ('' + value).match(regexp)
     if (!match) {
       return context.createError({
-        message: ls.l('errors.FieldNotValid', elementName ?? context.path)
+        message: ({ label, path }) => ls.l('errors.FieldNotValid', elementName || label || path)
       })
     }
     return true
@@ -65,7 +65,7 @@ export const fileType = (allowedFileTypes: string | string[]): TestFunction => {
   return async function (value, context) {
     if (!(value instanceof File)) {
       return context.createError({
-        message: ls.l('errors.FieldNotValid', context.path)
+        message: ({ label, path }) => ls.l('errors.FieldNotValid', label || path)
       })
     }
 
@@ -89,7 +89,7 @@ export const fileSize = (maxFileSizeInBytes: number): TestFunction => {
     if (Array.isArray(value)) {
       if (value.length && value.some((f) => !(f instanceof File))) {
         return context.createError({
-          message: ls.l('errors.FieldNotValid', context.path)
+          message: ({ label, path }) => ls.l('errors.FieldNotValid', label || path)
         })
       }
       files = []
@@ -97,7 +97,7 @@ export const fileSize = (maxFileSizeInBytes: number): TestFunction => {
       files = [value]
     } else {
       return context.createError({
-        message: ls.l('errors.FieldNotValid', context.path)
+        message: ({ label, path }) => ls.l('errors.FieldNotValid', label || path)
       })
     }
 
@@ -127,7 +127,7 @@ export const uniqueFile = (existingFileHashes: IFileHashDto[]): TestFunction => 
       !(value.file instanceof File)
     ) {
       return context.createError({
-        message: ls.l('errors.FieldNotValid', context.path)
+        message: ({ label, path }) => ls.l('errors.FieldNotValid', label || path)
       })
     }
 
@@ -147,7 +147,7 @@ export const requiredWhen = (predicate: Ref<boolean> | (() => boolean)): TestFun
     const predicateValue = isRef(predicate) ? predicate.value : predicate()
     if (predicateValue && value == null) {
       return context.createError({
-        message: ls.l('errors.RequiredField', context.path)
+        message: ({ label, path }) => ls.l('errors.RequiredField', label || path)
       })
     }
     return true
