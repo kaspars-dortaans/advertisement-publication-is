@@ -22,7 +22,7 @@
 </template>
 
 <script setup lang="ts">
-import AdvertisementTable from '@/components/AdvertisementTable.vue'
+import AdvertisementTable from '@/components/advertisements/AdvertisementTable.vue'
 import ResponsiveLayout from '@/components/common/ResponsiveLayout.vue'
 import { confirmDelete } from '@/utils/confirm-dialog'
 import {

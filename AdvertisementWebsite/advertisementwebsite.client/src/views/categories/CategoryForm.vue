@@ -16,7 +16,7 @@
 
           <!-- Title -->
           <LocaleTextInput
-            v-model="fields.localizedNames!.model.value"
+            v-model="fields.localizedNames!.value"
             v-bind="fields.localizedNames?.attributes"
             :invalid="fields.localizedNames?.hasError"
             :localeList="ls.localeList.value"
@@ -69,7 +69,7 @@
             :listLabel="l.form.categoryForm.attributeOrderList"
           />
 
-          <Button :label="isEdit ? l.actions.edit : l.actions.save" type="submit" class="mt-3" />
+          <Button :label="isEdit ? l.actions.save : l.actions.create" type="submit" class="mt-3" />
         </form>
       </Panel>
     </BlockWithSpinner>

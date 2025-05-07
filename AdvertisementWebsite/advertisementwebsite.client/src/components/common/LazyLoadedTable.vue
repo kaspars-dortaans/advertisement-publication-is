@@ -11,7 +11,7 @@
       :totalRecords="totalRecordCount"
       :selectionMode="selectionMode"
       sortMode="multiple"
-      class="bg-white flex-1 lg:flex-none rounded-none lg:rounded-md"
+      class="bg-white flex-1 lg:flex-grow-0 lg:flex-shrink-1 lg:basis-auto lg:max-w-full rounded-none lg:rounded-md"
       removableSort
       paginator
       lazy

@@ -222,6 +222,11 @@ const isAllowedToDelete = computed(() =>
   AuthService.hasPermission(Permissions.DeleteOwnedAdvertisementNotificationSubscriptions)
 )
 
+//watch
+watch(LocaleService.currentLocaleName, () => {
+  table.value?.refresh()
+})
+
 //Methods
 const advertisementNotificationSource = async (query: DataTableQuery) => {
   return await subscriptionService.getAdvertisementNotificationSubscriptions(query)
