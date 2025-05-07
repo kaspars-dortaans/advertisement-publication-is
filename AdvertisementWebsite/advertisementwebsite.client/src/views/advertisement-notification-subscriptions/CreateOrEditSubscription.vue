@@ -29,7 +29,7 @@
               <template v-if="!isEdit">
                 <FloatLabel variant="on">
                   <Select
-                    v-model="fields.paidTime!.model"
+                    v-model="fields.paidTime!.value"
                     v-bind="fields.paidTime?.attributes"
                     :invalid="fields.paidTime?.hasError"
                     :options="timeOptions"
@@ -70,7 +70,7 @@
               <!-- Keywords -->
               <FloatLabel variant="on">
                 <AutoComplete
-                  v-model="fields.keywords!.model"
+                  v-model="fields.keywords!.value"
                   v-bind="fields.keywords?.attributes"
                   :typeahead="false"
                   :invalid="fields.keywords?.hasError"

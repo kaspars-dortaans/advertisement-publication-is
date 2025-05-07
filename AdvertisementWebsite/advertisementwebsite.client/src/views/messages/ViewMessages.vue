@@ -71,7 +71,7 @@
               <Button class="min-w-10" icon="pi pi-paperclip" rounded @click="selectAttachments" />
               <div class="flex-1">
                 <Textarea
-                  v-model="fields.text!.model.value"
+                  v-model="fields.text!.value"
                   v-bind="fields.text?.attributes"
                   :valid="fields.text?.hasError"
                   :rows="1"
@@ -89,7 +89,7 @@
                 rounded
               />
               <AttachmentUpload
-                v-model="fields.attachments!.model.value"
+                v-model="fields.attachments!.value"
                 v-bind="fields.attachments?.attributes"
                 :invalid="fields.attachments?.hasError"
                 ref="fileInput"

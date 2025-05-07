@@ -23,7 +23,7 @@
           </Panel>
           <FloatLabel variant="on">
             <Select
-              v-model="fields.extendTime!.model"
+              v-model="fields.extendTime!.value"
               v-bind="fields.extendTime?.attributes"
               :options="timeOptions"
               :invalid="fields.extendTime?.hasError"

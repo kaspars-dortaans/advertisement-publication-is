@@ -101,7 +101,7 @@ watch(
 )
 
 watch(
-  () => props.field?.model?.value || props.value,
+  () => props.field?.value || props.value,
   (newValue) => {
     const selectedLength = selectedCategories.value.length
     //If selection has not changed return

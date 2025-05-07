@@ -13,7 +13,7 @@
   <template v-else-if="attributeFields">
     <template v-for="(attribute, i) in attributes" :key="attribute.id">
       <AttributeInput
-        v-model="attributeFields[i].model.value"
+        v-model="attributeFields[i].value"
         v-bind="attributeFields[i].attributes"
         :label="attribute.name"
         :valueType="attribute.attributeValueType!"

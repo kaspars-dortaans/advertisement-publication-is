@@ -143,7 +143,7 @@ import { LocaleService } from '@/services/locale-service'
 import { getClient } from '@/utils/client-builder'
 import { confirmDelete } from '@/utils/confirm-dialog'
 import { useConfirm } from 'primevue'
-import { computed, ref, useTemplateRef } from 'vue'
+import { computed, ref, useTemplateRef, watch } from 'vue'
 import { useRouter } from 'vue-router'
 
 const { push } = useRouter()

@@ -12,7 +12,7 @@
           <form class="flex flex-col space-y-2" @submit="pay">
             <h4 class="font-semibold">{{ l.makePayment.paymentOptions }}</h4>
             <Listbox
-              v-model="fields.paymentOption!.model"
+              v-model="fields.paymentOption!.value"
               v-bind="fields.paymentOption?.attributes"
               :invalid="fields.paymentOption?.hasError"
               :options="paymentOptions"

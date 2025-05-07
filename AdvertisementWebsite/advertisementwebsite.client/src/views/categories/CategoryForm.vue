@@ -29,7 +29,7 @@
           <!-- Parent category -->
           <FloatLabel variant="on">
             <AutoComplete
-              v-model="fields.parentCategory!.model"
+              v-model="fields.parentCategory!.value"
               v-bind="fields.parentCategory!.attributes"
               :invalid="fields.parentCategory!.hasError"
               :suggestions="suggestedLookups"
@@ -46,7 +46,7 @@
           <!-- Can contain advertisements -->
           <div class="inline-flex gap-2 mt-4">
             <ToggleSwitch
-              v-model="fields.canContainAdvertisements!.model.value"
+              v-model="fields.canContainAdvertisements!.value"
               v-bind="fields.canContainAdvertisements!.attributes"
               :invalid="fields.canContainAdvertisements!.hasError"
               id="can-contain-advertisements-input"
@@ -61,7 +61,7 @@
 
           <!-- Attribute list -->
           <OrderableList
-            v-model="fields.categoryAttributeOrder!.model.value"
+            v-model="fields.categoryAttributeOrder!.value"
             v-bind="fields.categoryAttributeOrder?.attributes"
             :invalid="fields.categoryAttributeOrder?.hasError"
             :lookups="attributeLookup"

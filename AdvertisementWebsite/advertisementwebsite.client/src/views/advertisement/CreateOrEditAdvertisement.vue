@@ -20,7 +20,7 @@
               <template v-if="!isEdit">
                 <FloatLabel variant="on">
                   <Select
-                    v-model="fields.postTime!.model"
+                    v-model="fields.postTime!.value"
                     v-bind="fields.postTime?.attributes"
                     :invalid="fields.postTime?.hasError"
                     :options="postTimeOptions"
@@ -111,7 +111,7 @@
 
               <!-- Images -->
               <MultipleImageUpload
-                v-model="fields.imagesToAdd!.model.value"
+                v-model="fields.imagesToAdd!.value"
                 :maxImageCount="ImageConstants.MaxImageCountPerAdvertisement"
                 :accept="ImageConstants.AllowedFileTypes"
                 :maxFileSizeInBytes="ImageConstants.MaxFileSizeInBytes"
