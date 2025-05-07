@@ -89,7 +89,30 @@ export const emptyLocale = {
     totalForTimePeriod: '',
     timePeriod: ''
   },
+  manageAttributes: {
+    confirmDeleteHeader: '',
+    confirmDeleteMessage: '',
+    title: '',
+    valueType: '',
+    filterType: '',
+    attributeValueListName: '',
+    sortable: '',
+    searchable: '',
+    showOnListItem: '',
+    iconName: ''
+  },
   form: {
+    attributeForm: {
+      title: '',
+      valueType: '',
+      filterType: '',
+      attributeValueList: '',
+      sortable: '',
+      searchable: '',
+      showOnListItem: '',
+      iconName: '',
+      valueValidationRegex: ''
+    },
     categoryForm: {
       title: '',
       parentCategory: '',
@@ -203,7 +226,11 @@ export const emptyLocale = {
     manageCategories: '',
     createCategory: '',
     editCategory: '',
-    viewCategory: ''
+    viewCategory: '',
+    manageAttributes: '',
+    viewAttribute: '',
+    createAttribute: '',
+    editAttribute: ''
   },
   dataSize: {
     bits: '',
@@ -229,6 +256,17 @@ export const emptyLocale = {
     ExtendAdvertisement: '',
     CreateAdvertisementNotificationSubscription: '',
     ExtendAdvertisementNotificationSubscription: ''
+  },
+  valueType: {
+    Text: '',
+    Integer: '',
+    Decimal: '',
+    ValueListEntry: ''
+  },
+  filterType: {
+    Search: '',
+    FromTo: '',
+    Match: ''
   },
   dayNames: [
      '',

@@ -190,6 +190,7 @@ services.AddScoped<IChatService, ChatService>();
 services.AddScoped<IAdvertisementNotificationSubscriptionService, AdvertisementNotificationSubscriptionService>();
 services.AddScoped<IAttributeValidatorService, AttributeValidatorService>();
 services.AddScoped<IPaymentService, PaymentService>();
+services.AddScoped<IAttributeService, AttributeService>();
 
 //Helpers
 services.AddScoped<IStorage, LocalFileStorage>();

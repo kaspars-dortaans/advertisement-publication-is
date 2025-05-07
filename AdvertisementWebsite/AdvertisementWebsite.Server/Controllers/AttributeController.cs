@@ -1,0 +1,119 @@
+﻿using AdvertisementWebsite.Server.Dto.Attributes;
+using AutoMapper;
+using BusinessLogic.Authorization;
+using BusinessLogic.Constants;
+using BusinessLogic.Dto;
+using BusinessLogic.Dto.Attribute;
+using BusinessLogic.Dto.DataTableQuery;
+using BusinessLogic.Entities;
+using BusinessLogic.Exceptions;
+using BusinessLogic.Helpers;
+using BusinessLogic.Helpers.CookieSettings;
+using BusinessLogic.Services;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+
+namespace AdvertisementWebsite.Server.Controllers;
+
+[Authorize]
+[ApiController]
+[Route("api/[controller]/[action]")]
+public class AttributeController(
+    IAttributeService attributeService,
+    IBaseService<AttributeValueList> attributeValueListService,
+    IMapper mapper,
+    CookieSettingsHelper cookieSettingsHelper
+    ) : ControllerBase
+{
+    private readonly IAttributeService _attributeService = attributeService;
+    private readonly IBaseService<AttributeValueList> _attributeValueListService = attributeValueListService;
+    private readonly IMapper _mapper = mapper;
+    private readonly CookieSettingsHelper _cookieSettingsHelper = cookieSettingsHelper;
+
+    [HasPermission(Permissions.ViewAllAttributes)]
+    [ProducesResponseType<DataTableQueryResponse<AttributeListItem>>(StatusCodes.Status200OK)]
+    [ProducesResponseType<RequestExceptionResponse>(StatusCodes.Status400BadRequest)]
+    [HttpPost]
+    public async Task<DataTableQueryResponse<AttributeListItem>> GetAttributes(DataTableQuery query)
+    {
+        return await _attributeService.GetAttributes(query);
+    }
+
+    [HasPermission(Permissions.CreateAttribute)]
+    [ProducesResponseType<OkResult>(StatusCodes.Status200OK)]
+    [ProducesResponseType<RequestExceptionResponse>(StatusCodes.Status400BadRequest)]
+    [HttpPost]
+    public async Task CreateAttribute(PutAttributeRequest request)
+    {
+        var newAttribute = _mapper.Map<BusinessLogic.Entities.Attribute>(request);
+        await _attributeService.AddAsync(newAttribute);
+    }
+
+    [HasPermission(Permissions.ViewAllAttributes)]
+    [ProducesResponseType<PutAttributeRequest>(StatusCodes.Status200OK)]
+    [ProducesResponseType<RequestExceptionResponse>(StatusCodes.Status400BadRequest)]
+    [HttpPost]
+    public async Task<PutAttributeRequest> GetAttributeFormInfo(int attributeId)
+    {
+        var attributeData = (await _attributeService
+            .Where(a => a.Id == attributeId)
+            .Select(a => new PutAttributeRequest
+            {
+                Id = a.Id,
+                ValueType = a.ValueType,
+                FilterType = a.FilterType,
+                ValueValidationRegex = a.ValueValidationRegex,
+                AttributeValueListId = a.AttributeValueListId,
+                AttributeValueListName = a.AttributeValueList != null
+                    ? a.AttributeValueList.LocalisedNames.Localise(_cookieSettingsHelper.Settings.Locale)
+                    : null,
+                Sortable = a.Sortable,
+                Searchable = a.Searchable,
+                ShowOnListItem = a.ShowOnListItem,
+                LocalizedNames = a.AttributeNameLocales.Select(l => new KeyValuePair<string, string>(l.Locale, l.Text)),
+                IconName = a.IconName
+            })
+            .FirstOrDefaultAsync())
+            ?? throw new ApiException([CustomErrorCodes.NotFound]);
+
+        return attributeData;
+    }
+
+    [HasPermission(Permissions.ViewAllAttributes)]
+    [ProducesResponseType<IEnumerable<KeyValuePair<int, string>>>(StatusCodes.Status200OK)]
+    [ProducesResponseType<RequestExceptionResponse>(StatusCodes.Status400BadRequest)]
+    [HttpPost]
+    public async Task<IEnumerable<KeyValuePair<int, string>>> GetAttributeValueListLookup()
+    {
+        return await _attributeValueListService
+            .GetAll()
+            .Select(l => new KeyValuePair<int, string>(l.Id, l.LocalisedNames.Localise(_cookieSettingsHelper.Settings.Locale)))
+            .ToListAsync();
+    }
+
+    [HasPermission(Permissions.EditAttribute)]
+    [ProducesResponseType<OkResult>(StatusCodes.Status200OK)]
+    [ProducesResponseType<RequestExceptionResponse>(StatusCodes.Status400BadRequest)]
+    [HttpPost]
+    public async Task EditAttribute(PutAttributeRequest request)
+    {
+        if (request.Id == null)
+        {
+            throw new ApiException([], new Dictionary<string, IList<string>>() {
+                { nameof(PutAttributeRequest.Id), [CustomErrorCodes.NotFound]}
+            });
+        }
+        var updatedAttribute = _mapper.Map<BusinessLogic.Entities.Attribute>(request);
+        await _attributeService.UpdateAttribute(updatedAttribute);
+    }
+
+    [HasPermission(Permissions.DeleteAttribute)]
+    [ProducesResponseType<OkResult>(StatusCodes.Status200OK)]
+    [ProducesResponseType<RequestExceptionResponse>(StatusCodes.Status400BadRequest)]
+    [HttpPost]
+    public async Task DeleteAttribute(IEnumerable<int> ids)
+    {
+        await _attributeService.DeleteWhereAsync(c => ids.Contains(c.Id));
+    }
+}

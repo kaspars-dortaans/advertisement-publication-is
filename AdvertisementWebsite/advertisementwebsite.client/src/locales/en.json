@@ -87,6 +87,18 @@
     "totalForTimePeriod": "Total amount paid: {0}",
     "timePeriod": "Laika periods"
   },
+  "manageAttributes": {
+    "confirmDeleteHeader": "Delete attributes",
+    "confirmDeleteMessage": "{0} attributes will be deleted.",
+    "title": "Title",
+    "valueType": "Value type",
+    "filterType": "Filter type",
+    "attributeValueListName": "Value list name",
+    "sortable": "Is sortable",
+    "searchable": "Is searchable",
+    "showOnListItem": "Show in advertisement list",
+    "iconName": "Icon name"
+  },
   "form": {
     "common": {
       "dragAndDropToUpload": "Drag and drop here to upload",
@@ -152,6 +164,17 @@
       "addCategoryAttributes": "Add category attributes",
       "attributeOrderList": "Category attribute order",
       "canContainAdvertisements": "Can contain advertisements"
+    },
+    "attributeForm": {
+      "title": "Title",
+      "valueType": "Value type",
+      "filterType": "Filter type",
+      "attributeValueList": "Value list",
+      "sortable": "Is sortable",
+      "searchable": "Is searchable",
+      "showOnListItem": "Show in advertisement list",
+      "iconName": "Icon name",
+      "valueValidationRegex": "Value validation regex"
     }
   },
   "messages": {
@@ -201,7 +224,11 @@
     "manageCategories": "Manage categories",
     "createCategory": "Create category",
     "editCategory": "Edit category",
-    "viewCategory": "View category"
+    "viewCategory": "View category",
+    "manageAttributes": "Manage attributes",
+    "viewAttribute": "View attribute",
+    "createAttribute": "Create attribute",
+    "editAttribute": "Edit attribute"
   },
   "dataSize": {
     "bits": "{0} b",
@@ -227,6 +254,17 @@
     "ExtendAdvertisement": "Extend advertisement",
     "CreateAdvertisementNotificationSubscription": "Create advertisement notification subscription",
     "ExtendAdvertisementNotificationSubscription": "Extend advertisement notification subscription"
+  },
+  "valueType": {
+    "Text": "Text",
+    "Integer": "Integer",
+    "Decimal": "Decimal",
+    "ValueListEntry": "Value list entry"
+  },
+  "filterType": {
+    "Search": "Search by text",
+    "FromTo": "Search in range",
+    "Match": "Match exactly"
   },
   "dayNames": [
     "Sunday",

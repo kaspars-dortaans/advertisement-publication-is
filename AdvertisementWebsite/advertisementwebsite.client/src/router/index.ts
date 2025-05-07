@@ -312,6 +312,46 @@ const router = createRouter({
       ]
     },
 
+    {
+      path: '/attributes/',
+      children: [
+        {
+          path: 'view',
+          name: 'manageAttributes',
+          component: () => import('../views/attributes/ManageAttributes.vue'),
+          meta: {
+            requiresPermission: Permissions.ViewAllAttributes
+          }
+        },
+        {
+          path: 'create',
+          name: 'createAttribute',
+          component: () => import('../views/attributes/AttributeForm.vue'),
+          meta: {
+            requiresPermission: Permissions.CreateAttribute
+          }
+        },
+        {
+          path: 'view/:attributeId',
+          name: 'viewAttribute',
+          component: () => import('../views/attributes/ViewAttribute.vue'),
+          props: (route) => ({ attributeId: toNumberOrUndefined(route.params.attributeId) }),
+          meta: {
+            requiresPermission: Permissions.ViewAllAttributes
+          }
+        },
+        {
+          path: 'edit/:attributeId',
+          name: 'editAttribute',
+          component: () => import('../views/attributes/AttributeForm.vue'),
+          props: (route) => ({ attributeId: toNumberOrUndefined(route.params.attributeId) }),
+          meta: {
+            requiresPermission: Permissions.EditAttribute
+          }
+        }
+      ]
+    },
+
     //Not found
     {
       path: '/:all(.*)*',

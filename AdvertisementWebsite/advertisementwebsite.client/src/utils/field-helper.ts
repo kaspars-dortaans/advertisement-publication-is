@@ -120,10 +120,48 @@ export class FieldHelper<TValues extends GenericObject> {
       Object.entries<Field<unknown, TValues>>(this.fields as GenericObject).some(
         (e) =>
           this._isFieldDirty(e[0] as TPath<TValues>) &&
-          e[1].value !== this._meta.value.initialValues?.[e[0] as TPath<TValues>]
+          !this._compareFieldValue(
+            e[1].model.value,
+            this._meta.value.initialValues?.[e[0] as TPath<TValues>]
+          )
       )
     )
   })
+
+  private _compareFieldValue = (newValue: unknown, oldValue: unknown) => {
+    if (newValue === oldValue) {
+      return true
+    }
+
+    let newComparableItems = newValue
+    let oldComparableItems = oldValue
+
+    if (newValue && oldValue && typeof newValue === 'object' && typeof oldValue === 'object') {
+      newComparableItems = Object.entries(newValue)
+        .filter((e) => typeof e[1] !== 'function')
+        .map((e) => e[1])
+      oldComparableItems = Object.entries(oldValue)
+        .filter((e) => typeof e[1] !== 'function')
+        .map((e) => e[1])
+    }
+
+    if (Array.isArray(newComparableItems) && Array.isArray(oldComparableItems)) {
+      if (newComparableItems.length !== oldComparableItems.length) {
+        return false
+      }
+
+      for (let i = 0; i < newComparableItems.length; i++) {
+        if (!this._compareFieldValue(newComparableItems[i], oldComparableItems[i])) {
+          return false
+        }
+      }
+
+      //All items where equal
+      return true
+    }
+
+    return false
+  }
 
   defineField = (path: Path<TValues>, config?: FieldConfig<TValues, Path<TValues>>) => {
     const [field, fieldAttrs] = this._defineField(path, config)

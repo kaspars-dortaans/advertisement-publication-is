@@ -87,6 +87,18 @@
     "totalForTimePeriod": "Kopsummā samaksāts: {0}",
     "timePeriod": "Laik periods"
   },
+  "manageAttributes": {
+    "confirmDeleteHeader": "Izdzēst atribūtus",
+    "confirmDeleteMessage": "Tiks izdzēsti {0} atribūti.",
+    "title": "Nosaukums",
+    "valueType": "Vērtības tips",
+    "filterType": "Filtra tips",
+    "attributeValueListName": "Atribūta vērtību saraksta nosaukums",
+    "sortable": "Ir kārtojams",
+    "searchable": "Ir meklējams",
+    "showOnListItem": "Rādīt sludinājumu sarakstā",
+    "iconName": "Ikonas nosaukums"
+  },
   "form": {
     "common": {
       "dragAndDropToUpload": "Velc un met šeit lai Augšupielādētu",
@@ -152,6 +164,17 @@
       "addCategoryAttributes": "Pievienot atribūtus kategorijai",
       "attributeOrderList": "Kategorijas atribūtu secība",
       "canContainAdvertisements": "Var saturēt sludinājumus"
+    },
+    "attributeForm": {
+      "title": "Nosaukums",
+      "valueType": "Vērtības veids",
+      "filterType": "Filtrēšanas veids",
+      "attributeValueList": "Atribūtu vērtību saraksts",
+      "sortable": "Ir kārtojams",
+      "searchable": "Ir meklējams",
+      "showOnListItem": "Rādīt sludinājumu sarakstā",
+      "iconName": "Ikonas nosaukums",
+      "valueValidationRegex": "Vērtības validācijas regulārā izteiksme"
     }
   },
   "messages": {
@@ -201,7 +224,11 @@
     "manageCategories": "Pārvaldīt kategorijas",
     "createCategory": "Izveidot kategoriju",
     "editCategory": "Rediģēt kategoriju",
-    "viewCategory": "Skatīt kategoriju"
+    "viewCategory": "Skatīt kategoriju",
+    "manageAttributes": "Pārvaldīt atribūtus",
+    "viewAttribute": "Skatīt atribūtu",
+    "createAttribute": "Izveidot atribūtu",
+    "editAttribute": "Rediģēt atribūtu"
   },
   "dataSize": {
     "bits": "{0} biti",
@@ -227,6 +254,17 @@
     "ExtendAdvertisement": "Pagarināt sludinājumu",
     "CreateAdvertisementNotificationSubscription": "Izveidot sludinājumu paziņojumu abonementu",
     "ExtendAdvertisementNotificationSubscription": "Pagarināt sludinājumu paziņojumu abonementu"
+  },
+  "valueType": {
+    "Text": "Teksts",
+    "Integer": "Vesels skaitlis",
+    "Decimal": "Skaitlis",
+    "ValueListEntry": "Vērtību saraksta ieraksts"
+  },
+  "filterType": {
+    "Search": "Meklēt pēc teksta",
+    "FromTo": "Meklēt diapazonā",
+    "Match": "Tieša atbilstība"
   },
   "dayNames": [
     "Svētdiena",
