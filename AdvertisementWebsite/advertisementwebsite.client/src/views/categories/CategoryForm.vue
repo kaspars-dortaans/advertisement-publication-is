@@ -130,16 +130,18 @@ const attributeLookup = ref<Int32StringKeyValuePair[]>([])
 const form = useForm<CategoryForm>({
   validationSchema: toTypedSchema(
     object({
-      canContainAdvertisements: bool().default(true),
-      localizedNames: array().default([]),
-      categoryAttributeOrder: array().default([])
+      canContainAdvertisements: bool()
+        .default(true)
+        .label('form.categoryForm.canContainAdvertisements'),
+      localizedNames: array().default([]).label('form.categoryForm.title'),
+      categoryAttributeOrder: array().default([]).label('form.categoryForm.attributeOrderList')
     })
   )
 })
 const { fields, formErrors, valuesChanged, defineMultipleFields, handleErrors } = new FieldHelper(
   form
 )
-const { handleSubmit, values, isSubmitting, resetForm } = form
+const { handleSubmit, values, isSubmitting, resetForm, validate } = form
 defineMultipleFields([
   'canContainAdvertisements',
   'parentCategory',
@@ -157,7 +159,10 @@ onBeforeMount(async () => {
 })
 
 //Watchers
-watch(LocaleService.currentLocaleName, () => loadLookups())
+watch(LocaleService.currentLocaleName, async () => {
+  await loadLookups()
+  validate({ mode: 'validated-only' })
+})
 
 //Methods
 const loadLookups = async () => {

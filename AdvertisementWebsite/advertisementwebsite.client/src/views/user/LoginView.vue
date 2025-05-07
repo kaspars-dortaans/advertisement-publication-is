@@ -56,6 +56,7 @@ import { LocaleService } from '@/services/locale-service'
 import { FieldHelper } from '@/utils/field-helper'
 import { toTypedSchema } from '@vee-validate/yup'
 import { useForm } from 'vee-validate'
+import { watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { object, string } from 'yup'
 
@@ -75,12 +76,12 @@ const navigation = AppNavigation.get()
 const form = useForm<ILoginDto>({
   validationSchema: toTypedSchema(
     object({
-      email: string().required().email(),
-      password: string().required()
+      email: string().required().email().label('form.login.email'),
+      password: string().required().label('form.login.password')
     })
   )
 })
-const { values, handleSubmit } = form
+const { values, handleSubmit, validate } = form
 const { fields, formErrors, defineMultipleFields, handleErrors } = new FieldHelper(form)
 defineMultipleFields(['email', 'password'])
 
@@ -102,5 +103,10 @@ const tryLogin = handleSubmit(async () => {
   } catch (error) {
     handleErrors(error)
   }
+})
+
+//Watchers
+watch(LocaleService.currentLocaleName, () => {
+  validate({ mode: 'validated-only' })
 })
 </script>

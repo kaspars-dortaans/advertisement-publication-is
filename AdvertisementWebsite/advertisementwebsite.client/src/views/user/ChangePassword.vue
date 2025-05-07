@@ -70,6 +70,7 @@ import { getClient } from '@/utils/client-builder'
 import BackButton from '@/components/common/BackButton.vue'
 import FieldError from '@/components/form/FieldError.vue'
 import { useRouter } from 'vue-router'
+import { watch } from 'vue'
 
 const { push } = useRouter()
 
@@ -81,18 +82,24 @@ const userService = getClient(UserClient)
 const form = useForm<ChangePasswordRequest>({
   validationSchema: toTypedSchema(
     object({
-      currentPassword: string().required(),
-      password: string().required(),
-      confirmPassword: string().required()
+      currentPassword: string().required().label('form.changePassword.currentPassword'),
+      password: string().required().label('form.changePassword.newPassword'),
+      confirmPassword: string().required().label('form.changePassword.confirmNewPassword')
     })
   )
 })
-const { isSubmitting, handleSubmit, values } = form
+const { isSubmitting, handleSubmit, values, validate } = form
 const { fields, formErrors, hasFormErrors, defineMultipleFields, handleErrors } = new FieldHelper(
   form
 )
 defineMultipleFields(['currentPassword', 'password', 'confirmPassword'])
 
+//Watchers
+watch(LocaleService.currentLocaleName, () => {
+  validate({ mode: 'validated-only' })
+})
+
+//Methods
 const changePassword = handleSubmit(async () => {
   try {
     await userService.changePassword(new ChangePasswordRequest(values))

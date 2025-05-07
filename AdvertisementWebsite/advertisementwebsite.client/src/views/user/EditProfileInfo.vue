@@ -140,7 +140,7 @@ import { downloadFile, hashFile } from '@/utils/file-helper'
 import { toTypedSchema } from '@vee-validate/yup'
 import { useConfirm } from 'primevue'
 import { useForm } from 'vee-validate'
-import { onBeforeMount, ref } from 'vue'
+import { onBeforeMount, ref, watch } from 'vue'
 import { useRouter, onBeforeRouteLeave } from 'vue-router'
 import { boolean, object, string } from 'yup'
 import { leaveFormGuard } from '@/utils/confirm-dialog'
@@ -162,20 +162,22 @@ const userService = getClient(UserClient)
 const form = useForm<IEditUserInfo>({
   validationSchema: toTypedSchema(
     object({
-      firstName: string().required(),
-      lastName: string().required(),
-      userName: string().required(),
-      email: string().required().email(),
-      isEmailPublic: boolean().default(false),
-      phoneNumber: string().required(),
-      isPhoneNumberPublic: boolean().default(false),
-      linkToUserSite: string().url().nullable()
+      firstName: string().required().label('form.profileInfo.firstName'),
+      lastName: string().required().label('form.profileInfo.lastName'),
+      userName: string().required().label('form.profileInfo.userName'),
+      email: string().required().email().label('form.profileInfo.email'),
+      isEmailPublic: boolean().default(false).label('form.profileInfo.publiclyDisplayEmail'),
+      phoneNumber: string().required().label('form.profileInfo.phoneNumber'),
+      isPhoneNumberPublic: boolean()
+        .default(false)
+        .label('form.profileInfo.publiclyDisplayPhoneNumber'),
+      linkToUserSite: string().url().nullable().label('form.profileInfo.linkToUserSite')
     })
   )
 })
 const { fields, hasFormErrors, formErrors, valuesChanged, defineMultipleFields, handleErrors } =
   new FieldHelper(form)
-const { handleSubmit, values, isSubmitting, resetForm } = form
+const { handleSubmit, values, isSubmitting, resetForm, validate } = form
 
 defineMultipleFields([
   'firstName',
@@ -197,28 +199,33 @@ const loading = ref(false)
 onBeforeMount(async () => {
   loading.value = true
   await authService.refreshProfileData()
-  const userInfo = await AuthService.profileInfoPromise.value
+  const userInfo = (await AuthService.profileInfoPromise.value)!
 
   let profileImage
-  if (userInfo?.profileImage?.imageURLs?.url) {
+  if (userInfo.profileImage?.imageURLs?.url) {
     profileImage = await downloadFile(userInfo.profileImage.imageURLs.url)
     originalProfileImage.value = profileImage
   }
 
   resetForm({
     values: new EditUserInfo({
-      userName: userInfo?.userName!,
-      firstName: userInfo?.firstName!,
-      lastName: userInfo?.lastName!,
-      email: userInfo?.email!,
-      isEmailPublic: userInfo?.isEmailPublic,
-      phoneNumber: userInfo?.phoneNumber!,
-      isPhoneNumberPublic: userInfo?.isPhoneNumberPublic,
-      linkToUserSite: userInfo?.linkToUserSite,
+      userName: userInfo.userName!,
+      firstName: userInfo.firstName!,
+      lastName: userInfo.lastName!,
+      email: userInfo.email!,
+      isEmailPublic: userInfo.isEmailPublic,
+      phoneNumber: userInfo.phoneNumber!,
+      isPhoneNumberPublic: userInfo.isPhoneNumberPublic,
+      linkToUserSite: userInfo.linkToUserSite,
       profileImage: profileImage
     })
   })
   loading.value = false
+})
+
+//Watchers
+watch(LocaleService.currentLocaleName, () => {
+  validate({ mode: 'validated-only' })
 })
 
 //Methods

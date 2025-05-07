@@ -131,7 +131,7 @@ import { FieldHelper } from '@/utils/field-helper'
 import { toTypedSchema } from '@vee-validate/yup'
 import { useConfirm } from 'primevue'
 import { useForm } from 'vee-validate'
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import { onBeforeRouteLeave, useRouter } from 'vue-router'
 import { boolean, object, string } from 'yup'
 
@@ -151,21 +151,23 @@ const l = LocaleService.currentLocale
 const form = useForm<IRegisterDto>({
   validationSchema: toTypedSchema(
     object({
-      firstName: string().required().default(''),
-      lastName: string().required().default(''),
-      userName: string().required().default(''),
-      email: string().required().email().default(''),
-      isEmailPublic: boolean().default(false),
-      phoneNumber: string().required().default(''),
-      isPhoneNumberPublic: boolean().default(false),
-      password: string().required().default(''),
-      passwordConfirmation: string().required().default('')
+      firstName: string().required().default('').label('form.register.firstName'),
+      lastName: string().required().default('').label('form.register.lastName'),
+      userName: string().required().default('').label('form.register.username'),
+      email: string().required().email().default('').label('form.register.email'),
+      isEmailPublic: boolean().default(false).label('form.register.publiclyDisplayEmail'),
+      phoneNumber: string().required().default('').label('form.register.phoneNumber'),
+      isPhoneNumberPublic: boolean()
+        .default(false)
+        .label('form.register.publiclyDisplayPhoneNumber'),
+      password: string().required().default('').label('form.register.password'),
+      passwordConfirmation: string().required().default('').label('form.register.confirmPassword')
     })
   )
 })
 const { fields, hasFormErrors, formErrors, valuesChanged, defineMultipleFields, handleErrors } =
   new FieldHelper<IRegisterDto>(form)
-const { values, handleSubmit, isSubmitting } = form
+const { values, handleSubmit, isSubmitting, validate } = form
 defineMultipleFields([
   'firstName',
   'lastName',
@@ -178,7 +180,12 @@ defineMultipleFields([
   'passwordConfirmation',
   'profileImage'
 ])
+//Watchers
+watch(LocaleService.currentLocaleName, () => {
+  validate({ mode: 'validated-only' })
+})
 
+//Methods
 const onSubmit = handleSubmit(async () => {
   try {
     const profileImage = values.profileImage

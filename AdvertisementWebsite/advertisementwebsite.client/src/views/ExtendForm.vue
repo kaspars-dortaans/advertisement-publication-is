@@ -70,7 +70,7 @@ import { getClient } from '@/utils/client-builder'
 import { FieldHelper } from '@/utils/field-helper'
 import { toTypedSchema } from '@vee-validate/yup'
 import { useForm } from 'vee-validate'
-import { computed, onBeforeMount, ref } from 'vue'
+import { computed, onBeforeMount, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { number, object } from 'yup'
 
@@ -111,11 +111,12 @@ const form = useForm({
       })
         .default(undefined)
         .required()
+        .label('form.extend.timePeriod')
     })
   )
 })
 const { fields, handleErrors, defineField } = new FieldHelper(form)
-const { handleSubmit, isSubmitting, values } = form
+const { handleSubmit, isSubmitting, values, validate } = form
 defineField('extendTime')
 
 //Hooks
@@ -135,6 +136,11 @@ onBeforeMount(async () => {
   }
 
   loading.value = false
+})
+
+//Watcher
+watch(LocaleService.currentLocaleName, () => {
+  validate({ mode: 'validated-only' })
 })
 
 //Methods

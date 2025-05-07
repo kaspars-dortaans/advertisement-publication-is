@@ -9,7 +9,7 @@ export const initYup = (app: App<Element>) => {
       email: () => ls.l('errors.NotAnEmail')
     },
     mixed: {
-      required: ({ path }) => ls.l('errors.RequiredField', ls.l(path))
+      required: ({ label, path }) => ls.l('errors.RequiredField', ls.l(label) || path)
     }
   })
 }

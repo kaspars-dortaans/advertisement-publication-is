@@ -199,9 +199,11 @@ const paymentState = usePaymentState()
 const { addAttributeValidationSchema } = useValidateAttributeInput(attributeInfo)
 const validationSchema = computed(() => {
   let schemaObject: AnyObject = {
-    paidTime: object().test(requiredWhen(() => !isEdit.value)),
-    title: string().default('').required(),
-    keywords: array(string()),
+    paidTime: object()
+      .test(requiredWhen(() => !isEdit.value))
+      .label('form.putAdvertisementNotification.timePeriod'),
+    title: string().default('').required().label('form.putAdvertisementNotification.title'),
+    keywords: array(string()).label('form.putAdvertisementNotification.keywords'),
     categoryId: number().test(canAddAdvertisementToCategoryValidator(categoryList)),
     attributeValues: array().default([])
   }
@@ -212,7 +214,7 @@ const validationSchema = computed(() => {
 
 const form = useForm<PutNotificationSubscriptionForm>({ validationSchema })
 const fieldHelper = new FieldHelper(form)
-const { isSubmitting, handleSubmit, values, resetForm } = form
+const { isSubmitting, handleSubmit, values, resetForm, validate } = form
 const { defineMultipleFields, handleErrors, fields, valuesChanged } = fieldHelper
 defineMultipleFields(['title', 'paidTime', 'keywords', 'categoryId', 'attributeValues'])
 
@@ -242,8 +244,9 @@ onBeforeMount(() => {
 })
 
 //Watchers
-watch(LocaleService.currentLocaleName, () => {
-  reloadData()
+watch(LocaleService.currentLocaleName, async () => {
+  await reloadData()
+  validate({ mode: 'validated-only' })
 })
 
 //Methods
@@ -281,13 +284,15 @@ const loadSubscription = async () => {
   loading.value--
 }
 
-const reloadData = () => {
+const reloadData = async () => {
   loading.value++
-  loadCategoryList()
+  const promises = []
+  promises.push(loadCategoryList())
   //If category info was loaded before, reload it
   if (attributeInfo.value.length) {
-    loadCategoryInfo(values.categoryId)
+    promises.push(loadCategoryInfo(values.categoryId))
   }
+  await promises
   loading.value--
 }
 

@@ -203,27 +203,27 @@ let valueListType = computed<boolean>(() => false)
 const form = useForm<AttributeForm>({
   validationSchema: toTypedSchema(
     object({
-      localizedNames: array().default([]).label(l.value.form.attributeForm.title),
-      valueType: string().required().label(l.value.form.attributeForm.valueType),
+      localizedNames: array().default([]).label('form.attributeForm.title'),
+      valueType: string().required().label('form.attributeForm.valueType'),
       attributeValueListId: number()
         .nullable()
         .test(requiredWhen(() => valueListType.value))
-        .label(l.value.form.attributeForm.attributeValueList),
-      filterType: string().required().label(l.value.form.attributeForm.filterType),
+        .label('form.attributeForm.attributeValueList'),
+      filterType: string().required().label('form.attributeForm.filterType'),
       valueValidationRegex: string()
         .nullable()
         .default('')
-        .label(l.value.form.attributeForm.valueValidationRegex),
-      sortable: boolean().default(true).label(l.value.form.attributeForm.sortable),
-      searchable: boolean().default(true).label(l.value.form.attributeForm.searchable),
-      showOnListItems: boolean().default(false).label(l.value.form.attributeForm.showOnListItem),
-      iconName: string().nullable().default('').label(l.value.form.attributeForm.iconName)
+        .label('form.attributeForm.valueValidationRegex'),
+      sortable: boolean().default(true).label('form.attributeForm.sortable'),
+      searchable: boolean().default(true).label('form.attributeForm.searchable'),
+      showOnListItems: boolean().default(false).label('form.attributeForm.showOnListItem'),
+      iconName: string().nullable().default('').label('form.attributeForm.iconName')
     })
   )
 })
 const fh = new FieldHelper(form)
 const { fields, formErrors, valuesChanged, defineMultipleFields, handleErrors } = fh
-const { handleSubmit, values, isSubmitting, resetForm } = form
+const { handleSubmit, values, isSubmitting, resetForm, validate } = form
 defineMultipleFields([
   'valueType',
   'filterType',
@@ -244,7 +244,10 @@ onBeforeMount(async () => {
 })
 
 //Watchers
-watch(LocaleService.currentLocaleName, () => reloadData())
+watch(LocaleService.currentLocaleName, async () => {
+  await reloadData()
+  validate({ mode: 'validated-only' })
+})
 
 //Methods
 const reloadData = async () => {

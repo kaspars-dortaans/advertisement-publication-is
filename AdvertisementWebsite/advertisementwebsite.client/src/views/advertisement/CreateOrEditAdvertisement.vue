@@ -216,11 +216,15 @@ const paymentState = usePaymentState()
 const { addAttributeValidationSchema } = useValidateAttributeInput(attributeInfo)
 const validationSchema = computed(() => {
   let schemaObject: AnyObject = {
-    categoryId: number().test(canAddAdvertisementToCategoryValidator(categoryList)),
+    categoryId: number()
+      .test(canAddAdvertisementToCategoryValidator(categoryList))
+      .label('form.putAdvertisement.category'),
     attributeValues: array().default([]),
-    postTime: object().test(requiredWhen(() => !isEdit.value)),
-    title: string().required(),
-    description: string().required(),
+    postTime: object()
+      .test(requiredWhen(() => !isEdit.value))
+      .label('form.putAdvertisement.timePeriod'),
+    title: string().required().label('form.putAdvertisement.title'),
+    description: string().required().label('form.putAdvertisement.description'),
     thumbnailImageHash: string().optional(),
 
     //Validation is handled in image upload component
@@ -234,7 +238,7 @@ const validationSchema = computed(() => {
 //Change attributeValues type, to allow easier validation and model binding
 const form = useForm<CreateOrEditAdvertisementForm>({ validationSchema })
 const fieldHelper = new FieldHelper(form)
-const { values, handleSubmit, isSubmitting, resetForm } = form
+const { values, handleSubmit, isSubmitting, resetForm, validate } = form
 const { fields, valuesChanged, defineMultipleFields, handleErrors } = fieldHelper
 
 const imageFieldNames: `imagesToAdd.${number}`[] = [
@@ -275,8 +279,9 @@ onBeforeMount(() => {
 })
 
 //Watchers
-watch(LocaleService.currentLocaleName, () => {
-  reloadData()
+watch(LocaleService.currentLocaleName, async () => {
+  await reloadData()
+  validate({ mode: 'validated-only' })
 })
 
 watch(
@@ -303,12 +308,14 @@ watch(
 )
 
 //Methods
-const reloadData = () => {
-  loadCategoryList()
+const reloadData = async () => {
+  const promises = []
+  promises.push(loadCategoryList())
   //If category info was loaded before, reload it
   if (attributeInfo.value.length) {
-    loadCategoryInfo(values.categoryId)
+    promises.push(loadCategoryInfo(values.categoryId))
   }
+  await promises
 }
 
 const loadAdvertisementInfo = async () => {
