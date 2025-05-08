@@ -127,14 +127,10 @@ public class CategoryService(Context dbContext,
         
         if (existingCategory.LocalisedNames != null && existingCategory.LocalisedNames.Count > 0)
         {
-            foreach (var locName in existingCategory.LocalisedNames)
-            {
-                var updatedName = category.LocalisedNames.FirstOrDefault(l => string.Equals(locName.Locale, l.Locale, StringComparison.CurrentCultureIgnoreCase));
-                if (updatedName != null)
-                {
-                    updatedName.Id = locName.Id;
-                }
-            }
+            LocalisationHelper.SyncLocaleTexts(existingCategory.LocalisedNames, category.LocalisedNames);
+        } else
+        {
+            existingCategory.LocalisedNames = category.LocalisedNames;
         }
 
         existingCategory.LocalisedNames = category.LocalisedNames;

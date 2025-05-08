@@ -83,6 +83,12 @@ public class DbSeeder(Context context, UserManager<User> userManager, RoleManage
             Permissions.EditAttribute,
             Permissions.DeleteAttribute,
 
+            //Manage attribute value lists
+            Permissions.ViewAllAttributeValueLists,
+            Permissions.CreateAttributeValueList,
+            Permissions.EditAttributeValueList,
+            Permissions.DeleteAttributeValueList,
+
             //Manage users
             Permissions.ViewAllUsers,
             Permissions.CreateUser,

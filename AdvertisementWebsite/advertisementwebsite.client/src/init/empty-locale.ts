@@ -26,6 +26,7 @@ export const emptyLocale = {
     publish: '',
     pay: '',
     subscribe: '',
+    add: '',
   },
   dataTable: {
     pageReportTemplate: '',
@@ -101,7 +102,17 @@ export const emptyLocale = {
     showOnListItem: '',
     iconName: ''
   },
+  manageAttributeValueLists: {
+    confirmDeleteHeader: '',
+    confirmDeleteMessage: '',
+    title: '',
+    entryCount: ''
+  },
   form: {
+    attributeValueListForm: {
+      title: '',
+      entries: ''
+    },
     attributeForm: {
       title: '',
       valueType: '',
@@ -230,7 +241,11 @@ export const emptyLocale = {
     manageAttributes: '',
     viewAttribute: '',
     createAttribute: '',
-    editAttribute: ''
+    editAttribute: '',
+    manageAttributeValueLists: '',
+    createAttributeValueList: '',
+    editAttributeValueList: '',
+    viewAttributeValueList: ''
   },
   dataSize: {
     bits: '',

@@ -12,7 +12,7 @@ public class AttributeMappingProfile : Profile
             {
                 AttributeId = r.Id ?? default,
                 Locale = n.Key,
-                Text = n.Value
+                Text = n.Value ?? string.Empty
             })));
     }
 }

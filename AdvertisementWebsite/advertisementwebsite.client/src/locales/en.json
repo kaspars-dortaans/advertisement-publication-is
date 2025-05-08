@@ -23,7 +23,8 @@
     "stay": "Stay",
     "publish": "Publish",
     "pay": "Pay",
-    "subscribe": "Subscribe"
+    "subscribe": "Subscribe",
+    "add": "Add"
   },
   "dataTable": {
     "pageReportTemplate": "{1} to {2} of {3}",
@@ -98,6 +99,12 @@
     "searchable": "Is searchable",
     "showOnListItem": "Show in advertisement list",
     "iconName": "Icon name"
+  },
+  "manageAttributeValueLists": {
+    "confirmDeleteHeader": "Delete attribute value list",
+    "confirmDeleteMessage": "{0} attribute value lists will be deleted.",
+    "title": "Title",
+    "entryCount": "Entry count"
   },
   "form": {
     "common": {
@@ -175,6 +182,10 @@
       "showOnListItem": "Show in advertisement list",
       "iconName": "Icon name",
       "valueValidationRegex": "Value validation regex"
+    },
+    "attributeValueListForm": {
+      "title": "Title",
+      "entries": "Entries"
     }
   },
   "messages": {
@@ -228,7 +239,11 @@
     "manageAttributes": "Manage attributes",
     "viewAttribute": "View attribute",
     "createAttribute": "Create attribute",
-    "editAttribute": "Edit attribute"
+    "editAttribute": "Edit attribute",
+    "manageAttributeValueLists": "Manage attribute value lists",
+    "createAttributeValueList": "Create attribute value list",
+    "editAttributeValueList": "Edit attribute value list",
+    "viewAttributeValueList": "View attribute value list"
   },
   "dataSize": {
     "bits": "{0} b",

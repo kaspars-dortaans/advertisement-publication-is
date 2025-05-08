@@ -6,6 +6,7 @@ using BusinessLogic.Dto;
 using BusinessLogic.Dto.Attribute;
 using BusinessLogic.Dto.DataTableQuery;
 using BusinessLogic.Entities;
+using BusinessLogic.Entities.LocaleTexts;
 using BusinessLogic.Exceptions;
 using BusinessLogic.Helpers;
 using BusinessLogic.Helpers.CookieSettings;
@@ -115,5 +116,111 @@ public class AttributeController(
     public async Task DeleteAttribute(IEnumerable<int> ids)
     {
         await _attributeService.DeleteWhereAsync(c => ids.Contains(c.Id));
+    }
+
+    [HasPermission(Permissions.ViewAllAttributeValueLists)]
+    [ProducesResponseType<DataTableQueryResponse<AttributeValueList_ListItem>>(StatusCodes.Status200OK)]
+    [ProducesResponseType<RequestExceptionResponse>(StatusCodes.Status400BadRequest)]
+    [HttpPost]
+    public async Task<DataTableQueryResponse<AttributeValueList_ListItem>> GetAttributeValueLists(DataTableQuery request)
+    {
+        return await _attributeService.GetAttributeValueLists(request);
+    }
+
+    [HasPermission(Permissions.CreateAttributeValueList)]
+    [ProducesResponseType<OkResult>(StatusCodes.Status200OK)]
+    [ProducesResponseType<RequestExceptionResponse>(StatusCodes.Status400BadRequest)]
+    [HttpPost]
+    public async Task CreateAttributeValueList(PutAttributeValueListRequest request)
+    {
+        var valueList = new AttributeValueList
+        {
+            LocalisedNames = request.LocalizedNames.Select(ln => new AttributeValueListLocaleText
+            {
+                Locale = ln.Key,
+                Text = ln.Value ?? string.Empty
+            }).ToList(),
+            ListEntries = request.Entries.Select(e => new AttributeValueListEntry
+            {
+                OrderIndex = e.OrderIndex,
+                LocalisedNames = e.LocalizedNames.Select(ln => new AttributeValueListEntryLocaleText
+                {
+                    Locale = ln.Key,
+                    Text = ln.Value ?? string.Empty
+                }).ToList()
+            }).ToList()
+        };
+        await _attributeValueListService.AddAsync(valueList);
+    }
+
+    [HasPermission(Permissions.ViewAllAttributeValueLists)]
+    [ProducesResponseType<PutAttributeValueListRequest>(StatusCodes.Status200OK)]
+    [ProducesResponseType<RequestExceptionResponse>(StatusCodes.Status400BadRequest)]
+    [HttpPost]
+    public async Task<PutAttributeValueListRequest> GetAttributeValueListFormInfo(int valueListId)
+    {
+        var formInfo = (await _attributeValueListService.Where(vl => vl.Id == valueListId)
+            .Select(vl => new PutAttributeValueListRequest
+            {
+                Id = vl.Id,
+                LocalizedNames = vl.LocalisedNames.Select(ln => new KeyValuePair<string, string>(ln.Locale, ln.Text)),
+                Entries = vl.ListEntries.Select(e => new AttributeValueListEntryDto
+                {
+                    Id = e.Id,
+                    OrderIndex = e.Id,
+                    LocalizedNames = e.LocalisedNames.Select(ln => new KeyValuePair<string, string>(ln.Locale, ln.Text))
+                })
+            })
+            .FirstOrDefaultAsync())
+            ?? throw new ApiException([CustomErrorCodes.NotFound]);
+
+        return formInfo;
+    }
+
+    [HasPermission(Permissions.EditAttributeValueList)]
+    [ProducesResponseType<OkResult>(StatusCodes.Status200OK)]
+    [ProducesResponseType<RequestExceptionResponse>(StatusCodes.Status400BadRequest)]
+    [HttpPost]
+    public async Task EditAttributeValueList(PutAttributeValueListRequest request)
+    {
+        if (!request.Id.HasValue)
+        {
+            throw new ApiException([], new Dictionary<string, IList<string>>
+            {
+                { nameof(PutAttributeValueListRequest.Id), [CustomErrorCodes.MissingRequired] }
+            });
+        }
+
+        var valueList = new AttributeValueList
+        {
+            Id = request.Id.Value,
+            LocalisedNames = request.LocalizedNames.Select(ln => new AttributeValueListLocaleText
+            {
+                Locale = ln.Key,
+                Text = ln.Value ?? string.Empty
+            }).ToList(),
+            ListEntries = request.Entries.Select(e => new AttributeValueListEntry
+            {
+                Id = e.Id ?? default,
+                OrderIndex = e.OrderIndex,
+                LocalisedNames = e.LocalizedNames.Select(ln => new AttributeValueListEntryLocaleText
+                {
+                    AttributeValueListEntryId = request.Id.Value,
+                    Locale = ln.Key,
+                    Text = ln.Value ?? string.Empty
+                }).ToList()
+            }).ToList()
+        };
+        await _attributeService.UpdateAttributeValueList(valueList);
+    }
+
+    [HasPermission(Permissions.DeleteAttributeValueList)]
+    [ProducesResponseType<OkResult>(StatusCodes.Status200OK)]
+    [ProducesResponseType<RequestExceptionResponse>(StatusCodes.Status400BadRequest)]
+    [HttpPost]
+    public async Task DeleteAttributeValueLists(IEnumerable<int> ids)
+    {
+
+        await _attributeService.DeleteAttributeValueLists(ids);
     }
 }

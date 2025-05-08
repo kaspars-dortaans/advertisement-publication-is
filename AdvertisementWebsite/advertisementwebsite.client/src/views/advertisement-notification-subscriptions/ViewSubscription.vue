@@ -22,18 +22,13 @@
             <fieldset class="flex-1 flex flex-col gap-2">
               <!-- Title -->
               <FloatLabel variant="on">
-                <InputText
-                  v-model="existingSubscription.title"
-                  :disabled="true"
-                  id="title-input"
-                  fluid
-                />
+                <InputText v-model="existingSubscription.title" id="title-input" fluid disabled />
                 <label for="title-input">{{ l.form.putAdvertisementNotification.title }}</label>
               </FloatLabel>
 
               <!-- Time period -->
               <FloatLabel variant="on">
-                <InputText v-model="validToDate" :disabled="true" id="time-period-select" fluid />
+                <InputText v-model="validToDate" id="time-period-select" fluid disabled />
                 <label for="time-period-select">{{
                   l.form.putAdvertisementNotification.validTo
                 }}</label>
@@ -43,11 +38,11 @@
               <FloatLabel variant="on">
                 <AutoComplete
                   v-model="existingSubscription.keywords"
-                  :disabled="true"
                   :typeahead="false"
                   inputId="keyword-input"
                   multiple
                   fluid
+                  disabled
                 />
                 <label for="keyword-input">{{
                   l.form.putAdvertisementNotification.keywords
@@ -60,7 +55,7 @@
               <CategorySelect
                 :categoryList="categoryList"
                 :value="existingSubscription.categoryId"
-                :disabled="true"
+                disabled
               />
             </fieldset>
 
@@ -72,7 +67,7 @@
                   :values="attributeValues"
                   :attributes="attributeInfo"
                   :valueLists="attributeValueLists"
-                  :disabled="true"
+                  disabled
                 />
               </div>
             </fieldset>

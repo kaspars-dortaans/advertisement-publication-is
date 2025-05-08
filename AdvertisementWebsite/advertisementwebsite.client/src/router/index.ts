@@ -232,6 +232,46 @@ const router = createRouter({
       ]
     },
 
+    {
+      path: '/attribute-value-list',
+      children: [
+        {
+          path: 'manage',
+          name: 'manageAttributeValueLists',
+          component: () => import('../views/attribute-value-list/ManageAttributeValueLists.vue'),
+          meta: {
+            requiresPermission: Permissions.ViewAllAttributeValueLists
+          }
+        },
+        {
+          path: 'create',
+          name: 'createAttributeValueList',
+          component: () => import('../views/attribute-value-list/AttributeValueListForm.vue'),
+          meta: {
+            requiresPermission: Permissions.CreateAttributeValueList
+          }
+        },
+        {
+          path: 'view/:valueListId',
+          name: 'viewAttributeValueList',
+          component: () => import('../views/attribute-value-list/ViewAttributeValueList.vue'),
+          props: (route) => ({ valueListId: toNumberOrUndefined(route.params.valueListId) }),
+          meta: {
+            requiresPermission: Permissions.ViewAllAttributeValueLists
+          }
+        },
+        {
+          path: 'edit/:valueListId',
+          name: 'editAttributeValueList',
+          component: () => import('../views/attribute-value-list/AttributeValueListForm.vue'),
+          props: (route) => ({ valueListId: toNumberOrUndefined(route.params.valueListId) }),
+          meta: {
+            requiresPermission: Permissions.EditAttributeValueList
+          }
+        }
+      ]
+    },
+
     //User payments
     {
       path: '/payments',

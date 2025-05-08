@@ -12,7 +12,7 @@ public class CategoryMapperProfile : Profile
             {
                 CategoryId = r.Id ?? default,
                 Locale = p.Key,
-                Text = p.Value
+                Text = p.Value ?? string.Empty
             })))
             .ForMember(c => c.CategoryAttributes, opts => opts.MapFrom(r => r.CategoryAttributeOrder.Select((cao, i)=> new CategoryAttribute
             {

@@ -23,17 +23,17 @@
           <!-- Title -->
           <LocaleTextInput
             v-model="categoryNames"
-            :disabled="true"
             :localeList="ls.localeList.value"
             :label="l.form.categoryForm.title"
             :lookups="[]"
+            disabled
           />
 
           <Divider />
 
           <!-- Parent category -->
           <FloatLabel variant="on">
-            <InputText v-model="categoryInfo.parentCategoryName" :disabled="true" fluid />
+            <InputText v-model="categoryInfo.parentCategoryName" disabled fluid />
             <label for="parent-category-id-input">{{ l.form.categoryForm.parentCategory }}</label>
           </FloatLabel>
 
@@ -41,7 +41,7 @@
           <div class="inline-flex gap-2 mt-4">
             <ToggleSwitch
               v-model="categoryInfo.canContainAdvertisements"
-              :disabled="true"
+              disabled
               id="can-contain-advertisements-input"
             />
             <label for="can-contain-advertisements-input">{{
@@ -56,7 +56,7 @@
             v-model="categoryInfo.categoryAttributeOrder"
             :inputLabel="l.form.categoryForm.addCategoryAttributes"
             :listLabel="l.form.categoryForm.attributeOrderList"
-            :disabled="true"
+            disabled
             :lookups="[]"
           />
         </div>

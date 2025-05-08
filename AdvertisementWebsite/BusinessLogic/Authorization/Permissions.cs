@@ -45,6 +45,12 @@ public enum Permissions
     EditAttribute,
     DeleteAttribute,
 
+    //Manage attribute value lists
+    ViewAllAttributeValueLists,
+    CreateAttributeValueList,
+    EditAttributeValueList,
+    DeleteAttributeValueList,
+
     //Manage users
     ViewAllUsers,
     CreateUser,

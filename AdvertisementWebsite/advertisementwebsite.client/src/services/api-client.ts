@@ -1920,6 +1920,321 @@ export class AttributeClient {
         }
         return Promise.resolve<OkResult>(null as any);
     }
+
+    /**
+     * @param body (optional) 
+     * @return OK
+     */
+    getAttributeValueLists(body: DataTableQuery | undefined, cancelToken?: CancelToken): Promise<AttributeValueList_ListItemDataTableQueryResponse> {
+        let url_ = this.baseUrl + "/api/Attribute/GetAttributeValueLists";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_: AxiosRequestConfig = {
+            data: content_,
+            method: "POST",
+            url: url_,
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "text/plain"
+            },
+            cancelToken
+        };
+
+        return this.instance.request(options_).catch((_error: any) => {
+            if (isAxiosError(_error) && _error.response) {
+                return _error.response;
+            } else {
+                throw _error;
+            }
+        }).then((_response: AxiosResponse) => {
+            return this.processGetAttributeValueLists(_response);
+        });
+    }
+
+    protected processGetAttributeValueLists(response: AxiosResponse): Promise<AttributeValueList_ListItemDataTableQueryResponse> {
+        const status = response.status;
+        let _headers: any = {};
+        if (response.headers && typeof response.headers === "object") {
+            for (const k in response.headers) {
+                if (response.headers.hasOwnProperty(k)) {
+                    _headers[k] = response.headers[k];
+                }
+            }
+        }
+        if (status === 200) {
+            const _responseText = response.data;
+            let result200: any = null;
+            let resultData200  = _responseText;
+            result200 = AttributeValueList_ListItemDataTableQueryResponse.fromJS(resultData200);
+            return Promise.resolve<AttributeValueList_ListItemDataTableQueryResponse>(result200);
+
+        } else if (status === 400) {
+            const _responseText = response.data;
+            let result400: any = null;
+            let resultData400  = _responseText;
+            result400 = RequestExceptionResponse.fromJS(resultData400);
+            return throwException("Bad Request", status, _responseText, _headers, result400);
+
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.data;
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Promise.resolve<AttributeValueList_ListItemDataTableQueryResponse>(null as any);
+    }
+
+    /**
+     * @param body (optional) 
+     * @return OK
+     */
+    createAttributeValueList(body: PutAttributeValueListRequest | undefined, cancelToken?: CancelToken): Promise<OkResult> {
+        let url_ = this.baseUrl + "/api/Attribute/CreateAttributeValueList";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_: AxiosRequestConfig = {
+            data: content_,
+            method: "POST",
+            url: url_,
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "text/plain"
+            },
+            cancelToken
+        };
+
+        return this.instance.request(options_).catch((_error: any) => {
+            if (isAxiosError(_error) && _error.response) {
+                return _error.response;
+            } else {
+                throw _error;
+            }
+        }).then((_response: AxiosResponse) => {
+            return this.processCreateAttributeValueList(_response);
+        });
+    }
+
+    protected processCreateAttributeValueList(response: AxiosResponse): Promise<OkResult> {
+        const status = response.status;
+        let _headers: any = {};
+        if (response.headers && typeof response.headers === "object") {
+            for (const k in response.headers) {
+                if (response.headers.hasOwnProperty(k)) {
+                    _headers[k] = response.headers[k];
+                }
+            }
+        }
+        if (status === 200) {
+            const _responseText = response.data;
+            let result200: any = null;
+            let resultData200  = _responseText;
+            result200 = OkResult.fromJS(resultData200);
+            return Promise.resolve<OkResult>(result200);
+
+        } else if (status === 400) {
+            const _responseText = response.data;
+            let result400: any = null;
+            let resultData400  = _responseText;
+            result400 = RequestExceptionResponse.fromJS(resultData400);
+            return throwException("Bad Request", status, _responseText, _headers, result400);
+
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.data;
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Promise.resolve<OkResult>(null as any);
+    }
+
+    /**
+     * @param valueListId (optional) 
+     * @return OK
+     */
+    getAttributeValueListFormInfo(valueListId: number | undefined, cancelToken?: CancelToken): Promise<PutAttributeValueListRequest> {
+        let url_ = this.baseUrl + "/api/Attribute/GetAttributeValueListFormInfo?";
+        if (valueListId === null)
+            throw new Error("The parameter 'valueListId' cannot be null.");
+        else if (valueListId !== undefined)
+            url_ += "valueListId=" + encodeURIComponent("" + valueListId) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: AxiosRequestConfig = {
+            method: "POST",
+            url: url_,
+            headers: {
+                "Accept": "text/plain"
+            },
+            cancelToken
+        };
+
+        return this.instance.request(options_).catch((_error: any) => {
+            if (isAxiosError(_error) && _error.response) {
+                return _error.response;
+            } else {
+                throw _error;
+            }
+        }).then((_response: AxiosResponse) => {
+            return this.processGetAttributeValueListFormInfo(_response);
+        });
+    }
+
+    protected processGetAttributeValueListFormInfo(response: AxiosResponse): Promise<PutAttributeValueListRequest> {
+        const status = response.status;
+        let _headers: any = {};
+        if (response.headers && typeof response.headers === "object") {
+            for (const k in response.headers) {
+                if (response.headers.hasOwnProperty(k)) {
+                    _headers[k] = response.headers[k];
+                }
+            }
+        }
+        if (status === 200) {
+            const _responseText = response.data;
+            let result200: any = null;
+            let resultData200  = _responseText;
+            result200 = PutAttributeValueListRequest.fromJS(resultData200);
+            return Promise.resolve<PutAttributeValueListRequest>(result200);
+
+        } else if (status === 400) {
+            const _responseText = response.data;
+            let result400: any = null;
+            let resultData400  = _responseText;
+            result400 = RequestExceptionResponse.fromJS(resultData400);
+            return throwException("Bad Request", status, _responseText, _headers, result400);
+
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.data;
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Promise.resolve<PutAttributeValueListRequest>(null as any);
+    }
+
+    /**
+     * @param body (optional) 
+     * @return OK
+     */
+    editAttributeValueList(body: PutAttributeValueListRequest | undefined, cancelToken?: CancelToken): Promise<OkResult> {
+        let url_ = this.baseUrl + "/api/Attribute/EditAttributeValueList";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_: AxiosRequestConfig = {
+            data: content_,
+            method: "POST",
+            url: url_,
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "text/plain"
+            },
+            cancelToken
+        };
+
+        return this.instance.request(options_).catch((_error: any) => {
+            if (isAxiosError(_error) && _error.response) {
+                return _error.response;
+            } else {
+                throw _error;
+            }
+        }).then((_response: AxiosResponse) => {
+            return this.processEditAttributeValueList(_response);
+        });
+    }
+
+    protected processEditAttributeValueList(response: AxiosResponse): Promise<OkResult> {
+        const status = response.status;
+        let _headers: any = {};
+        if (response.headers && typeof response.headers === "object") {
+            for (const k in response.headers) {
+                if (response.headers.hasOwnProperty(k)) {
+                    _headers[k] = response.headers[k];
+                }
+            }
+        }
+        if (status === 200) {
+            const _responseText = response.data;
+            let result200: any = null;
+            let resultData200  = _responseText;
+            result200 = OkResult.fromJS(resultData200);
+            return Promise.resolve<OkResult>(result200);
+
+        } else if (status === 400) {
+            const _responseText = response.data;
+            let result400: any = null;
+            let resultData400  = _responseText;
+            result400 = RequestExceptionResponse.fromJS(resultData400);
+            return throwException("Bad Request", status, _responseText, _headers, result400);
+
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.data;
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Promise.resolve<OkResult>(null as any);
+    }
+
+    /**
+     * @param body (optional) 
+     * @return OK
+     */
+    deleteAttributeValueLists(body: number[] | undefined, cancelToken?: CancelToken): Promise<OkResult> {
+        let url_ = this.baseUrl + "/api/Attribute/DeleteAttributeValueLists";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_: AxiosRequestConfig = {
+            data: content_,
+            method: "POST",
+            url: url_,
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "text/plain"
+            },
+            cancelToken
+        };
+
+        return this.instance.request(options_).catch((_error: any) => {
+            if (isAxiosError(_error) && _error.response) {
+                return _error.response;
+            } else {
+                throw _error;
+            }
+        }).then((_response: AxiosResponse) => {
+            return this.processDeleteAttributeValueLists(_response);
+        });
+    }
+
+    protected processDeleteAttributeValueLists(response: AxiosResponse): Promise<OkResult> {
+        const status = response.status;
+        let _headers: any = {};
+        if (response.headers && typeof response.headers === "object") {
+            for (const k in response.headers) {
+                if (response.headers.hasOwnProperty(k)) {
+                    _headers[k] = response.headers[k];
+                }
+            }
+        }
+        if (status === 200) {
+            const _responseText = response.data;
+            let result200: any = null;
+            let resultData200  = _responseText;
+            result200 = OkResult.fromJS(resultData200);
+            return Promise.resolve<OkResult>(result200);
+
+        } else if (status === 400) {
+            const _responseText = response.data;
+            let result400: any = null;
+            let resultData400  = _responseText;
+            result400 = RequestExceptionResponse.fromJS(resultData400);
+            return throwException("Bad Request", status, _responseText, _headers, result400);
+
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.data;
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Promise.resolve<OkResult>(null as any);
+    }
 }
 
 export class CategoryClient {
@@ -5000,6 +5315,61 @@ export interface IAttributeValueItem {
     iconName?: string | undefined;
 }
 
+export class AttributeValueListEntryDto implements IAttributeValueListEntryDto {
+    id?: number | undefined;
+    orderIndex!: number;
+    localizedNames!: StringStringKeyValuePair[];
+
+    constructor(data?: IAttributeValueListEntryDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+        if (!data) {
+            this.localizedNames = [];
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.orderIndex = _data["orderIndex"];
+            if (Array.isArray(_data["localizedNames"])) {
+                this.localizedNames = [] as any;
+                for (let item of _data["localizedNames"])
+                    this.localizedNames!.push(StringStringKeyValuePair.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): AttributeValueListEntryDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new AttributeValueListEntryDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["orderIndex"] = this.orderIndex;
+        if (Array.isArray(this.localizedNames)) {
+            data["localizedNames"] = [];
+            for (let item of this.localizedNames)
+                data["localizedNames"].push(item ? item.toJSON() : <any>undefined);
+        }
+        return data;
+    }
+}
+
+export interface IAttributeValueListEntryDto {
+    id?: number | undefined;
+    orderIndex: number;
+    localizedNames: StringStringKeyValuePair[];
+}
+
 export class AttributeValueListEntryItem implements IAttributeValueListEntryItem {
     id?: number;
     name?: string | undefined;
@@ -5094,6 +5464,126 @@ export interface IAttributeValueListItem {
     id?: number;
     name?: string | undefined;
     entries?: AttributeValueListEntryItem[] | undefined;
+}
+
+export class AttributeValueList_ListItem implements IAttributeValueList_ListItem {
+    id?: number;
+    title?: string | undefined;
+    entryCount?: number;
+
+    constructor(data?: IAttributeValueList_ListItem) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.title = _data["title"];
+            this.entryCount = _data["entryCount"];
+        }
+    }
+
+    static fromJS(data: any): AttributeValueList_ListItem {
+        data = typeof data === 'object' ? data : {};
+        let result = new AttributeValueList_ListItem();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["title"] = this.title;
+        data["entryCount"] = this.entryCount;
+        return data;
+    }
+}
+
+export interface IAttributeValueList_ListItem {
+    id?: number;
+    title?: string | undefined;
+    entryCount?: number;
+}
+
+export class AttributeValueList_ListItemDataTableQueryResponse implements IAttributeValueList_ListItemDataTableQueryResponse {
+    draw?: number;
+    recordsTotal?: number;
+    recordsFiltered?: number;
+    data?: AttributeValueList_ListItem[] | undefined;
+    aggregates?: { [key: string]: any; } | undefined;
+    error?: string | undefined;
+
+    constructor(data?: IAttributeValueList_ListItemDataTableQueryResponse) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.draw = _data["draw"];
+            this.recordsTotal = _data["recordsTotal"];
+            this.recordsFiltered = _data["recordsFiltered"];
+            if (Array.isArray(_data["data"])) {
+                this.data = [] as any;
+                for (let item of _data["data"])
+                    this.data!.push(AttributeValueList_ListItem.fromJS(item));
+            }
+            if (_data["aggregates"]) {
+                this.aggregates = {} as any;
+                for (let key in _data["aggregates"]) {
+                    if (_data["aggregates"].hasOwnProperty(key))
+                        (<any>this.aggregates)![key] = _data["aggregates"][key];
+                }
+            }
+            this.error = _data["error"];
+        }
+    }
+
+    static fromJS(data: any): AttributeValueList_ListItemDataTableQueryResponse {
+        data = typeof data === 'object' ? data : {};
+        let result = new AttributeValueList_ListItemDataTableQueryResponse();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["draw"] = this.draw;
+        data["recordsTotal"] = this.recordsTotal;
+        data["recordsFiltered"] = this.recordsFiltered;
+        if (Array.isArray(this.data)) {
+            data["data"] = [];
+            for (let item of this.data)
+                data["data"].push(item ? item.toJSON() : <any>undefined);
+        }
+        if (this.aggregates) {
+            data["aggregates"] = {};
+            for (let key in this.aggregates) {
+                if (this.aggregates.hasOwnProperty(key))
+                    (<any>data["aggregates"])[key] = (<any>this.aggregates)[key];
+            }
+        }
+        data["error"] = this.error;
+        return data;
+    }
+}
+
+export interface IAttributeValueList_ListItemDataTableQueryResponse {
+    draw?: number;
+    recordsTotal?: number;
+    recordsFiltered?: number;
+    data?: AttributeValueList_ListItem[] | undefined;
+    aggregates?: { [key: string]: any; } | undefined;
+    error?: string | undefined;
 }
 
 export class AuthenticationProperties implements IAuthenticationProperties {
@@ -7175,6 +7665,69 @@ export interface IPutAttributeRequest {
     iconName?: string | undefined;
     showOnListItem: boolean;
     localizedNames: StringStringKeyValuePair[];
+}
+
+export class PutAttributeValueListRequest implements IPutAttributeValueListRequest {
+    id?: number | undefined;
+    localizedNames!: StringStringKeyValuePair[];
+    entries?: AttributeValueListEntryDto[] | undefined;
+
+    constructor(data?: IPutAttributeValueListRequest) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+        if (!data) {
+            this.localizedNames = [];
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            if (Array.isArray(_data["localizedNames"])) {
+                this.localizedNames = [] as any;
+                for (let item of _data["localizedNames"])
+                    this.localizedNames!.push(StringStringKeyValuePair.fromJS(item));
+            }
+            if (Array.isArray(_data["entries"])) {
+                this.entries = [] as any;
+                for (let item of _data["entries"])
+                    this.entries!.push(AttributeValueListEntryDto.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): PutAttributeValueListRequest {
+        data = typeof data === 'object' ? data : {};
+        let result = new PutAttributeValueListRequest();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        if (Array.isArray(this.localizedNames)) {
+            data["localizedNames"] = [];
+            for (let item of this.localizedNames)
+                data["localizedNames"].push(item ? item.toJSON() : <any>undefined);
+        }
+        if (Array.isArray(this.entries)) {
+            data["entries"] = [];
+            for (let item of this.entries)
+                data["entries"].push(item ? item.toJSON() : <any>undefined);
+        }
+        return data;
+    }
+}
+
+export interface IPutAttributeValueListRequest {
+    id?: number | undefined;
+    localizedNames: StringStringKeyValuePair[];
+    entries?: AttributeValueListEntryDto[] | undefined;
 }
 
 export class PutCategoryRequest implements IPutCategoryRequest {
