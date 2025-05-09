@@ -167,6 +167,10 @@ const allRouteItems: INavbarItem[] = [
     doNotShowWithoutItems: true,
     items: [
       {
+        route: 'manageUsers',
+        label: 'navigation.manageUsers'
+      },
+      {
         route: 'manageCategories',
         label: 'navigation.manageCategories'
       },

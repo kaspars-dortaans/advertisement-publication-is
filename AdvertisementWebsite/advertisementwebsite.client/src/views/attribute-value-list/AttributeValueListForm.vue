@@ -63,7 +63,7 @@ import { useForm } from 'vee-validate'
 import { computed, onBeforeMount, ref, watch } from 'vue'
 import { onBeforeRouteLeave, useRouter } from 'vue-router'
 import { array, object } from 'yup'
-import { type AttributeValueListForm } from '../../types/attributes/attribute-value-list-form'
+import { type AttributeValueListForm } from '../../types/forms/attribute-value-list-form'
 
 const props = defineProps<{
   valueListId?: number

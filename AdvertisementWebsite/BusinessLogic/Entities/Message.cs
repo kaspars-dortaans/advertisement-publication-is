@@ -12,5 +12,5 @@ public class Message
     public bool IsMessageRead { get; set; }
     public Chat Chat { get; set; } = default!;
     public User FromUser { get; set; } = default!;
-    public IEnumerable<MessageAttachment> Attachments { get; set; } = default!;
+    public ICollection<MessageAttachment> Attachments { get; set; } = default!;
 }

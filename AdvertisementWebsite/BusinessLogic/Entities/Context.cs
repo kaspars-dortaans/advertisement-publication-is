@@ -17,6 +17,8 @@ public class Context(DbContextOptions<Context> options) : IdentityDbContext<User
     public virtual DbSet<AttributeValueListEntry> AttributeValueListEntries { get; set; }
     public virtual DbSet<Category> Categories { get; set; }
     public virtual DbSet<Message> Messages { get; set; }
+    public virtual DbSet<Chat> Chats { get; set; }
+    public virtual DbSet<ChatUser> ChatUsers { get; set; }
     public virtual DbSet<Permission> Permissions { get; set; }
     public virtual DbSet<RolePermission> RolePermissions { get; set; }
     public virtual DbSet<CategoryAttribute> CategoryAttributes { get; set; }

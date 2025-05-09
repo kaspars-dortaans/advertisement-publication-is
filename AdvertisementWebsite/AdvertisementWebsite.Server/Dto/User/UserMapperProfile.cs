@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using BusinessLogic.Dto.Image;
 using AdvertisementWebsite.Server.Helpers;
+using BusinessLogic.Dto.Users;
 
 namespace AdvertisementWebsite.Server.Dto.User;
 
@@ -32,5 +33,11 @@ public class UserMapperProfile : Profile
                 : null));
 
         CreateMap<EditUserInfo, BusinessLogic.Entities.User>();
+
+        CreateMap<CreateUserRequest, BusinessLogic.Entities.User>()
+            .IncludeBase<RegisterDto, BusinessLogic.Entities.User>();
+
+        CreateMap<EditUserRequest, BusinessLogic.Entities.User>()
+            .IncludeBase<EditUserInfo, BusinessLogic.Entities.User>();
     }
 }

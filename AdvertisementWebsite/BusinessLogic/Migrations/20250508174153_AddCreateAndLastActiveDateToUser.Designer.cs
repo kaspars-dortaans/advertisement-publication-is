@@ -3,6 +3,7 @@ using System;
 using BusinessLogic.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BusinessLogic.Migrations
 {
     [DbContext(typeof(Context))]
-    partial class ContextModelSnapshot : ModelSnapshot
+    [Migration("20250508174153_AddCreateAndLastActiveDateToUser")]
+    partial class AddCreateAndLastActiveDateToUser
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -281,7 +284,7 @@ namespace BusinessLogic.Migrations
 
                     b.HasIndex("AdvertisementId");
 
-                    b.ToTable("Chats");
+                    b.ToTable("Chat");
                 });
 
             modelBuilder.Entity("BusinessLogic.Entities.ChatUser", b =>
@@ -296,7 +299,7 @@ namespace BusinessLogic.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("ChatUsers");
+                    b.ToTable("ChatUser");
                 });
 
             modelBuilder.Entity("BusinessLogic.Entities.Cost", b =>

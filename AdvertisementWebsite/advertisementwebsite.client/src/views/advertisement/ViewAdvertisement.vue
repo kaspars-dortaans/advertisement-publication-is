@@ -65,7 +65,7 @@
               <Button
                 :label="l.advertisements.viewProfile"
                 as="RouterLink"
-                :to="{ name: 'viewUser', params: { id: advertisement.ownerId } }"
+                :to="{ name: 'viewUserProfile', params: { id: advertisement.ownerId } }"
               ></Button>
               <Button
                 v-if="!userOwnedAdvertisement"

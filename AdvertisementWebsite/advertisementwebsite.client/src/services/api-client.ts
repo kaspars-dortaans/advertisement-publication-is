@@ -3839,9 +3839,10 @@ export class UserClient {
      * @param phoneNumber (optional) 
      * @param isPhoneNumberPublic (optional) 
      * @param profileImage (optional) 
+     * @param linkToUserSite (optional) 
      * @return OK
      */
-    register(email: string | undefined, isEmailPublic: boolean | undefined, password: string | undefined, passwordConfirmation: string | undefined, firstName: string | undefined, lastName: string | undefined, userName: string | undefined, phoneNumber: string | undefined, isPhoneNumberPublic: boolean | undefined, profileImage: FileParameter | null | undefined, cancelToken?: CancelToken): Promise<OkResult> {
+    register(email: string | undefined, isEmailPublic: boolean | undefined, password: string | undefined, passwordConfirmation: string | undefined, firstName: string | undefined, lastName: string | undefined, userName: string | undefined, phoneNumber: string | undefined, isPhoneNumberPublic: boolean | undefined, profileImage: FileParameter | null | undefined, linkToUserSite: string | null | undefined, cancelToken?: CancelToken): Promise<OkResult> {
         let url_ = this.baseUrl + "/api/User/Register";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -3884,6 +3885,8 @@ export class UserClient {
             content_.append("isPhoneNumberPublic", isPhoneNumberPublic.toString());
         if (profileImage !== null && profileImage !== undefined)
             content_.append("profileImage", profileImage.data, profileImage.fileName ? profileImage.fileName : "profileImage");
+        if (linkToUserSite !== null && linkToUserSite !== undefined)
+            content_.append("linkToUserSite", linkToUserSite.toString());
 
         let options_: AxiosRequestConfig = {
             data: content_,
@@ -4396,6 +4399,415 @@ export class UserClient {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
         }
         return Promise.resolve<UserListItemDataTableQueryResponse>(null as any);
+    }
+
+    /**
+     * @return OK
+     */
+    getRoleList( cancelToken?: CancelToken): Promise<string[]> {
+        let url_ = this.baseUrl + "/api/User/GetRoleList";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: AxiosRequestConfig = {
+            method: "GET",
+            url: url_,
+            headers: {
+                "Accept": "text/plain"
+            },
+            cancelToken
+        };
+
+        return this.instance.request(options_).catch((_error: any) => {
+            if (isAxiosError(_error) && _error.response) {
+                return _error.response;
+            } else {
+                throw _error;
+            }
+        }).then((_response: AxiosResponse) => {
+            return this.processGetRoleList(_response);
+        });
+    }
+
+    protected processGetRoleList(response: AxiosResponse): Promise<string[]> {
+        const status = response.status;
+        let _headers: any = {};
+        if (response.headers && typeof response.headers === "object") {
+            for (const k in response.headers) {
+                if (response.headers.hasOwnProperty(k)) {
+                    _headers[k] = response.headers[k];
+                }
+            }
+        }
+        if (status === 200) {
+            const _responseText = response.data;
+            let result200: any = null;
+            let resultData200  = _responseText;
+            if (Array.isArray(resultData200)) {
+                result200 = [] as any;
+                for (let item of resultData200)
+                    result200!.push(item);
+            }
+            else {
+                result200 = <any>null;
+            }
+            return Promise.resolve<string[]>(result200);
+
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.data;
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Promise.resolve<string[]>(null as any);
+    }
+
+    /**
+     * @param email (optional) 
+     * @param isEmailPublic (optional) 
+     * @param password (optional) 
+     * @param passwordConfirmation (optional) 
+     * @param firstName (optional) 
+     * @param lastName (optional) 
+     * @param userName (optional) 
+     * @param phoneNumber (optional) 
+     * @param isPhoneNumberPublic (optional) 
+     * @param profileImage (optional) 
+     * @param linkToUserSite (optional) 
+     * @param userRoles (optional) 
+     * @return OK
+     */
+    createUser(email: string | undefined, isEmailPublic: boolean | undefined, password: string | undefined, passwordConfirmation: string | undefined, firstName: string | undefined, lastName: string | undefined, userName: string | undefined, phoneNumber: string | undefined, isPhoneNumberPublic: boolean | undefined, profileImage: FileParameter | null | undefined, linkToUserSite: string | null | undefined, userRoles: string[] | undefined, cancelToken?: CancelToken): Promise<OkResult> {
+        let url_ = this.baseUrl + "/api/User/CreateUser";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = new FormData();
+        if (email === null || email === undefined)
+            throw new Error("The parameter 'email' cannot be null.");
+        else
+            content_.append("email", email.toString());
+        if (isEmailPublic === null || isEmailPublic === undefined)
+            throw new Error("The parameter 'isEmailPublic' cannot be null.");
+        else
+            content_.append("isEmailPublic", isEmailPublic.toString());
+        if (password === null || password === undefined)
+            throw new Error("The parameter 'password' cannot be null.");
+        else
+            content_.append("password", password.toString());
+        if (passwordConfirmation === null || passwordConfirmation === undefined)
+            throw new Error("The parameter 'passwordConfirmation' cannot be null.");
+        else
+            content_.append("passwordConfirmation", passwordConfirmation.toString());
+        if (firstName === null || firstName === undefined)
+            throw new Error("The parameter 'firstName' cannot be null.");
+        else
+            content_.append("firstName", firstName.toString());
+        if (lastName === null || lastName === undefined)
+            throw new Error("The parameter 'lastName' cannot be null.");
+        else
+            content_.append("lastName", lastName.toString());
+        if (userName === null || userName === undefined)
+            throw new Error("The parameter 'userName' cannot be null.");
+        else
+            content_.append("userName", userName.toString());
+        if (phoneNumber === null || phoneNumber === undefined)
+            throw new Error("The parameter 'phoneNumber' cannot be null.");
+        else
+            content_.append("phoneNumber", phoneNumber.toString());
+        if (isPhoneNumberPublic === null || isPhoneNumberPublic === undefined)
+            throw new Error("The parameter 'isPhoneNumberPublic' cannot be null.");
+        else
+            content_.append("isPhoneNumberPublic", isPhoneNumberPublic.toString());
+        if (profileImage !== null && profileImage !== undefined)
+            content_.append("profileImage", profileImage.data, profileImage.fileName ? profileImage.fileName : "profileImage");
+        if (linkToUserSite !== null && linkToUserSite !== undefined)
+            content_.append("linkToUserSite", linkToUserSite.toString());
+        if (userRoles === null || userRoles === undefined)
+            throw new Error("The parameter 'userRoles' cannot be null.");
+        else
+            userRoles.forEach(item_ => content_.append("userRoles", item_.toString()));
+
+        let options_: AxiosRequestConfig = {
+            data: content_,
+            method: "POST",
+            url: url_,
+            headers: {
+                "Accept": "text/plain"
+            },
+            cancelToken
+        };
+
+        return this.instance.request(options_).catch((_error: any) => {
+            if (isAxiosError(_error) && _error.response) {
+                return _error.response;
+            } else {
+                throw _error;
+            }
+        }).then((_response: AxiosResponse) => {
+            return this.processCreateUser(_response);
+        });
+    }
+
+    protected processCreateUser(response: AxiosResponse): Promise<OkResult> {
+        const status = response.status;
+        let _headers: any = {};
+        if (response.headers && typeof response.headers === "object") {
+            for (const k in response.headers) {
+                if (response.headers.hasOwnProperty(k)) {
+                    _headers[k] = response.headers[k];
+                }
+            }
+        }
+        if (status === 200) {
+            const _responseText = response.data;
+            let result200: any = null;
+            let resultData200  = _responseText;
+            result200 = OkResult.fromJS(resultData200);
+            return Promise.resolve<OkResult>(result200);
+
+        } else if (status === 400) {
+            const _responseText = response.data;
+            let result400: any = null;
+            let resultData400  = _responseText;
+            result400 = RequestExceptionResponse.fromJS(resultData400);
+            return throwException("Bad Request", status, _responseText, _headers, result400);
+
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.data;
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Promise.resolve<OkResult>(null as any);
+    }
+
+    /**
+     * @param userId (optional) 
+     * @return OK
+     */
+    getUserFormInfo(userId: number | undefined, cancelToken?: CancelToken): Promise<UserInfo> {
+        let url_ = this.baseUrl + "/api/User/GetUserFormInfo?";
+        if (userId === null)
+            throw new Error("The parameter 'userId' cannot be null.");
+        else if (userId !== undefined)
+            url_ += "userId=" + encodeURIComponent("" + userId) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: AxiosRequestConfig = {
+            method: "GET",
+            url: url_,
+            headers: {
+                "Accept": "text/plain"
+            },
+            cancelToken
+        };
+
+        return this.instance.request(options_).catch((_error: any) => {
+            if (isAxiosError(_error) && _error.response) {
+                return _error.response;
+            } else {
+                throw _error;
+            }
+        }).then((_response: AxiosResponse) => {
+            return this.processGetUserFormInfo(_response);
+        });
+    }
+
+    protected processGetUserFormInfo(response: AxiosResponse): Promise<UserInfo> {
+        const status = response.status;
+        let _headers: any = {};
+        if (response.headers && typeof response.headers === "object") {
+            for (const k in response.headers) {
+                if (response.headers.hasOwnProperty(k)) {
+                    _headers[k] = response.headers[k];
+                }
+            }
+        }
+        if (status === 200) {
+            const _responseText = response.data;
+            let result200: any = null;
+            let resultData200  = _responseText;
+            result200 = UserInfo.fromJS(resultData200);
+            return Promise.resolve<UserInfo>(result200);
+
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.data;
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Promise.resolve<UserInfo>(null as any);
+    }
+
+    /**
+     * @param email (optional) 
+     * @param isEmailPublic (optional) 
+     * @param firstName (optional) 
+     * @param lastName (optional) 
+     * @param userName (optional) 
+     * @param phoneNumber (optional) 
+     * @param isPhoneNumberPublic (optional) 
+     * @param linkToUserSite (optional) 
+     * @param profileImageChanged (optional) 
+     * @param profileImage (optional) 
+     * @param userId (optional) 
+     * @param userRoles (optional) 
+     * @return OK
+     */
+    editUser(email: string | undefined, isEmailPublic: boolean | undefined, firstName: string | undefined, lastName: string | undefined, userName: string | undefined, phoneNumber: string | undefined, isPhoneNumberPublic: boolean | undefined, linkToUserSite: string | null | undefined, profileImageChanged: boolean | undefined, profileImage: FileParameter | null | undefined, userId: number | undefined, userRoles: string[] | null | undefined, cancelToken?: CancelToken): Promise<OkResult> {
+        let url_ = this.baseUrl + "/api/User/EditUser";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = new FormData();
+        if (email === null || email === undefined)
+            throw new Error("The parameter 'email' cannot be null.");
+        else
+            content_.append("email", email.toString());
+        if (isEmailPublic === null || isEmailPublic === undefined)
+            throw new Error("The parameter 'isEmailPublic' cannot be null.");
+        else
+            content_.append("isEmailPublic", isEmailPublic.toString());
+        if (firstName === null || firstName === undefined)
+            throw new Error("The parameter 'firstName' cannot be null.");
+        else
+            content_.append("firstName", firstName.toString());
+        if (lastName === null || lastName === undefined)
+            throw new Error("The parameter 'lastName' cannot be null.");
+        else
+            content_.append("lastName", lastName.toString());
+        if (userName === null || userName === undefined)
+            throw new Error("The parameter 'userName' cannot be null.");
+        else
+            content_.append("userName", userName.toString());
+        if (phoneNumber === null || phoneNumber === undefined)
+            throw new Error("The parameter 'phoneNumber' cannot be null.");
+        else
+            content_.append("phoneNumber", phoneNumber.toString());
+        if (isPhoneNumberPublic === null || isPhoneNumberPublic === undefined)
+            throw new Error("The parameter 'isPhoneNumberPublic' cannot be null.");
+        else
+            content_.append("isPhoneNumberPublic", isPhoneNumberPublic.toString());
+        if (linkToUserSite !== null && linkToUserSite !== undefined)
+            content_.append("linkToUserSite", linkToUserSite.toString());
+        if (profileImageChanged === null || profileImageChanged === undefined)
+            throw new Error("The parameter 'profileImageChanged' cannot be null.");
+        else
+            content_.append("profileImageChanged", profileImageChanged.toString());
+        if (profileImage !== null && profileImage !== undefined)
+            content_.append("profileImage", profileImage.data, profileImage.fileName ? profileImage.fileName : "profileImage");
+        if (userId === null || userId === undefined)
+            throw new Error("The parameter 'userId' cannot be null.");
+        else
+            content_.append("userId", userId.toString());
+        if (userRoles !== null && userRoles !== undefined)
+            userRoles.forEach(item_ => content_.append("userRoles", item_.toString()));
+
+        let options_: AxiosRequestConfig = {
+            data: content_,
+            method: "POST",
+            url: url_,
+            headers: {
+                "Accept": "text/plain"
+            },
+            cancelToken
+        };
+
+        return this.instance.request(options_).catch((_error: any) => {
+            if (isAxiosError(_error) && _error.response) {
+                return _error.response;
+            } else {
+                throw _error;
+            }
+        }).then((_response: AxiosResponse) => {
+            return this.processEditUser(_response);
+        });
+    }
+
+    protected processEditUser(response: AxiosResponse): Promise<OkResult> {
+        const status = response.status;
+        let _headers: any = {};
+        if (response.headers && typeof response.headers === "object") {
+            for (const k in response.headers) {
+                if (response.headers.hasOwnProperty(k)) {
+                    _headers[k] = response.headers[k];
+                }
+            }
+        }
+        if (status === 200) {
+            const _responseText = response.data;
+            let result200: any = null;
+            let resultData200  = _responseText;
+            result200 = OkResult.fromJS(resultData200);
+            return Promise.resolve<OkResult>(result200);
+
+        } else if (status === 400) {
+            const _responseText = response.data;
+            let result400: any = null;
+            let resultData400  = _responseText;
+            result400 = RequestExceptionResponse.fromJS(resultData400);
+            return throwException("Bad Request", status, _responseText, _headers, result400);
+
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.data;
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Promise.resolve<OkResult>(null as any);
+    }
+
+    /**
+     * @param body (optional) 
+     * @return OK
+     */
+    deleteUsers(body: number[] | undefined, cancelToken?: CancelToken): Promise<OkResult> {
+        let url_ = this.baseUrl + "/api/User/DeleteUsers";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_: AxiosRequestConfig = {
+            data: content_,
+            method: "POST",
+            url: url_,
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "text/plain"
+            },
+            cancelToken
+        };
+
+        return this.instance.request(options_).catch((_error: any) => {
+            if (isAxiosError(_error) && _error.response) {
+                return _error.response;
+            } else {
+                throw _error;
+            }
+        }).then((_response: AxiosResponse) => {
+            return this.processDeleteUsers(_response);
+        });
+    }
+
+    protected processDeleteUsers(response: AxiosResponse): Promise<OkResult> {
+        const status = response.status;
+        let _headers: any = {};
+        if (response.headers && typeof response.headers === "object") {
+            for (const k in response.headers) {
+                if (response.headers.hasOwnProperty(k)) {
+                    _headers[k] = response.headers[k];
+                }
+            }
+        }
+        if (status === 200) {
+            const _responseText = response.data;
+            let result200: any = null;
+            let resultData200  = _responseText;
+            result200 = OkResult.fromJS(resultData200);
+            return Promise.resolve<OkResult>(result200);
+
+        } else if (status === 400) {
+            const _responseText = response.data;
+            let result400: any = null;
+            let resultData400  = _responseText;
+            result400 = RequestExceptionResponse.fromJS(resultData400);
+            return throwException("Bad Request", status, _responseText, _headers, result400);
+
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.data;
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Promise.resolve<OkResult>(null as any);
     }
 }
 
@@ -6226,6 +6638,97 @@ export interface ICreateOrEditNotificationSubscriptionRequest {
     attributeValues?: Int32StringKeyValuePair[] | undefined;
 }
 
+export class CreateUserRequest implements ICreateUserRequest {
+    email!: string;
+    isEmailPublic?: boolean;
+    password!: string;
+    passwordConfirmation!: string;
+    firstName!: string;
+    lastName!: string;
+    userName!: string;
+    phoneNumber!: string;
+    isPhoneNumberPublic?: boolean;
+    profileImage?: any | undefined;
+    linkToUserSite?: string | undefined;
+    userRoles!: string[];
+
+    constructor(data?: ICreateUserRequest) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+        if (!data) {
+            this.userRoles = [];
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.email = _data["email"];
+            this.isEmailPublic = _data["isEmailPublic"];
+            this.password = _data["password"];
+            this.passwordConfirmation = _data["passwordConfirmation"];
+            this.firstName = _data["firstName"];
+            this.lastName = _data["lastName"];
+            this.userName = _data["userName"];
+            this.phoneNumber = _data["phoneNumber"];
+            this.isPhoneNumberPublic = _data["isPhoneNumberPublic"];
+            this.profileImage = _data["profileImage"];
+            this.linkToUserSite = _data["linkToUserSite"];
+            if (Array.isArray(_data["userRoles"])) {
+                this.userRoles = [] as any;
+                for (let item of _data["userRoles"])
+                    this.userRoles!.push(item);
+            }
+        }
+    }
+
+    static fromJS(data: any): CreateUserRequest {
+        data = typeof data === 'object' ? data : {};
+        let result = new CreateUserRequest();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["email"] = this.email;
+        data["isEmailPublic"] = this.isEmailPublic;
+        data["password"] = this.password;
+        data["passwordConfirmation"] = this.passwordConfirmation;
+        data["firstName"] = this.firstName;
+        data["lastName"] = this.lastName;
+        data["userName"] = this.userName;
+        data["phoneNumber"] = this.phoneNumber;
+        data["isPhoneNumberPublic"] = this.isPhoneNumberPublic;
+        data["profileImage"] = this.profileImage;
+        data["linkToUserSite"] = this.linkToUserSite;
+        if (Array.isArray(this.userRoles)) {
+            data["userRoles"] = [];
+            for (let item of this.userRoles)
+                data["userRoles"].push(item);
+        }
+        return data;
+    }
+}
+
+export interface ICreateUserRequest {
+    email: string;
+    isEmailPublic?: boolean;
+    password: string;
+    passwordConfirmation: string;
+    firstName: string;
+    lastName: string;
+    userName: string;
+    phoneNumber: string;
+    isPhoneNumberPublic?: boolean;
+    profileImage?: any | undefined;
+    linkToUserSite?: string | undefined;
+    userRoles: string[];
+}
+
 export class DataTableQuery implements IDataTableQuery {
     start?: number | undefined;
     length?: number | undefined;
@@ -6440,6 +6943,94 @@ export interface IEditUserInfo {
     linkToUserSite?: string | undefined;
     profileImageChanged?: boolean;
     profileImage?: any | undefined;
+}
+
+export class EditUserRequest implements IEditUserRequest {
+    email!: string;
+    isEmailPublic?: boolean;
+    firstName!: string;
+    lastName!: string;
+    userName!: string;
+    phoneNumber!: string;
+    isPhoneNumberPublic?: boolean;
+    linkToUserSite?: string | undefined;
+    profileImageChanged?: boolean;
+    profileImage?: any | undefined;
+    userId!: number;
+    userRoles?: string[] | undefined;
+
+    constructor(data?: IEditUserRequest) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.email = _data["email"];
+            this.isEmailPublic = _data["isEmailPublic"];
+            this.firstName = _data["firstName"];
+            this.lastName = _data["lastName"];
+            this.userName = _data["userName"];
+            this.phoneNumber = _data["phoneNumber"];
+            this.isPhoneNumberPublic = _data["isPhoneNumberPublic"];
+            this.linkToUserSite = _data["linkToUserSite"];
+            this.profileImageChanged = _data["profileImageChanged"];
+            this.profileImage = _data["profileImage"];
+            this.userId = _data["userId"];
+            if (Array.isArray(_data["userRoles"])) {
+                this.userRoles = [] as any;
+                for (let item of _data["userRoles"])
+                    this.userRoles!.push(item);
+            }
+        }
+    }
+
+    static fromJS(data: any): EditUserRequest {
+        data = typeof data === 'object' ? data : {};
+        let result = new EditUserRequest();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["email"] = this.email;
+        data["isEmailPublic"] = this.isEmailPublic;
+        data["firstName"] = this.firstName;
+        data["lastName"] = this.lastName;
+        data["userName"] = this.userName;
+        data["phoneNumber"] = this.phoneNumber;
+        data["isPhoneNumberPublic"] = this.isPhoneNumberPublic;
+        data["linkToUserSite"] = this.linkToUserSite;
+        data["profileImageChanged"] = this.profileImageChanged;
+        data["profileImage"] = this.profileImage;
+        data["userId"] = this.userId;
+        if (Array.isArray(this.userRoles)) {
+            data["userRoles"] = [];
+            for (let item of this.userRoles)
+                data["userRoles"].push(item);
+        }
+        return data;
+    }
+}
+
+export interface IEditUserRequest {
+    email: string;
+    isEmailPublic?: boolean;
+    firstName: string;
+    lastName: string;
+    userName: string;
+    phoneNumber: string;
+    isPhoneNumberPublic?: boolean;
+    linkToUserSite?: string | undefined;
+    profileImageChanged?: boolean;
+    profileImage?: any | undefined;
+    userId: number;
+    userRoles?: string[] | undefined;
 }
 
 export enum FilterType {
@@ -7853,6 +8444,7 @@ export class RegisterDto implements IRegisterDto {
     phoneNumber!: string;
     isPhoneNumberPublic?: boolean;
     profileImage?: any | undefined;
+    linkToUserSite?: string | undefined;
 
     constructor(data?: IRegisterDto) {
         if (data) {
@@ -7875,6 +8467,7 @@ export class RegisterDto implements IRegisterDto {
             this.phoneNumber = _data["phoneNumber"];
             this.isPhoneNumberPublic = _data["isPhoneNumberPublic"];
             this.profileImage = _data["profileImage"];
+            this.linkToUserSite = _data["linkToUserSite"];
         }
     }
 
@@ -7897,6 +8490,7 @@ export class RegisterDto implements IRegisterDto {
         data["phoneNumber"] = this.phoneNumber;
         data["isPhoneNumberPublic"] = this.isPhoneNumberPublic;
         data["profileImage"] = this.profileImage;
+        data["linkToUserSite"] = this.linkToUserSite;
         return data;
     }
 }
@@ -7912,6 +8506,7 @@ export interface IRegisterDto {
     phoneNumber: string;
     isPhoneNumberPublic?: boolean;
     profileImage?: any | undefined;
+    linkToUserSite?: string | undefined;
 }
 
 export class ReportAdvertisementRequest implements IReportAdvertisementRequest {
@@ -8401,6 +8996,7 @@ export class UserInfo implements IUserInfo {
     isEmailPublic?: boolean;
     email?: string | undefined;
     linkToUserSite?: string | undefined;
+    userRoles?: string[] | undefined;
     profileImage?: ImageDto | undefined;
 
     constructor(data?: IUserInfo) {
@@ -8423,6 +9019,11 @@ export class UserInfo implements IUserInfo {
             this.isEmailPublic = _data["isEmailPublic"];
             this.email = _data["email"];
             this.linkToUserSite = _data["linkToUserSite"];
+            if (Array.isArray(_data["userRoles"])) {
+                this.userRoles = [] as any;
+                for (let item of _data["userRoles"])
+                    this.userRoles!.push(item);
+            }
             this.profileImage = _data["profileImage"] ? ImageDto.fromJS(_data["profileImage"]) : <any>undefined;
         }
     }
@@ -8445,6 +9046,11 @@ export class UserInfo implements IUserInfo {
         data["isEmailPublic"] = this.isEmailPublic;
         data["email"] = this.email;
         data["linkToUserSite"] = this.linkToUserSite;
+        if (Array.isArray(this.userRoles)) {
+            data["userRoles"] = [];
+            for (let item of this.userRoles)
+                data["userRoles"].push(item);
+        }
         data["profileImage"] = this.profileImage ? this.profileImage.toJSON() : <any>undefined;
         return data;
     }
@@ -8460,6 +9066,7 @@ export interface IUserInfo {
     isEmailPublic?: boolean;
     email?: string | undefined;
     linkToUserSite?: string | undefined;
+    userRoles?: string[] | undefined;
     profileImage?: ImageDto | undefined;
 }
 
@@ -8467,6 +9074,12 @@ export class UserListItem implements IUserListItem {
     id?: number;
     firstName?: string | undefined;
     lastName?: string | undefined;
+    userName?: string | undefined;
+    userRoles?: string[] | undefined;
+    email?: string | undefined;
+    phoneNumber?: string | undefined;
+    createdDate?: Date;
+    lastActive?: Date | undefined;
 
     constructor(data?: IUserListItem) {
         if (data) {
@@ -8482,6 +9095,16 @@ export class UserListItem implements IUserListItem {
             this.id = _data["id"];
             this.firstName = _data["firstName"];
             this.lastName = _data["lastName"];
+            this.userName = _data["userName"];
+            if (Array.isArray(_data["userRoles"])) {
+                this.userRoles = [] as any;
+                for (let item of _data["userRoles"])
+                    this.userRoles!.push(item);
+            }
+            this.email = _data["email"];
+            this.phoneNumber = _data["phoneNumber"];
+            this.createdDate = _data["createdDate"] ? new Date(_data["createdDate"].toString()) : <any>undefined;
+            this.lastActive = _data["lastActive"] ? new Date(_data["lastActive"].toString()) : <any>undefined;
         }
     }
 
@@ -8497,6 +9120,16 @@ export class UserListItem implements IUserListItem {
         data["id"] = this.id;
         data["firstName"] = this.firstName;
         data["lastName"] = this.lastName;
+        data["userName"] = this.userName;
+        if (Array.isArray(this.userRoles)) {
+            data["userRoles"] = [];
+            for (let item of this.userRoles)
+                data["userRoles"].push(item);
+        }
+        data["email"] = this.email;
+        data["phoneNumber"] = this.phoneNumber;
+        data["createdDate"] = this.createdDate ? this.createdDate.toISOString() : <any>undefined;
+        data["lastActive"] = this.lastActive ? this.lastActive.toISOString() : <any>undefined;
         return data;
     }
 }
@@ -8505,6 +9138,12 @@ export interface IUserListItem {
     id?: number;
     firstName?: string | undefined;
     lastName?: string | undefined;
+    userName?: string | undefined;
+    userRoles?: string[] | undefined;
+    email?: string | undefined;
+    phoneNumber?: string | undefined;
+    createdDate?: Date;
+    lastActive?: Date | undefined;
 }
 
 export class UserListItemDataTableQueryResponse implements IUserListItemDataTableQueryResponse {

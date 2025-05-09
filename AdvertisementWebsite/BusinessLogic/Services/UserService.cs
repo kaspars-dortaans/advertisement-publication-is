@@ -1,4 +1,6 @@
 ﻿using BusinessLogic.Constants;
+using BusinessLogic.Dto.DataTableQuery;
+using BusinessLogic.Dto.Users;
 using BusinessLogic.Entities;
 using BusinessLogic.Exceptions;
 using BusinessLogic.Helpers;
@@ -34,6 +36,7 @@ public class UserService(
     /// <returns></returns>
     public async Task Register(User user, string password, IFormFile? profileImage, IEnumerable<string>? roles)
     {
+        user.CreatedDate = DateTime.UtcNow;
         var createResult = await _userManager.CreateAsync(user, password);
 
         //Handle user creation errors
@@ -44,7 +47,8 @@ public class UserService(
             await _userManager.AddToRolesAsync(user, roles);
         }
 
-        if(!string.IsNullOrEmpty(_settingHelper.Settings.Locale)){
+        if (!string.IsNullOrEmpty(_settingHelper.Settings.Locale))
+        {
             await _userManager.AddClaimAsync(user, new Claim(ClaimTypes.Locality, _settingHelper.Settings.Locale));
         }
 
@@ -176,10 +180,28 @@ public class UserService(
     /// <param name="user"></param>
     /// <param name="updateProfileImage"></param>
     /// <param name="profileImage"></param>
+    /// <param name="newRoles"></param>
     /// <returns></returns>
-    public async Task UpdateUserInfo(User user, bool updateProfileImage, IFormFile? profileImage)
+    public async Task UpdateUser(User user, bool updateProfileImage, IFormFile? profileImage, IEnumerable<string>? newRoles = null)
     {
         HandleIdentityUserResult(await _userManager.UpdateAsync(user));
+
+        if (newRoles != null)
+        {
+            var currentRoles = await _userManager.GetRolesAsync(user);
+            var rolesToRemove = currentRoles.Where(cr => newRoles.All(nr => nr != cr)).ToList();
+            var rolesToAdd = newRoles.Where(nr => currentRoles.All(cr => cr != nr)).ToList();
+
+            if (rolesToRemove.Count > 0)
+            {
+                await _userManager.RemoveFromRolesAsync(user, rolesToRemove);
+            }
+            if (rolesToAdd.Count > 0)
+            {
+                await _userManager.AddToRolesAsync(user, rolesToAdd);
+            }
+        }
+
         if (updateProfileImage)
         {
             await SaveProfileImage(user.Email!, profileImage);
@@ -193,5 +215,62 @@ public class UserService(
 
         var identityResult = await _userManager.ChangePasswordAsync(user, currentPassword, newPassword);
         HandleIdentityUserResult(identityResult);
+    }
+
+    public async Task<IEnumerable<string>> GetAllRoleNames()
+    {
+        return await DbContext.Roles.Where(r => r != null).Select(r => r.Name!).ToListAsync();
+    }
+
+    public async Task<DataTableQueryResponse<UserListItem>> GetUserList(DataTableQuery request)
+    {
+        var query = DbSet.Select(u => new UserListItem
+        {
+            Id = u.Id,
+            FirstName = u.FirstName,
+            LastName = u.LastName,
+            Email = u.Email,
+            PhoneNumber = u.PhoneNumber,
+            UserName = u.UserName,
+            UserRoles = DbContext.Roles.Where(r => r.IdentityUserRoles.Any(ir => ir.UserId == u.Id && ir.RoleId == r.Id)).Select(r => r.Name).ToList(),
+            CreatedDate = u.CreatedDate,
+            LastActive = u.LastActiveDate
+        });
+        return await DataTableQueryResolver.ResolveDataTableQuery(query, request);
+    }
+
+    public async Task DeleteUsers(IEnumerable<int> ids)
+    {
+        var usersData = await Where(u => ids.Contains(u.Id))
+            .Select(u => new
+            {
+                ProfileImagePaths = new List<string?> { u.ProfileImageFile.Path, u.ProfileImageFile.ThumbnailPath },
+                AdvertisementIds = u.OwnedAdvertisements.Select(a => a.Id),
+                AdvertisementImagePaths = u.OwnedAdvertisements.SelectMany(a => a.Images.Select(i => new string?[] { i.ThumbnailPath, i.Path })),
+                DeletableChatAttachmentPaths = u.Chats
+                    .Where(c => c.ChatUsers.Count == 1)
+                    .SelectMany(c => c.ChatMessages
+                        .Where(cm => cm.Attachments.Count > 0)
+                        .SelectMany(cm => cm.Attachments.Select(a => a.Path)))
+            })
+            .ToListAsync();
+
+        //Remove advertisements relationship from chats to not violate foreign key policy, when advertisements are deleted
+        var advertisementIds = usersData.SelectMany(ud => ud.AdvertisementIds).ToList();
+        await DbContext.Chats
+            .Where(c => c.AdvertisementId != null && advertisementIds.Contains(c.AdvertisementId.Value))
+            .ExecuteUpdateAsync(setters => setters.SetProperty(c => c.AdvertisementId, c => null));
+
+        //Delete users
+        await Where(u => ids.Contains(u.Id)).ExecuteDeleteAsync();
+
+        //Delete empty chats
+        await DbContext.Chats.Where(c => c.ChatUsers.Count == 0).ExecuteDeleteAsync();
+
+        //Delete files from storage
+        List<string> filePaths = usersData.SelectMany(ud => ud.ProfileImagePaths.Concat(ud.AdvertisementImagePaths.SelectMany(p => p)).Concat(ud.DeletableChatAttachmentPaths))
+            .Where(path => !string.IsNullOrEmpty(path))
+            .ToList()!;
+        await _storage.DeleteFiles(filePaths);
     }
 }

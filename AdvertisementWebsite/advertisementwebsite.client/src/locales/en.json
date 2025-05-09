@@ -106,6 +106,18 @@
     "title": "Title",
     "entryCount": "Entry count"
   },
+  "manageUsers": {
+    "confirmDeleteHeader": "Delete users",
+    "confirmDeleteMessage": "{0} users will be deleted.",
+    "firstName": "First name",
+    "lastName": "Last name",
+    "userName": "Username",
+    "userRoles": "Roles",
+    "email": "Email",
+    "phoneNumber": "Phone number",
+    "createdDate": "CreatedDate",
+    "lastActive": "Last active date"
+  },
   "form": {
     "common": {
       "dragAndDropToUpload": "Drag and drop here to upload",
@@ -127,9 +139,12 @@
       "username": "Username",
       "publiclyDisplayEmail": "Publicly display e-mail",
       "phoneNumber": "Phone number",
-      "publiclyDisplayPhoneNumber": "Publicly display phone number"
+      "publiclyDisplayPhoneNumber": "Publicly display phone number",
+      "userRoles": "User roles",
+      "linkToUserSite": "Link to user site"
     },
     "profileInfo": {
+      "userRoles": "User roles",
       "firstName": "First name",
       "lastName": "Last name",
       "userName": "Username",
@@ -243,7 +258,11 @@
     "manageAttributeValueLists": "Manage attribute value lists",
     "createAttributeValueList": "Create attribute value list",
     "editAttributeValueList": "Edit attribute value list",
-    "viewAttributeValueList": "View attribute value list"
+    "viewAttributeValueList": "View attribute value list",
+    "manageUsers": "Manage users",
+    "createUser": "Create user",
+    "viewUser": "View user",
+    "editUser": "Edit user"
   },
   "dataSize": {
     "bits": "{0} b",

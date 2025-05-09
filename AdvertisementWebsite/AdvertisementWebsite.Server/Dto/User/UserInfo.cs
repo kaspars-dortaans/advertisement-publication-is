@@ -13,5 +13,6 @@ public class UserInfo
     public bool IsEmailPublic { get; set; }
     public string Email { get; set; } = default!;
     public string? LinkToUserSite { get; set; }
+    public IEnumerable<string> UserRoles { get; set; } = default!;
     public ImageDto? ProfileImage { get; set; } = default!;
 }

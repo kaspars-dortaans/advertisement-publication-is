@@ -7,7 +7,9 @@ public static class LocalisationHelper
 {
     public static string Localise<T> (this ICollection<T> localisations, string locale) where T: LocaleText
     {
-        return localisations.First(lt => lt.Locale == locale || lt.Locale == LocalisationConstants.TextNotLocalised).Text;
+        return localisations.FirstOrDefault(lt => lt.Locale == locale) != null
+                    ? localisations.FirstOrDefault(lt => lt.Locale == locale)!.Text
+                    : LocalisationConstants.NotLocalizedTextPlaceholder;
     }
 
     public static void SyncLocaleTexts<T>(ICollection<T> existingLocaleTexts, ICollection<T> newLocaleTexts) where T : LocaleText

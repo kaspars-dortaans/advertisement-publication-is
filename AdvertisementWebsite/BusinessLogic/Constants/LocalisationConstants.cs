@@ -2,5 +2,5 @@
 
 public static class LocalisationConstants
 {
-    public const string TextNotLocalised = "TextNotLocalised";
+    public const string NotLocalizedTextPlaceholder = "Missing translation";
 }

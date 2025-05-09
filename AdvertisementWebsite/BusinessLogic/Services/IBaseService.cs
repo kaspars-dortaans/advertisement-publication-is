@@ -1,4 +1,5 @@
-﻿using System.Linq.Expressions;
+﻿using Microsoft.EntityFrameworkCore.Query;
+using System.Linq.Expressions;
 
 namespace BusinessLogic.Services;
 
@@ -15,7 +16,8 @@ public interface IBaseService<Entity> where Entity : class
     public Task<Entity?> FirstOrDefaultAsync(Expression<Func<Entity, bool>> predicate);
     public IQueryable<Entity> Where(Expression<Func<Entity, bool>> predicate);
     public Task DeleteWhereAsync(Expression<Func<Entity, bool>> predicate);
-    
+    public Task UpdateWhereAsync(Expression<Func<Entity, bool>> predicate, Expression<Func<SetPropertyCalls<Entity>, SetPropertyCalls<Entity>>> setters);
+
     /// <summary>
     /// Add entity if it does not exist.
     /// </summary>

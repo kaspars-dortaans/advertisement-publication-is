@@ -33,6 +33,7 @@ import Listbox from 'primevue/listbox'
 import Checkbox from 'primevue/checkbox'
 import DatePicker from 'primevue/datepicker'
 import ToggleSwitch from 'primevue/toggleswitch'
+import MultiSelect from 'primevue/multiselect'
 
 //Data
 import Column from 'primevue/column'
@@ -177,6 +178,7 @@ export function initPrimeVue(app: App<Element>) {
   app.component('Listbox', Listbox)
   app.component('DatePicker', DatePicker)
   app.component('ToggleSwitch', ToggleSwitch)
+  app.component('MultiSelect', MultiSelect)
 
   //Data
   app.component('Tree', Tree)

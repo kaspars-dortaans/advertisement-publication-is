@@ -1,5 +1,6 @@
 ﻿using BusinessLogic.Entities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Query;
 using System.Linq.Expressions;
 
 namespace BusinessLogic.Services;
@@ -67,6 +68,11 @@ public class BaseService<Entity>(Context dbContext) : IBaseService<Entity> where
     public Task DeleteWhereAsync(Expression<Func<Entity, bool>> predicate)
     {
         return DbSet.Where(predicate).DeleteFromQueryAsync();
+    }
+
+    public Task UpdateWhereAsync(Expression<Func<Entity, bool>> predicate, Expression<Func<SetPropertyCalls<Entity>, SetPropertyCalls<Entity>>> setters)
+    {
+        return DbSet.Where(predicate).ExecuteUpdateAsync(setters);
     }
 
     public async Task<bool> AddIfNotExistsAsync(Entity entity)

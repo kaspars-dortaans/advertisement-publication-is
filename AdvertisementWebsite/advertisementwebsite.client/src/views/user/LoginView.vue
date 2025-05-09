@@ -34,7 +34,7 @@
         </InputGroup>
         <FieldError :field="fields.password" />
 
-        <Button class="mt-1" :label="l.navigation.login" type="submit" />
+        <Button class="mt-1" :label="l.navigation.login" :loading="isSubmitting" type="submit" />
         <p>
           <span>{{ l.form.login.doNotHaveAnAccountQuestion }}</span>
           <RouterLink class="ml-1 link" :to="{ name: 'register' }">{{
@@ -81,7 +81,7 @@ const form = useForm<ILoginDto>({
     })
   )
 })
-const { values, handleSubmit, validate } = form
+const { values, handleSubmit, isSubmitting, validate } = form
 const { fields, formErrors, defineMultipleFields, handleErrors } = new FieldHelper(form)
 defineMultipleFields(['email', 'password'])
 

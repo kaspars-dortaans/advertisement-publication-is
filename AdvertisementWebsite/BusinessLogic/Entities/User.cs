@@ -16,5 +16,7 @@ public class User : IdentityUser<int>
     public ICollection<Advertisement> BookmarkedAdvertisements { get; set; } = default!;
     public ICollection<AdvertisementBookmark> AdvertisementBookmarks { get; set; } = default!;
     public ICollection<Chat> Chats { get; set; } = default!;
+    public DateTime CreatedDate { get; set; }
+    public DateTime? LastActiveDate { get; set; }
 
 }

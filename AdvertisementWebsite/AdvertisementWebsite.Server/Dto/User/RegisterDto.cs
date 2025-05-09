@@ -38,4 +38,7 @@ public class RegisterDto
     [AllowedFileTypes(ImageConstants.AllowedFileTypes)]
     [AllowedImageAspectRatio(ImageConstants.AllowedAspectRatio)]
     public IFormFile? ProfileImage { get; set; }
+
+    [Url(ErrorMessage = CustomErrorCodes.NotAUrl)]
+    public string? LinkToUserSite { get; set; }
 }

@@ -8,11 +8,11 @@ public class AttributeMappingProfile : Profile
     public AttributeMappingProfile()
     {
         CreateMap<PutAttributeRequest, BusinessLogic.Entities.Attribute>()
-            .ForMember(a => a.AttributeNameLocales, opts => opts.MapFrom(r => r.LocalizedNames.Select(n => new AttributeNameLocaleText
+            .ForMember(a => a.AttributeNameLocales, opts => opts.MapFrom(r => r.LocalizedNames.Where(ln => ln != null).Select(n => new AttributeNameLocaleText
             {
                 AttributeId = r.Id ?? default,
-                Locale = n.Key,
-                Text = n.Value ?? string.Empty
+                Locale = n.Value.Key,
+                Text = n.Value.Value ?? string.Empty
             })));
     }
 }

@@ -22,7 +22,7 @@ const router = createRouter({
       beforeEnter: (_, from, next) => {
         AuthService.get().logout()
 
-        if (from.meta.requiresPermission) {
+        if (from.meta.requiresPermission != null) {
           next({ name: 'home' })
         } else {
           next(from.fullPath)
@@ -36,11 +36,52 @@ const router = createRouter({
       name: 'register',
       component: () => import('../views/user/RegisterView.vue')
     },
+
+    //Users
     {
-      path: '/user/:id/',
-      name: 'viewUser',
-      component: () => import('../views/user/ViewUser.vue'),
-      props: (route) => ({ id: toNumberOrUndefined(route.params.id) })
+      path: '/users/',
+      children: [
+        {
+          path: 'view-profile/:id/',
+          name: 'viewUserProfile',
+          component: () => import('../views/user/ViewUserProfile.vue'),
+          props: (route) => ({ id: toNumberOrUndefined(route.params.id) })
+        },
+        {
+          path: 'manage',
+          name: 'manageUsers',
+          component: () => import('../views/user/ManageUsers.vue'),
+          meta: {
+            requiresPermission: Permissions.ViewAllUsers
+          }
+        },
+        {
+          path: 'create',
+          name: 'createUser',
+          component: () => import('../views/user/CreateUserForm.vue'),
+          meta: {
+            requiresPermission: Permissions.CreateUser
+          }
+        },
+        {
+          path: 'view/:userId',
+          name: 'viewUser',
+          component: () => import('../views/user/ViewUser.vue'),
+          props: (route) => ({ userId: toNumberOrUndefined(route.params.userId) }),
+          meta: {
+            requiresPermission: Permissions.ViewAllUsers
+          }
+        },
+        {
+          path: 'edit/:userId',
+          name: 'editUser',
+          component: () => import('../views/user/EditUserForm.vue'),
+          props: (route) => ({ userId: toNumberOrUndefined(route.params.userId) }),
+          meta: {
+            requiresPermission: Permissions.EditAnyUser
+          }
+        }
+      ]
     },
 
     //Advertisements

@@ -162,7 +162,7 @@ import {
   ValueTypes
 } from '@/services/api-client'
 import { LocaleService } from '@/services/locale-service'
-import type { AttributeForm } from '@/types/attributes/attribute-form'
+import type { AttributeForm } from '@/types/forms/attribute-form'
 import { getClient } from '@/utils/client-builder'
 import { leaveFormGuard } from '@/utils/confirm-dialog'
 import { FieldHelper } from '@/utils/field-helper'

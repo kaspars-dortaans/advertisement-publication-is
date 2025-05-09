@@ -194,6 +194,7 @@ public class DbSeeder(Context context, UserManager<User> userManager, RoleManage
                 Email = adminEmail,
                 IsEmailPublic = true,
                 IsPhoneNumberPublic = true,
+                CreatedDate = DateTime.UtcNow
             }, "!23Qwe");
 
         }
@@ -214,6 +215,7 @@ public class DbSeeder(Context context, UserManager<User> userManager, RoleManage
                 Email = userEmail,
                 IsEmailPublic = true,
                 IsPhoneNumberPublic = true,
+                CreatedDate = DateTime.UtcNow
             }, "!23Qwe");
 
         }

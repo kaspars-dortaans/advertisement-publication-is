@@ -108,6 +108,18 @@ export const emptyLocale = {
     title: '',
     entryCount: ''
   },
+  manageUsers: {
+    confirmDeleteHeader: '',
+    confirmDeleteMessage: '',
+    firstName: '',
+    lastName: '',
+    userName: '',
+    userRoles: '',
+    email: '',
+    phoneNumber: '',
+    createdDate: '',
+    lastActive: ''
+  },
   form: {
     attributeValueListForm: {
       title: '',
@@ -158,6 +170,7 @@ export const emptyLocale = {
       confirmNewPassword: ''
     },
     profileInfo: {
+      userRoles: '',
       firstName: '',
       lastName: '',
       userName: '',
@@ -177,7 +190,9 @@ export const emptyLocale = {
       username: '',
       publiclyDisplayEmail: '',
       phoneNumber: '',
-      publiclyDisplayPhoneNumber: ''
+      publiclyDisplayPhoneNumber: '',
+      userRoles: '',
+      linkToUserSite: ''
     },
     login: {
       email: '',
@@ -245,7 +260,11 @@ export const emptyLocale = {
     manageAttributeValueLists: '',
     createAttributeValueList: '',
     editAttributeValueList: '',
-    viewAttributeValueList: ''
+    viewAttributeValueList: '',
+    manageUsers: '',
+    createUser: '',
+    viewUser: '',
+    editUser: ''
   },
   dataSize: {
     bits: '',

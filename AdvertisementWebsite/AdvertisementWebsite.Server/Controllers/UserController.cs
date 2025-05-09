@@ -1,11 +1,14 @@
-﻿using AutoMapper;
+﻿using AdvertisementWebsite.Server.Dto.Login;
+using AdvertisementWebsite.Server.Dto.User;
+using AdvertisementWebsite.Server.Helpers;
+using AutoMapper;
 using BusinessLogic.Authorization;
 using BusinessLogic.Constants;
 using BusinessLogic.Dto;
 using BusinessLogic.Dto.DataTableQuery;
+using BusinessLogic.Dto.Users;
 using BusinessLogic.Entities;
 using BusinessLogic.Exceptions;
-using BusinessLogic.Helpers;
 using BusinessLogic.Helpers.CookieSettings;
 using BusinessLogic.Services;
 using Microsoft.AspNetCore.Authentication.BearerToken;
@@ -19,9 +22,6 @@ using Microsoft.Extensions.Options;
 using System.ComponentModel.DataAnnotations;
 using System.Security.Authentication;
 using System.Security.Claims;
-using AdvertisementWebsite.Server.Dto.Login;
-using AdvertisementWebsite.Server.Dto.User;
-using AdvertisementWebsite.Server.Helpers;
 
 namespace AdvertisementWebsite.Server.Controllers;
 
@@ -69,6 +69,7 @@ public class UserController(
             }
 
             await _signInManager.SignInAsync(user, false);
+            await _userService.UpdateWhereAsync(u => u.Id == User.GetUserId()!.Value, setters => setters.SetProperty(u => u.LastActiveDate, u => DateTime.UtcNow));
 
             //Access token is attached to response by bearer token sign in handler, which is called within PasswordSingInAsync
             return TypedResults.Empty;
@@ -98,8 +99,8 @@ public class UserController(
         var refreshTicket = refreshTokenProtector.Unprotect(refreshRequest.RefreshToken);
 
         // Reject the /refresh attempt with a 401 if the token expired or the security stamp validation fails
-        if (refreshTicket?.Properties?.ExpiresUtc is not { } expiresUtc 
-            || DateTime.UtcNow >= expiresUtc 
+        if (refreshTicket?.Properties?.ExpiresUtc is not { } expiresUtc
+            || DateTime.UtcNow >= expiresUtc
             || await _signInManager.ValidateSecurityStampAsync(refreshTicket.Principal) is not User user
         )
         {
@@ -107,10 +108,16 @@ public class UserController(
         }
 
         var newPrincipal = await _signInManager.CreateUserPrincipalAsync(user);
-        return TypedResults.SignIn(newPrincipal, authenticationScheme: IdentityConstants.BearerScheme);
+        var result = TypedResults.SignIn(newPrincipal, authenticationScheme: IdentityConstants.BearerScheme);
+        var userId = result.Principal.GetUserId();
+        if (userId != null && result.Principal.Identity?.IsAuthenticated != null && result.Principal.Identity.IsAuthenticated)
+        {
+            await _userService.UpdateWhereAsync(u => u.Id == userId, setters => setters.SetProperty(u => u.LastActiveDate, u => DateTime.UtcNow));
+        }
+        return result;
     }
 
-    [AllowAnonymous]   
+    [AllowAnonymous]
     [ProducesResponseType<OkResult>(StatusCodes.Status200OK)]
     [ProducesResponseType<RequestExceptionResponse>(StatusCodes.Status400BadRequest)]
     [HttpPost]
@@ -153,7 +160,9 @@ public class UserController(
             .FirstOrDefaultAsync(u => u.Id == userId)
             ?? throw new ApiException([CustomErrorCodes.UserNotFound]);
 
-        return _mapper.Map<UserInfo>(user, opt => opt.Items[nameof(Url)] = Url);
+        var userInfo = _mapper.Map<UserInfo>(user, opt => opt.Items[nameof(Url)] = Url);
+        userInfo.UserRoles = await _userManager.GetRolesAsync(user);
+        return userInfo;
     }
 
     [HasPermission(Permissions.EditOwnProfileInfo)]
@@ -163,14 +172,13 @@ public class UserController(
     public async Task UpdateUserInfo([FromForm] EditUserInfo request)
     {
         var userId = User.GetUserId()!.Value;
-
         var user = await _userService
             .Include(u => u.ProfileImageFile)
             .FirstOrDefaultAsync(u => u.Id == userId)
             ?? throw new ApiException([CustomErrorCodes.UserNotFound]);
 
         _mapper.Map(request, user);
-        await _userService.UpdateUserInfo(user, request.ProfileImageChanged, request.ProfileImage);
+        await _userService.UpdateUser(user, request.ProfileImageChanged, request.ProfileImage);
     }
 
     [HttpGet]
@@ -216,10 +224,61 @@ public class UserController(
     [HttpPost]
     public async Task<DataTableQueryResponse<UserListItem>> GetUserList(DataTableQuery query)
     {
-        var users = _userService.GetAll();
-        var queryResult = await users.ResolveDataTableQuery(query, null);
-        var listItems = _mapper.MapDataTableResult<User, UserListItem>(queryResult);
+        return await _userService.GetUserList(query);
+    }
 
-        return listItems;
+    [HasPermission(Permissions.ViewAllUsers)]
+    [ProducesResponseType<IEnumerable<string>>(StatusCodes.Status200OK)]
+    [HttpGet]
+    public async Task<IEnumerable<string>> GetRoleList()
+    {
+        return await _userService.GetAllRoleNames();
+    }
+
+    [HasPermission(Permissions.CreateUser)]
+    [ProducesResponseType<OkResult>(StatusCodes.Status200OK)]
+    [ProducesResponseType<RequestExceptionResponse>(StatusCodes.Status400BadRequest)]
+    [HttpPost]
+    public async Task CreateUser([FromForm] CreateUserRequest request)
+    {
+        var user = _mapper.Map(request, new User());
+        await _userService.Register(user, request.Password, request.ProfileImage, request.UserRoles);
+    }
+
+    [HasPermission(Permissions.ViewAllUsers)]
+    [HttpGet]
+    public async Task<UserInfo> GetUserFormInfo(int userId)
+    {
+        var user = await _userService.Include(u => u.ProfileImageFile)
+            .FirstOrDefaultAsync(u => u.Id == userId)
+            ?? throw new ApiException([CustomErrorCodes.UserNotFound]);
+
+        var userInfo = _mapper.Map<UserInfo>(user, opt => opt.Items[nameof(Url)] = Url);
+        userInfo.UserRoles = await _userManager.GetRolesAsync(user);
+        return userInfo;
+    }
+
+    [HasPermission(Permissions.EditAnyUser)]
+    [ProducesResponseType<OkResult>(StatusCodes.Status200OK)]
+    [ProducesResponseType<RequestExceptionResponse>(StatusCodes.Status400BadRequest)]
+    [HttpPost]
+    public async Task EditUser([FromForm] EditUserRequest request)
+    {
+        var user = await _userService
+            .Include(u => u.ProfileImageFile)
+            .FirstOrDefaultAsync(u => u.Id == request.UserId)
+            ?? throw new ApiException([CustomErrorCodes.UserNotFound]);
+
+        _mapper.Map(request, user);
+        await _userService.UpdateUser(user, request.ProfileImageChanged, request.ProfileImage, request.UserRoles);
+    }
+
+    [HasPermission(Permissions.DeleteAnyUser)]
+    [ProducesResponseType<OkResult>(StatusCodes.Status200OK)]
+    [ProducesResponseType<RequestExceptionResponse>(StatusCodes.Status400BadRequest)]
+    [HttpPost]
+    public async Task DeleteUsers(IEnumerable<int> userIds)
+    {
+        await _userService.DeleteUsers(userIds);
     }
 }

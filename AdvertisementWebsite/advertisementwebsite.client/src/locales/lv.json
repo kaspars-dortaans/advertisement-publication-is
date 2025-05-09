@@ -106,6 +106,18 @@
     "title": "Nosaukums",
     "entryCount": "Ierakstu skaits"
   },
+  "manageUsers": {
+    "confirmDeleteHeader": "Dzēst lietotājus",
+    "confirmDeleteMessage": "Tiks izdzēsti {0} lietotāji.",
+    "firstName": "Vārds",
+    "lastName": "Uzvārds",
+    "userName": "Lietotājvārds",
+    "userRoles": "Lomas",
+    "email": "E-pasts",
+    "phoneNumber": "Tālruņa numurs",
+    "createdDate": "Izveidots",
+    "lastActive": "Pēdējoreiz aktīvs"
+  },
   "form": {
     "common": {
       "dragAndDropToUpload": "Velc un met šeit lai Augšupielādētu",
@@ -127,9 +139,12 @@
       "username": "Lietotājvārds",
       "publiclyDisplayEmail": "Publiski attēlot e-pastu",
       "phoneNumber": "Tālruņa numurs",
-      "publiclyDisplayPhoneNumber": "Publiski attēlot tālruņa numuru"
+      "publiclyDisplayPhoneNumber": "Publiski attēlot tālruņa numuru",
+      "userRoles": "Lomas",
+      "linkToUserSite": "Saite uz lietotāja mājaslapu"
     },
     "profileInfo": {
+      "userRoles": "Lomas",
       "firstName": "Vārds",
       "lastName": "Uzvārds",
       "userName": "Lietotājvārds",
@@ -243,7 +258,11 @@
     "manageAttributeValueLists": "Pārvaldīt atribūtu vērtību sarakstus",
     "createAttributeValueList": "Izveidot atribūtu vērtību sarakstu",
     "editAttributeValueList": "Rediģēt atribūtu vērtību sarakstu",
-    "viewAttributeValueList": "Skatīt atribūtu vērtību sarakstu"
+    "viewAttributeValueList": "Skatīt atribūtu vērtību sarakstu",
+    "manageUsers": "Pārvaldīt lietotājus",
+    "createUser": "Izveidot lietotāju",
+    "viewUser": "Skatīt lietotāju",
+    "editUser": "Rediģēt lietotāju"
   },
   "dataSize": {
     "bits": "{0} biti",
@@ -290,8 +309,24 @@
     "Piektdiena",
     "Sestdiena"
   ],
-  "dayNamesShort": ["Sv", "P", "O", "T", "C", "Pk", "S"],
-  "dayNamesMin": ["Sv", "P", "O", "T", "C", "Pk", "S"],
+  "dayNamesShort": [
+    "Sv",
+    "P",
+    "O",
+    "T",
+    "C",
+    "Pk",
+    "S"
+  ],
+  "dayNamesMin": [
+    "Sv",
+    "P",
+    "O",
+    "T",
+    "C",
+    "Pk",
+    "S"
+  ],
   "monthNames": [
     "Janvāris",
     "Februāris",
