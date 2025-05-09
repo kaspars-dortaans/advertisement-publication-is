@@ -30,7 +30,9 @@ public partial class AdvertisementNotificationSubscriptionService(
                 Title = s.Title,
                 Keywords = s.Keywords == null ? new List<string>() : s.Keywords,
                 //Ef could not translate OrderBy with Localize extension method
-                CategoryName = s.Category.LocalisedNames.First(lt => lt.Locale == locale || lt.Locale == LocalisationConstants.TextNotLocalised).Text,
+                CategoryName = s.Category.LocalisedNames.FirstOrDefault(lt => lt.Locale == locale) != null 
+                    ? s.Category.LocalisedNames.FirstOrDefault(lt => lt.Locale == locale)!.Text
+                    : LocalisationConstants.NotLocalizedTextPlaceholder,
                 Status = s.ValidToDate == null ? PaymentSubjectStatus.Draft
                     : (s.ValidToDate < DateTime.UtcNow
                         ? PaymentSubjectStatus.Expired

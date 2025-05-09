@@ -120,7 +120,7 @@ public class CategoryController(
                 CanContainAdvertisements = c.CanContainAdvertisements,
                 ParentCategoryId = c.ParentCategoryId,
                 ParentCategoryName = c.ParentCategory != null ? c.ParentCategory.LocalisedNames.Localise(_cookieSettingsHelper.Settings.Locale) : null,
-                LocalizedNames = c.LocalisedNames.Select(ln => new KeyValuePair<string, string>(ln.Locale, ln.Text)),
+                LocalizedNames = (IEnumerable<KeyValuePair<string, string>?>)c.LocalisedNames.Select(ln => new KeyValuePair<string, string>(ln.Locale, ln.Text)),
                 CategoryAttributeOrder = c.CategoryAttributes
                     .OrderBy(ca => ca.AttributeOrder)
                     .Select(ca => new KeyValuePair<int, string>(

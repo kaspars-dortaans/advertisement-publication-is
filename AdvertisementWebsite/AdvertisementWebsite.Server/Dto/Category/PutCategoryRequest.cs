@@ -9,7 +9,7 @@ public class PutCategoryRequest
 
     [Required(ErrorMessage = CustomErrorCodes.MissingRequired)]
     [MinLength(1, ErrorMessage = CustomErrorCodes.MissingRequired)]
-    public IEnumerable<KeyValuePair<string, string>> LocalizedNames{ get; set; } = default!;
+    public IEnumerable<KeyValuePair<string, string>?> LocalizedNames{ get; set; } = default!;
 
     [Required(ErrorMessage = CustomErrorCodes.MissingRequired)]
     public bool CanContainAdvertisements { get; set; }

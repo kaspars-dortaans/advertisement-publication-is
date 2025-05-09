@@ -8,11 +8,11 @@ public class CategoryMapperProfile : Profile
 {
     public CategoryMapperProfile() {
         CreateMap<PutCategoryRequest, BusinessLogic.Entities.Category>()
-            .ForMember(c => c.LocalisedNames, opts => opts.MapFrom(r => r.LocalizedNames.Select(p => new CategoryNameLocaleText
+            .ForMember(c => c.LocalisedNames, opts => opts.MapFrom(r => r.LocalizedNames.Where(ln => ln != null).Select(p => new CategoryNameLocaleText
             {
                 CategoryId = r.Id ?? default,
-                Locale = p.Key,
-                Text = p.Value ?? string.Empty
+                Locale = p.Value.Key,
+                Text = p.Value.Value ?? string.Empty
             })))
             .ForMember(c => c.CategoryAttributes, opts => opts.MapFrom(r => r.CategoryAttributeOrder.Select((cao, i)=> new CategoryAttribute
             {

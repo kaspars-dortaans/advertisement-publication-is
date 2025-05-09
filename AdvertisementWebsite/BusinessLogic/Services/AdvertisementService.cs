@@ -117,7 +117,9 @@ public class AdvertisementService(
                 Id = a.Id,
                 CategoryId = a.CategoryId,
                 //Ef could not translate OrderBy with Localise extension method
-                CategoryName = a.Category.LocalisedNames.First(lt => lt.Locale == locale || lt.Locale == LocalisationConstants.TextNotLocalised).Text,
+                CategoryName = a.Category.LocalisedNames.FirstOrDefault(lt => lt.Locale == locale) != null
+                    ? a.Category.LocalisedNames.FirstOrDefault(lt => lt.Locale == locale)!.Text
+                    : LocalisationConstants.NotLocalizedTextPlaceholder,
                 CreatedDate = a.CreatedDate,
                 Title = a.Title,
                 AdvertisementText = a.AdvertisementText,
@@ -296,7 +298,9 @@ public class AdvertisementService(
                 Id = a.Id,
                 Title = a.Title,
                 //Ef could not translate OrderBy with Localise extension method
-                CategoryName = a.Category.LocalisedNames.First(lt => lt.Locale == locale || lt.Locale == LocalisationConstants.TextNotLocalised).Text,
+                CategoryName = a.Category.LocalisedNames.FirstOrDefault(lt => lt.Locale == locale) != null
+                    ? a.Category.LocalisedNames.FirstOrDefault(lt => lt.Locale == locale)!.Text
+                    : LocalisationConstants.NotLocalizedTextPlaceholder,
                 Status = a.ValidToDate == null
                     ? Enums.PaymentSubjectStatus.Draft
                     : (a.ValidToDate < DateTime.UtcNow
