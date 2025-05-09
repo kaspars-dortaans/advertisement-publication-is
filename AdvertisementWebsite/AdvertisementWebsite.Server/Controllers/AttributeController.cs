@@ -72,7 +72,7 @@ public class AttributeController(
                 Sortable = a.Sortable,
                 Searchable = a.Searchable,
                 ShowOnListItem = a.ShowOnListItem,
-                LocalizedNames = (IEnumerable<KeyValuePair<string, string>?>)a.AttributeNameLocales.Select(l => new KeyValuePair<string, string>(l.Locale, l.Text)),
+                LocalizedNames = a.AttributeNameLocales.Select(l => (KeyValuePair<string, string>?)new KeyValuePair<string, string>(l.Locale, l.Text)),
                 IconName = a.IconName
             })
             .FirstOrDefaultAsync())
@@ -163,12 +163,12 @@ public class AttributeController(
             .Select(vl => new PutAttributeValueListRequest
             {
                 Id = vl.Id,
-                LocalizedNames = (IEnumerable<KeyValuePair<string, string>?>)vl.LocalisedNames.Select(ln => new KeyValuePair<string, string>(ln.Locale, ln.Text)),
+                LocalizedNames = vl.LocalisedNames.Select(ln => (KeyValuePair<string, string>?)new KeyValuePair<string, string>(ln.Locale, ln.Text)),
                 Entries = vl.ListEntries.Select(e => new AttributeValueListEntryDto
                 {
                     Id = e.Id,
                     OrderIndex = e.Id,
-                    LocalizedNames = (IEnumerable<KeyValuePair<string, string>?>)e.LocalisedNames.Select(ln => new KeyValuePair<string, string>(ln.Locale, ln.Text))
+                    LocalizedNames = e.LocalisedNames.Select(ln => (KeyValuePair<string, string>?)new KeyValuePair<string, string>(ln.Locale, ln.Text))
                 })
             })
             .FirstOrDefaultAsync())
