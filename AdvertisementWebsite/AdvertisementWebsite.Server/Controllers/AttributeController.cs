@@ -167,9 +167,9 @@ public class AttributeController(
                 Entries = vl.ListEntries.Select(e => new AttributeValueListEntryDto
                 {
                     Id = e.Id,
-                    OrderIndex = e.Id,
+                    OrderIndex = e.OrderIndex,
                     LocalizedNames = e.LocalisedNames.Select(ln => (KeyValuePair<string, string>?)new KeyValuePair<string, string>(ln.Locale, ln.Text))
-                })
+                }).OrderBy(e => e.OrderIndex).ToList()
             })
             .FirstOrDefaultAsync())
             ?? throw new ApiException([CustomErrorCodes.NotFound]);

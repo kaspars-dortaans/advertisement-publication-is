@@ -3,9 +3,11 @@
     :value="tableRows"
     v-model:editingRows="editingRows"
     :editMode="disabled ? undefined : 'row'"
+    :reorderableColumns="!disabled"
     :class="{ 'p-invalid': invalid }"
     @rowEditCancel="cancelRowChanges"
     @rowEditSave="saveRowChanges"
+    @rowReorder="reorderEntries"
   >
     <template #header>
       <div class="flex justify-between items-center">
@@ -13,6 +15,9 @@
         <Button v-if="!disabled" :label="l.actions.add" @click="addNewRow" />
       </div>
     </template>
+
+    <Column v-if="!disabled" headerStyle="width: 1rem" rowReorder />
+
     <Column v-for="locale in ls.localeList.value" :key="locale" :field="locale" :header="locale">
       <template #editor="{ data, field }">
         <InputText v-model="data[field]" fluid />
@@ -37,7 +42,11 @@
 <script lang="ts" setup>
 import { AttributeValueListEntryDto, StringStringKeyValuePair } from '@/services/api-client'
 import { LocaleService } from '@/services/locale-service'
-import { type DataTableRowEditCancelEvent, type DataTableRowEditSaveEvent } from 'primevue'
+import {
+  type DataTableRowEditCancelEvent,
+  type DataTableRowEditSaveEvent,
+  type DataTableRowReorderEvent
+} from 'primevue'
 import { ref, watch } from 'vue'
 
 type tableRowType = { [k: string]: string | number | undefined }
@@ -122,5 +131,20 @@ const cancelRowChanges = (e: DataTableRowEditCancelEvent) => {
   if (model.value && e.index >= model.value.length) {
     tableRows.value.splice(e.index)
   }
+}
+
+const reorderEntries = (e: DataTableRowReorderEvent) => {
+  if (e.dragIndex == e.dropIndex || !model.value) {
+    return
+  }
+
+  const entryToMove = model.value[e.dragIndex]
+  const delta = e.dragIndex < e.dropIndex ? 1 : -1
+  for (let i = e.dragIndex; i !== e.dropIndex; i += delta) {
+    model.value[i] = model.value[i + delta]
+    model.value[i].orderIndex = i
+  }
+  model.value[e.dropIndex] = entryToMove
+  model.value[e.dropIndex].orderIndex = e.dropIndex
 }
 </script>
