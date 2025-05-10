@@ -14,43 +14,44 @@
     @clear="cancel()"
   >
     <template #empty>
-      <div v-if="!resultImage && !editingImage" class="flex items-center justify-center flex-col">
+      <div
+        v-if="!resultImage && !editingImage"
+        class="h-full flex flex-col items-center justify-center"
+      >
         <i class="pi pi-cloud-upload !border-2 !rounded-full !p-8 !text-4xl !text-muted-color" />
         <p class="mt-6 mb-0">{{ l.form.common.dragAndDropToUpload }}</p>
       </div>
     </template>
 
     <template #header="{ chooseCallback, clearCallback, files }">
-      <div class="flex flex-wrap justify-between items-center flex-1 gap-4">
-        <div class="flex gap-2">
-          <Button :label="l.actions.choose" @click="chooseCallback" icon="pi pi-plus"></Button>
-          <Button
-            v-if="editingImage"
-            :label="l.actions.accept"
-            icon="pi pi-check"
-            severity="success"
-            @click="acceptEdit()"
-          ></Button>
-          <Button
-            v-else
-            :disabled="files?.length === 0 && !resultImage"
-            :label="l.actions.edit"
-            icon="pi pi-pencil"
-            @click="editImage(resultImage!)"
-          ></Button>
-          <Button
-            :disabled="files?.length === 0 && !resultImage && !editingImage"
-            :label="l.actions.cancel"
-            icon="pi pi-times"
-            severity="danger"
-            @click="clearCallback()"
-          ></Button>
-        </div>
+      <div class="flex flex-wrap justify-center items-center flex-1 gap-4">
+        <Button :label="l.actions.choose" @click="chooseCallback" icon="pi pi-plus"></Button>
+        <Button
+          v-if="editingImage"
+          :label="l.actions.accept"
+          icon="pi pi-check"
+          severity="success"
+          @click="acceptEdit()"
+        ></Button>
+        <Button
+          v-else
+          :disabled="files?.length === 0 && !resultImage"
+          :label="l.actions.edit"
+          icon="pi pi-pencil"
+          @click="editImage(resultImage!)"
+        ></Button>
+        <Button
+          :disabled="files?.length === 0 && !resultImage && !editingImage"
+          :label="l.actions.cancel"
+          icon="pi pi-times"
+          severity="danger"
+          @click="clearCallback()"
+        ></Button>
       </div>
     </template>
 
     <template #content="{ removeFileCallback, files, messages }">
-      <div class="w-96 h-96 max-w-full">
+      <div :class="{ hidden: !editingImage && !resultImageUrl }" class="flex flex-col h-full">
         <Cropper
           v-if="editingImage"
           ref="cropper"
@@ -66,6 +67,7 @@
             height: stencilSize
           }"
           imageRestriction="stencil"
+          class="flex-1"
           @ready="removePreviousFiles(removeFileCallback, files.length)"
         ></Cropper>
         <Image v-else :src="resultImageUrl"></Image>
@@ -104,14 +106,12 @@ const cropper = useTemplateRef('cropper')
 const stencilSize = 128
 const pt = {
   root: {
-    class: ['flex', 'flex-col']
+    class: 'flex flex-col self-stretch md:self-center w-full md:w-96 md:h-96'
   },
   header: {
     class: [
       // Flexbox
-      'flex',
-      'flex-wrap',
-      'justify-center',
+      'flex-none flex flex-wrap justify-center',
 
       // Colors
       'bg-surface-0',
@@ -138,6 +138,9 @@ const pt = {
   },
   content: {
     class: [
+      'flex-1 flex flex-col',
+      'overflow-hidden',
+
       // Position
       'relative',
 
@@ -157,6 +160,8 @@ const pt = {
 
       // Shape
       'rounded-t-lg',
+
+      '[&>[data-pc-section=]]:flex-1',
 
       //ProgressBar
       '[&>[data-pc-name=pcprogressbar]]:absolute',

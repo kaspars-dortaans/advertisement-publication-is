@@ -1,12 +1,12 @@
 <template>
   <ResponsiveLayout>
-    <BlockWithSpinner :loading="loadingCategories">
+    <BlockWithSpinner :loading="loadingCategories" class="flex-1 lg:flex-none flex flex-col">
       <Tree
         ref="tree"
         v-model:selectionKeys="selectedCategoryNodes"
         :value="categoryNodes"
         :pt="{ nodelabel: 'inline-flex items-center gap-2 justify-between flex-1' }"
-        class="min-w-72 min-h-96 rounded-none lg:rounded-md"
+        class="flex-1 lg:min-w-72 lg:min-h-96 rounded-none lg:rounded-md"
       >
         <template #header>
           <h4 class="page-title mb-2">{{ l.manageCategories.manageCategories }}</h4>

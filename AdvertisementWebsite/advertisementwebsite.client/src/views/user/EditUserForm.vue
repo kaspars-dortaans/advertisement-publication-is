@@ -1,7 +1,7 @@
 <template>
   <ResponsiveLayout>
-    <BlockWithSpinner :loading="loading">
-      <Panel class="rounded-none lg:rounded-md">
+    <BlockWithSpinner :loading="loading" class="flex-1 lg:flex-none flex flex-col">
+      <Panel class="rounded-none lg:rounded-md flex-1">
         <template #header>
           <div class="panel-title-container">
             <BackButton :default-to="{ name: 'manageUsers' }" />

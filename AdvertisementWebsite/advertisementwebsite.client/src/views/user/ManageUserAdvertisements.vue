@@ -74,7 +74,7 @@
 
     <Column>
       <template #body="slotProps">
-        <div class="space-x-2 space-y-2">
+        <div class="flex flex-wrap justify-end gap-2">
           <Button
             v-if="slotProps.data.status == PaymentSubjectStatus.Draft"
             :label="l.actions.publish"

@@ -25,9 +25,9 @@
       <template #item="{ element, index }">
         <p
           class="inline-flex gap-2 items-center px-2 bg-surface-100 rounded-md"
-          :class="{ 'cursor-pointer hover:bg-surface-200': !disabled }"
+          :class="{ 'cursor-move hover:bg-surface-200': !disabled }"
         >
-          <i class="pi pi-sort" />
+          <i class="pi pi-bars" />
           <span>{{ index + 1 }}. {{ element.value }}</span>
           <Button
             :disabled="disabled"
