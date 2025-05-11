@@ -29,7 +29,16 @@ public class PaymentController(
     [HttpPost]
     public async Task<DataTableQueryResponse<PaymentListItem>> GetUserPayments(PaymentDataTableQuery query)
     {
-        return await _paymentService.GetUserPayments(query, User.GetUserId()!.Value);
+        return await _paymentService.GetPayments(query, User.GetUserId()!.Value);
+    }
+
+    [HasPermission(Permissions.ViewSystemPayments)]
+    [ProducesResponseType<DataTableQueryResponse<PaymentListItem>>(StatusCodes.Status200OK)]
+    [ProducesResponseType<RequestExceptionResponse>(StatusCodes.Status400BadRequest)]
+    [HttpPost]
+    public async Task<DataTableQueryResponse<PaymentListItem>> GetAllPayments(PaymentDataTableQuery query)
+    {
+        return await _paymentService.GetPayments(query);
     }
 
     [HasPermission(Permissions.ViewOwnPayments)]
@@ -39,6 +48,15 @@ public class PaymentController(
     public async Task<PriceInfo> GetUserPayment(int paymentId)
     {
         return await _paymentService.GetPriceInfo(paymentId, User.GetUserId()!.Value);
+    }
+
+    [HasPermission(Permissions.ViewSystemPayments)]
+    [ProducesResponseType<PriceInfo>(StatusCodes.Status200OK)]
+    [ProducesResponseType<RequestExceptionResponse>(StatusCodes.Status400BadRequest)]
+    [HttpPost]
+    public async Task<PriceInfo> GeSystemPayment(int paymentId)
+    {
+        return await _paymentService.GetPriceInfo(paymentId);
     }
 
     [HasPermission(Permissions.MakePayment)]

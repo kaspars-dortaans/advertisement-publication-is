@@ -4556,6 +4556,69 @@ export class PaymentClient {
     }
 
     /**
+     * @param body (optional) 
+     * @return OK
+     */
+    getAllPayments(body: PaymentDataTableQuery | undefined, cancelToken?: CancelToken): Promise<PaymentListItemDataTableQueryResponse> {
+        let url_ = this.baseUrl + "/api/Payment/GetAllPayments";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_: AxiosRequestConfig = {
+            data: content_,
+            method: "POST",
+            url: url_,
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "text/plain"
+            },
+            cancelToken
+        };
+
+        return this.instance.request(options_).catch((_error: any) => {
+            if (isAxiosError(_error) && _error.response) {
+                return _error.response;
+            } else {
+                throw _error;
+            }
+        }).then((_response: AxiosResponse) => {
+            return this.processGetAllPayments(_response);
+        });
+    }
+
+    protected processGetAllPayments(response: AxiosResponse): Promise<PaymentListItemDataTableQueryResponse> {
+        const status = response.status;
+        let _headers: any = {};
+        if (response.headers && typeof response.headers === "object") {
+            for (const k in response.headers) {
+                if (response.headers.hasOwnProperty(k)) {
+                    _headers[k] = response.headers[k];
+                }
+            }
+        }
+        if (status === 200) {
+            const _responseText = response.data;
+            let result200: any = null;
+            let resultData200  = _responseText;
+            result200 = PaymentListItemDataTableQueryResponse.fromJS(resultData200);
+            return Promise.resolve<PaymentListItemDataTableQueryResponse>(result200);
+
+        } else if (status === 400) {
+            const _responseText = response.data;
+            let result400: any = null;
+            let resultData400  = _responseText;
+            result400 = RequestExceptionResponse.fromJS(resultData400);
+            return throwException("Bad Request", status, _responseText, _headers, result400);
+
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.data;
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Promise.resolve<PaymentListItemDataTableQueryResponse>(null as any);
+    }
+
+    /**
      * @param paymentId (optional) 
      * @return OK
      */
@@ -4588,6 +4651,69 @@ export class PaymentClient {
     }
 
     protected processGetUserPayment(response: AxiosResponse): Promise<PriceInfo> {
+        const status = response.status;
+        let _headers: any = {};
+        if (response.headers && typeof response.headers === "object") {
+            for (const k in response.headers) {
+                if (response.headers.hasOwnProperty(k)) {
+                    _headers[k] = response.headers[k];
+                }
+            }
+        }
+        if (status === 200) {
+            const _responseText = response.data;
+            let result200: any = null;
+            let resultData200  = _responseText;
+            result200 = PriceInfo.fromJS(resultData200);
+            return Promise.resolve<PriceInfo>(result200);
+
+        } else if (status === 400) {
+            const _responseText = response.data;
+            let result400: any = null;
+            let resultData400  = _responseText;
+            result400 = RequestExceptionResponse.fromJS(resultData400);
+            return throwException("Bad Request", status, _responseText, _headers, result400);
+
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.data;
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Promise.resolve<PriceInfo>(null as any);
+    }
+
+    /**
+     * @param paymentId (optional) 
+     * @return OK
+     */
+    geSystemPayment(paymentId: number | undefined, cancelToken?: CancelToken): Promise<PriceInfo> {
+        let url_ = this.baseUrl + "/api/Payment/GeSystemPayment?";
+        if (paymentId === null)
+            throw new Error("The parameter 'paymentId' cannot be null.");
+        else if (paymentId !== undefined)
+            url_ += "paymentId=" + encodeURIComponent("" + paymentId) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: AxiosRequestConfig = {
+            method: "POST",
+            url: url_,
+            headers: {
+                "Accept": "text/plain"
+            },
+            cancelToken
+        };
+
+        return this.instance.request(options_).catch((_error: any) => {
+            if (isAxiosError(_error) && _error.response) {
+                return _error.response;
+            } else {
+                throw _error;
+            }
+        }).then((_response: AxiosResponse) => {
+            return this.processGeSystemPayment(_response);
+        });
+    }
+
+    protected processGeSystemPayment(response: AxiosResponse): Promise<PriceInfo> {
         const status = response.status;
         let _headers: any = {};
         if (response.headers && typeof response.headers === "object") {
@@ -9144,6 +9270,7 @@ export interface IPaymentItemDto {
 
 export class PaymentListItem implements IPaymentListItem {
     id?: number;
+    payerUsername?: string | undefined;
     amount?: number;
     payerId?: number;
     date?: Date;
@@ -9161,6 +9288,7 @@ export class PaymentListItem implements IPaymentListItem {
     init(_data?: any) {
         if (_data) {
             this.id = _data["id"];
+            this.payerUsername = _data["payerUsername"];
             this.amount = _data["amount"];
             this.payerId = _data["payerId"];
             this.date = _data["date"] ? new Date(_data["date"].toString()) : <any>undefined;
@@ -9178,6 +9306,7 @@ export class PaymentListItem implements IPaymentListItem {
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
         data["id"] = this.id;
+        data["payerUsername"] = this.payerUsername;
         data["amount"] = this.amount;
         data["payerId"] = this.payerId;
         data["date"] = this.date ? this.date.toISOString() : <any>undefined;
@@ -9188,6 +9317,7 @@ export class PaymentListItem implements IPaymentListItem {
 
 export interface IPaymentListItem {
     id?: number;
+    payerUsername?: string | undefined;
     amount?: number;
     payerId?: number;
     date?: Date;
@@ -9329,6 +9459,7 @@ export interface IPostTimeDto {
 }
 
 export class PriceInfo implements IPriceInfo {
+    payerUsername?: string | undefined;
     items?: PaymentItemDto[] | undefined;
     totalAmount?: number;
     date?: Date | undefined;
@@ -9344,6 +9475,7 @@ export class PriceInfo implements IPriceInfo {
 
     init(_data?: any) {
         if (_data) {
+            this.payerUsername = _data["payerUsername"];
             if (Array.isArray(_data["items"])) {
                 this.items = [] as any;
                 for (let item of _data["items"])
@@ -9363,6 +9495,7 @@ export class PriceInfo implements IPriceInfo {
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
+        data["payerUsername"] = this.payerUsername;
         if (Array.isArray(this.items)) {
             data["items"] = [];
             for (let item of this.items)
@@ -9375,6 +9508,7 @@ export class PriceInfo implements IPriceInfo {
 }
 
 export interface IPriceInfo {
+    payerUsername?: string | undefined;
     items?: PaymentItemDto[] | undefined;
     totalAmount?: number;
     date?: Date | undefined;

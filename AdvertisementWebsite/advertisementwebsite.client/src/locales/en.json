@@ -80,7 +80,8 @@
     "totalAmount": "Total amount: {0}",
     "title": "Title",
     "timePeriod": "Time period",
-    "price": "Price"
+    "price": "Price",
+    "payerUsername": "Payer"
   },
   "viewPayments": {
     "id": "Id",
@@ -88,7 +89,8 @@
     "amount": "Amount",
     "paymentItemCount": "Item count",
     "totalForTimePeriod": "Total amount paid: {0}",
-    "timePeriod": "Laika periods"
+    "timePeriod": "Laika periods",
+    "payerUsername": "Payer"
   },
   "manageAttributes": {
     "confirmDeleteHeader": "Delete attributes",
@@ -230,6 +232,7 @@
     "imagesUploaded": "Images uploaded {0} / {1}",
     "thumbnail": "Thumbnail"
   },
+  "viewSystemPayment": {},
   "navigation": {
     "login": "Login",
     "logout": "Logout",
@@ -272,7 +275,8 @@
     "createUser": "Create user",
     "viewUser": "View user",
     "editUser": "Edit user",
-    "manageAdvertisements": "Manage advertisements"
+    "manageAdvertisements": "Manage advertisements",
+    "viewSystemPayments": "Payment overview"
   },
   "dataSize": {
     "bits": "{0} b",

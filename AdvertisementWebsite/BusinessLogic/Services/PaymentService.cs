@@ -16,15 +16,17 @@ namespace BusinessLogic.Services;
 
 public class PaymentService(Context dbContext) : BaseService<Payment>(dbContext), IPaymentService
 {
-    public Task<DataTableQueryResponse<PaymentListItem>> GetUserPayments(PaymentDataTableQuery request, int userId)
+    public Task<DataTableQueryResponse<PaymentListItem>> GetPayments(PaymentDataTableQuery request, int? userId = null)
     {
-        var query = Where(p => p.PayerId == userId)
+        var query = GetAll()
+            .Filter(userId, p => p.PayerId == userId)
             .Select(p => new PaymentListItem
             {
                 Id = p.Id,
                 Amount = p.Amount,
                 Date = p.Date,
-                PaymentItemCount = p.Items.Count()
+                PaymentItemCount = p.Items.Count(),
+                PayerUsername = p.Payer.UserName
             });
 
         return DataTableQueryResolver.ResolveDataTableQuery(query, request, new DataTableQueryConfig<PaymentListItem>
@@ -86,13 +88,15 @@ public class PaymentService(Context dbContext) : BaseService<Payment>(dbContext)
         };
     }
 
-    public async Task<PriceInfo> GetPriceInfo(int paymentId, int userId)
+    public async Task<PriceInfo> GetPriceInfo(int paymentId, int? userId = null)
     {
-        return (await Where(p => p.Id == paymentId && p.PayerId == userId)
+        return (await Where(p => p.Id == paymentId)
+            .Filter(userId, p => p.PayerId == userId)
             .Select(p => new PriceInfo
             {
                 TotalAmount = p.Amount,
                 Date = p.Date,
+                PayerUsername = p.Payer.UserName,
                 Items = p.Items.Select(i => new PaymentItemDto
                 {
                     PaymentSubjectId = i.PaymentSubjectId,

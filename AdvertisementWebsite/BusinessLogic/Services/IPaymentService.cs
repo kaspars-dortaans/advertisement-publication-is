@@ -6,7 +6,7 @@ namespace BusinessLogic.Services;
 
 public interface IPaymentService : IBaseService<Payment>
 {
-    public Task<DataTableQueryResponse<PaymentListItem>> GetUserPayments(PaymentDataTableQuery query, int userId);
+    public Task<DataTableQueryResponse<PaymentListItem>> GetPayments(PaymentDataTableQuery query, int? userId = null);
 
     /// <summary>
     /// Return dto with total amount, payment items with filled prices and titles
@@ -22,7 +22,7 @@ public interface IPaymentService : IBaseService<Payment>
     /// <param name="items"></param>
     /// <param name="uerId"></param>
     /// <returns></returns>
-    public Task<PriceInfo> GetPriceInfo(int paymentId, int uerId);
+    public Task<PriceInfo> GetPriceInfo(int paymentId, int? uerId = null);
 
     /// <summary>
     /// Confirm total amount is correct, and make payment

@@ -1,13 +1,13 @@
 <template>
   <LazyLoadedTable
     :columns="columns"
-    :dataSource="paymentDataSource"
+    :dataSource="dataSource"
     selectionMode="single"
     ref="table"
     @rowSelect="handleRowSelect"
   >
     <template #header>
-      <h3 class="page-title mb-3">{{ l.navigation.viewPayments }}</h3>
+      <h3 class="page-title mb-2">{{ l.navigation.viewSystemPayments }}</h3>
       <FloatLabel variant="on">
         <DatePicker
           v-model="timePeriodFilterValue"
@@ -33,6 +33,7 @@
     <Column field="date" :header="l.viewPayments.date" sortable>
       <template #body="slotProps">{{ dateFormat.format(slotProps.data.date) }}</template>
     </Column>
+    <Column field="payerUsername" :header="l.viewPayments.payerUsername" sortable />
     <Column field="amount" :header="l.viewPayments.amount" sortable>
       <template #body="slotProps">{{ currencyFormat.format(slotProps.data.amount) }}</template>
     </Column>
@@ -50,10 +51,13 @@ import { computed, ref, useTemplateRef, watch } from 'vue'
 import { useRouter } from 'vue-router'
 
 const { push } = useRouter()
+
+//Services
 const l = LocaleService.currentLocale
 const ls = LocaleService.get()
 const paymentService = getClient(PaymentClient)
 
+//Refs
 const table = useTemplateRef('table')
 
 //Constants
@@ -67,6 +71,11 @@ const columns: TableColumn[] = [
   new TableColumn({
     data: 'date',
     name: 'viewPayments.date',
+    orderable: true
+  }),
+  new TableColumn({
+    data: 'payerUsername',
+    name: 'viewPayments.payerUsername',
     orderable: true
   }),
   new TableColumn({
@@ -85,19 +94,18 @@ const columns: TableColumn[] = [
 ]
 
 //Reactive data
-const dateFormat = computed(() => {
-  return Intl.DateTimeFormat(LocaleService.currentLocaleName.value, {
+const dateFormat = computed(() =>
+  Intl.DateTimeFormat(LocaleService.currentLocaleName.value, {
     dateStyle: 'short',
     timeStyle: 'short'
   })
-})
-const currencyFormat = computed(() => {
-  return Intl.NumberFormat(LocaleService.currentLocaleName.value, {
+)
+const currencyFormat = computed(() =>
+  Intl.NumberFormat(LocaleService.currentLocaleName.value, {
     style: 'currency',
     currency: 'EUR'
   })
-})
-
+)
 const totalForTimePeriod = computed(() => {
   const totalAmount = aggregates.value['viewPayments.amount']
   if (typeof totalAmount === 'number') {
@@ -115,10 +123,10 @@ watch(timePeriodFilterValue, () => {
 })
 
 //Methods
-const paymentDataSource = async (request: PaymentDataTableQuery) => {
-  request.fromDate = timePeriodFilterValue.value[0]
-  request.toDate = timePeriodFilterValue.value[1]
-  const response = await paymentService.getUserPayments(request)
+const dataSource = async (query: PaymentDataTableQuery) => {
+  query.fromDate = timePeriodFilterValue.value[0]
+  query.toDate = timePeriodFilterValue.value[1]
+  const response = await paymentService.getAllPayments(query)
   aggregates.value = response.aggregates as { [k: string]: unknown }
   return response
 }
@@ -132,7 +140,7 @@ const refresh = () => {
 
 const handleRowSelect = (e: DataTableRowSelectEvent) => {
   push({
-    name: 'viewPayment',
+    name: 'viewSystemPayment',
     params: {
       paymentId: e.data.id
     }

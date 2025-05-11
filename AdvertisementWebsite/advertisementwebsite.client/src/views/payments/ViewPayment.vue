@@ -1,10 +1,12 @@
 <template>
   <ResponsiveLayout>
     <BlockWithSpinner :loading="loading" class="flex-1 lg:flex-none flex flex-col">
-      <Panel class="flex-1 rounded-none lg:rounded-md">
+      <Panel class="flex-1 rounded-none lg:rounded-md lg:min-w-96">
         <template #header>
           <div class="panel-title-container">
-            <BackButton :defaultTo="{ name: 'viewPayments' }" />
+            <BackButton
+              :defaultTo="{ name: canViewAnyPayment ? 'viewSystemPayments' : 'viewPayments' }"
+            />
             <h3 class="page-title">{{ l.navigation.paymentDetails }}</h3>
           </div>
         </template>
@@ -27,6 +29,7 @@ import { onBeforeMount, ref } from 'vue'
 
 const props = defineProps<{
   paymentId: number
+  canViewAnyPayment?: boolean
 }>()
 
 const l = LocaleService.currentLocale
@@ -37,7 +40,11 @@ const paymentInfo = ref<PriceInfo | undefined>()
 
 onBeforeMount(async () => {
   loading.value = true
-  paymentInfo.value = await paymentService.getUserPayment(props.paymentId)
+  if (props.canViewAnyPayment) {
+    paymentInfo.value = await paymentService.geSystemPayment(props.paymentId)
+  } else {
+    paymentInfo.value = await paymentService.getUserPayment(props.paymentId)
+  }
   loading.value = false
 })
 </script>

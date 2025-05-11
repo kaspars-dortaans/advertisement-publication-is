@@ -416,12 +416,32 @@ const router = createRouter({
           }
         },
         {
+          path: 'view-system-payments',
+          name: 'viewSystemPayments',
+          component: () => import('../views/payments/ViewSystemPayments.vue'),
+          meta: {
+            requiresPermission: Permissions.ViewSystemPayments
+          }
+        },
+        {
           path: 'view/:paymentId',
           name: 'viewPayment',
           component: () => import('../views/payments/ViewPayment.vue'),
           props: (route) => ({ paymentId: toNumberOrUndefined(route.params.paymentId) }),
           meta: {
             requiresPermission: Permissions.ViewOwnPayments
+          }
+        },
+        {
+          path: 'view-system-payment/:paymentId',
+          name: 'viewSystemPayment',
+          component: () => import('../views/payments/ViewPayment.vue'),
+          props: (route) => ({
+            paymentId: toNumberOrUndefined(route.params.paymentId),
+            canViewAnyPayment: true
+          }),
+          meta: {
+            requiresPermission: Permissions.ViewSystemPayments
           }
         }
       ]

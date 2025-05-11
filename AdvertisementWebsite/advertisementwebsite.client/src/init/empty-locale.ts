@@ -82,7 +82,8 @@ export const emptyLocale = {
     totalAmount: '',
     title: '',
     timePeriod: '',
-    price: ''
+    price: '',
+    payerUsername: ''
   },
   viewPayments: {
     id: '',
@@ -90,7 +91,8 @@ export const emptyLocale = {
     amount: '',
     paymentItemCount: '',
     totalForTimePeriod: '',
-    timePeriod: ''
+    timePeriod: '',
+    payerUsername: ''
   },
   manageAttributes: {
     confirmDeleteHeader: '',
@@ -232,6 +234,8 @@ export const emptyLocale = {
     imagesUploaded: '',
     thumbnail: ''
   },
+  viewSystemPayment: {
+  },
   navigation: {
     login: '',
     logout: '',
@@ -274,7 +278,8 @@ export const emptyLocale = {
     createUser: '',
     viewUser: '',
     editUser: '',
-    manageAdvertisements: ''
+    manageAdvertisements: '',
+    viewSystemPayments: ''
   },
   dataSize: {
     bits: '',

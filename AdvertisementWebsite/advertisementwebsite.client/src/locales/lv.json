@@ -80,7 +80,8 @@
     "totalAmount": "Kopsumma",
     "title": "Nosaukums",
     "timePeriod": "Laika periods",
-    "price": "Cena"
+    "price": "Cena",
+    "payerUsername": "Maksātājs"
   },
   "viewPayments": {
     "id": "Nr.",
@@ -88,7 +89,8 @@
     "amount": "Summa",
     "paymentItemCount": "Preču skaits",
     "totalForTimePeriod": "Kopsummā samaksāts: {0}",
-    "timePeriod": "Laik periods"
+    "timePeriod": "Laik periods",
+    "payerUsername": "Maksātājs"
   },
   "manageAttributes": {
     "confirmDeleteHeader": "Izdzēst atribūtus",
@@ -230,6 +232,7 @@
     "imagesUploaded": "Attēli augšupielādēti {0} / {1}",
     "thumbnail": "Sīktēls"
   },
+  "viewSystemPayment": "Maksājumu pārskats",
   "navigation": {
     "login": "Ienākt",
     "logout": "Iziet",
@@ -272,7 +275,8 @@
     "createUser": "Izveidot lietotāju",
     "viewUser": "Skatīt lietotāju",
     "editUser": "Rediģēt lietotāju",
-    "manageAdvertisements": "Pārvaldīt sludinājumus"
+    "manageAdvertisements": "Pārvaldīt sludinājumus",
+    "viewSystemPayments": "Maksājumu pārskats"
   },
   "dataSize": {
     "bits": "{0} biti",

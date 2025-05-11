@@ -1,10 +1,14 @@
 <template>
   <div class="flex flex-col gap-0.5">
-    <h4 v-if="paymentInfo?.date" class="font-semibold inline-flex">
+    <p v-if="paymentInfo?.date" class="inline-flex">
       <span class="flex-1">{{ l.paymentDetails.date }}</span>
       <span class="flex-1">{{ dateFormat.format(paymentInfo.date) }}</span>
-    </h4>
-    <h4 class="font-semibold">{{ l.paymentDetails.paymentItems }}</h4>
+    </p>
+    <p v-if="paymentInfo?.payerUsername" class="inline-flex">
+      <span class="flex-1">{{ l.paymentDetails.payerUsername }}</span>
+      <span class="flex-1">{{ paymentInfo.payerUsername }}</span>
+    </p>
+    <p>{{ l.paymentDetails.paymentItems }}</p>
     <div class="lg:overflow-y-auto flex flex-col gap-2">
       <div
         v-for="paymentItem in paymentInfo?.items"
