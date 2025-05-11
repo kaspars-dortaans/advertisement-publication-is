@@ -494,6 +494,7 @@ const router = createRouter({
       ]
     },
 
+    //Attributes
     {
       path: '/attributes/',
       children: [
@@ -529,6 +530,47 @@ const router = createRouter({
           props: (route) => ({ attributeId: toNumberOrUndefined(route.params.attributeId) }),
           meta: {
             requiresPermission: Permissions.EditAttribute
+          }
+        }
+      ]
+    },
+
+    //Roles
+    {
+      path: '/roles',
+      children: [
+        {
+          path: 'manage',
+          name: 'manageRoles',
+          component: () => import('../views/roles/ManageRoles.vue'),
+          meta: {
+            requiresPermission: Permissions.ViewAllRoles
+          }
+        },
+        {
+          path: 'create',
+          name: 'createRole',
+          component: () => import('../views/roles/RoleForm.vue'),
+          meta: {
+            requiresPermission: Permissions.AddRole
+          }
+        },
+        {
+          path: 'edit/:roleId',
+          name: 'editRole',
+          component: () => import('../views/roles/RoleForm.vue'),
+          props: (route) => ({ roleId: toNumberOrUndefined(route.params.roleId) }),
+          meta: {
+            requiresPermission: Permissions.EditRole
+          }
+        },
+        {
+          path: 'view/:roleId',
+          name: 'viewRole',
+          component: () => import('../views/roles/ViewRole.vue'),
+          props: (route) => ({ roleId: toNumberOrUndefined(route.params.roleId) }),
+          meta: {
+            requiresPermission: Permissions.ViewAllRoles
           }
         }
       ]

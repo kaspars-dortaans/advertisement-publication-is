@@ -27,6 +27,7 @@ export const emptyLocale = {
     pay: '',
     subscribe: '',
     add: '',
+    filter: '',
   },
   dataTable: {
     pageReportTemplate: '',
@@ -124,7 +125,17 @@ export const emptyLocale = {
     createdDate: '',
     lastActive: ''
   },
+  manageRoles: {
+    confirmDeleteHeader: '',
+    confirmDeleteMessage: '',
+    name: '',
+    permissionCount: ''
+  },
   form: {
+    roleForm: {
+      title: '',
+      permissions: ''
+    },
     attributeValueListForm: {
       title: '',
       entries: ''
@@ -279,7 +290,11 @@ export const emptyLocale = {
     viewUser: '',
     editUser: '',
     manageAdvertisements: '',
-    viewSystemPayments: ''
+    viewSystemPayments: '',
+    manageRoles: '',
+    viewRole: '',
+    editRole: '',
+    createRole: ''
   },
   dataSize: {
     bits: '',

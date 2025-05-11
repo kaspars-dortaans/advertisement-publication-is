@@ -24,7 +24,8 @@
     "publish": "Publish",
     "pay": "Pay",
     "subscribe": "Subscribe",
-    "add": "Add"
+    "add": "Add",
+    "filter": "Filter"
   },
   "dataTable": {
     "pageReportTemplate": "{1} to {2} of {3}",
@@ -122,6 +123,12 @@
     "createdDate": "CreatedDate",
     "lastActive": "Last active date"
   },
+  "manageRoles": {
+    "confirmDeleteHeader": "Delete roles",
+    "confirmDeleteMessage": "{0} roles will be deleted.",
+    "name": "Title",
+    "permissionCount": "Permission count"
+  },
   "form": {
     "common": {
       "dragAndDropToUpload": "Drag and drop here to upload",
@@ -207,6 +214,10 @@
     "attributeValueListForm": {
       "title": "Title",
       "entries": "Entries"
+    },
+    "roleForm": {
+      "title": "Title",
+      "permissions": "Permissions"
     }
   },
   "messages": {
@@ -276,7 +287,11 @@
     "viewUser": "View user",
     "editUser": "Edit user",
     "manageAdvertisements": "Manage advertisements",
-    "viewSystemPayments": "Payment overview"
+    "viewSystemPayments": "Payment overview",
+    "manageRoles": "Manage roles",
+    "viewRole": "View role",
+    "editRole": "Edit role",
+    "createRole": "Create role"
   },
   "dataSize": {
     "bits": "{0} b",

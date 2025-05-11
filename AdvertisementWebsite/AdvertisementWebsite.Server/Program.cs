@@ -192,6 +192,7 @@ services.AddScoped<IAdvertisementNotificationSubscriptionService, AdvertisementN
 services.AddScoped<IAttributeValidatorService, AttributeValidatorService>();
 services.AddScoped<IPaymentService, PaymentService>();
 services.AddScoped<IAttributeService, AttributeService>();
+services.AddScoped<IRoleService, RoleService>();
 
 //Helpers
 services.AddScoped<IStorage, LocalFileStorage>();

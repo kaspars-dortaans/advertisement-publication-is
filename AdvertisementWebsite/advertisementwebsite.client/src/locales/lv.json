@@ -24,7 +24,8 @@
     "publish": "Publicēt",
     "pay": "Maksāt",
     "subscribe": "Abonēt",
-    "add": "Pievienot"
+    "add": "Pievienot",
+    "filter": "Filtrēt"
   },
   "dataTable": {
     "pageReportTemplate": "{1} līdz {2} no {3}",
@@ -122,6 +123,12 @@
     "createdDate": "Izveidots",
     "lastActive": "Pēdējoreiz aktīvs"
   },
+  "manageRoles": {
+    "confirmDeleteHeader": "Dzēst lomas",
+    "confirmDeleteMessage": "Tiks izdzēstas {0} lomas.",
+    "name": "Nosaukums",
+    "permissionCount": "Atļauju skaits"
+  },
   "form": {
     "common": {
       "dragAndDropToUpload": "Velc un met šeit lai Augšupielādētu",
@@ -207,6 +214,10 @@
     "attributeValueListForm": {
       "title": "Nosaukums",
       "entries": "Ieraksti"
+    },
+    "roleForm": {
+      "title": "Nosaukums",
+      "permissions": "Atļaujas"
     }
   },
   "messages": {
@@ -276,7 +287,11 @@
     "viewUser": "Skatīt lietotāju",
     "editUser": "Rediģēt lietotāju",
     "manageAdvertisements": "Pārvaldīt sludinājumus",
-    "viewSystemPayments": "Maksājumu pārskats"
+    "viewSystemPayments": "Maksājumu pārskats",
+    "manageRoles": "Pārvaldīt lomas",
+    "viewRole": "Skatīt lomu",
+    "editRole": "Rediģēt lomu",
+    "createRole": "Izveidot lomu"
   },
   "dataSize": {
     "bits": "{0} biti",
