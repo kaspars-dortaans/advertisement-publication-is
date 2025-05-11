@@ -68,7 +68,8 @@
     "categoryName": "Kategorija",
     "status": "Statuss",
     "validTo": "Derīgs līdz",
-    "createdAt": "Izveidots"
+    "createdAt": "Izveidots",
+    "ownerUsername": "Īpašnieks"
   },
   "makePayment": {
     "paymentOptions": "Maksājumu veidi"
@@ -180,7 +181,8 @@
       "title": "Nosaukums",
       "keywords": "Atslēgvārdi",
       "timePeriod": "Laika periods",
-      "validTo": "Derīgs līdz"
+      "validTo": "Derīgs līdz",
+      "owner": "Īpašnieks"
     },
     "categoryForm": {
       "title": "Nosaukums",
@@ -245,6 +247,11 @@
     "editAdvertisement": "Rediģēt sludinājumu",
     "messages": "Sarakstes",
     "advertisementNotifications": "Sludinājumu paziņojumu abonementi",
+    "myAdvertisementNotificationSubscriptions": "Mani sludinājumu paziņojumu abonementi",
+    "manageAdvertisementNotificationSubscription": "Pārvaldīt sludinājumu paziņojumu abonementus",
+    "createAdvertisementNotificationSubscription": "Izveidot sludinājumu paziņojumu abonementu",
+    "editAdvertisementNotificationSubscription": "Rediģēt sludinājumu paziņojumu abonementu",
+    "viewAdvertisementNotificationSubscription": "Skatīt sludinājumu paziņojumu abonementu",
     "makePayment": "Veikt maksājumu",
     "viewPayments": "Skatīt maksājumus",
     "paymentDetails": "Maksājuma pārskats",

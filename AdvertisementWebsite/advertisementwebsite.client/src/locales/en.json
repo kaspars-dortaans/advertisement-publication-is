@@ -68,7 +68,8 @@
     "categoryName": "Category",
     "status": "Status",
     "validTo": "Valid to",
-    "createdAt": "Created at"
+    "createdAt": "Created at",
+    "ownerUsername": "Owner"
   },
   "makePayment": {
     "paymentOptions": "Payment options"
@@ -180,7 +181,8 @@
       "title": "Title",
       "keywords": "Keywords",
       "timePeriod": "Time period",
-      "validTo": "Valid to"
+      "validTo": "Valid to",
+      "owner": "Owner"
     },
     "categoryForm": {
       "title": "Title",
@@ -245,6 +247,11 @@
     "editAdvertisement": "Edit advertisement",
     "messages": "Messages",
     "advertisementNotifications": "Advertisement notifications",
+    "myAdvertisementNotificationSubscriptions": "My advertisement notification subscriptions",
+    "manageAdvertisementNotificationSubscription": "Manage advertisement notification subscriptions",
+    "createAdvertisementNotificationSubscription": "Create advertisement notification subscription",
+    "editAdvertisementNotificationSubscription": "Edit advertisement notification subscription",
+    "viewAdvertisementNotificationSubscription": "View advertisement notification subscription",
     "makePayment": "Make payment",
     "viewPayments": "View Payments",
     "paymentDetails": "Payment details",

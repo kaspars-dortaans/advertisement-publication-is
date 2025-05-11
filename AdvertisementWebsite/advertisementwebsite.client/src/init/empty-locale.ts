@@ -70,7 +70,8 @@ export const emptyLocale = {
     categoryName: '',
     status: '',
     validTo: '',
-    createdAt: ''
+    createdAt: '',
+    ownerUsername: ''
   },
   makePayment: {
     paymentOptions: ''
@@ -148,7 +149,8 @@ export const emptyLocale = {
       title: '',
       keywords: '',
       timePeriod: '',
-      validTo: ''
+      validTo: '',
+      owner: ''
     },
     extend: {
       timePeriod: '',
@@ -247,6 +249,11 @@ export const emptyLocale = {
     editAdvertisement: '',
     messages: '',
     advertisementNotifications: '',
+    myAdvertisementNotificationSubscriptions: '',
+    manageAdvertisementNotificationSubscription: '',
+    createAdvertisementNotificationSubscription: '',
+    editAdvertisementNotificationSubscription: '',
+    viewAdvertisementNotificationSubscription: '',
     makePayment: '',
     viewPayments: '',
     paymentDetails: '',

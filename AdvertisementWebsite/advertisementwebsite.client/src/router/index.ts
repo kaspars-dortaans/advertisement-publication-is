@@ -261,7 +261,7 @@ const router = createRouter({
       children: [
         {
           path: 'manage',
-          name: 'manageAdvertisementNotificationSubscription',
+          name: 'manageOwnAdvertisementNotificationSubscription',
           component: () =>
             import('../views/advertisement-notification-subscriptions/ManageSubscriptions.vue'),
           meta: {
@@ -269,8 +269,18 @@ const router = createRouter({
           }
         },
         {
-          path: 'create',
-          name: 'createAdvertisementNotificationSubscription',
+          path: 'manage-all',
+          name: 'manageAdvertisementNotificationSubscription',
+          component: () =>
+            import('../views/advertisement-notification-subscriptions/ManageSubscriptions.vue'),
+          props: () => ({ canManageAll: true }),
+          meta: {
+            requiresPermission: Permissions.ViewAllAdvertisementNotificationSubscriptions
+          }
+        },
+        {
+          path: 'create-own',
+          name: 'createOwnAdvertisementNotificationSubscription',
           component: () =>
             import(
               '../views/advertisement-notification-subscriptions/CreateOrEditSubscription.vue'
@@ -280,11 +290,39 @@ const router = createRouter({
           }
         },
         {
+          path: 'create',
+          name: 'createAdvertisementNotificationSubscription',
+          component: () =>
+            import(
+              '../views/advertisement-notification-subscriptions/CreateOrEditSubscription.vue'
+            ),
+          props: () => ({ forAnyUser: true }),
+          meta: {
+            requiresPermission: Permissions.CreateAdvertisementNotificationSubscription
+          }
+        },
+        {
           path: 'view/:subscriptionId',
           name: 'viewAdvertisementNotificationSubscription',
           component: () =>
             import('../views/advertisement-notification-subscriptions/ViewSubscription.vue'),
-          props: (route) => ({ subscriptionId: toNumberOrUndefined(route.params.subscriptionId) })
+          props: (route) => ({ subscriptionId: toNumberOrUndefined(route.params.subscriptionId) }),
+          meta: {
+            requiresPermission: Permissions.ViewOwnedAdvertisementNotificationSubscriptions
+          }
+        },
+        {
+          path: 'view-any/:subscriptionId',
+          name: 'viewAnyAdvertisementNotificationSubscription',
+          component: () =>
+            import('../views/advertisement-notification-subscriptions/ViewSubscription.vue'),
+          props: (route) => ({
+            subscriptionId: toNumberOrUndefined(route.params.subscriptionId),
+            forAnyUser: true
+          }),
+          meta: {
+            requiresPermission: Permissions.ViewAllAdvertisementNotificationSubscriptions
+          }
         },
         {
           path: 'edit/:subscriptionId',
@@ -296,6 +334,21 @@ const router = createRouter({
           props: (route) => ({ subscriptionId: toNumberOrUndefined(route.params.subscriptionId) }),
           meta: {
             requiresPermission: Permissions.EditOwnedAdvertisementNotificationSubscriptions
+          }
+        },
+        {
+          path: 'edit-any/:subscriptionId',
+          name: 'editAnyAdvertisementNotificationSubscription',
+          component: () =>
+            import(
+              '../views/advertisement-notification-subscriptions/CreateOrEditSubscription.vue'
+            ),
+          props: (route) => ({
+            subscriptionId: toNumberOrUndefined(route.params.subscriptionId),
+            forAnyUser: true
+          }),
+          meta: {
+            requiresPermission: Permissions.EditAnyAdvertisementNotificationSubscription
           }
         }
       ]

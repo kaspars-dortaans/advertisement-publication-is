@@ -164,6 +164,7 @@ import {
 import { usePaymentState } from '@/composables/payment-store'
 import { createAdvertisementPostTimeSpanOptions } from '@/constants/advertisement-post-time-span'
 import { ImageConstants } from '@/constants/api/ImageConstants'
+import { TakeLookupsWhenSearching } from '@/constants/search-constants'
 import {
   AdvertisementClient,
   AttributeFormInfo,
@@ -216,9 +217,6 @@ const ls = LocaleService.get()
 const advertisementService = getClient(AdvertisementClient)
 const categoryService = getClient(CategoryClient)
 const userService = getClient(UserClient)
-
-//Constants
-const takeLookupCount = 50
 
 //Reactive data
 const isEdit = computed(() => typeof props.id === 'number' && !isNaN(props.id))
@@ -390,7 +388,7 @@ const loadAdvertisementInfo = async () => {
 }
 
 const searchUsers = async (e: AutoCompleteCompleteEvent) => {
-  userLookups.value = await userService.searchUserLookup(e.query, takeLookupCount)
+  userLookups.value = await userService.searchUserLookup(e.query, TakeLookupsWhenSearching)
 }
 
 const submit = handleSubmit(async () => {

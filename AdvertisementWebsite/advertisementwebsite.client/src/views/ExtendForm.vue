@@ -129,9 +129,15 @@ onBeforeMount(async () => {
   ) {
     extendItems.value = await advertisementService.getAdvertisementLookupByIds(props.ids)
   } else {
-    extendItems.value = await advertisementNotificationService.getSubscriptionsLookupByIds(
-      props.ids
-    )
+    if (AuthService.hasPermission(Permissions.ViewAllAdvertisementNotificationSubscriptions)) {
+      extendItems.value = await advertisementNotificationService.getAllSubscriptionsLookupByIds(
+        props.ids
+      )
+    } else {
+      extendItems.value = await advertisementNotificationService.getSubscriptionsLookupByIds(
+        props.ids
+      )
+    }
   }
 
   loading.value = false
@@ -201,7 +207,7 @@ const submit = handleSubmit(async () => {
           ids: props.ids
         })
       )
-      push({ name: 'manageAdvertisementNotificationSubscriptions' })
+      push({ name: 'manageAdvertisementNotificationSubscription' })
     } else {
       const timePeriod = new PostTimeDto(values.extendTime!)
       paymentState.value.paymentItems = extendItems.value!.map(

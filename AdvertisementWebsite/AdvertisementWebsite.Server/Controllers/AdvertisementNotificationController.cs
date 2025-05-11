@@ -116,6 +116,86 @@ public class AdvertisementNotificationController(
         await _subscriptionService.DeleteWhereAsync(s => s.OwnerId == userId && subscriptionIds.Contains(s.Id));
     }
 
+    [HasPermission(Permissions.ViewAllAdvertisementNotificationSubscriptions)]
+    [ProducesResponseType<DataTableQueryResponse<NotificationSubscriptionItem>>(StatusCodes.Status200OK)]
+    [ProducesResponseType<RequestExceptionResponse>(StatusCodes.Status400BadRequest)]
+    [HttpPost]
+    public async Task<DataTableQueryResponse<NotificationSubscriptionItem>> GetAllAdvertisementNotificationSubscriptions(DataTableQuery query)
+    {
+        return await _subscriptionService.GetSubscriptions(query);
+    }
+
+    [HasPermission(Permissions.ViewAllAdvertisementNotificationSubscriptions)]
+    [ProducesResponseType<IEnumerable<KeyValuePair<int, string>>>(StatusCodes.Status200OK)]
+    [ProducesResponseType<RequestExceptionResponse>(StatusCodes.Status400BadRequest)]
+    [HttpPost]
+    public async Task<IEnumerable<KeyValuePair<int, string>>> GetAllSubscriptionsLookupByIds(IEnumerable<int> ids)
+    {
+        return await _subscriptionService.GetLookupByIds(ids).ToListAsync();
+    }
+
+    [HasPermission(Permissions.CreateAdvertisementNotificationSubscription)]
+    [ProducesResponseType<int>(StatusCodes.Status200OK)]
+    [ProducesResponseType<RequestExceptionResponse>(StatusCodes.Status400BadRequest)]
+    [HttpPost]
+    public async Task<int> CreateSubscriptionForAnyUser(CreateOrEditNotificationSubscriptionRequest request)
+    {
+        var dto = _mapper.Map<CreateOrEditSubscription>(request);
+        return await _subscriptionService.CreateSubscription(dto, null, true);
+    }
+
+    [HasPermission(Permissions.EditAnyAdvertisementNotificationSubscription)]
+    [ProducesResponseType<SubscriptionFormInfo>(StatusCodes.Status200OK)]
+    [ProducesResponseType<RequestExceptionResponse>(StatusCodes.Status400BadRequest)]
+    [HttpGet]
+    public async Task<SubscriptionFormInfo> EditAnySubscriptions(int subscriptionId)
+    {
+        var subscriptionFormInfo = await _subscriptionService.GetSubscriptionInfo(subscriptionId);
+        return new SubscriptionFormInfo
+        {
+            Subscription = _mapper.Map<CreateOrEditNotificationSubscriptionRequest>(subscriptionFormInfo),
+            CategoryInfo = await _categoryService.GetCategoryFormInfo(subscriptionFormInfo.CategoryId)
+        };
+    }
+
+    [HasPermission(Permissions.EditAnyAdvertisementNotificationSubscription)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType<RequestExceptionResponse>(StatusCodes.Status400BadRequest)]
+    [HttpPost]
+    public async Task EditAnySubscriptions(CreateOrEditNotificationSubscriptionRequest request)
+    {
+        if (request.Id == null)
+        {
+            throw new ApiException([], new Dictionary<string, IList<string>>
+            {
+                { nameof(CreateOrEditNotificationSubscriptionRequest.Id), [CustomErrorCodes.MissingRequired] }
+            });
+        }
+
+        var dto = _mapper.Map<CreateOrEditSubscription>(request);
+        await _subscriptionService.EditSubscription(dto);
+    }
+
+    [HasPermission(Permissions.EditAnyAdvertisementNotificationSubscription)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType<RequestExceptionResponse>(StatusCodes.Status400BadRequest)]
+    [HttpPost]
+    public async Task SetAnySubscriptionActiveStatus(SetActiveStatusRequest request)
+    {
+        await _subscriptionService
+            .Where(s => request.Ids.Contains(s.Id))
+            .UpdateFromQueryAsync(a => new AdvertisementNotificationSubscription() { IsActive = request.IsActive });
+    }
+
+    [HasPermission(Permissions.DeleteAnyAdvertisementNotificationSubscription)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType<RequestExceptionResponse>(StatusCodes.Status400BadRequest)]
+    [HttpPost]
+    public async Task DeleteAnySubscriptions(IEnumerable<int> subscriptionIds)
+    {
+        await _subscriptionService.DeleteWhereAsync(s => subscriptionIds.Contains(s.Id));
+    }
+
     [HasPermission(Permissions.EditAnyAdvertisementNotificationSubscription)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType<RequestExceptionResponse>(StatusCodes.Status400BadRequest)]

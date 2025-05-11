@@ -5,14 +5,18 @@
         <template #header>
           <div class="panel-title-container">
             <BackButton :defaultTo="{ name: 'manageAdvertisementNotificationSubscription' }" />
-            <h3 class="page-title">{{ l.navigation.advertisementNotifications }}</h3>
+            <h3 class="page-title">{{ l.navigation.viewAdvertisementNotificationSubscription }}</h3>
             <Button
               v-if="isAllowedToEdit"
               :label="l.actions.edit"
               icon="pi pi-pencil"
               severity="secondary"
               as="RouterLink"
-              :to="{ name: 'editAdvertisementNotificationSubscription' }"
+              :to="{
+                name: props.forAnyUser
+                  ? 'editAnyAdvertisementNotificationSubscription'
+                  : 'editAdvertisementNotificationSubscription'
+              }"
             />
           </div>
         </template>
@@ -20,6 +24,17 @@
         <div class="flex flex-col gap-3">
           <div class="flex flex-col lg:flex-row gap-2">
             <fieldset class="flex-1 flex flex-col gap-2">
+              <!-- Owner -->
+              <FloatLabel v-if="forAnyUser" variant="on">
+                <InputText
+                  v-model="existingSubscription.ownerUsername"
+                  id="owner-name"
+                  fluid
+                  disabled
+                />
+                <label for="title-input">{{ l.form.putAdvertisementNotification.owner }}</label>
+              </FloatLabel>
+
               <!-- Title -->
               <FloatLabel variant="on">
                 <InputText v-model="existingSubscription.title" id="title-input" fluid disabled />
@@ -104,6 +119,7 @@ import { computed, onBeforeMount, ref, watch } from 'vue'
 
 const props = defineProps<{
   subscriptionId: number
+  forAnyUser?: boolean
 }>()
 
 //Services
@@ -133,7 +149,11 @@ const dateFormat = computed(() =>
 )
 const { isSmallScreen } = useTrackScreenSize()
 const isAllowedToEdit = computed(() =>
-  AuthService.hasPermission(Permissions.EditOwnedAdvertisementNotificationSubscriptions)
+  AuthService.hasPermission(
+    props.forAnyUser
+      ? Permissions.EditAnyAdvertisementNotificationSubscription
+      : Permissions.EditOwnedAdvertisementNotificationSubscriptions
+  )
 )
 const categoryList = ref<CategoryItem[]>([])
 const attributeValues = ref<(string | number | undefined)[]>([])
@@ -159,7 +179,9 @@ watch(LocaleService.currentLocaleName, () => {
 const reloadData = async () => {
   loading.value++
   const [{ subscription, categoryInfo }] = await Promise.all([
-    advertisementNotificationService.editSubscriptionsGet(props.subscriptionId),
+    props.forAnyUser
+      ? advertisementNotificationService.editAnySubscriptionsGet(props.subscriptionId)
+      : advertisementNotificationService.editSubscriptionsGet(props.subscriptionId),
     loadCategoryList()
   ])
   setCategoryInfo(categoryInfo)

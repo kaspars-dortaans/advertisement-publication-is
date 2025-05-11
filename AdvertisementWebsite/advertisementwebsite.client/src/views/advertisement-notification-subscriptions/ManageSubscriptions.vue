@@ -7,20 +7,28 @@
     ref="table"
   >
     <template #header>
-      <h3 class="page-title mb-2">{{ l.navigation.advertisementNotifications }}</h3>
+      <h3 class="page-title mb-2">
+        {{
+          canManageAll
+            ? l.navigation.manageAdvertisementNotificationSubscription
+            : l.navigation.myAdvertisementNotificationSubscriptions
+        }}
+      </h3>
       <div class="flex flex-wrap justify-end gap-2">
-        <Button
-          :label="l.actions.deactivate"
-          :disabled="!selectedRows.length || !atLeastOneSelectedIsActive"
-          severity="secondary"
-          @click="setActiveState(false)"
-        />
-        <Button
-          :label="l.actions.activate"
-          :disabled="!selectedRows.length || !atLeastOneSelectedIsInactive"
-          severity="primary"
-          @click="setActiveState(true)"
-        />
+        <template v-if="isAllowedToEdit">
+          <Button
+            :label="l.actions.deactivate"
+            :disabled="!selectedRows.length || !atLeastOneSelectedIsActive"
+            severity="secondary"
+            @click="setActiveState(false)"
+          />
+          <Button
+            :label="l.actions.activate"
+            :disabled="!selectedRows.length || !atLeastOneSelectedIsInactive"
+            severity="primary"
+            @click="setActiveState(true)"
+          />
+        </template>
         <Button
           v-if="isAllowedToDelete"
           :label="l.actions.delete"
@@ -29,6 +37,7 @@
           @click="confirmNotificationSubscriptionDelete"
         />
         <Button
+          v-if="isAllowedToEdit"
           :label="l.actions.extend"
           :disabled="!selectedRows.length || allSelectedAreDrafts"
           severity="secondary"
@@ -39,7 +48,11 @@
           :label="l.actions.create"
           severity="primary"
           as="RouterLink"
-          :to="{ name: 'createAdvertisementNotificationSubscription' }"
+          :to="{
+            name: canManageAll
+              ? 'createAdvertisementNotificationSubscription'
+              : 'createOwnAdvertisementNotificationSubscription'
+          }"
         />
       </div>
     </template>
@@ -47,6 +60,12 @@
     <Column selectionMode="multiple" headerStyle="width: 3rem" />
 
     <Column field="title" :header="l.manageAdvertisementNotificationSubscriptions.title" sortable />
+    <Column
+      v-if="canManageAll"
+      field="ownerUsername"
+      :header="l.manageAdvertisementNotificationSubscriptions.ownerUsername"
+      sortable
+    />
     <Column
       field="keywords"
       :header="l.manageAdvertisementNotificationSubscriptions.keywords"
@@ -97,7 +116,7 @@
       <template #body="slotProps">
         <div class="flex flex-wrap justify-end gap-2">
           <Button
-            v-if="slotProps.data.status === PaymentSubjectStatus.Draft"
+            v-if="isAllowedToCreate && slotProps.data.status === PaymentSubjectStatus.Draft"
             :label="l.actions.subscribe"
             @click="subscribe(slotProps.data)"
           />
@@ -106,7 +125,9 @@
             :label="l.actions.edit"
             as="RouterLink"
             :to="{
-              name: 'editAdvertisementNotificationSubscription',
+              name: canManageAll
+                ? 'editAnyAdvertisementNotificationSubscription'
+                : 'editAdvertisementNotificationSubscription',
               params: { subscriptionId: '' + slotProps.data.id }
             }"
           />
@@ -115,7 +136,9 @@
             severity="secondary"
             as="RouterLink"
             :to="{
-              name: 'viewAdvertisementNotificationSubscription',
+              name: canManageAll
+                ? 'viewAnyAdvertisementNotificationSubscription'
+                : 'viewAdvertisementNotificationSubscription',
               params: { subscriptionId: '' + slotProps.data.id }
             }"
           />
@@ -147,6 +170,9 @@ import { computed, ref, useTemplateRef, watch } from 'vue'
 import { useRouter } from 'vue-router'
 
 const { push } = useRouter()
+const props = defineProps<{
+  canManageAll?: boolean
+}>()
 
 //Services
 const l = LocaleService.currentLocale
@@ -162,6 +188,12 @@ const columns: TableColumn[] = [
   new TableColumn({
     data: 'title',
     name: 'manageAdvertisementNotificationSubscriptions.title',
+    orderable: true,
+    searchable: true
+  }),
+  new TableColumn({
+    data: 'ownerUsername',
+    name: 'manageAdvertisementNotificationSubscriptions.ownerUsername',
     orderable: true,
     searchable: true
   }),
@@ -213,13 +245,25 @@ const dateFormat = computed(() =>
   })
 )
 const isAllowedToCreate = computed(() =>
-  AuthService.hasPermission(Permissions.CreateOwnedAdvertisementNotificationSubscription)
+  AuthService.hasPermission(
+    props.canManageAll
+      ? Permissions.CreateAdvertisementNotificationSubscription
+      : Permissions.CreateOwnedAdvertisementNotificationSubscription
+  )
 )
 const isAllowedToEdit = computed(() =>
-  AuthService.hasPermission(Permissions.EditOwnedAdvertisementNotificationSubscriptions)
+  AuthService.hasPermission(
+    props.canManageAll
+      ? Permissions.EditAnyAdvertisementNotificationSubscription
+      : Permissions.EditOwnedAdvertisementNotificationSubscriptions
+  )
 )
 const isAllowedToDelete = computed(() =>
-  AuthService.hasPermission(Permissions.DeleteOwnedAdvertisementNotificationSubscriptions)
+  AuthService.hasPermission(
+    props.canManageAll
+      ? Permissions.DeleteAnyAdvertisementNotificationSubscription
+      : Permissions.DeleteOwnedAdvertisementNotificationSubscriptions
+  )
 )
 
 //watch
@@ -229,23 +273,31 @@ watch(LocaleService.currentLocaleName, () => {
 
 //Methods
 const advertisementNotificationSource = async (query: DataTableQuery) => {
-  return await subscriptionService.getAdvertisementNotificationSubscriptions(query)
+  if (props.canManageAll) {
+    return await subscriptionService.getAllAdvertisementNotificationSubscriptions(query)
+  } else {
+    return await subscriptionService.getAdvertisementNotificationSubscriptions(query)
+  }
 }
 
 const setActiveState = async (isActive: boolean) => {
   loading.value = true
-  await subscriptionService.setSubscriptionActiveStatus(
-    new SetActiveStatusRequest({
-      ids: selectedRows.value
-        .filter(
-          (r) =>
-            (isActive && r.status === PaymentSubjectStatus.Inactive) ||
-            (!isActive && r.status === PaymentSubjectStatus.Active)
-        )
-        .map((i) => i.id!),
-      isActive
-    })
-  )
+  const request = new SetActiveStatusRequest({
+    ids: selectedRows.value
+      .filter(
+        (r) =>
+          (isActive && r.status === PaymentSubjectStatus.Inactive) ||
+          (!isActive && r.status === PaymentSubjectStatus.Active)
+      )
+      .map((i) => i.id!),
+    isActive
+  })
+
+  if (props.canManageAll) {
+    await subscriptionService.setAnySubscriptionActiveStatus(request)
+  } else {
+    await subscriptionService.setSubscriptionActiveStatus(request)
+  }
   table.value?.refresh()
   loading.value = false
 }
@@ -259,7 +311,12 @@ const confirmNotificationSubscriptionDelete = async () => {
     ),
     accept: async () => {
       loading.value = true
-      await subscriptionService.deleteSubscriptions(selectedRows.value.map((i) => i.id!))
+      const ids = selectedRows.value.map((i) => i.id!)
+      if (props.canManageAll) {
+        await subscriptionService.deleteAnySubscriptions(ids)
+      } else {
+        await subscriptionService.deleteSubscriptions(ids)
+      }
       table.value?.refresh()
       loading.value = false
     }

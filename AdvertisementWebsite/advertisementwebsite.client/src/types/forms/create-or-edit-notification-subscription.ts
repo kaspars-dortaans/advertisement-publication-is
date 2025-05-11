@@ -1,9 +1,13 @@
-import { CreateOrEditNotificationSubscriptionRequest } from '@/services/api-client'
+import {
+  CreateOrEditNotificationSubscriptionRequest,
+  Int32StringKeyValuePair
+} from '@/services/api-client'
 
 export type PutNotificationSubscriptionForm = Omit<
   CreateOrEditNotificationSubscriptionRequest,
-  'attributeValues' | 'keywords'
+  'attributeValues' | 'keywords' | 'ownerId'
 > & {
   attributeValues: (string | number | undefined)[]
   keywords: string[]
+  ownerId: Int32StringKeyValuePair
 }

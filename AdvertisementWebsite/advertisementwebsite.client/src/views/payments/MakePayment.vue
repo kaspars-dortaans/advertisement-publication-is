@@ -152,7 +152,7 @@ const pay = handleSubmit(async () => {
         ? 'home'
         : isPreviousAdvertisement
           ? 'manageOwnAdvertisements'
-          : 'manageAdvertisementNotificationSubscription'
+          : 'manageOwnAdvertisementNotificationSubscription'
     })
   } catch (e) {
     handleErrors(e)

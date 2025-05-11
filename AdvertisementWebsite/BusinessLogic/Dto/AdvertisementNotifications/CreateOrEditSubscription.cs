@@ -5,6 +5,8 @@ namespace BusinessLogic.Dto.AdvertisementNotifications;
 public class CreateOrEditSubscription
 {
     public int? Id { get; set; }
+    public int? OwnerId { get; set; }
+    public string? OwnerUsername { get; set; }
     public string Title { get; set; } = default!;
     public IEnumerable<string>? Keywords { get; set; }
     public PostTimeDto? PaidTime { get; set; }

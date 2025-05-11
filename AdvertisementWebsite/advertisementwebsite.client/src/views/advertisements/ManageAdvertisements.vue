@@ -11,18 +11,20 @@
         {{ manageAll ? l.navigation.manageAdvertisements : l.navigation.myAdvertisements }}
       </h3>
       <div class="flex flex-wrap justify-end gap-2">
-        <Button
-          :label="l.actions.deactivate"
-          :disabled="!selectedAdvertisements.length || !atLeastOneSelectedIsActive"
-          severity="secondary"
-          @click="setAdvertisementActiveState(false)"
-        />
-        <Button
-          :label="l.actions.activate"
-          :disabled="!selectedAdvertisements.length || !atLeastOneSelectedIsInactive"
-          severity="primary"
-          @click="setAdvertisementActiveState(true)"
-        />
+        <template v-if="isAllowedToEdit">
+          <Button
+            :label="l.actions.deactivate"
+            :disabled="!selectedAdvertisements.length || !atLeastOneSelectedIsActive"
+            severity="secondary"
+            @click="setAdvertisementActiveState(false)"
+          />
+          <Button
+            :label="l.actions.activate"
+            :disabled="!selectedAdvertisements.length || !atLeastOneSelectedIsInactive"
+            severity="primary"
+            @click="setAdvertisementActiveState(true)"
+          />
+        </template>
         <Button
           v-if="isAllowedToDelete"
           :label="l.actions.delete"
@@ -31,6 +33,7 @@
           @click="confirmDeleteAdvertisements"
         />
         <Button
+          v-if="isAllowedToEdit"
           :label="l.actions.extend"
           :disabled="!selectedAdvertisements.length || allSelectedAreDrafts"
           severity="secondary"
@@ -84,7 +87,7 @@
       <template #body="slotProps">
         <div class="flex flex-wrap justify-end gap-2">
           <Button
-            v-if="slotProps.data.status == PaymentSubjectStatus.Draft"
+            v-if="isAllowedToCreate && slotProps.data.status == PaymentSubjectStatus.Draft"
             :label="l.actions.publish"
             @click="publishAdvertisement(slotProps.data)"
           />

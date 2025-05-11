@@ -5,13 +5,36 @@
         <template #header>
           <div class="panel-title-container">
             <BackButton :defaultTo="{ name: 'manageAdvertisementNotificationSubscription' }" />
-            <h3 class="page-title">{{ l.navigation.advertisementNotifications }}</h3>
+            <h3 class="page-title">
+              {{
+                isEdit
+                  ? l.navigation.editAdvertisementNotificationSubscription
+                  : l.navigation.createAdvertisementNotificationSubscription
+              }}
+            </h3>
           </div>
         </template>
 
         <form class="flex flex-col gap-3" @submit="submit">
           <div class="flex flex-col lg:flex-row gap-2">
             <fieldset class="flex-1 flex flex-col gap-2">
+              <!-- Owner -->
+              <FloatLabel v-if="forAnyUser" variant="on">
+                <AutoComplete
+                  v-model="fields.ownerId!.value"
+                  v-bind="fields.ownerId?.attributes"
+                  :invalid="fields.ownerId?.hasError"
+                  :suggestions="userLookups"
+                  inputId="owner-input"
+                  optionLabel="value"
+                  fluid
+                  dropdown
+                  @complete="searchUsers"
+                />
+                <label for="owner-input">{{ l.form.putAdvertisementNotification.owner }}</label>
+              </FloatLabel>
+              <FieldError :field="fields.ownerId" />
+
               <!-- Title -->
               <FloatLabel variant="on">
                 <InputText
@@ -143,6 +166,7 @@ import {
   Int32StringKeyValuePair,
   NewPaymentItem,
   PaymentType,
+  UserClient,
   ValueTypes
 } from '@/services/api-client'
 import { LocaleService } from '@/services/locale-service'
@@ -156,14 +180,16 @@ import {
   requiredWhen
 } from '@/validators/custom-validators'
 import { toTypedSchema } from '@vee-validate/yup'
-import { useConfirm } from 'primevue'
+import { useConfirm, type AutoCompleteCompleteEvent } from 'primevue'
 import { useForm } from 'vee-validate'
 import { computed, onBeforeMount, ref, watch } from 'vue'
 import { onBeforeRouteLeave, useRouter } from 'vue-router'
 import { array, number, object, string, type AnyObject } from 'yup'
+import { TakeLookupsWhenSearching } from '@/constants/search-constants'
 
 const props = defineProps<{
   subscriptionId?: number | undefined
+  forAnyUser?: boolean
 }>()
 
 //Route
@@ -179,6 +205,7 @@ const l = LocaleService.currentLocale
 const ls = LocaleService.get()
 const advertisementNotificationService = getClient(AdvertisementNotificationClient)
 const categoryService = getClient(CategoryClient)
+const userService = getClient(UserClient)
 
 //Reactive data
 const isEdit = computed(() => typeof props.subscriptionId === 'number')
@@ -194,11 +221,15 @@ const dateFormat = computed(() =>
 )
 const { isSmallScreen } = useTrackScreenSize()
 const paymentState = usePaymentState()
+const userLookups = ref<Int32StringKeyValuePair[]>([])
 
 //Form and fields
 const { addAttributeValidationSchema } = useValidateAttributeInput(attributeInfo)
 const validationSchema = computed(() => {
   let schemaObject: AnyObject = {
+    ownerId: object()
+      .test(requiredWhen(() => props.forAnyUser))
+      .label('form.putAdvertisementNotification.owner'),
     paidTime: object()
       .test(requiredWhen(() => !isEdit.value))
       .label('form.putAdvertisementNotification.timePeriod'),
@@ -216,7 +247,7 @@ const form = useForm<PutNotificationSubscriptionForm>({ validationSchema })
 const fieldHelper = new FieldHelper(form)
 const { isSubmitting, handleSubmit, values, resetForm, validate } = form
 const { defineMultipleFields, handleErrors, fields, valuesChanged } = fieldHelper
-defineMultipleFields(['title', 'paidTime', 'keywords', 'categoryId', 'attributeValues'])
+defineMultipleFields(['title', 'ownerId', 'paidTime', 'keywords', 'categoryId', 'attributeValues'])
 
 const {
   loading,
@@ -253,7 +284,9 @@ watch(LocaleService.currentLocaleName, async () => {
 const loadSubscription = async () => {
   loading.value++
   const [{ subscription, categoryInfo }] = await Promise.all([
-    advertisementNotificationService.editSubscriptionsGet(props.subscriptionId),
+    props.forAnyUser
+      ? advertisementNotificationService.editAnySubscriptionsGet(props.subscriptionId)
+      : advertisementNotificationService.editSubscriptionsGet(props.subscriptionId),
     loadCategoryList()
   ])
   setCategoryInfo(categoryInfo)
@@ -272,6 +305,10 @@ const loadSubscription = async () => {
 
     resetForm({
       values: {
+        ownerId: new Int32StringKeyValuePair({
+          key: subscription.ownerId,
+          value: subscription.ownerUsername
+        }),
         categoryId: subscription.categoryId,
         keywords: subscription.keywords,
         title: subscription.title,
@@ -288,12 +325,17 @@ const reloadData = async () => {
   loading.value++
   const promises = []
   promises.push(loadCategoryList())
+
   //If category info was loaded before, reload it
   if (attributeInfo.value.length) {
     promises.push(loadCategoryInfo(values.categoryId))
   }
-  await promises
+  await Promise.all(promises)
   loading.value--
+}
+
+const searchUsers = async (e: AutoCompleteCompleteEvent) => {
+  userLookups.value = await userService.searchUserLookup(e.query, TakeLookupsWhenSearching)
 }
 
 const submit = handleSubmit(async () => {
@@ -313,6 +355,8 @@ const submit = handleSubmit(async () => {
 
     const request = new CreateOrEditNotificationSubscriptionRequest({
       id: props.subscriptionId,
+      ownerId: values.ownerId?.key,
+      paidTime: values.paidTime,
       categoryId: values.categoryId,
       title: values.title,
       keywords: values.keywords?.map((k) => k.trim())?.filter((k) => k) ?? [],
@@ -320,20 +364,36 @@ const submit = handleSubmit(async () => {
     })
 
     if (isEdit.value) {
-      await advertisementNotificationService.editSubscriptionsPost(request)
-      formSubmitted.value = true
-      push({ name: 'manageAdvertisementNotificationSubscription' })
+      if (props.forAnyUser) {
+        //Edit subscription for any user
+        await advertisementNotificationService.editAnySubscriptionsPost(request)
+        formSubmitted.value = true
+        push({ name: 'manageAdvertisementNotificationSubscription' })
+      } else {
+        //Edit own subscription
+        await advertisementNotificationService.editSubscriptionsPost(request)
+        formSubmitted.value = true
+        push({ name: 'manageOwnAdvertisementNotificationSubscription' })
+      }
     } else {
-      const id = await advertisementNotificationService.createSubscriptions(request)
-      paymentState.value.paymentItems = [
-        new NewPaymentItem({
-          paymentSubjectId: id,
-          type: PaymentType.CreateAdvertisementNotificationSubscription,
-          timePeriod: values.paidTime!
-        })
-      ]
-      formSubmitted.value = true
-      push({ name: 'makePayment' })
+      if (props.forAnyUser) {
+        //Create subscription for any user
+        await advertisementNotificationService.createSubscriptionForAnyUser(request)
+        formSubmitted.value = true
+        push({ name: 'manageAdvertisementNotificationSubscription' })
+      } else {
+        //Create own subscription
+        const id = await advertisementNotificationService.createSubscriptions(request)
+        paymentState.value.paymentItems = [
+          new NewPaymentItem({
+            paymentSubjectId: id,
+            type: PaymentType.CreateAdvertisementNotificationSubscription,
+            timePeriod: values.paidTime!
+          })
+        ]
+        formSubmitted.value = true
+        push({ name: 'makePayment' })
+      }
     }
   } catch (error) {
     handleErrors(error)

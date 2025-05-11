@@ -7,6 +7,8 @@ namespace AdvertisementWebsite.Server.Dto.AdvertisementNotification;
 public class CreateOrEditNotificationSubscriptionRequest
 {
     public int? Id { get; set; }
+    public int? OwnerId { get; set; }
+    public string? OwnerUsername { get; set; }
 
     [Required(ErrorMessage = CustomErrorCodes.MissingRequired)]
     public string Title { get; set; } = default!;
