@@ -115,10 +115,20 @@ const router = createRouter({
         },
         {
           path: '/manage',
-          name: 'manageAdvertisements',
-          component: () => import('../views/user/ManageUserAdvertisements.vue'),
+          name: 'manageOwnAdvertisements',
+          component: () => import('../views/advertisements/ManageAdvertisements.vue'),
+          props: () => ({ manageAll: false }),
           meta: {
             requiresPermission: Permissions.ViewOwnedAdvertisements
+          }
+        },
+        {
+          path: '/manage-all',
+          name: 'manageAdvertisements',
+          component: () => import('../views/advertisements/ManageAdvertisements.vue'),
+          props: () => ({ manageAll: true }),
+          meta: {
+            requiresPermission: Permissions.ViewAllAdvertisements
           }
         }
       ]
@@ -130,11 +140,20 @@ const router = createRouter({
       redirect: { name: 'viewAdvertisements' },
       children: [
         {
-          path: 'create',
-          name: 'createAdvertisement',
+          path: 'create-own',
+          name: 'createOwnAdvertisement',
           component: () => import('../views/advertisement/CreateOrEditAdvertisement.vue'),
           meta: {
             requiresPermission: Permissions.CreateOwnedAdvertisement
+          }
+        },
+        {
+          path: 'create',
+          name: 'createAdvertisement',
+          component: () => import('../views/advertisement/CreateOrEditAdvertisement.vue'),
+          props: () => ({ forAnyUser: true }),
+          meta: {
+            requiresPermission: Permissions.CreateAdvertisement
           }
         },
         {
@@ -160,6 +179,15 @@ const router = createRouter({
               props: (route) => ({ id: toNumberOrUndefined(route.params.id) }),
               meta: {
                 requiresPermission: Permissions.EditOwnedAdvertisement
+              }
+            },
+            {
+              path: 'edit-any',
+              name: 'editAnyAdvertisement',
+              component: () => import('../views/advertisement/CreateOrEditAdvertisement.vue'),
+              props: (route) => ({ id: toNumberOrUndefined(route.params.id), forAnyUser: true }),
+              meta: {
+                requiresPermission: Permissions.EditAnyAdvertisement
               }
             }
           ]

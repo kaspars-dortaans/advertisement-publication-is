@@ -112,6 +112,7 @@ services.Configure<BearerTokenOptions>(IdentityConstants.BearerScheme, options =
 
 //Authorization 
 services.AddSingleton<IAuthorizationHandler, PermissionAuthorizationHandler>();
+services.AddSingleton<IAuthorizationHandler, AnyOfPermissionsAuthorizationHandler>();
 services.AddSingleton<IAuthorizationPolicyProvider, PermissionAuthorizationPolicyProvider>();
 
 //Controllers

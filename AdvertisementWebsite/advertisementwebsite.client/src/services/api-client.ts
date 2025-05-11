@@ -616,8 +616,8 @@ export class AdvertisementClient {
      * @param body (optional) 
      * @return OK
      */
-    setIsActiveAdvertisements(body: SetActiveStatusRequest | undefined, cancelToken?: CancelToken): Promise<void> {
-        let url_ = this.baseUrl + "/api/Advertisement/SetIsActiveAdvertisements";
+    setIsActiveOwnedAdvertisements(body: SetActiveStatusRequest | undefined, cancelToken?: CancelToken): Promise<void> {
+        let url_ = this.baseUrl + "/api/Advertisement/SetIsActiveOwnedAdvertisements";
         url_ = url_.replace(/[?&]$/, "");
 
         const content_ = JSON.stringify(body);
@@ -639,11 +639,11 @@ export class AdvertisementClient {
                 throw _error;
             }
         }).then((_response: AxiosResponse) => {
-            return this.processSetIsActiveAdvertisements(_response);
+            return this.processSetIsActiveOwnedAdvertisements(_response);
         });
     }
 
-    protected processSetIsActiveAdvertisements(response: AxiosResponse): Promise<void> {
+    protected processSetIsActiveOwnedAdvertisements(response: AxiosResponse): Promise<void> {
         const status = response.status;
         let _headers: any = {};
         if (response.headers && typeof response.headers === "object") {
@@ -668,8 +668,8 @@ export class AdvertisementClient {
      * @param body (optional) 
      * @return OK
      */
-    deleteAdvertisements(body: number[] | undefined, cancelToken?: CancelToken): Promise<void> {
-        let url_ = this.baseUrl + "/api/Advertisement/DeleteAdvertisements";
+    deleteOwnedAdvertisements(body: number[] | undefined, cancelToken?: CancelToken): Promise<void> {
+        let url_ = this.baseUrl + "/api/Advertisement/DeleteOwnedAdvertisements";
         url_ = url_.replace(/[?&]$/, "");
 
         const content_ = JSON.stringify(body);
@@ -691,11 +691,11 @@ export class AdvertisementClient {
                 throw _error;
             }
         }).then((_response: AxiosResponse) => {
-            return this.processDeleteAdvertisements(_response);
+            return this.processDeleteOwnedAdvertisements(_response);
         });
     }
 
-    protected processDeleteAdvertisements(response: AxiosResponse): Promise<void> {
+    protected processDeleteOwnedAdvertisements(response: AxiosResponse): Promise<void> {
         const status = response.status;
         let _headers: any = {};
         if (response.headers && typeof response.headers === "object") {
@@ -718,6 +718,8 @@ export class AdvertisementClient {
 
     /**
      * @param id (optional) 
+     * @param ownerId (optional) 
+     * @param ownerUserName (optional) 
      * @param categoryId (optional) 
      * @param attributeValues (optional) 
      * @param postTime (optional) 
@@ -728,13 +730,17 @@ export class AdvertisementClient {
      * @param imageOrder (optional) 
      * @return OK
      */
-    createAdvertisement(id: number | null | undefined, categoryId: number | undefined, attributeValues: Int32StringKeyValuePair[] | null | undefined, postTime: PostTimeDto | null | undefined, validToDate: Date | null | undefined, title: string | undefined, description: string | undefined, imagesToAdd: FileParameter[] | null | undefined, imageOrder: ImageDto[] | null | undefined, cancelToken?: CancelToken): Promise<number> {
+    createAdvertisement(id: number | null | undefined, ownerId: number | null | undefined, ownerUserName: string | null | undefined, categoryId: number | undefined, attributeValues: Int32StringKeyValuePair[] | null | undefined, postTime: PostTimeDto | null | undefined, validToDate: Date | null | undefined, title: string | undefined, description: string | undefined, imagesToAdd: FileParameter[] | null | undefined, imageOrder: ImageDto[] | null | undefined, cancelToken?: CancelToken): Promise<number> {
         let url_ = this.baseUrl + "/api/Advertisement/CreateAdvertisement";
         url_ = url_.replace(/[?&]$/, "");
 
         const content_ = new FormData();
         if (id !== null && id !== undefined)
             content_.append("id", id.toString());
+        if (ownerId !== null && ownerId !== undefined)
+            content_.append("ownerId", ownerId.toString());
+        if (ownerUserName !== null && ownerUserName !== undefined)
+            content_.append("ownerUserName", ownerUserName.toString());
         if (categoryId === null || categoryId === undefined)
             throw new Error("The parameter 'categoryId' cannot be null.");
         else
@@ -895,6 +901,8 @@ export class AdvertisementClient {
 
     /**
      * @param id (optional) 
+     * @param ownerId (optional) 
+     * @param ownerUserName (optional) 
      * @param categoryId (optional) 
      * @param attributeValues (optional) 
      * @param postTime (optional) 
@@ -905,13 +913,17 @@ export class AdvertisementClient {
      * @param imageOrder (optional) 
      * @return OK
      */
-    editAdvertisementPost(id: number | null | undefined, categoryId: number | undefined, attributeValues: Int32StringKeyValuePair[] | null | undefined, postTime: PostTimeDto | null | undefined, validToDate: Date | null | undefined, title: string | undefined, description: string | undefined, imagesToAdd: FileParameter[] | null | undefined, imageOrder: ImageDto[] | null | undefined, cancelToken?: CancelToken): Promise<OkResult> {
+    editAdvertisementPost(id: number | null | undefined, ownerId: number | null | undefined, ownerUserName: string | null | undefined, categoryId: number | undefined, attributeValues: Int32StringKeyValuePair[] | null | undefined, postTime: PostTimeDto | null | undefined, validToDate: Date | null | undefined, title: string | undefined, description: string | undefined, imagesToAdd: FileParameter[] | null | undefined, imageOrder: ImageDto[] | null | undefined, cancelToken?: CancelToken): Promise<OkResult> {
         let url_ = this.baseUrl + "/api/Advertisement/EditAdvertisement";
         url_ = url_.replace(/[?&]$/, "");
 
         const content_ = new FormData();
         if (id !== null && id !== undefined)
             content_.append("id", id.toString());
+        if (ownerId !== null && ownerId !== undefined)
+            content_.append("ownerId", ownerId.toString());
+        if (ownerUserName !== null && ownerUserName !== undefined)
+            content_.append("ownerUserName", ownerUserName.toString());
         if (categoryId === null || categoryId === undefined)
             throw new Error("The parameter 'categoryId' cannot be null.");
         else
@@ -1074,6 +1086,612 @@ export class AdvertisementClient {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
         }
         return Promise.resolve<Int32StringKeyValuePair[]>(null as any);
+    }
+
+    /**
+     * @param body (optional) 
+     * @return OK
+     */
+    getAllAdvertisements(body: DataTableQuery | undefined, cancelToken?: CancelToken): Promise<AdvertisementInfoDataTableQueryResponse> {
+        let url_ = this.baseUrl + "/api/Advertisement/GetAllAdvertisements";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_: AxiosRequestConfig = {
+            data: content_,
+            method: "POST",
+            url: url_,
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "text/plain"
+            },
+            cancelToken
+        };
+
+        return this.instance.request(options_).catch((_error: any) => {
+            if (isAxiosError(_error) && _error.response) {
+                return _error.response;
+            } else {
+                throw _error;
+            }
+        }).then((_response: AxiosResponse) => {
+            return this.processGetAllAdvertisements(_response);
+        });
+    }
+
+    protected processGetAllAdvertisements(response: AxiosResponse): Promise<AdvertisementInfoDataTableQueryResponse> {
+        const status = response.status;
+        let _headers: any = {};
+        if (response.headers && typeof response.headers === "object") {
+            for (const k in response.headers) {
+                if (response.headers.hasOwnProperty(k)) {
+                    _headers[k] = response.headers[k];
+                }
+            }
+        }
+        if (status === 200) {
+            const _responseText = response.data;
+            let result200: any = null;
+            let resultData200  = _responseText;
+            result200 = AdvertisementInfoDataTableQueryResponse.fromJS(resultData200);
+            return Promise.resolve<AdvertisementInfoDataTableQueryResponse>(result200);
+
+        } else if (status === 400) {
+            const _responseText = response.data;
+            let result400: any = null;
+            let resultData400  = _responseText;
+            result400 = RequestExceptionResponse.fromJS(resultData400);
+            return throwException("Bad Request", status, _responseText, _headers, result400);
+
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.data;
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Promise.resolve<AdvertisementInfoDataTableQueryResponse>(null as any);
+    }
+
+    /**
+     * @param advertisementId (optional) 
+     * @return OK
+     */
+    getAnyAdvertisement(advertisementId: number | undefined, cancelToken?: CancelToken): Promise<AdvertisementDto> {
+        let url_ = this.baseUrl + "/api/Advertisement/GetAnyAdvertisement?";
+        if (advertisementId === null)
+            throw new Error("The parameter 'advertisementId' cannot be null.");
+        else if (advertisementId !== undefined)
+            url_ += "advertisementId=" + encodeURIComponent("" + advertisementId) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: AxiosRequestConfig = {
+            method: "GET",
+            url: url_,
+            headers: {
+                "Accept": "text/plain"
+            },
+            cancelToken
+        };
+
+        return this.instance.request(options_).catch((_error: any) => {
+            if (isAxiosError(_error) && _error.response) {
+                return _error.response;
+            } else {
+                throw _error;
+            }
+        }).then((_response: AxiosResponse) => {
+            return this.processGetAnyAdvertisement(_response);
+        });
+    }
+
+    protected processGetAnyAdvertisement(response: AxiosResponse): Promise<AdvertisementDto> {
+        const status = response.status;
+        let _headers: any = {};
+        if (response.headers && typeof response.headers === "object") {
+            for (const k in response.headers) {
+                if (response.headers.hasOwnProperty(k)) {
+                    _headers[k] = response.headers[k];
+                }
+            }
+        }
+        if (status === 200) {
+            const _responseText = response.data;
+            let result200: any = null;
+            let resultData200  = _responseText;
+            result200 = AdvertisementDto.fromJS(resultData200);
+            return Promise.resolve<AdvertisementDto>(result200);
+
+        } else if (status === 400) {
+            const _responseText = response.data;
+            let result400: any = null;
+            let resultData400  = _responseText;
+            result400 = RequestExceptionResponse.fromJS(resultData400);
+            return throwException("Bad Request", status, _responseText, _headers, result400);
+
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.data;
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Promise.resolve<AdvertisementDto>(null as any);
+    }
+
+    /**
+     * @param body (optional) 
+     * @return OK
+     */
+    setIsActiveAnyAdvertisements(body: SetActiveStatusRequest | undefined, cancelToken?: CancelToken): Promise<void> {
+        let url_ = this.baseUrl + "/api/Advertisement/SetIsActiveAnyAdvertisements";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_: AxiosRequestConfig = {
+            data: content_,
+            method: "POST",
+            url: url_,
+            headers: {
+                "Content-Type": "application/json",
+            },
+            cancelToken
+        };
+
+        return this.instance.request(options_).catch((_error: any) => {
+            if (isAxiosError(_error) && _error.response) {
+                return _error.response;
+            } else {
+                throw _error;
+            }
+        }).then((_response: AxiosResponse) => {
+            return this.processSetIsActiveAnyAdvertisements(_response);
+        });
+    }
+
+    protected processSetIsActiveAnyAdvertisements(response: AxiosResponse): Promise<void> {
+        const status = response.status;
+        let _headers: any = {};
+        if (response.headers && typeof response.headers === "object") {
+            for (const k in response.headers) {
+                if (response.headers.hasOwnProperty(k)) {
+                    _headers[k] = response.headers[k];
+                }
+            }
+        }
+        if (status === 200) {
+            const _responseText = response.data;
+            return Promise.resolve<void>(null as any);
+
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.data;
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Promise.resolve<void>(null as any);
+    }
+
+    /**
+     * @param id (optional) 
+     * @param ownerId (optional) 
+     * @param ownerUserName (optional) 
+     * @param categoryId (optional) 
+     * @param attributeValues (optional) 
+     * @param postTime (optional) 
+     * @param validToDate (optional) 
+     * @param title (optional) 
+     * @param description (optional) 
+     * @param imagesToAdd (optional) 
+     * @param imageOrder (optional) 
+     * @return OK
+     */
+    createAdvertisementForAnyUser(id: number | null | undefined, ownerId: number | null | undefined, ownerUserName: string | null | undefined, categoryId: number | undefined, attributeValues: Int32StringKeyValuePair[] | null | undefined, postTime: PostTimeDto | null | undefined, validToDate: Date | null | undefined, title: string | undefined, description: string | undefined, imagesToAdd: FileParameter[] | null | undefined, imageOrder: ImageDto[] | null | undefined, cancelToken?: CancelToken): Promise<number> {
+        let url_ = this.baseUrl + "/api/Advertisement/CreateAdvertisementForAnyUser";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = new FormData();
+        if (id !== null && id !== undefined)
+            content_.append("id", id.toString());
+        if (ownerId !== null && ownerId !== undefined)
+            content_.append("ownerId", ownerId.toString());
+        if (ownerUserName !== null && ownerUserName !== undefined)
+            content_.append("ownerUserName", ownerUserName.toString());
+        if (categoryId === null || categoryId === undefined)
+            throw new Error("The parameter 'categoryId' cannot be null.");
+        else
+            content_.append("categoryId", categoryId.toString());
+        if (attributeValues !== null && attributeValues !== undefined)
+            attributeValues.forEach((item_, i) => {
+                if(item_.key != null)
+                    content_.append("attributeValues[" + i + "].key", "" + item_.key)
+                if(item_.value != null)
+                    content_.append("attributeValues[" + i + "].value", "" + item_.value)
+            });
+        if (postTime !== null && postTime !== undefined)
+        {
+            if(postTime.days != null)
+                content_.append("postTime.days", "" + postTime.days)
+            if(postTime.weeks != null)
+                content_.append("postTime.weeks", "" + postTime.weeks)
+            if(postTime.months != null)
+                content_.append("postTime.months", "" + postTime.months)
+        }
+        if (validToDate !== null && validToDate !== undefined)
+            content_.append("validToDate", validToDate.toJSON());
+        if (title === null || title === undefined)
+            throw new Error("The parameter 'title' cannot be null.");
+        else
+            content_.append("title", title.toString());
+        if (description === null || description === undefined)
+            throw new Error("The parameter 'description' cannot be null.");
+        else
+            content_.append("description", description.toString());
+        if (imagesToAdd !== null && imagesToAdd !== undefined)
+            imagesToAdd.forEach(item_ => content_.append("imagesToAdd", item_.data, item_.fileName ? item_.fileName : "imagesToAdd") );
+        if (imageOrder !== null && imageOrder !== undefined)
+            imageOrder.forEach((item_, i) => {
+                if(item_.id != null)
+                    content_.append("imageOrder[" + i + "].id", "" + item_.id)
+                if(item_.imageURLs != null)
+                    content_.append("imageOrder[" + i + "].imageURLs", "" + item_.imageURLs)
+                if(item_.hash != null)
+                    content_.append("imageOrder[" + i + "].hash", "" + item_.hash)
+            });
+
+        let options_: AxiosRequestConfig = {
+            data: content_,
+            method: "POST",
+            url: url_,
+            headers: {
+                "Accept": "text/plain"
+            },
+            cancelToken
+        };
+
+        return this.instance.request(options_).catch((_error: any) => {
+            if (isAxiosError(_error) && _error.response) {
+                return _error.response;
+            } else {
+                throw _error;
+            }
+        }).then((_response: AxiosResponse) => {
+            return this.processCreateAdvertisementForAnyUser(_response);
+        });
+    }
+
+    protected processCreateAdvertisementForAnyUser(response: AxiosResponse): Promise<number> {
+        const status = response.status;
+        let _headers: any = {};
+        if (response.headers && typeof response.headers === "object") {
+            for (const k in response.headers) {
+                if (response.headers.hasOwnProperty(k)) {
+                    _headers[k] = response.headers[k];
+                }
+            }
+        }
+        if (status === 200) {
+            const _responseText = response.data;
+            let result200: any = null;
+            let resultData200  = _responseText;
+                result200 = resultData200 !== undefined ? resultData200 : <any>null;
+    
+            return Promise.resolve<number>(result200);
+
+        } else if (status === 400) {
+            const _responseText = response.data;
+            let result400: any = null;
+            let resultData400  = _responseText;
+            result400 = RequestExceptionResponse.fromJS(resultData400);
+            return throwException("Bad Request", status, _responseText, _headers, result400);
+
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.data;
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Promise.resolve<number>(null as any);
+    }
+
+    /**
+     * @param advertisementId (optional) 
+     * @return OK
+     */
+    editAnyAdvertisementGet(advertisementId: number | undefined, cancelToken?: CancelToken): Promise<AdvertisementFormInfo> {
+        let url_ = this.baseUrl + "/api/Advertisement/EditAnyAdvertisement?";
+        if (advertisementId === null)
+            throw new Error("The parameter 'advertisementId' cannot be null.");
+        else if (advertisementId !== undefined)
+            url_ += "advertisementId=" + encodeURIComponent("" + advertisementId) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: AxiosRequestConfig = {
+            method: "GET",
+            url: url_,
+            headers: {
+                "Accept": "text/plain"
+            },
+            cancelToken
+        };
+
+        return this.instance.request(options_).catch((_error: any) => {
+            if (isAxiosError(_error) && _error.response) {
+                return _error.response;
+            } else {
+                throw _error;
+            }
+        }).then((_response: AxiosResponse) => {
+            return this.processEditAnyAdvertisementGet(_response);
+        });
+    }
+
+    protected processEditAnyAdvertisementGet(response: AxiosResponse): Promise<AdvertisementFormInfo> {
+        const status = response.status;
+        let _headers: any = {};
+        if (response.headers && typeof response.headers === "object") {
+            for (const k in response.headers) {
+                if (response.headers.hasOwnProperty(k)) {
+                    _headers[k] = response.headers[k];
+                }
+            }
+        }
+        if (status === 200) {
+            const _responseText = response.data;
+            let result200: any = null;
+            let resultData200  = _responseText;
+            result200 = AdvertisementFormInfo.fromJS(resultData200);
+            return Promise.resolve<AdvertisementFormInfo>(result200);
+
+        } else if (status === 400) {
+            const _responseText = response.data;
+            let result400: any = null;
+            let resultData400  = _responseText;
+            result400 = RequestExceptionResponse.fromJS(resultData400);
+            return throwException("Bad Request", status, _responseText, _headers, result400);
+
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.data;
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Promise.resolve<AdvertisementFormInfo>(null as any);
+    }
+
+    /**
+     * @param id (optional) 
+     * @param ownerId (optional) 
+     * @param ownerUserName (optional) 
+     * @param categoryId (optional) 
+     * @param attributeValues (optional) 
+     * @param postTime (optional) 
+     * @param validToDate (optional) 
+     * @param title (optional) 
+     * @param description (optional) 
+     * @param imagesToAdd (optional) 
+     * @param imageOrder (optional) 
+     * @return OK
+     */
+    editAnyAdvertisementPost(id: number | null | undefined, ownerId: number | null | undefined, ownerUserName: string | null | undefined, categoryId: number | undefined, attributeValues: Int32StringKeyValuePair[] | null | undefined, postTime: PostTimeDto | null | undefined, validToDate: Date | null | undefined, title: string | undefined, description: string | undefined, imagesToAdd: FileParameter[] | null | undefined, imageOrder: ImageDto[] | null | undefined, cancelToken?: CancelToken): Promise<OkResult> {
+        let url_ = this.baseUrl + "/api/Advertisement/EditAnyAdvertisement";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = new FormData();
+        if (id !== null && id !== undefined)
+            content_.append("id", id.toString());
+        if (ownerId !== null && ownerId !== undefined)
+            content_.append("ownerId", ownerId.toString());
+        if (ownerUserName !== null && ownerUserName !== undefined)
+            content_.append("ownerUserName", ownerUserName.toString());
+        if (categoryId === null || categoryId === undefined)
+            throw new Error("The parameter 'categoryId' cannot be null.");
+        else
+            content_.append("categoryId", categoryId.toString());
+        if (attributeValues !== null && attributeValues !== undefined)
+            attributeValues.forEach((item_, i) => {
+                if(item_.key != null)
+                    content_.append("attributeValues[" + i + "].key", "" + item_.key)
+                if(item_.value != null)
+                    content_.append("attributeValues[" + i + "].value", "" + item_.value)
+            });
+        if (postTime !== null && postTime !== undefined)
+        {
+            if(postTime.days != null)
+                content_.append("postTime.days", "" + postTime.days)
+            if(postTime.weeks != null)
+                content_.append("postTime.weeks", "" + postTime.weeks)
+            if(postTime.months != null)
+                content_.append("postTime.months", "" + postTime.months)
+        }
+        if (validToDate !== null && validToDate !== undefined)
+            content_.append("validToDate", validToDate.toJSON());
+        if (title === null || title === undefined)
+            throw new Error("The parameter 'title' cannot be null.");
+        else
+            content_.append("title", title.toString());
+        if (description === null || description === undefined)
+            throw new Error("The parameter 'description' cannot be null.");
+        else
+            content_.append("description", description.toString());
+        if (imagesToAdd !== null && imagesToAdd !== undefined)
+            imagesToAdd.forEach(item_ => content_.append("imagesToAdd", item_.data, item_.fileName ? item_.fileName : "imagesToAdd") );
+        if (imageOrder !== null && imageOrder !== undefined)
+            imageOrder.forEach((item_, i) => {
+                if(item_.id != null)
+                    content_.append("imageOrder[" + i + "].id", "" + item_.id)
+                if(item_.imageURLs != null)
+                    content_.append("imageOrder[" + i + "].imageURLs", "" + item_.imageURLs)
+                if(item_.hash != null)
+                    content_.append("imageOrder[" + i + "].hash", "" + item_.hash)
+            });
+
+        let options_: AxiosRequestConfig = {
+            data: content_,
+            method: "POST",
+            url: url_,
+            headers: {
+                "Accept": "text/plain"
+            },
+            cancelToken
+        };
+
+        return this.instance.request(options_).catch((_error: any) => {
+            if (isAxiosError(_error) && _error.response) {
+                return _error.response;
+            } else {
+                throw _error;
+            }
+        }).then((_response: AxiosResponse) => {
+            return this.processEditAnyAdvertisementPost(_response);
+        });
+    }
+
+    protected processEditAnyAdvertisementPost(response: AxiosResponse): Promise<OkResult> {
+        const status = response.status;
+        let _headers: any = {};
+        if (response.headers && typeof response.headers === "object") {
+            for (const k in response.headers) {
+                if (response.headers.hasOwnProperty(k)) {
+                    _headers[k] = response.headers[k];
+                }
+            }
+        }
+        if (status === 200) {
+            const _responseText = response.data;
+            let result200: any = null;
+            let resultData200  = _responseText;
+            result200 = OkResult.fromJS(resultData200);
+            return Promise.resolve<OkResult>(result200);
+
+        } else if (status === 400) {
+            const _responseText = response.data;
+            let result400: any = null;
+            let resultData400  = _responseText;
+            result400 = RequestExceptionResponse.fromJS(resultData400);
+            return throwException("Bad Request", status, _responseText, _headers, result400);
+
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.data;
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Promise.resolve<OkResult>(null as any);
+    }
+
+    /**
+     * @param body (optional) 
+     * @return OK
+     */
+    extendAdvertisements(body: ExtendRequest | undefined, cancelToken?: CancelToken): Promise<AdvertisementFormInfo> {
+        let url_ = this.baseUrl + "/api/Advertisement/ExtendAdvertisements";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_: AxiosRequestConfig = {
+            data: content_,
+            method: "POST",
+            url: url_,
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "text/plain"
+            },
+            cancelToken
+        };
+
+        return this.instance.request(options_).catch((_error: any) => {
+            if (isAxiosError(_error) && _error.response) {
+                return _error.response;
+            } else {
+                throw _error;
+            }
+        }).then((_response: AxiosResponse) => {
+            return this.processExtendAdvertisements(_response);
+        });
+    }
+
+    protected processExtendAdvertisements(response: AxiosResponse): Promise<AdvertisementFormInfo> {
+        const status = response.status;
+        let _headers: any = {};
+        if (response.headers && typeof response.headers === "object") {
+            for (const k in response.headers) {
+                if (response.headers.hasOwnProperty(k)) {
+                    _headers[k] = response.headers[k];
+                }
+            }
+        }
+        if (status === 200) {
+            const _responseText = response.data;
+            let result200: any = null;
+            let resultData200  = _responseText;
+            result200 = AdvertisementFormInfo.fromJS(resultData200);
+            return Promise.resolve<AdvertisementFormInfo>(result200);
+
+        } else if (status === 400) {
+            const _responseText = response.data;
+            let result400: any = null;
+            let resultData400  = _responseText;
+            result400 = RequestExceptionResponse.fromJS(resultData400);
+            return throwException("Bad Request", status, _responseText, _headers, result400);
+
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.data;
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Promise.resolve<AdvertisementFormInfo>(null as any);
+    }
+
+    /**
+     * @param body (optional) 
+     * @return OK
+     */
+    deleteAnyAdvertisements(body: number[] | undefined, cancelToken?: CancelToken): Promise<OkResult> {
+        let url_ = this.baseUrl + "/api/Advertisement/DeleteAnyAdvertisements";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_: AxiosRequestConfig = {
+            data: content_,
+            method: "POST",
+            url: url_,
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "text/plain"
+            },
+            cancelToken
+        };
+
+        return this.instance.request(options_).catch((_error: any) => {
+            if (isAxiosError(_error) && _error.response) {
+                return _error.response;
+            } else {
+                throw _error;
+            }
+        }).then((_response: AxiosResponse) => {
+            return this.processDeleteAnyAdvertisements(_response);
+        });
+    }
+
+    protected processDeleteAnyAdvertisements(response: AxiosResponse): Promise<OkResult> {
+        const status = response.status;
+        let _headers: any = {};
+        if (response.headers && typeof response.headers === "object") {
+            for (const k in response.headers) {
+                if (response.headers.hasOwnProperty(k)) {
+                    _headers[k] = response.headers[k];
+                }
+            }
+        }
+        if (status === 200) {
+            const _responseText = response.data;
+            let result200: any = null;
+            let resultData200  = _responseText;
+            result200 = OkResult.fromJS(resultData200);
+            return Promise.resolve<OkResult>(result200);
+
+        } else if (status === 400) {
+            const _responseText = response.data;
+            let result400: any = null;
+            let resultData400  = _responseText;
+            result400 = RequestExceptionResponse.fromJS(resultData400);
+            return throwException("Bad Request", status, _responseText, _headers, result400);
+
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.data;
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Promise.resolve<OkResult>(null as any);
     }
 }
 
@@ -1500,6 +2118,65 @@ export class AdvertisementNotificationClient {
     }
 
     protected processDeleteSubscriptions(response: AxiosResponse): Promise<void> {
+        const status = response.status;
+        let _headers: any = {};
+        if (response.headers && typeof response.headers === "object") {
+            for (const k in response.headers) {
+                if (response.headers.hasOwnProperty(k)) {
+                    _headers[k] = response.headers[k];
+                }
+            }
+        }
+        if (status === 200) {
+            const _responseText = response.data;
+            return Promise.resolve<void>(null as any);
+
+        } else if (status === 400) {
+            const _responseText = response.data;
+            let result400: any = null;
+            let resultData400  = _responseText;
+            result400 = RequestExceptionResponse.fromJS(resultData400);
+            return throwException("Bad Request", status, _responseText, _headers, result400);
+
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.data;
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Promise.resolve<void>(null as any);
+    }
+
+    /**
+     * @param body (optional) 
+     * @return OK
+     */
+    extendSubscription(body: ExtendRequest | undefined, cancelToken?: CancelToken): Promise<void> {
+        let url_ = this.baseUrl + "/api/AdvertisementNotification/ExtendSubscription";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_: AxiosRequestConfig = {
+            data: content_,
+            method: "POST",
+            url: url_,
+            headers: {
+                "Content-Type": "application/json",
+            },
+            cancelToken
+        };
+
+        return this.instance.request(options_).catch((_error: any) => {
+            if (isAxiosError(_error) && _error.response) {
+                return _error.response;
+            } else {
+                throw _error;
+            }
+        }).then((_response: AxiosResponse) => {
+            return this.processExtendSubscription(_response);
+        });
+    }
+
+    protected processExtendSubscription(response: AxiosResponse): Promise<void> {
         const status = response.status;
         let _headers: any = {};
         if (response.headers && typeof response.headers === "object") {
@@ -4809,6 +5486,81 @@ export class UserClient {
         }
         return Promise.resolve<OkResult>(null as any);
     }
+
+    /**
+     * @param search (optional) 
+     * @param take (optional) 
+     * @return OK
+     */
+    searchUserLookup(search: string | undefined, take: number | undefined, cancelToken?: CancelToken): Promise<Int32StringKeyValuePair[]> {
+        let url_ = this.baseUrl + "/api/User/SearchUserLookup?";
+        if (search === null)
+            throw new Error("The parameter 'search' cannot be null.");
+        else if (search !== undefined)
+            url_ += "search=" + encodeURIComponent("" + search) + "&";
+        if (take === null)
+            throw new Error("The parameter 'take' cannot be null.");
+        else if (take !== undefined)
+            url_ += "take=" + encodeURIComponent("" + take) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: AxiosRequestConfig = {
+            method: "POST",
+            url: url_,
+            headers: {
+                "Accept": "text/plain"
+            },
+            cancelToken
+        };
+
+        return this.instance.request(options_).catch((_error: any) => {
+            if (isAxiosError(_error) && _error.response) {
+                return _error.response;
+            } else {
+                throw _error;
+            }
+        }).then((_response: AxiosResponse) => {
+            return this.processSearchUserLookup(_response);
+        });
+    }
+
+    protected processSearchUserLookup(response: AxiosResponse): Promise<Int32StringKeyValuePair[]> {
+        const status = response.status;
+        let _headers: any = {};
+        if (response.headers && typeof response.headers === "object") {
+            for (const k in response.headers) {
+                if (response.headers.hasOwnProperty(k)) {
+                    _headers[k] = response.headers[k];
+                }
+            }
+        }
+        if (status === 200) {
+            const _responseText = response.data;
+            let result200: any = null;
+            let resultData200  = _responseText;
+            if (Array.isArray(resultData200)) {
+                result200 = [] as any;
+                for (let item of resultData200)
+                    result200!.push(Int32StringKeyValuePair.fromJS(item));
+            }
+            else {
+                result200 = <any>null;
+            }
+            return Promise.resolve<Int32StringKeyValuePair[]>(result200);
+
+        } else if (status === 400) {
+            const _responseText = response.data;
+            let result400: any = null;
+            let resultData400  = _responseText;
+            result400 = RequestExceptionResponse.fromJS(resultData400);
+            return throwException("Bad Request", status, _responseText, _headers, result400);
+
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.data;
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Promise.resolve<Int32StringKeyValuePair[]>(null as any);
+    }
 }
 
 export class AccessTokenResponse implements IAccessTokenResponse {
@@ -4997,6 +5749,7 @@ export interface IAdvertisementFormInfo {
 
 export class AdvertisementInfo implements IAdvertisementInfo {
     id?: number;
+    ownerUsername?: string | undefined;
     title?: string | undefined;
     categoryName?: string | undefined;
     status?: PaymentSubjectStatus;
@@ -5015,6 +5768,7 @@ export class AdvertisementInfo implements IAdvertisementInfo {
     init(_data?: any) {
         if (_data) {
             this.id = _data["id"];
+            this.ownerUsername = _data["ownerUsername"];
             this.title = _data["title"];
             this.categoryName = _data["categoryName"];
             this.status = _data["status"];
@@ -5033,6 +5787,7 @@ export class AdvertisementInfo implements IAdvertisementInfo {
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
         data["id"] = this.id;
+        data["ownerUsername"] = this.ownerUsername;
         data["title"] = this.title;
         data["categoryName"] = this.categoryName;
         data["status"] = this.status;
@@ -5044,6 +5799,7 @@ export class AdvertisementInfo implements IAdvertisementInfo {
 
 export interface IAdvertisementInfo {
     id?: number;
+    ownerUsername?: string | undefined;
     title?: string | undefined;
     categoryName?: string | undefined;
     status?: PaymentSubjectStatus;
@@ -6472,6 +7228,8 @@ export interface ICreateChatRequest {
 
 export class CreateOrEditAdvertisementRequest implements ICreateOrEditAdvertisementRequest {
     id?: number | undefined;
+    ownerId?: number | undefined;
+    ownerUserName?: string | undefined;
     categoryId!: number;
     attributeValues?: Int32StringKeyValuePair[] | undefined;
     postTime?: PostTimeDto | undefined;
@@ -6493,6 +7251,8 @@ export class CreateOrEditAdvertisementRequest implements ICreateOrEditAdvertisem
     init(_data?: any) {
         if (_data) {
             this.id = _data["id"];
+            this.ownerId = _data["ownerId"];
+            this.ownerUserName = _data["ownerUserName"];
             this.categoryId = _data["categoryId"];
             if (Array.isArray(_data["attributeValues"])) {
                 this.attributeValues = [] as any;
@@ -6526,6 +7286,8 @@ export class CreateOrEditAdvertisementRequest implements ICreateOrEditAdvertisem
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
         data["id"] = this.id;
+        data["ownerId"] = this.ownerId;
+        data["ownerUserName"] = this.ownerUserName;
         data["categoryId"] = this.categoryId;
         if (Array.isArray(this.attributeValues)) {
             data["attributeValues"] = [];
@@ -6552,6 +7314,8 @@ export class CreateOrEditAdvertisementRequest implements ICreateOrEditAdvertisem
 
 export interface ICreateOrEditAdvertisementRequest {
     id?: number | undefined;
+    ownerId?: number | undefined;
+    ownerUserName?: string | undefined;
     categoryId: number;
     attributeValues?: Int32StringKeyValuePair[] | undefined;
     postTime?: PostTimeDto | undefined;
@@ -7031,6 +7795,58 @@ export interface IEditUserRequest {
     profileImage?: any | undefined;
     userId: number;
     userRoles?: string[] | undefined;
+}
+
+export class ExtendRequest implements IExtendRequest {
+    ids!: number[];
+    extendTime!: PostTimeDto;
+
+    constructor(data?: IExtendRequest) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+        if (!data) {
+            this.ids = [];
+            this.extendTime = new PostTimeDto();
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            if (Array.isArray(_data["ids"])) {
+                this.ids = [] as any;
+                for (let item of _data["ids"])
+                    this.ids!.push(item);
+            }
+            this.extendTime = _data["extendTime"] ? PostTimeDto.fromJS(_data["extendTime"]) : new PostTimeDto();
+        }
+    }
+
+    static fromJS(data: any): ExtendRequest {
+        data = typeof data === 'object' ? data : {};
+        let result = new ExtendRequest();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        if (Array.isArray(this.ids)) {
+            data["ids"] = [];
+            for (let item of this.ids)
+                data["ids"].push(item);
+        }
+        data["extendTime"] = this.extendTime ? this.extendTime.toJSON() : <any>undefined;
+        return data;
+    }
+}
+
+export interface IExtendRequest {
+    ids: number[];
+    extendTime: PostTimeDto;
 }
 
 export enum FilterType {

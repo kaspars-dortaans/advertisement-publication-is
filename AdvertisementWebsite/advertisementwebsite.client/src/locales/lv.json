@@ -53,7 +53,8 @@
     "validTo": "Derīgs līdz",
     "createdAt": "Izveidots",
     "confirmDeleteHeader": "Izdzēst sludinājumus",
-    "confirmDeleteMessage": "{0} sludinājumi tiks izdzēsti."
+    "confirmDeleteMessage": "{0} sludinājumi tiks izdzēsti.",
+    "ownerUsername": "Īpašnieks"
   },
   "advertisementBookmark": {
     "confirmDeleteHeader": "Izdzēst sludinājumu atzīmes",
@@ -165,7 +166,8 @@
       "title": "Nosaukums",
       "description": "Apraksts",
       "timePeriod": "Laika periods",
-      "validTo": "Derīgs līdz"
+      "validTo": "Derīgs līdz",
+      "owner": "Īpašnieks"
     },
     "extend": {
       "timePeriod": "Laika periods",
@@ -262,7 +264,8 @@
     "manageUsers": "Pārvaldīt lietotājus",
     "createUser": "Izveidot lietotāju",
     "viewUser": "Skatīt lietotāju",
-    "editUser": "Rediģēt lietotāju"
+    "editUser": "Rediģēt lietotāju",
+    "manageAdvertisements": "Pārvaldīt sludinājumus"
   },
   "dataSize": {
     "bits": "{0} biti",

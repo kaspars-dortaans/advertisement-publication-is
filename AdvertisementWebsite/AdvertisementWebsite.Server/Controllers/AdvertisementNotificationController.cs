@@ -115,4 +115,13 @@ public class AdvertisementNotificationController(
         var userId = User.GetUserId()!.Value;
         await _subscriptionService.DeleteWhereAsync(s => s.OwnerId == userId && subscriptionIds.Contains(s.Id));
     }
+
+    [HasPermission(Permissions.EditAnyAdvertisementNotificationSubscription)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType<RequestExceptionResponse>(StatusCodes.Status400BadRequest)]
+    [HttpPost]
+    public async Task ExtendSubscription(ExtendRequest request)
+    {
+        await _subscriptionService.ExtendSubscriptions(request.Ids, request.ExtendTime);
+    }
 }

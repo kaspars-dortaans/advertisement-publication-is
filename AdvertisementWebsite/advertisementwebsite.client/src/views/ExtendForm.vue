@@ -37,11 +37,7 @@
           <FieldError :field="fields.extendTime" />
 
           <div class="flex flex-row gap-2 justify-center">
-            <BackButton
-              :label="l.actions.cancel"
-              icon=""
-              :default-to="{ name: 'manageAdvertisements' }"
-            />
+            <BackButton :label="l.actions.cancel" icon="" :default-to="{ name: 'home' }" />
             <Button type="submit" :loading="isSubmitting" :label="actionText" />
           </div>
         </form>
@@ -57,14 +53,17 @@ import ResponsiveLayout from '@/components/common/ResponsiveLayout.vue'
 import FieldError from '@/components/form/FieldError.vue'
 import { usePaymentState } from '@/composables/payment-store'
 import { createAdvertisementPostTimeSpanOptions } from '@/constants/advertisement-post-time-span'
+import { Permissions } from '@/constants/api/Permissions'
 import {
   AdvertisementClient,
   AdvertisementNotificationClient,
+  ExtendRequest,
   Int32StringKeyValuePair,
   NewPaymentItem,
   PaymentType,
   PostTimeDto
 } from '@/services/api-client'
+import { AuthService } from '@/services/auth-service'
 import { LocaleService } from '@/services/locale-service'
 import { getClient } from '@/utils/client-builder'
 import { FieldHelper } from '@/utils/field-helper'
@@ -177,17 +176,44 @@ const setPageText = () => {
 
 const submit = handleSubmit(async () => {
   try {
-    const timePeriod = new PostTimeDto(values.extendTime!)
-    paymentState.value.paymentItems = extendItems.value!.map(
-      (i) =>
-        new NewPaymentItem({
-          paymentSubjectId: i.key!,
-          timePeriod,
-          type: props.type
+    if (
+      (AuthService.hasPermission(Permissions.CreateAdvertisement) &&
+        props.type === PaymentType.CreateAdvertisement) ||
+      (AuthService.hasPermission(Permissions.EditAnyAdvertisement) &&
+        props.type === PaymentType.ExtendAdvertisement)
+    ) {
+      await advertisementService.extendAdvertisements(
+        new ExtendRequest({
+          extendTime: new PostTimeDto(values.extendTime),
+          ids: props.ids
         })
-    )
-
-    push({ name: 'makePayment' })
+      )
+      push({ name: 'manageAdvertisements' })
+    } else if (
+      (AuthService.hasPermission(Permissions.CreateAdvertisementNotificationSubscription) &&
+        props.type === PaymentType.CreateAdvertisementNotificationSubscription) ||
+      (AuthService.hasPermission(Permissions.EditAnyAdvertisementNotificationSubscription) &&
+        props.type === PaymentType.ExtendAdvertisementNotificationSubscription)
+    ) {
+      await advertisementNotificationService.extendSubscription(
+        new ExtendRequest({
+          extendTime: new PostTimeDto(values.extendTime),
+          ids: props.ids
+        })
+      )
+      push({ name: 'manageAdvertisementNotificationSubscriptions' })
+    } else {
+      const timePeriod = new PostTimeDto(values.extendTime!)
+      paymentState.value.paymentItems = extendItems.value!.map(
+        (i) =>
+          new NewPaymentItem({
+            paymentSubjectId: i.key!,
+            timePeriod,
+            type: props.type
+          })
+      )
+      push({ name: 'makePayment' })
+    }
   } catch (e) {
     handleErrors(e)
   }

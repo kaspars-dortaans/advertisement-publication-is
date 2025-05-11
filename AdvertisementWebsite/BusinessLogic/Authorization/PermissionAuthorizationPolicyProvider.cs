@@ -13,8 +13,16 @@ public class PermissionAuthorizationPolicyProvider(IOptions<AuthorizationOptions
             return policy;
         }
 
-        return new AuthorizationPolicyBuilder()
-            .AddRequirements(new PermissionRequirement(policyName))
-            .Build();
+        if (policyName.StartsWith(PermissionConstants.AnyOfPermissionsPrefix))
+        {
+            return new AuthorizationPolicyBuilder()
+                .AddRequirements(new AnyOfPermissionsRequirement(policyName[PermissionConstants.AnyOfPermissionsPrefix.Length..]))
+                .Build();
+        } else
+        {
+            return new AuthorizationPolicyBuilder()
+                .AddRequirements(new PermissionRequirement(policyName))
+                .Build();
+        }
     }
 }

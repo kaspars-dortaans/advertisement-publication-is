@@ -53,7 +53,8 @@
     "validTo": "Valid to",
     "createdAt": "Created at",
     "confirmDeleteHeader": "Delete advertisements",
-    "confirmDeleteMessage": "{0} advertisement(s) will be deleted."
+    "confirmDeleteMessage": "{0} advertisement(s) will be deleted.",
+    "ownerUsername": "Owner"
   },
   "advertisementBookmark": {
     "confirmDeleteHeader": "Delete advertisement bookmarks",
@@ -165,7 +166,8 @@
       "title": "Title",
       "description": "Description",
       "timePeriod": "Time period",
-      "validTo": "Valid to"
+      "validTo": "Valid to",
+      "owner": "Owner"
     },
     "extend": {
       "timePeriod": "Time period",
@@ -262,7 +264,8 @@
     "manageUsers": "Manage users",
     "createUser": "Create user",
     "viewUser": "View user",
-    "editUser": "Edit user"
+    "editUser": "Edit user",
+    "manageAdvertisements": "Manage advertisements"
   },
   "dataSize": {
     "bits": "{0} b",

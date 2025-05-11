@@ -1,3 +1,3 @@
 export class LocalisationConstants {
-  static readonly TextNotLocalised = "TextNotLocalised"
+  static readonly NotLocalizedTextPlaceholder = "Missing translation"
 }

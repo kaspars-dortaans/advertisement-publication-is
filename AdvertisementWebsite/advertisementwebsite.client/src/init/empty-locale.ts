@@ -55,7 +55,8 @@ export const emptyLocale = {
     validTo: '',
     createdAt: '',
     confirmDeleteHeader: '',
-    confirmDeleteMessage: ''
+    confirmDeleteMessage: '',
+    ownerUsername: ''
   },
   advertisementBookmark: {
     confirmDeleteHeader: '',
@@ -162,7 +163,8 @@ export const emptyLocale = {
       title: '',
       description: '',
       timePeriod: '',
-      validTo: ''
+      validTo: '',
+      owner: ''
     },
     changePassword: {
       currentPassword: '',
@@ -264,7 +266,8 @@ export const emptyLocale = {
     manageUsers: '',
     createUser: '',
     viewUser: '',
-    editUser: ''
+    editUser: '',
+    manageAdvertisements: ''
   },
   dataSize: {
     bits: '',

@@ -151,7 +151,7 @@ const pay = handleSubmit(async () => {
       name: mixedItemType
         ? 'home'
         : isPreviousAdvertisement
-          ? 'manageAdvertisements'
+          ? 'manageOwnAdvertisements'
           : 'manageAdvertisementNotificationSubscription'
     })
   } catch (e) {

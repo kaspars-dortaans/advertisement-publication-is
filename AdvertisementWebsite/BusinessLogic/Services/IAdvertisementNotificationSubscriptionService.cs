@@ -19,5 +19,5 @@ public interface IAdvertisementNotificationSubscriptionService : IBaseService<Ad
     public Task<int> CreateSubscription(CreateOrEditSubscription dto, int userId);
     public Task<CreateOrEditSubscription> GetSubscriptionInfo(int subscriptionId, int userId);
     public Task EditSubscription(CreateOrEditSubscription dto, int userId);
-    public Task ExtendSubscriptions(IEnumerable<int> subscriptionIds, PostTimeDto time, int userId);
+    public Task ExtendSubscriptions(IEnumerable<int> subscriptionIds, PostTimeDto time);
 }

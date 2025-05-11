@@ -7,9 +7,11 @@ using BusinessLogic.Entities;
 using BusinessLogic.Entities.Files;
 using BusinessLogic.Exceptions;
 using BusinessLogic.Helpers;
+using BusinessLogic.Helpers.BackgroundJobs;
 using BusinessLogic.Helpers.CookieSettings;
 using BusinessLogic.Helpers.FilePathResolver;
 using BusinessLogic.Helpers.Storage;
+using Hangfire;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
@@ -36,10 +38,22 @@ public class AdvertisementService(
     private readonly IFilePathResolver _filePathResolver = filePathResolver;
     private readonly IStorage _storage = storage;
     private readonly ImageHelper _imageHelper = imageHelper;
-    public async Task<AdvertisementDto> FindOwnedOrActiveAdvertisement(int advertisementId, int? userId)
+
+    public Task<AdvertisementDto> FindOwnedOrActiveAdvertisement(int advertisementId, int? userId)
+    {
+        var query = Where(a => a.OwnerId == userId || (a.ValidToDate > DateTime.UtcNow && a.IsActive));
+        return FindAdvertisement(query, advertisementId, userId);
+    }
+
+    public Task<AdvertisementDto> FindAdvertisement(int advertisementId, int? userId)
+    {
+        return FindAdvertisement(DbSet, advertisementId, userId);
+    }
+
+    private async Task<AdvertisementDto> FindAdvertisement(IQueryable<Advertisement> query, int advertisementId, int? userId)
     {
         var locale = _cookieSettingHelper.Settings.NormalizedLocale;
-        var result = await Where(a => a.OwnerId == userId || (a.ValidToDate > DateTime.UtcNow && a.IsActive))
+        var result = (await query
             .Select(a => new AdvertisementDto()
             {
                 Id = a.Id,
@@ -59,12 +73,14 @@ public class AdvertisementService(
                     Value = v.Value,
                     IconName = v.Attribute.IconName,
                     ValueName = v.Attribute.ValueType == Enums.ValueTypes.ValueListEntry && v.Attribute.AttributeValueList != null
-                        ? v.Attribute.AttributeValueList.ListEntries.First(entry => entry.Id == Convert.ToInt16(v.Value)).LocalisedNames.Localise(locale)
+                        ? v.Attribute.AttributeValueList.ListEntries.FirstOrDefault(entry => entry.Id == Convert.ToInt16(v.Value)) != null
+                            ? v.Attribute.AttributeValueList.ListEntries.FirstOrDefault(entry => entry.Id == Convert.ToInt16(v.Value))!.LocalisedNames.Localise(locale)
+                            : LocalisationConstants.NotLocalizedTextPlaceholder
                         : null
                 }),
                 IsBookmarked = userId == null ? null : a.BookmarksOwners.Any(o => o.Id == userId)
             })
-            .FirstOrDefaultAsync(a => a.Id == advertisementId)
+            .FirstOrDefaultAsync(a => a.Id == advertisementId))
             ?? throw new ApiException([CustomErrorCodes.NotFound]);
 
         //Mask email
@@ -288,7 +304,7 @@ public class AdvertisementService(
     /// <param name="tableQuery"></param>
     /// <param name="userId"></param>
     /// <returns></returns>
-    public async Task<DataTableQueryResponse<AdvertisementInfo>> GetAdvertisementInfo(DataTableQuery tableQuery, int? userId)
+    public async Task<DataTableQueryResponse<AdvertisementInfo>> GetAdvertisementInfo(DataTableQuery tableQuery, int? userId = null)
     {
         var locale = _cookieSettingHelper.Settings.Locale;
         var advertisementInfoQuery = DbSet
@@ -296,6 +312,7 @@ public class AdvertisementService(
             .Select(a => new AdvertisementInfo()
             {
                 Id = a.Id,
+                OwnerUsername = userId == null ? a.Owner.UserName : null,
                 Title = a.Title,
                 //Ef could not translate OrderBy with Localise extension method
                 CategoryName = a.Category.LocalisedNames.FirstOrDefault(lt => lt.Locale == locale) != null
@@ -315,25 +332,28 @@ public class AdvertisementService(
         return await advertisementInfoQuery.ResolveDataTableQuery(tableQuery);
     }
 
-    public async Task RemoveAdvertisements(IEnumerable<int> advertisementIds, int userId)
+    public async Task RemoveAdvertisements(IEnumerable<int> advertisementIds, int? userId = null)
     {
-        var imagePaths = (await Where(a => a.OwnerId == userId && advertisementIds.Contains(a.Id))
+        var advertisementQuery = Where(a => advertisementIds.Contains(a.Id))
+            .Filter(userId, a => a.OwnerId == userId);
+
+        var imagePaths = (await advertisementQuery
             .SelectMany(a => a.Images.Select(i => new[] { i.Path, i.ThumbnailPath }))
             .ToListAsync())
             .SelectMany(p => p);
 
         var attachmentPaths = await _chatService
-            .Where(c => advertisementIds.Any(id => id == c.AdvertisementId))
+            .Where(c => advertisementQuery.Any(a => a.Id == c.AdvertisementId))
             .SelectMany(c => c.ChatMessages.SelectMany(m => m.Attachments.Select(a => a.Path))).ToListAsync();
 
-        await _chatService.DeleteWhereAsync(c => advertisementIds.Any(id => id == c.AdvertisementId));
+        await _chatService.DeleteWhereAsync(c => advertisementQuery.Any(a => a.Id == c.AdvertisementId));
         await Task.WhenAll([
             _storage.DeleteFiles(imagePaths.Concat(attachmentPaths)),
-            DeleteWhereAsync(a => a.OwnerId == userId && advertisementIds.Contains(a.Id))
+            advertisementQuery.ExecuteDeleteAsync()
         ]);
     }
 
-    public async Task<int> CreateAdvertisement(CreateOrEditAdvertisementDto dto, int userId)
+    public async Task<int> CreateAdvertisement(CreateOrEditAdvertisementDto dto, int userId, bool setValidToDate = false)
     {
         //Validate
         await _attributeValidatorService.ValidateAttributeCategory(dto.CategoryId, nameof(CreateOrEditAdvertisementDto.CategoryId));
@@ -353,18 +373,32 @@ public class AdvertisementService(
             OwnerId = userId,
             AttributeValues = advertisementAttributeValues,
             ViewCount = 0,
-            IsActive = true
+            IsActive = true,
+            CreatedDate = DateTime.UtcNow
         };
+
+        if (setValidToDate)
+        {
+            advertisement.ValidToDate = DateTime.UtcNow.AddDays(dto.PostTime.ToDays());
+        }
+
         await AddAsync(advertisement);
         await SynchronizeAdvertisementImages(advertisement.Id, dto.ImagesToAdd, dto.ImageOrder, null);
         await UpdateAdvertisementThumbnailImage(advertisement.Id, dto.ImageOrder?.FirstOrDefault()?.Hash);
+
+        if (setValidToDate)
+        {
+            BackgroundJob.Enqueue<IAdvertisementNotificationSender>((s) => s.SendNotifications(advertisement.Id));
+        }
+
         return advertisement.Id;
     }
 
-    public async Task UpdateAdvertisement(CreateOrEditAdvertisementDto dto, int userId)
+    public async Task UpdateAdvertisement(CreateOrEditAdvertisementDto dto, int? ownerId = null)
     {
         //Make sure user is advertisement owner, and it exists while necessary data to compare against
-        var compareData = Where(a => a.OwnerId == userId && a.Id == dto.Id)
+        var compareData = Where(a => a.Id == dto.Id)
+            .Filter(ownerId, a => a.OwnerId == ownerId)
             .Select(a => new
             {
                 a.CategoryId,
@@ -394,6 +428,7 @@ public class AdvertisementService(
         {
             CategoryId = dto.CategoryId,
             Title = dto.Title,
+            OwnerId = ownerId ?? dto.OwnerId!.Value,
             AdvertisementText = dto.Description,
             ThumbnailImageId = string.IsNullOrEmpty(thumbnailHash) ? null : DbContext.AdvertisementImages.FirstOrDefault(ai => ai.AdvertisementId == dto.Id && ai.Hash == thumbnailHash)!.Id
         });
@@ -533,13 +568,15 @@ public class AdvertisementService(
         }
     }
 
-    public async Task<CreateOrEditAdvertisementDto> GetAdvertisementFormInfo(int advertisementId, int userId)
+    public async Task<CreateOrEditAdvertisementDto> GetAdvertisementFormInfo(int advertisementId, int? ownerId = null)
     {
         var dto = (await DbSet
-            .Where(a => a.OwnerId == userId)
+            .Filter(ownerId, a => a.OwnerId == ownerId)
             .Select(a => new CreateOrEditAdvertisementDto
             {
                 Id = a.Id,
+                OwnerId = a.OwnerId,
+                OwnerUsername = a.Owner.UserName,
                 CategoryId = a.CategoryId,
                 AttributeValues = a.AttributeValues.Select(av => new KeyValuePair<int, string>(av.AttributeId, av.Value)),
                 ValidToDate = a.ValidToDate,
@@ -555,9 +592,9 @@ public class AdvertisementService(
         return dto;
     }
 
-    public async Task ExtendAdvertisement(int userId, IEnumerable<int> advertisementId, PostTimeDto extendTime)
+    public async Task ExtendAdvertisement(IEnumerable<int> advertisementId, PostTimeDto extendTime)
     {
-        var advertisements = await Where(a => a.OwnerId == userId && advertisementId.Contains(a.Id))
+        var advertisements = await Where(a => advertisementId.Contains(a.Id))
             .ToListAsync();
 
         //Validate that user is owner of all specified advertisements

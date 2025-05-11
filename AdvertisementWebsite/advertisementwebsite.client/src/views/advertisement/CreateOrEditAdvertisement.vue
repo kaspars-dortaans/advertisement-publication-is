@@ -16,6 +16,23 @@
         <form class="flex flex-col gap-2" @submit="submit">
           <div class="flex flex-col lg:flex-row lg:justify-center flex-wrap gap-3">
             <fieldset class="flex flex-col gap-2 min-w-full lg:min-w-60">
+              <!-- Assigned to user -->
+              <FloatLabel v-if="forAnyUser" variant="on">
+                <AutoComplete
+                  v-model="fields.ownerId!.value"
+                  v-bind="fields.ownerId!.attributes"
+                  :invalid="fields.ownerId!.hasError"
+                  :suggestions="userLookups"
+                  optionLabel="value"
+                  id="owner-input"
+                  fluid
+                  dropdown
+                  @complete="searchUsers"
+                />
+                <label for="owner-input">{{ l.form.putAdvertisement.owner }}</label>
+              </FloatLabel>
+              <FieldError :field="fields.ownerId" />
+
               <!-- Time period -->
               <template v-if="!isEdit">
                 <FloatLabel variant="on">
@@ -158,6 +175,7 @@ import {
   NewPaymentItem,
   PaymentType,
   RequestExceptionResponse,
+  UserClient,
   ValueTypes
 } from '@/services/api-client'
 import { LocaleService } from '@/services/locale-service'
@@ -172,7 +190,7 @@ import {
   requiredWhen
 } from '@/validators/custom-validators'
 import { toTypedSchema } from '@vee-validate/yup'
-import { useConfirm } from 'primevue'
+import { useConfirm, type AutoCompleteCompleteEvent } from 'primevue'
 import { useForm } from 'vee-validate'
 import { computed, onBeforeMount, ref, watch } from 'vue'
 import { onBeforeRouteLeave, useRouter } from 'vue-router'
@@ -189,6 +207,7 @@ onBeforeRouteLeave((_to, _from, next) =>
 //Props
 const props = defineProps<{
   id?: number
+  forAnyUser?: boolean
 }>()
 
 //Services
@@ -196,6 +215,10 @@ const l = LocaleService.currentLocale
 const ls = LocaleService.get()
 const advertisementService = getClient(AdvertisementClient)
 const categoryService = getClient(CategoryClient)
+const userService = getClient(UserClient)
+
+//Constants
+const takeLookupCount = 50
 
 //Reactive data
 const isEdit = computed(() => typeof props.id === 'number' && !isNaN(props.id))
@@ -211,11 +234,15 @@ const categoryList = ref<CategoryItem[]>([])
 const attributeInfo = ref<AttributeFormInfo[]>([])
 const { isSmallScreen } = useTrackScreenSize()
 const paymentState = usePaymentState()
+const userLookups = ref<Int32StringKeyValuePair[]>([])
 
 //Forms and fields
 const { addAttributeValidationSchema } = useValidateAttributeInput(attributeInfo)
 const validationSchema = computed(() => {
   let schemaObject: AnyObject = {
+    ownerId: object()
+      .test(requiredWhen(() => props.forAnyUser === true))
+      .label('form.putAdvertisement.owner'),
     categoryId: number()
       .test(canAddAdvertisementToCategoryValidator(categoryList))
       .label('form.putAdvertisement.category'),
@@ -245,6 +272,7 @@ const imageFieldNames: `imagesToAdd.${number}`[] = [
   ...Array(ImageConstants.MaxImageCountPerAdvertisement).keys()
 ].map<`imagesToAdd.${number}`>((i) => `imagesToAdd.${i}`)
 defineMultipleFields([
+  'ownerId',
   'categoryId',
   'postTime',
   'title',
@@ -315,13 +343,15 @@ const reloadData = async () => {
   if (attributeInfo.value.length) {
     promises.push(loadCategoryInfo(values.categoryId))
   }
-  await promises
+  await Promise.all(promises)
 }
 
 const loadAdvertisementInfo = async () => {
   loading.value += 1
   const [{ advertisement, categoryInfo }] = await Promise.all([
-    advertisementService.editAdvertisementGet(props.id),
+    props.forAnyUser
+      ? advertisementService.editAnyAdvertisementGet(props.id)
+      : advertisementService.editAdvertisementGet(props.id),
     loadCategoryList()
   ])
   existingAdvertisement.value = advertisement
@@ -345,6 +375,10 @@ const loadAdvertisementInfo = async () => {
 
   resetForm({
     values: {
+      ownerId: new Int32StringKeyValuePair({
+        key: advertisement.ownerId,
+        value: advertisement.ownerUserName
+      }),
       categoryId: advertisement.categoryId,
       attributeValues: attributeValues,
       title: advertisement.title,
@@ -353,6 +387,10 @@ const loadAdvertisementInfo = async () => {
     }
   })
   loading.value -= 1
+}
+
+const searchUsers = async (e: AutoCompleteCompleteEvent) => {
+  userLookups.value = await userService.searchUserLookup(e.query, takeLookupCount)
 }
 
 const submit = handleSubmit(async () => {
@@ -385,41 +423,83 @@ const submit = handleSubmit(async () => {
     )
 
   try {
-    if (isEdit.value) {
-      await advertisementService.editAdvertisementPost(
-        props.id,
-        values.categoryId,
-        attributeValues,
-        undefined,
-        undefined,
-        values.title,
-        values.description,
-        imagesToAddFileParameter,
-        imageOrder
-      )
+    if (props.forAnyUser) {
+      if (isEdit.value) {
+        //Edit advertisement for any user
+        await advertisementService.editAnyAdvertisementPost(
+          props.id,
+          values.ownerId.key,
+          undefined,
+          values.categoryId,
+          attributeValues,
+          undefined,
+          undefined,
+          values.title,
+          values.description,
+          imagesToAddFileParameter,
+          imageOrder
+        )
+      } else {
+        //Crate advertisement for any user
+        await advertisementService.createAdvertisementForAnyUser(
+          undefined,
+          values.ownerId.key,
+          undefined,
+          values.categoryId,
+          attributeValues,
+          values.postTime,
+          undefined,
+          values.title,
+          values.description,
+          imagesToAddFileParameter,
+          imageOrder
+        )
+      }
       formSubmitted.value = true
       push({ name: 'manageAdvertisements' })
     } else {
-      const id = await advertisementService.createAdvertisement(
-        undefined,
-        values.categoryId,
-        attributeValues,
-        undefined,
-        undefined,
-        values.title,
-        values.description,
-        imagesToAddFileParameter,
-        imageOrder
-      )
-      formSubmitted.value = true
-      paymentState.value.paymentItems = [
-        new NewPaymentItem({
-          paymentSubjectId: id,
-          type: PaymentType.CreateAdvertisement,
-          timePeriod: values.postTime!
-        })
-      ]
-      push({ name: 'makePayment' })
+      //Edit own advertisement
+      if (isEdit.value) {
+        await advertisementService.editAdvertisementPost(
+          props.id,
+          undefined,
+          undefined,
+          values.categoryId,
+          attributeValues,
+          undefined,
+          undefined,
+          values.title,
+          values.description,
+          imagesToAddFileParameter,
+          imageOrder
+        )
+        formSubmitted.value = true
+        push({ name: 'manageOwnAdvertisements' })
+      } else {
+        //create own advertisement
+        const id = await advertisementService.createAdvertisement(
+          undefined,
+          undefined,
+          undefined,
+          values.categoryId,
+          attributeValues,
+          undefined,
+          undefined,
+          values.title,
+          values.description,
+          imagesToAddFileParameter,
+          imageOrder
+        )
+        formSubmitted.value = true
+        paymentState.value.paymentItems = [
+          new NewPaymentItem({
+            paymentSubjectId: id,
+            type: PaymentType.CreateAdvertisement,
+            timePeriod: values.postTime!
+          })
+        ]
+        push({ name: 'makePayment' })
+      }
     }
   } catch (e) {
     mapImageErrorToCorrectIndex(e, imagesToAdd)

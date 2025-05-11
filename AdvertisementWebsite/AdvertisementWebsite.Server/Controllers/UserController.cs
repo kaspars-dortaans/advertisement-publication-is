@@ -9,6 +9,7 @@ using BusinessLogic.Dto.DataTableQuery;
 using BusinessLogic.Dto.Users;
 using BusinessLogic.Entities;
 using BusinessLogic.Exceptions;
+using BusinessLogic.Helpers;
 using BusinessLogic.Helpers.CookieSettings;
 using BusinessLogic.Services;
 using Microsoft.AspNetCore.Authentication.BearerToken;
@@ -280,5 +281,20 @@ public class UserController(
     public async Task DeleteUsers(IEnumerable<int> userIds)
     {
         await _userService.DeleteUsers(userIds);
+    }
+
+    [HasAnyOfPermissions([Permissions.EditAnyAdvertisement, Permissions.EditAnyAdvertisementNotificationSubscription])]
+    [ProducesResponseType<IEnumerable<KeyValuePair<int, string>>>(StatusCodes.Status200OK)]
+    [ProducesResponseType<RequestExceptionResponse>(StatusCodes.Status400BadRequest)]
+    [HttpPost]
+    public async Task<IEnumerable<KeyValuePair<int, string>>> SearchUserLookup(string? search, int take)
+    {
+        var searchLowercase = search?.ToLower();
+        return await _userService
+            .GetAll()
+            .Filter(search, u => u.UserName != null && u.UserName.ToLower().Contains(searchLowercase!))
+            .Select(u => new KeyValuePair<int, string>(u.Id, u.UserName!))
+            .Take(take)
+            .ToListAsync();
     }
 }

@@ -7,6 +7,8 @@ namespace BusinessLogic.Dto.Advertisement;
 public class CreateOrEditAdvertisementDto
 {
     public int? Id { get; set; }
+    public int? OwnerId { get; set; }
+    public string? OwnerUsername { get; set; }
 
     public int CategoryId { get; set; }
 

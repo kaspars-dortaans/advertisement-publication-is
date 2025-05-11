@@ -9,6 +9,8 @@ namespace AdvertisementWebsite.Server.Dto.Advertisement;
 public class CreateOrEditAdvertisementRequest
 {
     public int? Id { get; set; }
+    public int? OwnerId { get; set; }
+    public string? OwnerUserName { get; set; }
 
     [Required(ErrorMessage = CustomErrorCodes.MissingRequired)]
     public int CategoryId { get; set; }

@@ -255,17 +255,14 @@ public class UserService(
             })
             .ToListAsync();
 
-        //Remove advertisements relationship from chats to not violate foreign key policy, when advertisements are deleted
+        //Delete user chats
         var advertisementIds = usersData.SelectMany(ud => ud.AdvertisementIds).ToList();
         await DbContext.Chats
             .Where(c => c.AdvertisementId != null && advertisementIds.Contains(c.AdvertisementId.Value))
-            .ExecuteUpdateAsync(setters => setters.SetProperty(c => c.AdvertisementId, c => null));
+            .ExecuteDeleteAsync();
 
         //Delete users
         await Where(u => ids.Contains(u.Id)).ExecuteDeleteAsync();
-
-        //Delete empty chats
-        await DbContext.Chats.Where(c => c.ChatUsers.Count == 0).ExecuteDeleteAsync();
 
         //Delete files from storage
         List<string> filePaths = usersData.SelectMany(ud => ud.ProfileImagePaths.Concat(ud.AdvertisementImagePaths.SelectMany(p => p)).Concat(ud.DeletableChatAttachmentPaths))

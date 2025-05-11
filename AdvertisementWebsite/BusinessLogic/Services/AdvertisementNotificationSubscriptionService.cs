@@ -128,10 +128,10 @@ public partial class AdvertisementNotificationSubscriptionService(
         await DbContext.SaveChangesAsync();
     }
 
-    public async Task ExtendSubscriptions(IEnumerable<int> subscriptionIds, PostTimeDto time, int userId)
+    public async Task ExtendSubscriptions(IEnumerable<int> subscriptionIds, PostTimeDto time)
     {
         var extendDays = time.ToDays();
-        var subscriptions = await Where(s => s.OwnerId == userId && subscriptionIds.Contains(s.Id)).ToListAsync();
+        var subscriptions = await Where(s => subscriptionIds.Contains(s.Id)).ToListAsync();
         foreach (var subscription in subscriptions)
         {
             if (subscription.ValidToDate != null && subscription.ValidToDate > DateTime.UtcNow)

@@ -7,7 +7,9 @@
     ref="table"
   >
     <template #header>
-      <h3 class="page-title mb-2">{{ l.navigation.myAdvertisements }}</h3>
+      <h3 class="page-title mb-2">
+        {{ manageAll ? l.navigation.manageAdvertisements : l.navigation.myAdvertisements }}
+      </h3>
       <div class="flex flex-wrap justify-end gap-2">
         <Button
           :label="l.actions.deactivate"
@@ -39,7 +41,7 @@
           :label="l.actions.create"
           severity="primary"
           as="RouterLink"
-          :to="{ name: 'createAdvertisement' }"
+          :to="{ name: props.manageAll ? 'createAdvertisement' : 'createOwnAdvertisement' }"
         />
       </div>
     </template>
@@ -47,6 +49,12 @@
     <Column selectionMode="multiple" headerStyle="width: 3rem" />
 
     <Column field="title" :header="l.manageAdvertisements.title" sortable />
+    <Column
+      v-if="manageAll"
+      field="ownerUsername"
+      :header="l.manageAdvertisements.ownerUsername"
+      sortable
+    />
     <Column field="categoryName" :header="l.manageAdvertisements.categoryName" sortable />
     <Column field="status" :header="l.manageAdvertisements.status" sortable>
       <template #body="slotProps">
@@ -84,7 +92,10 @@
             v-if="isAllowedToEdit"
             :label="l.actions.edit"
             as="RouterLink"
-            :to="{ name: 'editAdvertisement', params: { id: '' + slotProps.data.id } }"
+            :to="{
+              name: props.manageAll ? 'editAnyAdvertisement' : 'editAdvertisement',
+              params: { id: '' + slotProps.data.id }
+            }"
           />
           <Button
             :label="l.actions.view"
@@ -119,6 +130,9 @@ import { useConfirm } from 'primevue'
 import { computed, ref, useTemplateRef, watch } from 'vue'
 import { useRouter } from 'vue-router'
 
+const props = defineProps<{
+  manageAll: boolean
+}>()
 const table = useTemplateRef('table')
 const { push } = useRouter()
 
@@ -146,20 +160,33 @@ const dateFormat = computed(() =>
     timeStyle: 'short'
   })
 )
+
 const isAllowedToCreate = computed(() =>
-  AuthService.hasPermission(Permissions.CreateOwnedAdvertisement)
+  AuthService.hasPermission(
+    props.manageAll ? Permissions.CreateAdvertisement : Permissions.CreateOwnedAdvertisement
+  )
 )
 const isAllowedToEdit = computed(() =>
-  AuthService.hasPermission(Permissions.EditOwnedAdvertisement)
+  AuthService.hasPermission(
+    props.manageAll ? Permissions.EditAnyAdvertisement : Permissions.EditOwnedAdvertisement
+  )
 )
 const isAllowedToDelete = computed(() =>
-  AuthService.hasPermission(Permissions.DeleteOwnedAdvertisement)
+  AuthService.hasPermission(
+    props.manageAll ? Permissions.DeleteAnyAdvertisement : Permissions.DeleteOwnedAdvertisement
+  )
 )
 
 const columns: TableColumn[] = [
   new TableColumn({
     data: 'title',
     name: 'manageAdvertisements.title',
+    orderable: true,
+    searchable: true
+  }),
+  new TableColumn({
+    data: 'ownerUsername',
+    name: 'manageAdvertisements.ownerUsername',
     orderable: true,
     searchable: true
   }),
@@ -192,7 +219,11 @@ watch(LocaleService.currentLocaleName, () => {
 
 //Methods
 const advertisementSource = (query: DataTableQuery) => {
-  return advertisementService.getOwnedAdvertisements(query)
+  if (props.manageAll) {
+    return advertisementService.getAllAdvertisements(query)
+  } else {
+    return advertisementService.getOwnedAdvertisements(query)
+  }
 }
 
 const setAdvertisementActiveState = async (isActive: boolean) => {
@@ -204,9 +235,12 @@ const setAdvertisementActiveState = async (isActive: boolean) => {
         (!isActive && r.status === PaymentSubjectStatus.Active)
     )
     .map((a) => a.id!)
-  await advertisementService.setIsActiveAdvertisements(
-    new SetActiveStatusRequest({ isActive, ids })
-  )
+  const request = new SetActiveStatusRequest({ isActive, ids })
+  if (props.manageAll) {
+    await advertisementService.setIsActiveAnyAdvertisements(request)
+  } else {
+    await advertisementService.setIsActiveOwnedAdvertisements(request)
+  }
   table.value?.refresh()
 }
 
@@ -220,7 +254,15 @@ const confirmDeleteAdvertisements = () => {
 
 const deleteAdvertisements = async () => {
   loading.value = true
-  await advertisementService.deleteAdvertisements(selectedAdvertisements.value.map((a) => a.id!))
+  if (props.manageAll) {
+    await advertisementService.deleteAnyAdvertisements(
+      selectedAdvertisements.value.map((a) => a.id!)
+    )
+  } else {
+    await advertisementService.deleteOwnedAdvertisements(
+      selectedAdvertisements.value.map((a) => a.id!)
+    )
+  }
   table.value?.refresh()
 }
 

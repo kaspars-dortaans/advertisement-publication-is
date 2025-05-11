@@ -157,7 +157,7 @@ const allRouteItems: INavbarItem[] = [
         showForUnauthenticated: true
       },
       {
-        route: 'manageAdvertisements',
+        route: 'manageOwnAdvertisements',
         label: 'navigation.myAdvertisements'
       }
     ] as INavbarItem[]
@@ -169,6 +169,10 @@ const allRouteItems: INavbarItem[] = [
       {
         route: 'manageUsers',
         label: 'navigation.manageUsers'
+      },
+      {
+        route: 'manageAdvertisements',
+        label: 'navigation.manageAdvertisements'
       },
       {
         route: 'manageCategories',

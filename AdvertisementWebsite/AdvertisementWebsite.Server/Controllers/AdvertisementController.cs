@@ -152,7 +152,7 @@ public class AdvertisementController(
 
     [HasPermission(Permissions.EditOwnedAdvertisement)]
     [HttpPost]
-    public async Task SetIsActiveAdvertisements(SetActiveStatusRequest request)
+    public async Task SetIsActiveOwnedAdvertisements(SetActiveStatusRequest request)
     {
         var userId = User.GetUserId() ?? throw new ApiException([CustomErrorCodes.UserNotFound]);
         await _advertisementService
@@ -162,7 +162,7 @@ public class AdvertisementController(
 
     [HasPermission(Permissions.DeleteOwnedAdvertisement)]
     [HttpPost]
-    public async Task DeleteAdvertisements(IEnumerable<int> advertisementIds)
+    public async Task DeleteOwnedAdvertisements(IEnumerable<int> advertisementIds)
     {
         await _advertisementService.RemoveAdvertisements(advertisementIds, User.GetUserId()!.Value);
     }
@@ -212,5 +212,87 @@ public class AdvertisementController(
             .Where(a => ids.Contains(a.Id))
             .Select(a => new KeyValuePair<int, string>(a.Id, a.Title))
             .ToListAsync();
+    }
+
+    [HasPermission(Permissions.ViewAllAdvertisements)]
+    [ProducesResponseType<DataTableQueryResponse<AdvertisementInfo>>(StatusCodes.Status200OK)]
+    [ProducesResponseType<RequestExceptionResponse>(StatusCodes.Status400BadRequest)]
+    [HttpPost]
+    public async Task<DataTableQueryResponse<AdvertisementInfo>> GetAllAdvertisements(DataTableQuery request)
+    {
+        return await _advertisementService.GetAdvertisementInfo(request);
+    }
+
+    [HasPermission(Permissions.ViewAllAdvertisements)]
+    [ProducesResponseType<Dto.Advertisement.AdvertisementDto>(StatusCodes.Status200OK)]
+    [ProducesResponseType<RequestExceptionResponse>(StatusCodes.Status400BadRequest)]
+    [HttpGet]
+    public async Task<Dto.Advertisement.AdvertisementDto> GetAnyAdvertisement(int advertisementId)
+    {
+        var dto = await _advertisementService.FindAdvertisement(advertisementId, User.GetUserId());
+        return _mapper.Map<Dto.Advertisement.AdvertisementDto>(dto, opts => opts.Items[nameof(Url)] = Url);
+    }
+
+    [HasPermission(Permissions.EditAnyAdvertisement)]
+    [HttpPost]
+    public async Task SetIsActiveAnyAdvertisements(SetActiveStatusRequest request)
+    {
+        await _advertisementService
+            .Where(a => request.Ids.Contains(a.Id))
+            .UpdateFromQueryAsync(a => new Advertisement() { IsActive = request.IsActive });
+    }
+
+    [HasPermission(Permissions.CreateAdvertisement)]
+    [ProducesResponseType<int>(StatusCodes.Status200OK)]
+    [ProducesResponseType<RequestExceptionResponse>(StatusCodes.Status400BadRequest)]
+    [HttpPost]
+    public async Task<int> CreateAdvertisementForAnyUser([FromForm] CreateOrEditAdvertisementRequest request)
+    {
+        var advertisementDto = _mapper.Map<CreateOrEditAdvertisementDto>(request);
+        return await _advertisementService.CreateAdvertisement(advertisementDto, request.OwnerId ?? User.GetUserId()!.Value, true);
+    }
+
+    [HasPermission(Permissions.EditAnyAdvertisement)]
+    [ProducesResponseType<AdvertisementFormInfo>(StatusCodes.Status200OK)]
+    [ProducesResponseType<RequestExceptionResponse>(StatusCodes.Status400BadRequest)]
+    [HttpGet]
+    public async Task<AdvertisementFormInfo> EditAnyAdvertisement(int advertisementId)
+    {
+        var dto = await _advertisementService.GetAdvertisementFormInfo(advertisementId);
+        var advertisementValues = _mapper.Map<CreateOrEditAdvertisementRequest>(dto, opts => opts.Items[nameof(Url)] = Url);
+        return new AdvertisementFormInfo
+        {
+            Advertisement = advertisementValues,
+            CategoryInfo = await _categoryService.GetCategoryFormInfo(dto.CategoryId)
+        };
+    }
+
+    [HasPermission(Permissions.EditAnyAdvertisement)]
+    [ProducesResponseType<OkResult>(StatusCodes.Status200OK)]
+    [ProducesResponseType<RequestExceptionResponse>(StatusCodes.Status400BadRequest)]
+    [HttpPost]
+    public async Task EditAnyAdvertisement([FromForm] CreateOrEditAdvertisementRequest request)
+    {
+        var dto = _mapper.Map<CreateOrEditAdvertisementDto>(request);
+        await _advertisementService.UpdateAdvertisement(dto);
+    }
+
+    [HasPermission(Permissions.EditAnyAdvertisement)]
+    [ProducesResponseType<AdvertisementFormInfo>(StatusCodes.Status200OK)]
+    [ProducesResponseType<RequestExceptionResponse>(StatusCodes.Status400BadRequest)]
+    [HttpPost]
+    public async Task ExtendAdvertisements(ExtendRequest request)
+    {
+        await _advertisementService.ExtendAdvertisement(request.Ids, request.ExtendTime);
+    }
+
+
+    [HasPermission(Permissions.DeleteAnyAdvertisement)]
+    [ProducesResponseType<OkResult>(StatusCodes.Status200OK)]
+    [ProducesResponseType<RequestExceptionResponse>(StatusCodes.Status400BadRequest)]
+    [HttpPost]
+    public async Task DeleteAnyAdvertisements(IEnumerable<int> ids)
+    {
+        await _advertisementService.RemoveAdvertisements(ids);
     }
 }

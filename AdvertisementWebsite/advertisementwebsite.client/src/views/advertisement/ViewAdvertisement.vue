@@ -11,6 +11,7 @@
             <BackButton :defaultTo="{ name: 'viewAdvertisements' }" />
             <h3 class="page-title">{{ advertisement.title }}</h3>
             <Button
+              v-if="isAllowedToBookmark"
               :icon="bookmarkIcon"
               :label="l.advertisements.bookmark"
               :loading="savingBookmark"
@@ -19,12 +20,12 @@
               @click="bookmarkAdvertisement"
             />
             <Button
-              v-if="userOwnedAdvertisement"
+              v-if="isAllowedToEdit"
               icon="pi pi-pencil"
               :label="l.actions.edit"
               severity="secondary"
               as="RouterLink"
-              :to="{ name: 'editAdvertisement' }"
+              :to="{ name: canEditAny ? 'editAnyAdvertisement' : 'editAdvertisement' }"
             />
           </div>
         </template>
@@ -142,6 +143,7 @@ import { AuthService } from '@/services/auth-service'
 import BlockWithSpinner from '@/components/common/BlockWithSpinner.vue'
 import ResponsiveLayout from '@/components/common/ResponsiveLayout.vue'
 import AttributeValuesList from '@/components/advertisements/AttributeValuesList.vue'
+import { Permissions } from '@/constants/api/Permissions'
 
 //Props
 const props = defineProps<{ id: number }>()
@@ -177,6 +179,12 @@ const userOwnedAdvertisement = computed(() => {
     AuthService.profileInfo.value?.id === advertisement.value.ownerId
   )
 })
+const canManageAll = computed(() => AuthService.hasPermission(Permissions.ViewAllAdvertisements))
+const canEditAny = computed(() => AuthService.hasPermission(Permissions.EditAnyAdvertisement))
+const isAllowedToBookmark = computed(() =>
+  AuthService.hasPermission(Permissions.BookmarkAdvertisement)
+)
+const isAllowedToEdit = computed(() => userOwnedAdvertisement.value || canEditAny.value)
 
 //Hooks
 onMounted(() => {
@@ -219,7 +227,11 @@ watch(LocaleService.currentLocaleName, () => {
 //Methods
 const loadAdvertisement = async () => {
   loading.value = true
-  advertisement.value = await advertisementService.getAdvertisement(props.id)
+  if (canManageAll.value) {
+    advertisement.value = await advertisementService.getAnyAdvertisement(props.id)
+  } else {
+    advertisement.value = await advertisementService.getAdvertisement(props.id)
+  }
   loading.value = false
 }
 
