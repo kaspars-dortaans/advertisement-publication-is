@@ -16,3 +16,11 @@
 .p-menu-item.active.p-focus .p-menu-item-content {
   @apply bg-surface-300 dark:bg-surface-600;
 }
+
+.p-menubar-submenu {
+  z-index: 2000;
+}
+
+.p-blockui-mask .p-menubar-submenu {
+  z-index: 10;
+}
