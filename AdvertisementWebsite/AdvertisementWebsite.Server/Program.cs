@@ -1,3 +1,7 @@
+using AdvertisementWebsite.Server.BackgroundJobs;
+using AdvertisementWebsite.Server.Filters;
+using AdvertisementWebsite.Server.Hubs;
+using AdvertisementWebsite.Server.OpenApi;
 using BusinessLogic.Authorization;
 using BusinessLogic.Entities;
 using BusinessLogic.Helpers;
@@ -11,7 +15,6 @@ using Hangfire;
 using Hangfire.PostgreSql;
 using ImageMagick;
 using Microsoft.AspNetCore.Authentication.BearerToken;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Localization;
@@ -21,10 +24,6 @@ using Microsoft.OpenApi.Models;
 using System.Globalization;
 using System.Reflection;
 using System.Text.Json.Serialization;
-using AdvertisementWebsite.Server.BackgroundJobs;
-using AdvertisementWebsite.Server.Filters;
-using AdvertisementWebsite.Server.Hubs;
-using AdvertisementWebsite.Server.OpenApi;
 
 var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;
@@ -138,8 +137,7 @@ if (builder.Environment.IsDevelopment())
             Name = "Authorization",
             In = ParameterLocation.Header,
             Type = SecuritySchemeType.Http,
-            Scheme = JwtBearerDefaults.AuthenticationScheme,
-            BearerFormat = "JWT"
+            Scheme = "Bearer",
         };
 
         o.AddSecurityDefinition("Bearer", bearerScheme);

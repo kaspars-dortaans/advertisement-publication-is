@@ -1,7 +1,7 @@
 <template>
   <ResponsiveLayout>
     <AdvertisementTable
-      :categoryName="l.navigation.savedAdvertisements"
+      :title="l.navigation.savedAdvertisements"
       :advertisementSource="loadAdvertisements"
       :categoryFilterList="advertisementCategories"
       :groupByCategory="true"

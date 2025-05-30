@@ -63,7 +63,11 @@ else
 {
 {%-                 for property in parameter.Schema.ActualSchema.Properties -%}
     if({{ parameter.Name }}.{{ property[0] }} != null)
+{%-                     if property[1].ActualSchema.IsArray and property[1].ActualSchema.Item.IsBinary  -%}
+        {{ parameter.Name }}.{{ property[0] }}.forEach(item_ => content_.append("{{ parameter.Name }}.{{ property[0] }}", item_.data, item_.fileName ? item_.fileName : "{{ property[0] }}") );
+{%-                     else  -%}
         content_.append("{{ parameter.Name }}.{{ property[0] }}", "" + {{ parameter.Name }}.{{ property[0] }})
+{%-                     endif -%}
 {%-                 endfor -%}
 }
 {%-             elsif parameter.IsObjectArray -%}

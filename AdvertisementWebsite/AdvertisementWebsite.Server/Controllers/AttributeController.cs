@@ -72,7 +72,8 @@ public class AttributeController(
                 Sortable = a.Sortable,
                 Searchable = a.Searchable,
                 ShowOnListItem = a.ShowOnListItem,
-                LocalizedNames = a.AttributeNameLocales.Select(l => (KeyValuePair<string, string>?)new KeyValuePair<string, string>(l.Locale, l.Text)),
+                LocalizedNames = a.AttributeNameLocales.Select(l => 
+                    (KeyValuePair<string, string>?)new KeyValuePair<string, string>(l.Locale, l.Text)),
                 IconName = a.IconName
             })
             .FirstOrDefaultAsync())

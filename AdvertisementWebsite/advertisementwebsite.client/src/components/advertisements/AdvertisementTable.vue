@@ -23,21 +23,25 @@
   >
     <template #header>
       <slot name="title">
-        <h3 class="page-title mb-2">{{ categoryName ?? categoryInfo.categoryName }}</h3>
+        <h3 class="page-title mb-2">{{ title ?? categoryInfo.categoryName }}</h3>
       </slot>
       <div
         v-if="filterableColumns?.length || categoryFilterList?.length"
         class="flex flex-row gap-2 flex-wrap justify-center"
       >
         <div class="flex-auto flex flex-row justify-center flex-wrap gap-2">
-          <Select
-            v-if="categoryFilterList?.length"
-            v-model="categoryFilterModel"
-            :options="categoryFilterList"
-            :placeholder="l.advertisements.selectCategory"
-            optionLabel="value"
-            optionValue="key"
-          ></Select>
+          <FloatLabel variant="on">
+            <AutoComplete
+              v-if="categoryFilterList?.length"
+              v-model="categoryFilterModel"
+              :suggestions="categoryLookupsSearched"
+              optionLabel="value"
+              id="category-filter-input"
+              dropdown
+              @complete="filterCategoryLookups"
+            />
+            <label for="category-filter-input">{{ l.advertisements.selectCategory }}</label>
+          </FloatLabel>
           <DynamicFilter
             v-for="column in filterableColumns"
             :key="column.id"
@@ -128,6 +132,8 @@ import { LocaleService } from '@/services/locale-service'
 import { getClient } from '@/utils/client-builder'
 import { getPageReportTemplate } from '@/utils/data-table'
 import {
+  AutoComplete,
+  type AutoCompleteCompleteEvent,
   type ColumnPassThroughMethodOptions,
   type ColumnPassThroughOptions,
   type DataTablePageEvent,
@@ -143,7 +149,7 @@ const props = defineProps<{
     query: AdvertisementQuery
   ) => Promise<AdvertisementListItemDataTableQueryResponse>
   categoryId?: number | null | undefined
-  categoryName?: string | undefined
+  title?: string | undefined
   categoryFilterList?: Int32StringKeyValuePair[]
   groupByCategory?: boolean
   multiRowSelect?: boolean
@@ -190,12 +196,15 @@ const pageReportTemplate = ref('')
 /** Holds data for selected category, if any */
 const categoryInfo = ref<CategoryInfo>(new CategoryInfo())
 
+/** Category lookups that matched autocomplete search query*/
+const categoryLookupsSearched = ref<Int32StringKeyValuePair[]>(props.categoryFilterList ?? [])
+
 /** In data table filter selected category id */
-const categoryFilterModel = ref<number | undefined>()
+const categoryFilterModel = ref<Int32StringKeyValuePair | undefined>()
 
 /** Resulting selected category id in filter or passed as prop */
 const selectedCategoryId = computed(() =>
-  props.categoryId !== undefined ? props.categoryId : categoryFilterModel.value
+  props.categoryId !== undefined ? props.categoryId : categoryFilterModel.value?.key
 )
 
 /** Data table expanded group v-model */
@@ -276,7 +285,7 @@ const handleCategoryChange = async (selectedCategoryId?: number | null) => {
     promises.push(loadCategoryInfo())
   } else {
     categoryInfo.value = new CategoryInfo({
-      categoryName: props.categoryName,
+      categoryName: props.title,
       attributeInfo: [],
       attributeValueLists: []
     })
@@ -373,6 +382,18 @@ const clearFilter = () => {
 /** Set data table loading state */
 const setLoading = (isLoading: boolean) => {
   loadCount.value = Math.max(0, isLoading ? loadCount.value + 1 : loadCount.value - 1)
+}
+
+const filterCategoryLookups = (e: AutoCompleteCompleteEvent) => {
+  const categoryLookups = props.categoryFilterList ?? []
+  if (!e.query) {
+    categoryLookupsSearched.value = [...categoryLookups]
+  } else {
+    const queryLowercase = e.query.toLocaleLowerCase()
+    categoryLookupsSearched.value = categoryLookups.filter(
+      (cl) => cl.value!.toLocaleLowerCase().indexOf(queryLowercase) > -1
+    )
+  }
 }
 
 defineExpose({ refresh: loadAdvertisements })

@@ -50,7 +50,7 @@ import { debounceFn } from '@/utils/debounce'
 import { computed, inject, onBeforeMount, onBeforeUnmount, ref, watch, type ComputedRef } from 'vue'
 import { useRouter, type RouteRecordNormalized } from 'vue-router'
 
-const { push, getRoutes } = useRouter()
+const { push, getRoutes, afterEach } = useRouter()
 
 //Services
 const ls = LocaleService.get()
@@ -152,7 +152,7 @@ const allRouteItems: INavbarItem[] = [
         label: 'navigation.advertisementNotifications'
       },
       {
-        route: 'createAdvertisement',
+        route: 'createOwnAdvertisement',
         label: 'navigation.createAdvertisement',
         showForUnauthenticated: true
       },
@@ -257,13 +257,19 @@ onBeforeUnmount(() => {
   }
 })
 
+/** Clear search input on route leave */
+afterEach((to, from) => {
+  if (from?.name === 'searchAdvertisements' && to.name !== 'searchAdvertisements') {
+    searchInput.value = ''
+  }
+})
+
 //Methods
 /** Search advertisements with debounce */
 const search = () => {
   push({ name: 'searchAdvertisements', query: { search: searchInput.value } })
-  searchInput.value = ''
 }
-const { debounce: debouncedSearch, clear: clearDebounceSearch } = debounceFn(search)
+const { debounce: debouncedSearch, clear: clearDebounceSearch } = debounceFn(search, 2000)
 
 /** Search advertisements without debounce */
 const immediateSearch = () => {

@@ -8,7 +8,7 @@
     />
     <AdvertisementTable
       :categoryId="categoryId"
-      :categoryName="selectedCategoryName"
+      :title="selectedCategoryName"
       :advertisementSource="(q) => advertisementService.getAdvertisements(q)"
     ></AdvertisementTable>
   </ResponsiveLayout>

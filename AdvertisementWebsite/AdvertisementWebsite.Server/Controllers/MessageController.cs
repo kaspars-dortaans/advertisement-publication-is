@@ -98,8 +98,8 @@ public class MessageController(
             FromUserId = userId,
             IsMessageRead = false,
             Text = rq.WithMessage.Text,
-            SentTime = DateTime.UtcNow
-        }, rq.AdvertisementId);
+            SentTime = DateTime.UtcNow,
+        }, rq.AdvertisementId, rq.WithMessage.Attachments);
 
         var recipientIds = (await _chatService.ChatRecipientIds(newChat.Id)).Select(id => id.ToString());
         if (recipientIds.Any())

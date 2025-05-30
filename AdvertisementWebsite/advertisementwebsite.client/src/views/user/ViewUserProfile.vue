@@ -48,6 +48,7 @@
     <AdvertisementTable
       :advertisementSource="loadUserAdvertisements"
       :categoryNameSource="getCategoryName"
+      :title="ls.l('advertisements.userAdvertisements', userInfo?.userName ?? '')"
     ></AdvertisementTable>
   </ResponsiveLayout>
 </template>
@@ -78,6 +79,7 @@ const { push } = useRouter()
 const advertisementService = getClient(AdvertisementClient)
 const userService = getClient(UserClient)
 const l = LocaleService.currentLocale
+const ls = LocaleService.get()
 
 //Reactive data
 const userInfo = ref<PublicUserInfoDto | undefined>()

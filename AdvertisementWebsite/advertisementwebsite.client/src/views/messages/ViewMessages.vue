@@ -295,7 +295,7 @@ const selectAttachments = () => {
 }
 
 /**
- * Call Api to send new message
+ * Call Api to send new message or create new chat
  */
 const sendMessage = handleSubmit(async () => {
   sendingMessage.value = true

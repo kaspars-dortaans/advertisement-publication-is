@@ -106,7 +106,8 @@ public class CategoryService(Context dbContext,
                 {
                     Id = a.AttributeValueList!.Id,
                     Name = a.AttributeValueList!.LocalisedNames.Localise(locale),
-                    Entries = a.AttributeValueList!.ListEntries.Select(e => new AttributeValueListEntryItem()
+                    Entries = a.AttributeValueList!.ListEntries.OrderBy(e => e.OrderIndex)
+                    .Select(e => new AttributeValueListEntryItem()
                     {
                         Id = e.Id,
                         Name = e.LocalisedNames.Localise(locale),

@@ -3,6 +3,7 @@
     <AdvertisementTable
       :advertisementSource="(q: DataTableQuery) => loadAdvertisements(q)"
       :groupByCategory="true"
+      :categoryFilterList="categoryList"
       ref="advertisementTable"
     >
       <template #title>
@@ -16,18 +17,21 @@
 </template>
 
 <script setup lang="ts">
-import AdvertisementTable from '@/components/AdvertisementTable.vue'
+import AdvertisementTable from '@/components/advertisements/AdvertisementTable.vue'
 import BackButton from '@/components/common/BackButton.vue'
 import ResponsiveLayout from '@/components/common/ResponsiveLayout.vue'
 import {
   AdvertisementClient,
+  CategoryClient,
   DataTableQuery,
+  Int32StringKeyValuePair,
   SearchQuery,
   TableColumn,
   type AdvertisementQuery
 } from '@/services/api-client'
 import { LocaleService } from '@/services/locale-service'
 import { getClient } from '@/utils/client-builder'
+import { ref } from 'vue'
 import { computed, onBeforeMount, useTemplateRef, watch } from 'vue'
 import { useRouter } from 'vue-router'
 
@@ -38,10 +42,12 @@ const props = defineProps<{ search: string }>()
 
 //Services
 const advertisementService = getClient(AdvertisementClient)
+const categoryService = getClient(CategoryClient)
 const l = LocaleService.currentLocale
 
 //Refs
 const advertisementTable = useTemplateRef('advertisementTable')
+const categoryList = ref<Int32StringKeyValuePair[]>([])
 
 //Reactive data
 const title = computed(() => {
@@ -49,10 +55,12 @@ const title = computed(() => {
 })
 
 //Hooks
-onBeforeMount(() => {
+onBeforeMount(async () => {
   if (!props.search) {
     push({ name: 'home' })
   }
+
+  categoryList.value = await categoryService.getCategoryLookup()
 })
 
 //Watchers
@@ -64,6 +72,10 @@ watch(
     }
   }
 )
+
+watch(LocaleService.currentLocaleName, async () => {
+  categoryList.value = await categoryService.getCategoryLookup()
+})
 
 //Methods
 const loadAdvertisements = (q: AdvertisementQuery) => {

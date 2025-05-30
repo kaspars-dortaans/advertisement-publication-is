@@ -11,7 +11,6 @@
             <BackButton :defaultTo="{ name: 'viewAdvertisements' }" />
             <h3 class="page-title">{{ advertisement.title }}</h3>
             <Button
-              v-if="isAllowedToBookmark"
               :icon="bookmarkIcon"
               :label="l.advertisements.bookmark"
               :loading="savingBookmark"
@@ -181,9 +180,6 @@ const userOwnedAdvertisement = computed(() => {
 })
 const canManageAll = computed(() => AuthService.hasPermission(Permissions.ViewAllAdvertisements))
 const canEditAny = computed(() => AuthService.hasPermission(Permissions.EditAnyAdvertisement))
-const isAllowedToBookmark = computed(() =>
-  AuthService.hasPermission(Permissions.BookmarkAdvertisement)
-)
 const isAllowedToEdit = computed(() => userOwnedAdvertisement.value || canEditAny.value)
 
 //Hooks

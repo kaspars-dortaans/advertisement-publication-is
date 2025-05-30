@@ -8,6 +8,7 @@ using BusinessLogic.Helpers.FilePathResolver;
 using BusinessLogic.Helpers.Storage;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using System.Net.Mail;
 
 namespace BusinessLogic.Services;
 
@@ -45,9 +46,9 @@ public class ChatService(Context dbContext,
         });
     }
 
-    public async Task<ChatListItem> CreateChat(int userId, int toUserId, Message firstMessage, int? advertisementId)
+    public async Task<ChatListItem> CreateChat(int userId, int toUserId, Message firstMessage, int? advertisementId, IEnumerable<IFormFile>? attachments = null)
     {
-        //Validate advertisement Id
+        //Validate advertisement
         if (advertisementId is not null)
         {
             var data = (await _advertisementService
@@ -75,6 +76,10 @@ public class ChatService(Context dbContext,
             throw new ApiException([CustomErrorCodes.ChatAlreadyExists]);
         }
 
+        //Upload attachments
+        firstMessage.Attachments = await UploadAttachmentsToStorage(attachments);
+
+        //Add chat with first message
         var newChatEntry = await AddAsync(new Chat
         {
             AdvertisementId = advertisementId,
@@ -90,15 +95,49 @@ public class ChatService(Context dbContext,
             ChatMessages = [firstMessage],
         });
 
+        //Return chat info for notification recipients
         return await SelectChatListItems(Where(c => c.Id == newChatEntry.Id), toUserId).FirstAsync();
     }
 
     public async Task<MessageItem> SendMessage(int chatId, int userId, string text, IEnumerable<IFormFile>? attachments)
     {
+        //Validate and upload attachments to storage
         await ValidateIsMemberOfChat(chatId, userId);
+        var messageAttachments = await UploadAttachmentsToStorage(attachments);
 
+        //Add message to db
+        var entry = await _messageService.AddAsync(new Message
+        {
+            ChatId = chatId,
+            FromUserId = userId,
+            Text = text,
+            SentTime = DateTime.UtcNow,
+            IsMessageRead = false,
+            Attachments = messageAttachments
+        });
+
+        //Return message info for notification recipients
+        return new MessageItem
+        {
+            Id = entry.Id,
+            FromUserId = entry.FromUserId,
+            Text = entry.Text,
+            IsMessageRead = entry.IsMessageRead,
+            SentTime = entry.SentTime,
+            Attachments = entry.Attachments.Select(a => new MessageAttachmentItem
+            {
+                Id = a.Id,
+                FileName = a.FileName,
+                SizeInBytes = a.SizeInBytes
+            })
+        };
+    }
+
+    private async Task<ICollection<MessageAttachment>> UploadAttachmentsToStorage(IEnumerable<IFormFile>? attachments)
+    {
         var messageAttachments = Array.Empty<MessageAttachment>();
-        if (attachments is not null) {
+        if (attachments is not null && attachments.Any())
+        {
             var storeTasks = attachments.Select(async (a) =>
             {
                 using var fileStream = a.OpenReadStream();
@@ -116,31 +155,7 @@ public class ChatService(Context dbContext,
             });
             messageAttachments = await Task.WhenAll(storeTasks);
         }
-
-        var entry = await _messageService.AddAsync(new Message
-        {
-            ChatId = chatId,
-            FromUserId = userId,
-            Text = text,
-            SentTime = DateTime.UtcNow,
-            IsMessageRead = false,
-            Attachments = messageAttachments
-        });
-
-        return new MessageItem
-        {
-            Id = entry.Id,
-            FromUserId = entry.FromUserId,
-            Text = entry.Text,
-            IsMessageRead = entry.IsMessageRead,
-            SentTime = entry.SentTime,
-            Attachments = entry.Attachments.Select(a => new MessageAttachmentItem
-            {
-                Id = a.Id,
-                FileName = a.FileName,
-                SizeInBytes = a.SizeInBytes
-            })
-        };
+        return messageAttachments;
     }
 
     public async Task<int> MarkMessageAsRead(int chatId, IEnumerable<int> messageIds, int userId)

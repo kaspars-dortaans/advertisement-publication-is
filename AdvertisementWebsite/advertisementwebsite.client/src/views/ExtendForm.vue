@@ -1,6 +1,6 @@
 <template>
   <ResponsiveLayout>
-    <BlockWithSpinner :loading="loading">
+    <BlockWithSpinner :loading="loading" class="flex-1 lg:flex-none flex flex-col">
       <Panel class="rounded-none flex-1 lg:flex-none lg:rounded-md">
         <template #header>
           <div class="panel-title-container">
@@ -121,7 +121,6 @@ defineField('extendTime')
 //Hooks
 onBeforeMount(async () => {
   loading.value = true
-  setPageText()
 
   if (
     props.type === PaymentType.CreateAdvertisement ||
@@ -140,6 +139,7 @@ onBeforeMount(async () => {
     }
   }
 
+  setPageText()
   loading.value = false
 })
 
