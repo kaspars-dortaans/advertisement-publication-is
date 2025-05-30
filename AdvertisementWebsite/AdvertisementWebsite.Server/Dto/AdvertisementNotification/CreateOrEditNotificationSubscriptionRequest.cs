@@ -1,4 +1,5 @@
-﻿using BusinessLogic.Constants;
+﻿using AdvertisementWebsite.Server.Validators;
+using BusinessLogic.Constants;
 using BusinessLogic.Dto.Time;
 using System.ComponentModel.DataAnnotations;
 
@@ -10,8 +11,12 @@ public class CreateOrEditNotificationSubscriptionRequest
     public int? OwnerId { get; set; }
     public string? OwnerUsername { get; set; }
 
+    [MaxLength(InputConstants.MaxTitleLength, ErrorMessage = CustomErrorCodes.MaxLength)]
     [Required(ErrorMessage = CustomErrorCodes.MissingRequired)]
     public string Title { get; set; } = default!;
+
+    [MaxLength(InputConstants.MaxSubscriptionKeywordCount, ErrorMessage = CustomErrorCodes.MaxLength)]
+    [ElementLength(InputConstants.MaxSubscriptionKeywordLength)]
     public IEnumerable<string>? Keywords { get; set; }
 
     public PostTimeDto? PaidTime { get; set; }

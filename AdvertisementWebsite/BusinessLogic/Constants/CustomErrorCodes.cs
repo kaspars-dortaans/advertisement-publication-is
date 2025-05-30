@@ -29,4 +29,7 @@ public static class CustomErrorCodes
     public const string UserNotOwnerOfAdvertisement = "UserNotOwnerOfAdvertisement";
     public const string ChatAlreadyExists = "ChatAlreadyExists";
     public const string TotalsDoesNotMatch = "TotalsDoesNotMatch";
+    public const string MinLength = "MinLength";
+    public const string MaxLength = "MaxLength";
+    public const string ElementMaxLength = "ElementMaxLength";
 }

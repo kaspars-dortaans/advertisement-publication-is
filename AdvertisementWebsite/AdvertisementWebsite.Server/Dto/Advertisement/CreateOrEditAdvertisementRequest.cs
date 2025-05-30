@@ -24,9 +24,12 @@ public class CreateOrEditAdvertisementRequest
     /// </summary>
     public DateTime? ValidToDate { get; set; }
 
+    [MinLength(InputConstants.MinTitleLength, ErrorMessage = CustomErrorCodes.MinLength)]
+    [MaxLength(InputConstants.MaxTitleLength, ErrorMessage = CustomErrorCodes.MaxLength)]
     [Required(ErrorMessage = CustomErrorCodes.MissingRequired)]
     public string Title { get; set; } = default!;
 
+    [MaxLength(InputConstants.MaxTextLength, ErrorMessage = CustomErrorCodes.MaxLength)]
     [Required(ErrorMessage = CustomErrorCodes.MissingRequired)]
     public string Description { get; set; } = default!;
 

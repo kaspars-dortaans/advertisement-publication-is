@@ -4234,7 +4234,7 @@ export class MessageClient {
             if(withMessage.text != null)
                 content_.append("withMessage.text", "" + withMessage.text)
             if(withMessage.attachments != null)
-                content_.append("withMessage.attachments", "" + withMessage.attachments)
+                withMessage.attachments.forEach(item_ => content_.append("withMessage.attachments", item_.data, item_.fileName ? item_.fileName : "attachments") );
         }
 
         let options_: AxiosRequestConfig = {
