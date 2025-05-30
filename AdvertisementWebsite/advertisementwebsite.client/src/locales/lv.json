@@ -45,7 +45,8 @@
     "bookmark": "Atzīmēt sludinājumu",
     "description": "Apraksts",
     "selectCategory": "Izvēlēties kategoriju",
-    "search": "Meklēt"
+    "search": "Meklēt",
+    "userAdvertisements": "Lietotāja '{0}' jaunākie sludinājumi"
   },
   "manageAdvertisements": {
     "title": "Nosaukums",
@@ -53,17 +54,17 @@
     "status": "Statuss",
     "validTo": "Derīgs līdz",
     "createdAt": "Izveidots",
-    "confirmDeleteHeader": "Izdzēst sludinājumus",
-    "confirmDeleteMessage": "{0} sludinājumi tiks izdzēsti.",
+    "confirmDeleteHeader": "Izdzēst sludinājumu(s)",
+    "confirmDeleteMessage": "{0} sludinājums(i) tiks izdzēsts(i).",
     "ownerUsername": "Īpašnieks"
   },
   "advertisementBookmark": {
-    "confirmDeleteHeader": "Izdzēst sludinājumu atzīmes",
-    "confirmDeleteMessage": "{0} sludinājumu atzīmes tiks izdzēstas."
+    "confirmDeleteHeader": "Izdzēst sludinājumu atzīmi(es)",
+    "confirmDeleteMessage": "{0} sludinājumu atzīme(s) tiks izdzēsta(s)."
   },
   "manageAdvertisementNotificationSubscriptions": {
-    "confirmDeleteHeader": "Izdzēst sludinājumu paziņojumu abonementus",
-    "confirmDeleteMessage": "{0} paziņojumu abonementi tiks izdēsti.",
+    "confirmDeleteHeader": "Izdzēst sludinājumu paziņojumu abonementu(s)",
+    "confirmDeleteMessage": "{0} paziņojumu abonements(i) tiks iztēsts(i).",
     "title": "Nosaukums",
     "keywords": "Atslēgvārdi",
     "categoryName": "Kategorija",
@@ -78,7 +79,7 @@
   "paymentDetails": {
     "date": "Datums",
     "paymentItems": "Preces",
-    "totalAmount": "Kopsumma",
+    "totalAmount": "Kopsumma: {0}",
     "title": "Nosaukums",
     "timePeriod": "Laika periods",
     "price": "Cena",
@@ -94,8 +95,8 @@
     "payerUsername": "Maksātājs"
   },
   "manageAttributes": {
-    "confirmDeleteHeader": "Izdzēst atribūtus",
-    "confirmDeleteMessage": "Tiks izdzēsti {0} atribūti.",
+    "confirmDeleteHeader": "Izdzēst atribūtu(s)",
+    "confirmDeleteMessage": "Tiks izdzēsts(i) {0} atribūts(i).",
     "title": "Nosaukums",
     "valueType": "Vērtības tips",
     "filterType": "Filtra tips",
@@ -106,14 +107,14 @@
     "iconName": "Ikonas nosaukums"
   },
   "manageAttributeValueLists": {
-    "confirmDeleteHeader": "Izdzēst atribūtu vērtību sarakstus",
-    "confirmDeleteMessage": "Tiks izdzēsti {0} atribūtu vērtību saraksti.",
+    "confirmDeleteHeader": "Izdzēst atribūtu vērtību sarakstu(s)",
+    "confirmDeleteMessage": "Tiks izdzēsts(i) {0} atribūtu vērtību saraksts(i).",
     "title": "Nosaukums",
     "entryCount": "Ierakstu skaits"
   },
   "manageUsers": {
-    "confirmDeleteHeader": "Dzēst lietotājus",
-    "confirmDeleteMessage": "Tiks izdzēsti {0} lietotāji.",
+    "confirmDeleteHeader": "Dzēst lietotāju(s)",
+    "confirmDeleteMessage": "Tiks izdzēsts(i) {0} lietotājs(i).",
     "firstName": "Vārds",
     "lastName": "Uzvārds",
     "userName": "Lietotājvārds",
@@ -124,8 +125,8 @@
     "lastActive": "Pēdējoreiz aktīvs"
   },
   "manageRoles": {
-    "confirmDeleteHeader": "Dzēst lomas",
-    "confirmDeleteMessage": "Tiks izdzēstas {0} lomas.",
+    "confirmDeleteHeader": "Dzēst lomu(as)",
+    "confirmDeleteMessage": "Tiks izdzēsta(s) {0} loma(s).",
     "name": "Nosaukums",
     "permissionCount": "Atļauju skaits"
   },

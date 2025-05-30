@@ -47,7 +47,8 @@ export const emptyLocale = {
     bookmark: '',
     description: '',
     selectCategory: '',
-    search: ''
+    search: '',
+    userAdvertisements: ''
   },
   manageAdvertisements: {
     title: '',

@@ -45,7 +45,8 @@
     "bookmark": "Bookmark",
     "description": "Description",
     "selectCategory": "Select Category",
-    "search": "Search"
+    "search": "Search",
+    "userAdvertisements": "User '{0}' newest advertisements"
   },
   "manageAdvertisements": {
     "title": "Title",
@@ -53,16 +54,16 @@
     "status": "Status",
     "validTo": "Valid to",
     "createdAt": "Created at",
-    "confirmDeleteHeader": "Delete advertisements",
+    "confirmDeleteHeader": "Delete advertisement(s)",
     "confirmDeleteMessage": "{0} advertisement(s) will be deleted.",
     "ownerUsername": "Owner"
   },
   "advertisementBookmark": {
-    "confirmDeleteHeader": "Delete advertisement bookmarks",
+    "confirmDeleteHeader": "Delete advertisement bookmark(s)",
     "confirmDeleteMessage": "{0} bookmark(s) will be deleted."
   },
   "manageAdvertisementNotificationSubscriptions": {
-    "confirmDeleteHeader": "Delete advertisement notification subscriptions",
+    "confirmDeleteHeader": "Delete advertisement notification subscription(s)",
     "confirmDeleteMessage": "{0} notification subscription(s) will be deleted.",
     "title": "Title",
     "keywords": "Keywords",
@@ -94,8 +95,8 @@
     "payerUsername": "Payer"
   },
   "manageAttributes": {
-    "confirmDeleteHeader": "Delete attributes",
-    "confirmDeleteMessage": "{0} attributes will be deleted.",
+    "confirmDeleteHeader": "Delete attribute(s)",
+    "confirmDeleteMessage": "{0} attribute(s) will be deleted.",
     "title": "Title",
     "valueType": "Value type",
     "filterType": "Filter type",
@@ -106,14 +107,14 @@
     "iconName": "Icon name"
   },
   "manageAttributeValueLists": {
-    "confirmDeleteHeader": "Delete attribute value list",
-    "confirmDeleteMessage": "{0} attribute value lists will be deleted.",
+    "confirmDeleteHeader": "Delete attribute value list(s)",
+    "confirmDeleteMessage": "{0} attribute value list(s) will be deleted.",
     "title": "Title",
     "entryCount": "Entry count"
   },
   "manageUsers": {
-    "confirmDeleteHeader": "Delete users",
-    "confirmDeleteMessage": "{0} users will be deleted.",
+    "confirmDeleteHeader": "Delete user(s)",
+    "confirmDeleteMessage": "{0} user(s) will be deleted.",
     "firstName": "First name",
     "lastName": "Last name",
     "userName": "Username",
@@ -124,8 +125,8 @@
     "lastActive": "Last active date"
   },
   "manageRoles": {
-    "confirmDeleteHeader": "Delete roles",
-    "confirmDeleteMessage": "{0} roles will be deleted.",
+    "confirmDeleteHeader": "Delete role(s)",
+    "confirmDeleteMessage": "{0} role(s) will be deleted.",
     "name": "Title",
     "permissionCount": "Permission count"
   },
