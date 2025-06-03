@@ -159,7 +159,7 @@ const loadingChats = ref(false)
 const loadingMessages = ref(false)
 const sendingMessage = ref(false)
 const { isSmallScreen } = useTrackScreenSize()
-const focusOnMenu = ref(false)
+const focusOnMenu = ref(!props.chatId && !props.newChatToAdvertisementId)
 const allowedToSendMessages = computed(() => AuthService.hasPermission(Permissions.SendMessage))
 
 const chatMenuItems = ref<IChatMenuItem[]>([])
