@@ -323,7 +323,7 @@
     "Text": "Text",
     "Integer": "Integer",
     "Decimal": "Decimal",
-    "ValueListEntry": "Value list entry"
+    "ValueListEntry": "Entry in value list"
   },
   "filterType": {
     "Search": "Search by text",

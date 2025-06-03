@@ -91,7 +91,7 @@
     "amount": "Summa",
     "paymentItemCount": "Preču skaits",
     "totalForTimePeriod": "Kopsummā samaksāts: {0}",
-    "timePeriod": "Laik periods",
+    "timePeriod": "Laika periods",
     "payerUsername": "Maksātājs"
   },
   "manageAttributes": {
@@ -139,10 +139,10 @@
     "login": {
       "email": "E-pasts",
       "password": "Parole",
-      "doNotHaveAnAccountQuestion": "Vai tev vēl nav konta?"
+      "doNotHaveAnAccountQuestion": "Vai Tev vēl nav konta?"
     },
     "register": {
-      "alreadyHaveAnAccount": "Vai tev jau ir konts?",
+      "alreadyHaveAnAccount": "Vai Tev jau ir konts?",
       "email": "E-pasts",
       "password": "Parole",
       "confirmPassword": "Apstiprināt paroli",
@@ -323,7 +323,7 @@
     "Text": "Teksts",
     "Integer": "Vesels skaitlis",
     "Decimal": "Skaitlis",
-    "ValueListEntry": "Vērtību saraksta ieraksts"
+    "ValueListEntry": "Ieraksts vērtību sarakstā"
   },
   "filterType": {
     "Search": "Meklēt pēc teksta",
