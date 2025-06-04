@@ -292,7 +292,8 @@
     "manageRoles": "Pārvaldīt lomas",
     "viewRole": "Skatīt lomu",
     "editRole": "Rediģēt lomu",
-    "createRole": "Izveidot lomu"
+    "createRole": "Izveidot lomu",
+    "viewTermsOfUse": "Lietošanas noteikumi"
   },
   "dataSize": {
     "bits": "{0} biti",
@@ -412,5 +413,6 @@
     "OptionNotFound": "Opcija nav atrasta",
     "ValueMustBeInteger": "Lauka vērtībai jābūt veselam skaitlim",
     "ValueMustBeNumber": "Lauka vērtībai jābūt skaitlim"
-  }
+  },
+  "termsOfUse": "Todo: Ievietot lietošanas noteikumus. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
 }

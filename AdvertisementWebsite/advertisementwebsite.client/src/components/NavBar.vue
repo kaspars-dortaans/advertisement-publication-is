@@ -98,17 +98,9 @@ const allowedRouteItems: ComputedRef<INavbarItem[]> = computed(() => {
 })
 
 const profileRoutes = computed(() => {
-  if (!AuthService.isAuthenticated.value) {
-    return [
-      {
-        route: 'login',
-        icon: 'pi pi-user'
-      }
-    ] as INavbarItem[]
-  }
-
-  return [
-    {
+  let profileRoutes
+  if (AuthService.isAuthenticated.value) {
+    profileRoutes = {
       avatar: true,
       url:
         AuthService.profileInfo.value?.profileImage?.imageURLs?.thumbnailUrl ??
@@ -119,12 +111,32 @@ const profileRoutes = computed(() => {
           route: 'profileInfo'
         },
         {
+          label: 'navigation.viewTermsOfUse',
+          route: 'viewTermsOfUse'
+        },
+        {
           label: 'navigation.logout',
           route: 'logout'
         }
       ]
     }
-  ] as INavbarItem[]
+  } else {
+    profileRoutes = {
+      icon: 'pi pi-user',
+      items: [
+        {
+          label: 'navigation.login',
+          route: 'login'
+        },
+        {
+          label: 'navigation.viewTermsOfUse',
+          route: 'viewTermsOfUse'
+        }
+      ]
+    }
+  }
+
+  return [profileRoutes] as INavbarItem[]
 })
 
 //Constants

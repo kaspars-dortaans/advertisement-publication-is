@@ -1,6 +1,7 @@
 /** This is auto generated file
 * Assign empty locale to prevent errors when trying to localize while real locale is not loaded */
 export const emptyLocale = {
+  termsOfUse: '',
   false: '',
   true: '',
   title: '',
@@ -295,7 +296,8 @@ export const emptyLocale = {
     manageRoles: '',
     viewRole: '',
     editRole: '',
-    createRole: ''
+    createRole: '',
+    viewTermsOfUse: ''
   },
   dataSize: {
     bits: '',

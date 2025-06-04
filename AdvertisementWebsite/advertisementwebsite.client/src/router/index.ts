@@ -576,6 +576,13 @@ const router = createRouter({
       ]
     },
 
+    //Terms of use
+    {
+      path: '/terms-of-use',
+      name: 'viewTermsOfUse',
+      component: () => import('../views/ViewTermsOfUse.vue')
+    },
+
     //Not found
     {
       path: '/:all(.*)*',
