@@ -133,6 +133,11 @@ export const emptyLocale = {
     name: '',
     permissionCount: ''
   },
+  managePermissions: {
+    confirmDeleteHeader: '',
+    confirmDeleteMessage: '',
+    name: ''
+  },
   form: {
     roleForm: {
       title: '',
@@ -298,7 +303,8 @@ export const emptyLocale = {
     editRole: '',
     createRole: '',
     viewTermsOfUse: '',
-    manageServicePrices: ''
+    manageServicePrices: '',
+    managePermissions: ''
   },
   dataSize: {
     bits: '',

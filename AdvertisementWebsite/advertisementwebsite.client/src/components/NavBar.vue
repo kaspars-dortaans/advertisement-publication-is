@@ -183,6 +183,10 @@ const allRouteItems: INavbarItem[] = [
         label: 'navigation.manageUsers'
       },
       {
+        route: 'managePermissions',
+        label: 'navigation.managePermissions'
+      },
+      {
         route: 'manageRoles',
         label: 'navigation.manageRoles'
       },

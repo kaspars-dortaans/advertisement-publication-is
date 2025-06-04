@@ -130,6 +130,11 @@
     "name": "Nosaukums",
     "permissionCount": "Atļauju skaits"
   },
+  "managePermissions": {
+    "confirmDeleteHeader": "Dzēst atļauju(as)",
+    "confirmDeleteMessage": "Tiks izdzēsta(s) {0} atļauja(s).",
+    "name": "Nosaukums"
+  },
   "form": {
     "common": {
       "dragAndDropToUpload": "Velc un met šeit lai Augšupielādētu",
@@ -294,7 +299,8 @@
     "editRole": "Rediģēt lomu",
     "createRole": "Izveidot lomu",
     "viewTermsOfUse": "Lietošanas noteikumi",
-    "manageServicePrices": "Pārvaldīt pakalpojumu cenas"
+    "manageServicePrices": "Pārvaldīt pakalpojumu cenas",
+    "managePermissions": "Pārvaldīt atļaujas"
   },
   "dataSize": {
     "bits": "{0} biti",

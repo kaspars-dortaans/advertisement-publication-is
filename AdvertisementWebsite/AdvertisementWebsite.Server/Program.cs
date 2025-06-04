@@ -191,6 +191,7 @@ services.AddScoped<IAttributeValidatorService, AttributeValidatorService>();
 services.AddScoped<IPaymentService, PaymentService>();
 services.AddScoped<IAttributeService, AttributeService>();
 services.AddScoped<IRoleService, RoleService>();
+services.AddScoped<IPermissionService, PermissionService>();
 
 //Helpers
 services.AddScoped<IStorage, LocalFileStorage>();

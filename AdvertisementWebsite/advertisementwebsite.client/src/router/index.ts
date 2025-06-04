@@ -593,6 +593,16 @@ const router = createRouter({
       }
     },
 
+    //Permissions
+    {
+      path: '/manage-permissions',
+      name: 'managePermissions',
+      component: () => import('../views/ManagePermissions.vue'),
+      meta: {
+        requiresPermission: Permissions.ViewAllPermissions
+      }
+    },
+
     //Not found
     {
       path: '/:all(.*)*',

@@ -4992,6 +4992,272 @@ export class PaymentClient {
     }
 }
 
+export class PermissionClient {
+    protected instance: AxiosInstance;
+    protected baseUrl: string;
+    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+
+    constructor(baseUrl?: string, instance?: AxiosInstance) {
+
+        this.instance = instance || axios.create();
+
+        this.baseUrl = baseUrl ?? "";
+
+    }
+
+    /**
+     * @param body (optional) 
+     * @return OK
+     */
+    getPermissionList(body: DataTableQuery | undefined, cancelToken?: CancelToken): Promise<PermissionListItemDataTableQueryResponse> {
+        let url_ = this.baseUrl + "/api/Permission/GetPermissionList";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_: AxiosRequestConfig = {
+            data: content_,
+            method: "POST",
+            url: url_,
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "text/plain"
+            },
+            cancelToken
+        };
+
+        return this.instance.request(options_).catch((_error: any) => {
+            if (isAxiosError(_error) && _error.response) {
+                return _error.response;
+            } else {
+                throw _error;
+            }
+        }).then((_response: AxiosResponse) => {
+            return this.processGetPermissionList(_response);
+        });
+    }
+
+    protected processGetPermissionList(response: AxiosResponse): Promise<PermissionListItemDataTableQueryResponse> {
+        const status = response.status;
+        let _headers: any = {};
+        if (response.headers && typeof response.headers === "object") {
+            for (const k in response.headers) {
+                if (response.headers.hasOwnProperty(k)) {
+                    _headers[k] = response.headers[k];
+                }
+            }
+        }
+        if (status === 200) {
+            const _responseText = response.data;
+            let result200: any = null;
+            let resultData200  = _responseText;
+            result200 = PermissionListItemDataTableQueryResponse.fromJS(resultData200);
+            return Promise.resolve<PermissionListItemDataTableQueryResponse>(result200);
+
+        } else if (status === 400) {
+            const _responseText = response.data;
+            let result400: any = null;
+            let resultData400  = _responseText;
+            result400 = RequestExceptionResponse.fromJS(resultData400);
+            return throwException("Bad Request", status, _responseText, _headers, result400);
+
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.data;
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Promise.resolve<PermissionListItemDataTableQueryResponse>(null as any);
+    }
+
+    /**
+     * @param body (optional) 
+     * @return OK
+     */
+    createPermission(body: PutPermissionRequest | undefined, cancelToken?: CancelToken): Promise<Ok> {
+        let url_ = this.baseUrl + "/api/Permission/CreatePermission";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_: AxiosRequestConfig = {
+            data: content_,
+            method: "POST",
+            url: url_,
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "text/plain"
+            },
+            cancelToken
+        };
+
+        return this.instance.request(options_).catch((_error: any) => {
+            if (isAxiosError(_error) && _error.response) {
+                return _error.response;
+            } else {
+                throw _error;
+            }
+        }).then((_response: AxiosResponse) => {
+            return this.processCreatePermission(_response);
+        });
+    }
+
+    protected processCreatePermission(response: AxiosResponse): Promise<Ok> {
+        const status = response.status;
+        let _headers: any = {};
+        if (response.headers && typeof response.headers === "object") {
+            for (const k in response.headers) {
+                if (response.headers.hasOwnProperty(k)) {
+                    _headers[k] = response.headers[k];
+                }
+            }
+        }
+        if (status === 200) {
+            const _responseText = response.data;
+            let result200: any = null;
+            let resultData200  = _responseText;
+            result200 = Ok.fromJS(resultData200);
+            return Promise.resolve<Ok>(result200);
+
+        } else if (status === 400) {
+            const _responseText = response.data;
+            let result400: any = null;
+            let resultData400  = _responseText;
+            result400 = RequestExceptionResponse.fromJS(resultData400);
+            return throwException("Bad Request", status, _responseText, _headers, result400);
+
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.data;
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Promise.resolve<Ok>(null as any);
+    }
+
+    /**
+     * @param body (optional) 
+     * @return OK
+     */
+    editPermission(body: PutPermissionRequest | undefined, cancelToken?: CancelToken): Promise<Ok> {
+        let url_ = this.baseUrl + "/api/Permission/EditPermission";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_: AxiosRequestConfig = {
+            data: content_,
+            method: "POST",
+            url: url_,
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "text/plain"
+            },
+            cancelToken
+        };
+
+        return this.instance.request(options_).catch((_error: any) => {
+            if (isAxiosError(_error) && _error.response) {
+                return _error.response;
+            } else {
+                throw _error;
+            }
+        }).then((_response: AxiosResponse) => {
+            return this.processEditPermission(_response);
+        });
+    }
+
+    protected processEditPermission(response: AxiosResponse): Promise<Ok> {
+        const status = response.status;
+        let _headers: any = {};
+        if (response.headers && typeof response.headers === "object") {
+            for (const k in response.headers) {
+                if (response.headers.hasOwnProperty(k)) {
+                    _headers[k] = response.headers[k];
+                }
+            }
+        }
+        if (status === 200) {
+            const _responseText = response.data;
+            let result200: any = null;
+            let resultData200  = _responseText;
+            result200 = Ok.fromJS(resultData200);
+            return Promise.resolve<Ok>(result200);
+
+        } else if (status === 400) {
+            const _responseText = response.data;
+            let result400: any = null;
+            let resultData400  = _responseText;
+            result400 = RequestExceptionResponse.fromJS(resultData400);
+            return throwException("Bad Request", status, _responseText, _headers, result400);
+
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.data;
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Promise.resolve<Ok>(null as any);
+    }
+
+    /**
+     * @param body (optional) 
+     * @return OK
+     */
+    deletePermissions(body: number[] | undefined, cancelToken?: CancelToken): Promise<Ok> {
+        let url_ = this.baseUrl + "/api/Permission/DeletePermissions";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_: AxiosRequestConfig = {
+            data: content_,
+            method: "POST",
+            url: url_,
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "text/plain"
+            },
+            cancelToken
+        };
+
+        return this.instance.request(options_).catch((_error: any) => {
+            if (isAxiosError(_error) && _error.response) {
+                return _error.response;
+            } else {
+                throw _error;
+            }
+        }).then((_response: AxiosResponse) => {
+            return this.processDeletePermissions(_response);
+        });
+    }
+
+    protected processDeletePermissions(response: AxiosResponse): Promise<Ok> {
+        const status = response.status;
+        let _headers: any = {};
+        if (response.headers && typeof response.headers === "object") {
+            for (const k in response.headers) {
+                if (response.headers.hasOwnProperty(k)) {
+                    _headers[k] = response.headers[k];
+                }
+            }
+        }
+        if (status === 200) {
+            const _responseText = response.data;
+            let result200: any = null;
+            let resultData200  = _responseText;
+            result200 = Ok.fromJS(resultData200);
+            return Promise.resolve<Ok>(result200);
+
+        } else if (status === 400) {
+            const _responseText = response.data;
+            let result400: any = null;
+            let resultData400  = _responseText;
+            result400 = RequestExceptionResponse.fromJS(resultData400);
+            return throwException("Bad Request", status, _responseText, _headers, result400);
+
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.data;
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Promise.resolve<Ok>(null as any);
+    }
+}
+
 export class RoleClient {
     protected instance: AxiosInstance;
     protected baseUrl: string;
@@ -9929,6 +10195,122 @@ export enum PaymentType {
     ExtendAdvertisementNotificationSubscription = "ExtendAdvertisementNotificationSubscription",
 }
 
+export class PermissionListItem implements IPermissionListItem {
+    id?: number;
+    name?: string | undefined;
+
+    constructor(data?: IPermissionListItem) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.name = _data["name"];
+        }
+    }
+
+    static fromJS(data: any): PermissionListItem {
+        data = typeof data === 'object' ? data : {};
+        let result = new PermissionListItem();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["name"] = this.name;
+        return data;
+    }
+}
+
+export interface IPermissionListItem {
+    id?: number;
+    name?: string | undefined;
+}
+
+export class PermissionListItemDataTableQueryResponse implements IPermissionListItemDataTableQueryResponse {
+    draw?: number;
+    recordsTotal?: number;
+    recordsFiltered?: number;
+    data?: PermissionListItem[] | undefined;
+    aggregates?: { [key: string]: any; } | undefined;
+    error?: string | undefined;
+
+    constructor(data?: IPermissionListItemDataTableQueryResponse) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.draw = _data["draw"];
+            this.recordsTotal = _data["recordsTotal"];
+            this.recordsFiltered = _data["recordsFiltered"];
+            if (Array.isArray(_data["data"])) {
+                this.data = [] as any;
+                for (let item of _data["data"])
+                    this.data!.push(PermissionListItem.fromJS(item));
+            }
+            if (_data["aggregates"]) {
+                this.aggregates = {} as any;
+                for (let key in _data["aggregates"]) {
+                    if (_data["aggregates"].hasOwnProperty(key))
+                        (<any>this.aggregates)![key] = _data["aggregates"][key];
+                }
+            }
+            this.error = _data["error"];
+        }
+    }
+
+    static fromJS(data: any): PermissionListItemDataTableQueryResponse {
+        data = typeof data === 'object' ? data : {};
+        let result = new PermissionListItemDataTableQueryResponse();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["draw"] = this.draw;
+        data["recordsTotal"] = this.recordsTotal;
+        data["recordsFiltered"] = this.recordsFiltered;
+        if (Array.isArray(this.data)) {
+            data["data"] = [];
+            for (let item of this.data)
+                data["data"].push(item ? item.toJSON() : <any>undefined);
+        }
+        if (this.aggregates) {
+            data["aggregates"] = {};
+            for (let key in this.aggregates) {
+                if (this.aggregates.hasOwnProperty(key))
+                    (<any>data["aggregates"])[key] = (<any>this.aggregates)[key];
+            }
+        }
+        data["error"] = this.error;
+        return data;
+    }
+}
+
+export interface IPermissionListItemDataTableQueryResponse {
+    draw?: number;
+    recordsTotal?: number;
+    recordsFiltered?: number;
+    data?: PermissionListItem[] | undefined;
+    aggregates?: { [key: string]: any; } | undefined;
+    error?: string | undefined;
+}
+
 export class PostTimeDto implements IPostTimeDto {
     days?: number;
     weeks?: number;
@@ -10309,6 +10691,46 @@ export interface IPutCategoryRequest {
     parentCategoryId?: number | undefined;
     parentCategoryName?: string | undefined;
     categoryAttributeOrder: Int32StringKeyValuePair[];
+}
+
+export class PutPermissionRequest implements IPutPermissionRequest {
+    id?: number | undefined;
+    name!: string;
+
+    constructor(data?: IPutPermissionRequest) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.name = _data["name"];
+        }
+    }
+
+    static fromJS(data: any): PutPermissionRequest {
+        data = typeof data === 'object' ? data : {};
+        let result = new PutPermissionRequest();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["name"] = this.name;
+        return data;
+    }
+}
+
+export interface IPutPermissionRequest {
+    id?: number | undefined;
+    name: string;
 }
 
 export class RefreshRequest implements IRefreshRequest {

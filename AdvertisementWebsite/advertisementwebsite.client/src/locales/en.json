@@ -130,6 +130,11 @@
     "name": "Title",
     "permissionCount": "Permission count"
   },
+  "managePermissions": {
+    "confirmDeleteHeader": "Delete permission(s)",
+    "confirmDeleteMessage": "{0} permission(s) will be deleted.",
+    "name": "Title"
+  },
   "form": {
     "common": {
       "dragAndDropToUpload": "Drag and drop here to upload",
@@ -294,7 +299,8 @@
     "editRole": "Edit role",
     "createRole": "Create role",
     "viewTermsOfUse": "Terms of use",
-    "manageServicePrices": "Manage service prices"
+    "manageServicePrices": "Manage service prices",
+    "managePermissions": "Manage permissions"
   },
   "dataSize": {
     "bits": "{0} b",
