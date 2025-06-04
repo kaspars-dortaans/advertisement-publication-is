@@ -26,4 +26,7 @@ export class CustomErrorCodes {
   static readonly UserNotOwnerOfAdvertisement = "UserNotOwnerOfAdvertisement"
   static readonly ChatAlreadyExists = "ChatAlreadyExists"
   static readonly TotalsDoesNotMatch = "TotalsDoesNotMatch"
+  static readonly MinLength = "MinLength"
+  static readonly MaxLength = "MaxLength"
+  static readonly ElementMaxLength = "ElementMaxLength"
 }
