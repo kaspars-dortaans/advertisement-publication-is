@@ -205,6 +205,10 @@ const allRouteItems: INavbarItem[] = [
       {
         route: 'manageAttributeValueLists',
         label: 'navigation.manageAttributeValueLists'
+      },
+      {
+        route: 'manageServicePrices',
+        label: 'navigation.manageServicePrices'
       }
     ]
   },

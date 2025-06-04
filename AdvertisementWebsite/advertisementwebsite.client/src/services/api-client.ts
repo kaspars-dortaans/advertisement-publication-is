@@ -4869,6 +4869,127 @@ export class PaymentClient {
         }
         return Promise.resolve<Ok>(null as any);
     }
+
+    /**
+     * @return OK
+     */
+    getServicePrices( cancelToken?: CancelToken): Promise<Anonymous> {
+        let url_ = this.baseUrl + "/api/Payment/GetServicePrices";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: AxiosRequestConfig = {
+            method: "GET",
+            url: url_,
+            headers: {
+                "Accept": "text/plain"
+            },
+            cancelToken
+        };
+
+        return this.instance.request(options_).catch((_error: any) => {
+            if (isAxiosError(_error) && _error.response) {
+                return _error.response;
+            } else {
+                throw _error;
+            }
+        }).then((_response: AxiosResponse) => {
+            return this.processGetServicePrices(_response);
+        });
+    }
+
+    protected processGetServicePrices(response: AxiosResponse): Promise<Anonymous> {
+        const status = response.status;
+        let _headers: any = {};
+        if (response.headers && typeof response.headers === "object") {
+            for (const k in response.headers) {
+                if (response.headers.hasOwnProperty(k)) {
+                    _headers[k] = response.headers[k];
+                }
+            }
+        }
+        if (status === 200) {
+            const _responseText = response.data;
+            let result200: any = null;
+            let resultData200  = _responseText;
+            result200 = Anonymous.fromJS(resultData200);
+            return Promise.resolve<Anonymous>(result200);
+
+        } else if (status === 400) {
+            const _responseText = response.data;
+            let result400: any = null;
+            let resultData400  = _responseText;
+            result400 = RequestExceptionResponse.fromJS(resultData400);
+            return throwException("Bad Request", status, _responseText, _headers, result400);
+
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.data;
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Promise.resolve<Anonymous>(null as any);
+    }
+
+    /**
+     * @param body (optional) 
+     * @return OK
+     */
+    setServicePrices(body: SetServicePricesRequest | undefined, cancelToken?: CancelToken): Promise<Ok> {
+        let url_ = this.baseUrl + "/api/Payment/SetServicePrices";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_: AxiosRequestConfig = {
+            data: content_,
+            method: "POST",
+            url: url_,
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "text/plain"
+            },
+            cancelToken
+        };
+
+        return this.instance.request(options_).catch((_error: any) => {
+            if (isAxiosError(_error) && _error.response) {
+                return _error.response;
+            } else {
+                throw _error;
+            }
+        }).then((_response: AxiosResponse) => {
+            return this.processSetServicePrices(_response);
+        });
+    }
+
+    protected processSetServicePrices(response: AxiosResponse): Promise<Ok> {
+        const status = response.status;
+        let _headers: any = {};
+        if (response.headers && typeof response.headers === "object") {
+            for (const k in response.headers) {
+                if (response.headers.hasOwnProperty(k)) {
+                    _headers[k] = response.headers[k];
+                }
+            }
+        }
+        if (status === 200) {
+            const _responseText = response.data;
+            let result200: any = null;
+            let resultData200  = _responseText;
+            result200 = Ok.fromJS(resultData200);
+            return Promise.resolve<Ok>(result200);
+
+        } else if (status === 400) {
+            const _responseText = response.data;
+            let result400: any = null;
+            let resultData400  = _responseText;
+            result400 = RequestExceptionResponse.fromJS(resultData400);
+            return throwException("Bad Request", status, _responseText, _headers, result400);
+
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.data;
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Promise.resolve<Ok>(null as any);
+    }
 }
 
 export class RoleClient {
@@ -10749,6 +10870,45 @@ export interface ISetActiveStatusRequest {
     isActive: boolean;
 }
 
+export class SetServicePricesRequest implements ISetServicePricesRequest {
+    prices!: Prices;
+
+    constructor(data?: ISetServicePricesRequest) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+        if (!data) {
+            this.prices = new Prices();
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.prices = _data["prices"] ? Prices.fromJS(_data["prices"]) : new Prices();
+        }
+    }
+
+    static fromJS(data: any): SetServicePricesRequest {
+        data = typeof data === 'object' ? data : {};
+        let result = new SetServicePricesRequest();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["prices"] = this.prices ? this.prices.toJSON() : <any>undefined;
+        return data;
+    }
+}
+
+export interface ISetServicePricesRequest {
+    prices: Prices;
+}
+
 export class StringStringKeyValuePair implements IStringStringKeyValuePair {
     key?: string | undefined;
     value?: string | undefined;
@@ -11192,6 +11352,102 @@ export enum ValueTypes {
     Integer = "Integer",
     Decimal = "Decimal",
     ValueListEntry = "ValueListEntry",
+}
+
+export class Anonymous implements IAnonymous {
+    createAdvertisement?: number;
+    advertisementPerDay?: number;
+    createAdvertisementNotificationSubscription?: number;
+    subscriptionPerDay?: number;
+
+    constructor(data?: IAnonymous) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.createAdvertisement = _data["CreateAdvertisement"];
+            this.advertisementPerDay = _data["AdvertisementPerDay"];
+            this.createAdvertisementNotificationSubscription = _data["CreateAdvertisementNotificationSubscription"];
+            this.subscriptionPerDay = _data["SubscriptionPerDay"];
+        }
+    }
+
+    static fromJS(data: any): Anonymous {
+        data = typeof data === 'object' ? data : {};
+        let result = new Anonymous();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["CreateAdvertisement"] = this.createAdvertisement;
+        data["AdvertisementPerDay"] = this.advertisementPerDay;
+        data["CreateAdvertisementNotificationSubscription"] = this.createAdvertisementNotificationSubscription;
+        data["SubscriptionPerDay"] = this.subscriptionPerDay;
+        return data;
+    }
+}
+
+export interface IAnonymous {
+    createAdvertisement?: number;
+    advertisementPerDay?: number;
+    createAdvertisementNotificationSubscription?: number;
+    subscriptionPerDay?: number;
+}
+
+export class Prices implements IPrices {
+    createAdvertisement?: number;
+    advertisementPerDay?: number;
+    createAdvertisementNotificationSubscription?: number;
+    subscriptionPerDay?: number;
+
+    constructor(data?: IPrices) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.createAdvertisement = _data["CreateAdvertisement"];
+            this.advertisementPerDay = _data["AdvertisementPerDay"];
+            this.createAdvertisementNotificationSubscription = _data["CreateAdvertisementNotificationSubscription"];
+            this.subscriptionPerDay = _data["SubscriptionPerDay"];
+        }
+    }
+
+    static fromJS(data: any): Prices {
+        data = typeof data === 'object' ? data : {};
+        let result = new Prices();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["CreateAdvertisement"] = this.createAdvertisement;
+        data["AdvertisementPerDay"] = this.advertisementPerDay;
+        data["CreateAdvertisementNotificationSubscription"] = this.createAdvertisementNotificationSubscription;
+        data["SubscriptionPerDay"] = this.subscriptionPerDay;
+        return data;
+    }
+}
+
+export interface IPrices {
+    createAdvertisement?: number;
+    advertisementPerDay?: number;
+    createAdvertisementNotificationSubscription?: number;
+    subscriptionPerDay?: number;
 }
 
 export interface FileParameter {

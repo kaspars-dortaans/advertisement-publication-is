@@ -57,6 +57,10 @@ export class Field<FieldType, TValues extends GenericObject> {
     return !!this._errors.value[this._path]
   }
 
+  get path() {
+    return this._path
+  }
+
   setErrors = (e: string | string[]) => {
     this._setFieldError(this._path, e)
   }

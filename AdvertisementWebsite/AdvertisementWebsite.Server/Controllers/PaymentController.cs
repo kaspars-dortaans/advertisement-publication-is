@@ -5,6 +5,7 @@ using BusinessLogic.Authorization;
 using BusinessLogic.Dto;
 using BusinessLogic.Dto.DataTableQuery;
 using BusinessLogic.Dto.Payment;
+using BusinessLogic.Enums;
 using BusinessLogic.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -77,5 +78,23 @@ public class PaymentController(
     {
         var items = _mapper.Map<IEnumerable<PaymentItemDto>>(request.PaymentItems);
         await _paymentService.MakePayment(items, request.TotalAmountConfirmation, User.GetUserId()!.Value);
+    }
+
+    [HasPermission(Permissions.ManageServicePrices)]
+    [ProducesResponseType<Dictionary<CostType, decimal>>(StatusCodes.Status200OK)]
+    [ProducesResponseType<RequestExceptionResponse>(StatusCodes.Status400BadRequest)]
+    [HttpGet]
+    public async Task<Dictionary<CostType, decimal>> GetServicePrices()
+    {
+        return await _paymentService.GetServicePrices();
+    }
+
+    [HasPermission(Permissions.ManageServicePrices)]
+    [ProducesResponseType<Ok>(StatusCodes.Status200OK)]
+    [ProducesResponseType<RequestExceptionResponse>(StatusCodes.Status400BadRequest)]
+    [HttpPost]
+    public async Task SetServicePrices(SetServicePricesRequest request)
+    {
+        await _paymentService.SetServicePrices(request.Prices);
     }
 }

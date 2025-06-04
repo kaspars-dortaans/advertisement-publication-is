@@ -583,6 +583,16 @@ const router = createRouter({
       component: () => import('../views/ViewTermsOfUse.vue')
     },
 
+    //Service prices
+    {
+      path: '/manage-service-prices',
+      name: 'manageServicePrices',
+      component: () => import('../views/ManageServicePrices.vue'),
+      meta: {
+        requiresPermission: Permissions.ManageServicePrices
+      }
+    },
+
     //Not found
     {
       path: '/:all(.*)*',

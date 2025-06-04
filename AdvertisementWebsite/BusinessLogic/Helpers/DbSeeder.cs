@@ -122,6 +122,9 @@ public class DbSeeder(Context context, UserManager<User> userManager, RoleManage
             //Rule violation reports
             Permissions.ViewRuleViolationReports,
             Permissions.ResolveRuleViolationReport,
+
+            //Manage service prices
+            Permissions.ManageServicePrices
         }.Select(p => Enum.GetName(p)).ToList();
 
         var adminRolePermissions = _context.Permissions

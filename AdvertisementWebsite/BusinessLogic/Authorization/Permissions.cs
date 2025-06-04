@@ -84,4 +84,7 @@ public enum Permissions
     //Rule violation reports
     ViewRuleViolationReports,
     ResolveRuleViolationReport,
+
+    //Manage service prices
+    ManageServicePrices
 }

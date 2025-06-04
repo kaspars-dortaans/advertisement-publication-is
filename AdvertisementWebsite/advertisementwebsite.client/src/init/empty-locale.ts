@@ -297,7 +297,8 @@ export const emptyLocale = {
     viewRole: '',
     editRole: '',
     createRole: '',
-    viewTermsOfUse: ''
+    viewTermsOfUse: '',
+    manageServicePrices: ''
   },
   dataSize: {
     bits: '',
@@ -334,6 +335,12 @@ export const emptyLocale = {
     Search: '',
     FromTo: '',
     Match: ''
+  },
+  costType: {
+    createAdvertisement: '',
+    advertisementPerDay: '',
+    createAdvertisementNotificationSubscription: '',
+    subscriptionPerDay: ''
   },
   dayNames: [
      '',

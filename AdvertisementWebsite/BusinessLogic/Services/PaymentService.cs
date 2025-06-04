@@ -278,4 +278,30 @@ public class PaymentService(Context dbContext) : BaseService<Payment>(dbContext)
     {
         return costs[CostType.SubscriptionPerDay] * timePeriodInDays;
     }
+
+    public async Task SetServicePrices(Dictionary<CostType, decimal> setPrices)
+    {
+        var existingPrices = await DbContext.Costs.ToListAsync();
+        foreach (var setPrice in setPrices)
+        {
+            var price = existingPrices.FirstOrDefault(p => p.Type == setPrice.Key);
+            if(price == null)
+            {
+                existingPrices.Add(new Cost
+                {
+                    Type = setPrice.Key,
+                    Amount = setPrice.Value
+                });
+            } else
+            {
+                price.Amount = setPrice.Value;
+            }
+        }
+        await DbContext.SaveChangesAsync();
+    }
+
+    public Task<Dictionary<CostType, decimal>> GetServicePrices()
+    {
+        return DbContext.Costs.ToDictionaryAsync(c => c.Type, c => c.Amount);
+    }
 }

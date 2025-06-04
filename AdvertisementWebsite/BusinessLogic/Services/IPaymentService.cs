@@ -1,6 +1,7 @@
 ﻿using BusinessLogic.Dto.DataTableQuery;
 using BusinessLogic.Dto.Payment;
 using BusinessLogic.Entities.Payments;
+using BusinessLogic.Enums;
 
 namespace BusinessLogic.Services;
 
@@ -32,4 +33,8 @@ public interface IPaymentService : IBaseService<Payment>
     /// <param name="userId"></param>
     /// <returns></returns>
     public Task MakePayment(IEnumerable<PaymentItemDto> items, decimal confirmTotalAmount, int userId);
+
+    public Task SetServicePrices(Dictionary<CostType, decimal> setPrices);
+
+    public Task<Dictionary<CostType, decimal>> GetServicePrices();
 }

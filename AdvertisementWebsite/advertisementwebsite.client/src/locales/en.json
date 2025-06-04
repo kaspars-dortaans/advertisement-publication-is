@@ -293,7 +293,8 @@
     "viewRole": "View role",
     "editRole": "Edit role",
     "createRole": "Create role",
-    "viewTermsOfUse": "Terms of use"
+    "viewTermsOfUse": "Terms of use",
+    "manageServicePrices": "Manage service prices"
   },
   "dataSize": {
     "bits": "{0} b",
@@ -330,6 +331,12 @@
     "Search": "Search by text",
     "FromTo": "Search in range",
     "Match": "Match exactly"
+  },
+  "costType": {
+    "createAdvertisement": "Create advertisement",
+    "advertisementPerDay": "Publicly display advertisement per day",
+    "createAdvertisementNotificationSubscription": "Create advertisement notification subscription",
+    "subscriptionPerDay": "Advertisement notification subscription price per day"
   },
   "dayNames": [
     "Sunday",

@@ -293,7 +293,8 @@
     "viewRole": "Skatīt lomu",
     "editRole": "Rediģēt lomu",
     "createRole": "Izveidot lomu",
-    "viewTermsOfUse": "Lietošanas noteikumi"
+    "viewTermsOfUse": "Lietošanas noteikumi",
+    "manageServicePrices": "Pārvaldīt pakalpojumu cenas"
   },
   "dataSize": {
     "bits": "{0} biti",
@@ -330,6 +331,12 @@
     "Search": "Meklēt pēc teksta",
     "FromTo": "Meklēt diapazonā",
     "Match": "Tieša atbilstība"
+  },
+  "costType": {
+    "createAdvertisement": "Sludinājuma izveide",
+    "advertisementPerDay": "Sludinājuma dienas cena",
+    "createAdvertisementNotificationSubscription": "Sludinājuma paziņojumu abonementa izveides cena",
+    "subscriptionPerDay": "Sludinājumu paziņojumu abonementa dienas cena"
   },
   "dayNames": [
     "Svētdiena",
