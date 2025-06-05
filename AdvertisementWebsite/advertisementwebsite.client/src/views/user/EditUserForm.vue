@@ -5,7 +5,7 @@
         <template #header>
           <div class="panel-title-container">
             <BackButton :default-to="{ name: 'manageUsers' }" />
-            <h3 class="page-title">{{ l.navigation.editProfileInfo }}</h3>
+            <h3 class="page-title">{{ l.navigation.editUser }}</h3>
           </div>
         </template>
         <form class="flex flex-col gap-3 md:items-center bg-white" @submit="onSubmit">

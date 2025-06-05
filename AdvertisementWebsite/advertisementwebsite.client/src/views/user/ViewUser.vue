@@ -5,7 +5,7 @@
         <template #header>
           <div class="panel-title-container">
             <BackButton :default-to="{ name: 'manageUsers' }" />
-            <h3 class="page-title">{{ l.navigation.editProfileInfo }}</h3>
+            <h3 class="page-title">{{ l.navigation.viewUser }}</h3>
             <Button
               v-if="isAllowedToEdit"
               :label="l.actions.edit"
