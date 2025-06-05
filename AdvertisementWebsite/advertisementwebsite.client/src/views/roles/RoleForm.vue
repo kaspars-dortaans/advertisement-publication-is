@@ -119,9 +119,12 @@ watch(LocaleService.currentLocaleName, async () => {
 //Methods
 const reloadData = async () => {
   loading.value++
-  loadPermissionOptions()
+  const loadPermissionOptionPromise = loadPermissionOptions()
   if (isEdit.value) {
-    const formInfo = await roleService.getRoleFormInfo(props.roleId)
+    const [formInfo] = await Promise.all([
+      roleService.getRoleFormInfo(props.roleId),
+      loadPermissionOptionPromise
+    ])
     const selectedPermissions =
       formInfo.permissions?.map((p) => permissionOptions.value.findIndex((po) => po.key === p)) ??
       []
