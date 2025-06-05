@@ -58,7 +58,7 @@
 }
 
 .p-button-label {
-    @apply font-medium
+    @apply font-normal
 }
 
 .p-button-fluid {

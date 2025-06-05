@@ -419,6 +419,7 @@
     "Nov",
     "Dec"
   ],
+  "dateFormat": "dd/mm/yy",
   "errors": {
     "errorOccurred": "Notika kļūda",
     "FieldNotValid": "{0} lauka vērtība nav derīga",

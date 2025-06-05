@@ -106,7 +106,7 @@ const cropper = useTemplateRef('cropper')
 const stencilSize = 128
 const pt = {
   root: {
-    class: 'flex flex-col self-stretch md:self-center w-full md:w-96 md:h-96'
+    class: 'flex flex-col self-stretch md:self-center w-full md:w-[416px] md:h-96'
   },
   header: {
     class: [

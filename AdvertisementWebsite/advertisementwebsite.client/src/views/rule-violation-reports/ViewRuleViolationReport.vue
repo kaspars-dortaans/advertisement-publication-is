@@ -69,13 +69,15 @@
           </template>
         </dl>
 
-        <Button
-          v-if="!showResolveForm && isAllowedToResolve"
-          class="w-full mt-5 lg:w-fit lg:mx-auto"
-          @click="showResolveForm = true"
-        >
-          {{ report.isResolved ? l.actions.edit : l.actions.resolve }}
-        </Button>
+        <div class="flex flex-row justify-center">
+          <Button
+            v-if="!showResolveForm && isAllowedToResolve"
+            class="w-full mt-5 lg:w-fit lg:mx-auto"
+            @click="showResolveForm = true"
+          >
+            {{ report.isResolved ? l.actions.edit : l.actions.resolve }}
+          </Button>
+        </div>
 
         <form v-if="showResolveForm" class="flex flex-col gap-4" @submit="submit">
           <FieldError :messages="formErrors" />

@@ -23,7 +23,7 @@
 
 <script lang="ts" setup>
 import { formatDataSize } from '@/utils/file-helper'
-import { defineExpose, ref, useTemplateRef } from 'vue'
+import { ref, useTemplateRef } from 'vue'
 
 //Model
 const model = defineModel<File[]>()

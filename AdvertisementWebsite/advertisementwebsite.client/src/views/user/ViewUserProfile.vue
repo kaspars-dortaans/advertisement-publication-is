@@ -39,6 +39,7 @@
               :label="userInfo.linkToUserSite"
               as="a"
               :href="userInfo.linkToUserSite"
+              class="flex-grow justify-start"
             ></Button>
           </InputGroup>
         </div>

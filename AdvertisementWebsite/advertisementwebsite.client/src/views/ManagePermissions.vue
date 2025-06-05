@@ -112,7 +112,7 @@ const rowEditSaveHandler = async (e: DataTableRowEditSaveEvent) => {
 const confirmRowDelete = async () => {
   confirmDelete(confirm, {
     header: l.value.managePermissions.confirmDeleteHeader,
-    message: ls.l('.confirmDeleteMessage', selectedRows.value.length),
+    message: ls.l('managePermissions.confirmDeleteMessage', selectedRows.value.length),
     accept: () => {
       deleteRows()
     }

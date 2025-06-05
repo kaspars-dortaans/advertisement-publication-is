@@ -1,7 +1,7 @@
 <template>
   <ResponsiveLayout>
     <BlockWithSpinner :loading="loading || isSubmitting" class="flex-1 lg:flex-none flex flex-col">
-      <Panel class="rounded-none lg:rounded-md flex-1 lg:min-w-96">
+      <Panel class="rounded-none lg:rounded-md flex-1 lg:min-w-[720px]">
         <template #header>
           <div class="panel-title-container">
             <BackButton :defaultTo="{ name: 'manageAttributeValueLists' }" />
@@ -34,7 +34,11 @@
           />
           <FieldError :field="fields.entries" />
 
-          <Button :label="isEdit ? l.actions.save : l.actions.create" type="submit" class="mt-3" />
+          <Button
+            :label="isEdit ? l.actions.save : l.actions.create"
+            type="submit"
+            class="mt-3 lg:self-center"
+          />
         </form>
       </Panel>
     </BlockWithSpinner>

@@ -2,6 +2,7 @@
 * Assign empty locale to prevent errors when trying to localize while real locale is not loaded */
 export const emptyLocale = {
   termsOfUse: '',
+  dateFormat: '',
   false: '',
   true: '',
   title: '',

@@ -1,7 +1,7 @@
 <template>
   <ResponsiveLayout>
     <div
-      class="flex-1 lg:flex-none flex flex-col gap-[1.125rem] p-[1.125rem] rounded-none lg:rounded-md bg-surface-0"
+      class="flex-1 lg:flex-none flex flex-col gap-[1.125rem] p-[1.125rem] rounded-none lg:rounded-md bg-surface-0 max-w-full"
     >
       <h3 class="page-title mb-2">{{ l.navigation.manageRuleViolationReports }}</h3>
 

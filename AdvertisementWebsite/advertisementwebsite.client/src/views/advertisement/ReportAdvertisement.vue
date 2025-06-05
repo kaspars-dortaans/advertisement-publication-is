@@ -1,6 +1,6 @@
 <template>
   <ResponsiveLayout>
-    <Panel class="my-auto sm:min-w-96 rounded-none lg:rounded-md">
+    <Panel class="my-auto flex-1 lg:flex-none sm:min-w-96 rounded-none lg:rounded-md">
       <template #header>
         <div class="panel-title-container">
           <BackButton :defaultTo="{ name: 'viewAdvertisement' }" />

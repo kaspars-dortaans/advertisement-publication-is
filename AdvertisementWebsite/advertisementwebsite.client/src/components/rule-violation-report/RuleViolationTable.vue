@@ -8,7 +8,11 @@
     @rowSelect="handleRowSelect"
   >
     <template v-if="showResolved">
-      <Column field="isTrue" :header="l.manageRuleViolationReports.isTrue" sortable />
+      <Column field="isTrue" :header="l.manageRuleViolationReports.isTrue" sortable>
+        <template #body="slotProps">
+          {{ typeof slotProps.data.isTrue === 'boolean' ? l[slotProps.data.isTrue] : '' }}
+        </template>
+      </Column>
       <Column
         field="resolutionDescription"
         :header="l.manageRuleViolationReports.resolutionDescription"

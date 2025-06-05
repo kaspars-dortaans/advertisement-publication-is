@@ -20,5 +20,6 @@ public class AttributeValueItem
     //For value list entry name
     public string? ValueName { get; set; } = default!;
     public string? IconName { get; set; }
+    public bool ShowOnListItem { get; set; }
 }
 

@@ -419,6 +419,7 @@
     "Nov",
     "Dec"
   ],
+  "dateFormat": "mm/dd/yy",
   "errors": {
     "errorOccurred": "Error occurred",
     "FieldNotValid": "{0} field is not valid",

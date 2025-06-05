@@ -141,7 +141,6 @@ public class AdvertisementService(
                 AdvertisementText = a.AdvertisementText,
                 ThumbnailImageId = a.ThumbnailImageId,
                 AttributeValues = a.AttributeValues
-                    .Where(v => v.Attribute.ShowOnListItem)
                     .OrderBy(v => v.Attribute.CategoryAttributes.First(ca => ca.CategoryId == v.Advertisement.CategoryId).AttributeOrder)
                     .Select(v => new AttributeValueItem
                     {
@@ -150,8 +149,9 @@ public class AdvertisementService(
                         Value = v.Value,
                         IconName = v.Attribute.IconName,
                         ValueName = v.Attribute.ValueType == Enums.ValueTypes.ValueListEntry && v.Attribute.AttributeValueList != null
-                        ? v.Attribute.AttributeValueList.ListEntries.First(entry => entry.Id == Convert.ToInt16(v.Value)).LocalisedNames.Localise(locale)
-                        : null
+                            ? v.Attribute.AttributeValueList.ListEntries.First(entry => entry.Id == Convert.ToInt16(v.Value)).LocalisedNames.Localise(locale)
+                            : null,
+                        ShowOnListItem = v.Attribute.ShowOnListItem
                     })
             });
     }
@@ -170,6 +170,12 @@ public class AdvertisementService(
             AdditionalSort = (query, isSortApplied) => OrderByAttributes(query, isSortApplied, request.AttributeOrder.ToList())
         });
 
+        //In memory filter
+        foreach(var a in dto.Data)
+        {
+            a.AttributeValues = a.AttributeValues.Where(av => av.ShowOnListItem).ToList();
+        }
+        
         //In memory sorting
         if (request.AdvertisementIds is not null && !request.AttributeOrder.Any())
         {
@@ -232,11 +238,11 @@ public class AdvertisementService(
                         : ((!isValueInt || Convert.ToInt32(advertisement.AttributeValues.First(attributeValue => attributeValue.AttributeId == search.AttributeId).Value) >= valueInt)
                             && (!isSecondaryValueInt || Convert.ToInt32(advertisement.AttributeValues.First(attributeValue => attributeValue.AttributeId == search.AttributeId).Value) <= secondaryValueInt))
 
-                    : DbContext.Attributes.First(attribute => attribute.Id == search.AttributeId).FilterType == Enums.FilterType.Search
-                    //Contains search
-                    ? advertisement.AttributeValues.First(attributeValue => attributeValue.AttributeId == search.AttributeId).Value.Contains(search.Value)
-                    //Match
-                    : advertisement.AttributeValues.First(attributeValue => attributeValue.AttributeId == search.AttributeId).Value == search.Value);
+                    : (DbContext.Attributes.First(attribute => attribute.Id == search.AttributeId).FilterType == Enums.FilterType.Search
+                        //Contains search
+                        ? advertisement.AttributeValues.First(attributeValue => attributeValue.AttributeId == search.AttributeId).Value.Contains(search.Value)
+                        //Match
+                        : advertisement.AttributeValues.First(attributeValue => attributeValue.AttributeId == search.AttributeId).Value == search.Value));
         }
         return query;
     }

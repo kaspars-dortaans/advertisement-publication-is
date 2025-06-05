@@ -7984,6 +7984,7 @@ export class AttributeValueItem implements IAttributeValueItem {
     value?: string | undefined;
     valueName?: string | undefined;
     iconName?: string | undefined;
+    showOnListItem?: boolean;
 
     constructor(data?: IAttributeValueItem) {
         if (data) {
@@ -8001,6 +8002,7 @@ export class AttributeValueItem implements IAttributeValueItem {
             this.value = _data["value"];
             this.valueName = _data["valueName"];
             this.iconName = _data["iconName"];
+            this.showOnListItem = _data["showOnListItem"];
         }
     }
 
@@ -8018,6 +8020,7 @@ export class AttributeValueItem implements IAttributeValueItem {
         data["value"] = this.value;
         data["valueName"] = this.valueName;
         data["iconName"] = this.iconName;
+        data["showOnListItem"] = this.showOnListItem;
         return data;
     }
 }
@@ -8028,6 +8031,7 @@ export interface IAttributeValueItem {
     value?: string | undefined;
     valueName?: string | undefined;
     iconName?: string | undefined;
+    showOnListItem?: boolean;
 }
 
 export class AttributeValueListEntryDto implements IAttributeValueListEntryDto {
