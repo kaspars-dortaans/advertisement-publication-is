@@ -7,6 +7,8 @@ public class RuleViolationReport
     public DateTime ReportDate { get; set; }
     public int? ReporterId { get; set; }
     public int ReportedAdvertisementId { get; set; }
+    public bool? IsTrue { get; set; }
+    public string? ResolutionDescription { get; set; }
     public User? Reporter { get; set; }
     public Advertisement ReportedAdvertisement { get; set; } = default!;
 }

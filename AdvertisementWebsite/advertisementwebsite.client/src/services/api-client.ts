@@ -497,69 +497,6 @@ export class AdvertisementClient {
      * @param body (optional) 
      * @return OK
      */
-    reportAdvertisement(body: ReportAdvertisementRequest | undefined, cancelToken?: CancelToken): Promise<OkResult> {
-        let url_ = this.baseUrl + "/api/Advertisement/ReportAdvertisement";
-        url_ = url_.replace(/[?&]$/, "");
-
-        const content_ = JSON.stringify(body);
-
-        let options_: AxiosRequestConfig = {
-            data: content_,
-            method: "POST",
-            url: url_,
-            headers: {
-                "Content-Type": "application/json",
-                "Accept": "text/plain"
-            },
-            cancelToken
-        };
-
-        return this.instance.request(options_).catch((_error: any) => {
-            if (isAxiosError(_error) && _error.response) {
-                return _error.response;
-            } else {
-                throw _error;
-            }
-        }).then((_response: AxiosResponse) => {
-            return this.processReportAdvertisement(_response);
-        });
-    }
-
-    protected processReportAdvertisement(response: AxiosResponse): Promise<OkResult> {
-        const status = response.status;
-        let _headers: any = {};
-        if (response.headers && typeof response.headers === "object") {
-            for (const k in response.headers) {
-                if (response.headers.hasOwnProperty(k)) {
-                    _headers[k] = response.headers[k];
-                }
-            }
-        }
-        if (status === 200) {
-            const _responseText = response.data;
-            let result200: any = null;
-            let resultData200  = _responseText;
-            result200 = OkResult.fromJS(resultData200);
-            return Promise.resolve<OkResult>(result200);
-
-        } else if (status === 400) {
-            const _responseText = response.data;
-            let result400: any = null;
-            let resultData400  = _responseText;
-            result400 = RequestExceptionResponse.fromJS(resultData400);
-            return throwException("Bad Request", status, _responseText, _headers, result400);
-
-        } else if (status !== 200 && status !== 204) {
-            const _responseText = response.data;
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-        }
-        return Promise.resolve<OkResult>(null as any);
-    }
-
-    /**
-     * @param body (optional) 
-     * @return OK
-     */
     getOwnedAdvertisements(body: DataTableQuery | undefined, cancelToken?: CancelToken): Promise<AdvertisementInfoDataTableQueryResponse> {
         let url_ = this.baseUrl + "/api/Advertisement/GetOwnedAdvertisements";
         url_ = url_.replace(/[?&]$/, "");
@@ -5649,6 +5586,272 @@ export class RoleClient {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
         }
         return Promise.resolve<OkResult>(null as any);
+    }
+}
+
+export class RuleViolationReportClient {
+    protected instance: AxiosInstance;
+    protected baseUrl: string;
+    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+
+    constructor(baseUrl?: string, instance?: AxiosInstance) {
+
+        this.instance = instance || axios.create();
+
+        this.baseUrl = baseUrl ?? "";
+
+    }
+
+    /**
+     * @param body (optional) 
+     * @return OK
+     */
+    reportAdvertisement(body: ReportAdvertisementRequest | undefined, cancelToken?: CancelToken): Promise<OkResult> {
+        let url_ = this.baseUrl + "/api/RuleViolationReport/ReportAdvertisement";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_: AxiosRequestConfig = {
+            data: content_,
+            method: "POST",
+            url: url_,
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "text/plain"
+            },
+            cancelToken
+        };
+
+        return this.instance.request(options_).catch((_error: any) => {
+            if (isAxiosError(_error) && _error.response) {
+                return _error.response;
+            } else {
+                throw _error;
+            }
+        }).then((_response: AxiosResponse) => {
+            return this.processReportAdvertisement(_response);
+        });
+    }
+
+    protected processReportAdvertisement(response: AxiosResponse): Promise<OkResult> {
+        const status = response.status;
+        let _headers: any = {};
+        if (response.headers && typeof response.headers === "object") {
+            for (const k in response.headers) {
+                if (response.headers.hasOwnProperty(k)) {
+                    _headers[k] = response.headers[k];
+                }
+            }
+        }
+        if (status === 200) {
+            const _responseText = response.data;
+            let result200: any = null;
+            let resultData200  = _responseText;
+            result200 = OkResult.fromJS(resultData200);
+            return Promise.resolve<OkResult>(result200);
+
+        } else if (status === 400) {
+            const _responseText = response.data;
+            let result400: any = null;
+            let resultData400  = _responseText;
+            result400 = RequestExceptionResponse.fromJS(resultData400);
+            return throwException("Bad Request", status, _responseText, _headers, result400);
+
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.data;
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Promise.resolve<OkResult>(null as any);
+    }
+
+    /**
+     * @param body (optional) 
+     * @return OK
+     */
+    getReportList(body: DataTableQuery | undefined, cancelToken?: CancelToken): Promise<RuleViolationReportListItemDataTableQueryResponse> {
+        let url_ = this.baseUrl + "/api/RuleViolationReport/GetReportList";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_: AxiosRequestConfig = {
+            data: content_,
+            method: "POST",
+            url: url_,
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "text/plain"
+            },
+            cancelToken
+        };
+
+        return this.instance.request(options_).catch((_error: any) => {
+            if (isAxiosError(_error) && _error.response) {
+                return _error.response;
+            } else {
+                throw _error;
+            }
+        }).then((_response: AxiosResponse) => {
+            return this.processGetReportList(_response);
+        });
+    }
+
+    protected processGetReportList(response: AxiosResponse): Promise<RuleViolationReportListItemDataTableQueryResponse> {
+        const status = response.status;
+        let _headers: any = {};
+        if (response.headers && typeof response.headers === "object") {
+            for (const k in response.headers) {
+                if (response.headers.hasOwnProperty(k)) {
+                    _headers[k] = response.headers[k];
+                }
+            }
+        }
+        if (status === 200) {
+            const _responseText = response.data;
+            let result200: any = null;
+            let resultData200  = _responseText;
+            result200 = RuleViolationReportListItemDataTableQueryResponse.fromJS(resultData200);
+            return Promise.resolve<RuleViolationReportListItemDataTableQueryResponse>(result200);
+
+        } else if (status === 400) {
+            const _responseText = response.data;
+            let result400: any = null;
+            let resultData400  = _responseText;
+            result400 = RequestExceptionResponse.fromJS(resultData400);
+            return throwException("Bad Request", status, _responseText, _headers, result400);
+
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.data;
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Promise.resolve<RuleViolationReportListItemDataTableQueryResponse>(null as any);
+    }
+
+    /**
+     * @param id (optional) 
+     * @return OK
+     */
+    getReport(id: number | undefined, cancelToken?: CancelToken): Promise<RuleViolationReportListItem> {
+        let url_ = this.baseUrl + "/api/RuleViolationReport/GetReport?";
+        if (id === null)
+            throw new Error("The parameter 'id' cannot be null.");
+        else if (id !== undefined)
+            url_ += "id=" + encodeURIComponent("" + id) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: AxiosRequestConfig = {
+            method: "GET",
+            url: url_,
+            headers: {
+                "Accept": "text/plain"
+            },
+            cancelToken
+        };
+
+        return this.instance.request(options_).catch((_error: any) => {
+            if (isAxiosError(_error) && _error.response) {
+                return _error.response;
+            } else {
+                throw _error;
+            }
+        }).then((_response: AxiosResponse) => {
+            return this.processGetReport(_response);
+        });
+    }
+
+    protected processGetReport(response: AxiosResponse): Promise<RuleViolationReportListItem> {
+        const status = response.status;
+        let _headers: any = {};
+        if (response.headers && typeof response.headers === "object") {
+            for (const k in response.headers) {
+                if (response.headers.hasOwnProperty(k)) {
+                    _headers[k] = response.headers[k];
+                }
+            }
+        }
+        if (status === 200) {
+            const _responseText = response.data;
+            let result200: any = null;
+            let resultData200  = _responseText;
+            result200 = RuleViolationReportListItem.fromJS(resultData200);
+            return Promise.resolve<RuleViolationReportListItem>(result200);
+
+        } else if (status === 400) {
+            const _responseText = response.data;
+            let result400: any = null;
+            let resultData400  = _responseText;
+            result400 = RequestExceptionResponse.fromJS(resultData400);
+            return throwException("Bad Request", status, _responseText, _headers, result400);
+
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.data;
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Promise.resolve<RuleViolationReportListItem>(null as any);
+    }
+
+    /**
+     * @param body (optional) 
+     * @return OK
+     */
+    resolveReport(body: ResolveRuleViolationReportRequest | undefined, cancelToken?: CancelToken): Promise<Ok> {
+        let url_ = this.baseUrl + "/api/RuleViolationReport/ResolveReport";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_: AxiosRequestConfig = {
+            data: content_,
+            method: "POST",
+            url: url_,
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "text/plain"
+            },
+            cancelToken
+        };
+
+        return this.instance.request(options_).catch((_error: any) => {
+            if (isAxiosError(_error) && _error.response) {
+                return _error.response;
+            } else {
+                throw _error;
+            }
+        }).then((_response: AxiosResponse) => {
+            return this.processResolveReport(_response);
+        });
+    }
+
+    protected processResolveReport(response: AxiosResponse): Promise<Ok> {
+        const status = response.status;
+        let _headers: any = {};
+        if (response.headers && typeof response.headers === "object") {
+            for (const k in response.headers) {
+                if (response.headers.hasOwnProperty(k)) {
+                    _headers[k] = response.headers[k];
+                }
+            }
+        }
+        if (status === 200) {
+            const _responseText = response.data;
+            let result200: any = null;
+            let resultData200  = _responseText;
+            result200 = Ok.fromJS(resultData200);
+            return Promise.resolve<Ok>(result200);
+
+        } else if (status === 400) {
+            const _responseText = response.data;
+            let result400: any = null;
+            let resultData400  = _responseText;
+            result400 = RequestExceptionResponse.fromJS(resultData400);
+            return throwException("Bad Request", status, _responseText, _headers, result400);
+
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.data;
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Promise.resolve<Ok>(null as any);
     }
 }
 
@@ -10977,6 +11180,50 @@ export interface IRequestExceptionResponse {
     [key: string]: any;
 }
 
+export class ResolveRuleViolationReportRequest implements IResolveRuleViolationReportRequest {
+    id!: number;
+    isTrue!: boolean;
+    resolutionDescription!: string;
+
+    constructor(data?: IResolveRuleViolationReportRequest) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.isTrue = _data["isTrue"];
+            this.resolutionDescription = _data["resolutionDescription"];
+        }
+    }
+
+    static fromJS(data: any): ResolveRuleViolationReportRequest {
+        data = typeof data === 'object' ? data : {};
+        let result = new ResolveRuleViolationReportRequest();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["isTrue"] = this.isTrue;
+        data["resolutionDescription"] = this.resolutionDescription;
+        return data;
+    }
+}
+
+export interface IResolveRuleViolationReportRequest {
+    id: number;
+    isTrue: boolean;
+    resolutionDescription: string;
+}
+
 export class RoleFormRequest implements IRoleFormRequest {
     id?: number | undefined;
     name?: string | undefined;
@@ -11145,6 +11392,162 @@ export interface IRoleListItemDataTableQueryResponse {
     recordsTotal?: number;
     recordsFiltered?: number;
     data?: RoleListItem[] | undefined;
+    aggregates?: { [key: string]: any; } | undefined;
+    error?: string | undefined;
+}
+
+export class RuleViolationReportListItem implements IRuleViolationReportListItem {
+    id?: number;
+    description?: string | undefined;
+    resolutionDescription?: string | undefined;
+    reporterUsername?: string | undefined;
+    reporterId?: number | undefined;
+    advertisementOwnerUsername?: string | undefined;
+    advertisementOwnerId?: number;
+    advertisementTitle?: string | undefined;
+    advertisementId?: number;
+    reportDate?: Date;
+    isTrue?: boolean | undefined;
+    isResolved?: boolean;
+
+    constructor(data?: IRuleViolationReportListItem) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.description = _data["description"];
+            this.resolutionDescription = _data["resolutionDescription"];
+            this.reporterUsername = _data["reporterUsername"];
+            this.reporterId = _data["reporterId"];
+            this.advertisementOwnerUsername = _data["advertisementOwnerUsername"];
+            this.advertisementOwnerId = _data["advertisementOwnerId"];
+            this.advertisementTitle = _data["advertisementTitle"];
+            this.advertisementId = _data["advertisementId"];
+            this.reportDate = _data["reportDate"] ? new Date(_data["reportDate"].toString()) : <any>undefined;
+            this.isTrue = _data["isTrue"];
+            this.isResolved = _data["isResolved"];
+        }
+    }
+
+    static fromJS(data: any): RuleViolationReportListItem {
+        data = typeof data === 'object' ? data : {};
+        let result = new RuleViolationReportListItem();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["description"] = this.description;
+        data["resolutionDescription"] = this.resolutionDescription;
+        data["reporterUsername"] = this.reporterUsername;
+        data["reporterId"] = this.reporterId;
+        data["advertisementOwnerUsername"] = this.advertisementOwnerUsername;
+        data["advertisementOwnerId"] = this.advertisementOwnerId;
+        data["advertisementTitle"] = this.advertisementTitle;
+        data["advertisementId"] = this.advertisementId;
+        data["reportDate"] = this.reportDate ? this.reportDate.toISOString() : <any>undefined;
+        data["isTrue"] = this.isTrue;
+        data["isResolved"] = this.isResolved;
+        return data;
+    }
+}
+
+export interface IRuleViolationReportListItem {
+    id?: number;
+    description?: string | undefined;
+    resolutionDescription?: string | undefined;
+    reporterUsername?: string | undefined;
+    reporterId?: number | undefined;
+    advertisementOwnerUsername?: string | undefined;
+    advertisementOwnerId?: number;
+    advertisementTitle?: string | undefined;
+    advertisementId?: number;
+    reportDate?: Date;
+    isTrue?: boolean | undefined;
+    isResolved?: boolean;
+}
+
+export class RuleViolationReportListItemDataTableQueryResponse implements IRuleViolationReportListItemDataTableQueryResponse {
+    draw?: number;
+    recordsTotal?: number;
+    recordsFiltered?: number;
+    data?: RuleViolationReportListItem[] | undefined;
+    aggregates?: { [key: string]: any; } | undefined;
+    error?: string | undefined;
+
+    constructor(data?: IRuleViolationReportListItemDataTableQueryResponse) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.draw = _data["draw"];
+            this.recordsTotal = _data["recordsTotal"];
+            this.recordsFiltered = _data["recordsFiltered"];
+            if (Array.isArray(_data["data"])) {
+                this.data = [] as any;
+                for (let item of _data["data"])
+                    this.data!.push(RuleViolationReportListItem.fromJS(item));
+            }
+            if (_data["aggregates"]) {
+                this.aggregates = {} as any;
+                for (let key in _data["aggregates"]) {
+                    if (_data["aggregates"].hasOwnProperty(key))
+                        (<any>this.aggregates)![key] = _data["aggregates"][key];
+                }
+            }
+            this.error = _data["error"];
+        }
+    }
+
+    static fromJS(data: any): RuleViolationReportListItemDataTableQueryResponse {
+        data = typeof data === 'object' ? data : {};
+        let result = new RuleViolationReportListItemDataTableQueryResponse();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["draw"] = this.draw;
+        data["recordsTotal"] = this.recordsTotal;
+        data["recordsFiltered"] = this.recordsFiltered;
+        if (Array.isArray(this.data)) {
+            data["data"] = [];
+            for (let item of this.data)
+                data["data"].push(item ? item.toJSON() : <any>undefined);
+        }
+        if (this.aggregates) {
+            data["aggregates"] = {};
+            for (let key in this.aggregates) {
+                if (this.aggregates.hasOwnProperty(key))
+                    (<any>data["aggregates"])[key] = (<any>this.aggregates)[key];
+            }
+        }
+        data["error"] = this.error;
+        return data;
+    }
+}
+
+export interface IRuleViolationReportListItemDataTableQueryResponse {
+    draw?: number;
+    recordsTotal?: number;
+    recordsFiltered?: number;
+    data?: RuleViolationReportListItem[] | undefined;
     aggregates?: { [key: string]: any; } | undefined;
     error?: string | undefined;
 }

@@ -603,6 +603,28 @@ const router = createRouter({
       }
     },
 
+    //Rule violation reports
+    {
+      path: '/rule-violation-reports',
+      redirect: { name: 'manageRuleViolationReports' },
+      children: [
+        {
+          path: 'manage',
+          name: 'manageRuleViolationReports',
+          component: () => import('../views/rule-violation-reports/ManageRuleViolationReports.vue'),
+          meta: {
+            requiresPermission: Permissions.ViewRuleViolationReports
+          }
+        },
+        {
+          path: 'view/:id',
+          name: 'viewRuleViolationReport',
+          component: () => import('../views/rule-violation-reports/ViewRuleViolationReport.vue'),
+          props: (route) => ({ id: toNumberOrUndefined(route.params.id) })
+        }
+      ]
+    },
+
     //Not found
     {
       path: '/:all(.*)*',

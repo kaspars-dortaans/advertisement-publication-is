@@ -28,9 +28,10 @@
       </router-link>
       <Avatar v-else-if="item.avatar" :image="item.url" shape="circle" />
       <a v-else :href="item.url" :target="item.target" v-bind="props.action">
-        <i v-if="item.icon" class="mr-2" :class="item.icon" />
+        <i v-if="item.icon" :class="item.icon" />
         <span v-if="item.label">{{ ls.l(item.label) }}</span>
-        <span v-if="hasSubmenu" class="pi pi-fw pi-angle-down ml-2"></span>
+        <Badge v-if="item.badgeValue?.value" :value="item.badgeValue.value" class="rounded-xl" />
+        <span v-if="hasSubmenu" class="pi pi-fw pi-angle-down"></span>
       </a>
     </template>
   </MenuBar>
@@ -39,6 +40,7 @@
 <script setup lang="ts">
 import defaultProfileImageUrl from '@/assets/images/default-profile-image.svg'
 import logoUrl from '@/assets/images/logo.svg'
+import { Permissions } from '@/constants/api/Permissions'
 import { NewMessageTimeout } from '@/constants/message'
 import { MessageClient, UserClient } from '@/services/api-client'
 import { AuthService } from '@/services/auth-service'
@@ -62,21 +64,25 @@ const userService = getClient(UserClient)
 //Reactive data
 const searchInput = ref('')
 const unreadMessageCount = ref(0)
-const unreadMessageCountPositive = computed(() =>
-  unreadMessageCount.value < 0 ? 0 : unreadMessageCount.value
-)
 const unsubscribeCallbacks: (() => void)[] = []
 const currentUserId = computed(() => AuthService.profileInfo.value?.id)
 
 /** All navigation items */
-const navbarItems: ComputedRef<INavbarItem[]> = computed(() => [
-  ...allowedRouteItems.value,
-  {
-    label: LocaleService.currentLocaleName.value,
-    items: localeItems.value
-  },
-  ...profileRoutes.value
-])
+const navbarItems: ComputedRef<INavbarItem[]> = computed(() => {
+  const allRouteItems = [
+    ...constantRoutes,
+    ...messageRoutes.value,
+    {
+      label: LocaleService.currentLocaleName.value,
+      items: localeItems.value
+    },
+    ...profileRoutes.value
+  ]
+
+  const routes = getRoutes()
+  const allowedNavbarItems = filterRoutes(allRouteItems, routes, AuthService.permissions.value)
+  return allowedNavbarItems
+})
 
 /** Language select items */
 const localeItems = computed(() =>
@@ -90,12 +96,6 @@ const localeItems = computed(() =>
     }
   }))
 )
-
-/** Navigation routes allowed for current user */
-const allowedRouteItems: ComputedRef<INavbarItem[]> = computed(() => {
-  const routes = getRoutes()
-  return filterRoutes(allRouteItems, routes, AuthService.permissions.value)
-})
 
 const profileRoutes = computed(() => {
   let profileRoutes
@@ -139,9 +139,38 @@ const profileRoutes = computed(() => {
   return [profileRoutes] as INavbarItem[]
 })
 
+const messageRoutes = computed(() => {
+  const routes: INavbarItem[] = []
+  if (AuthService.hasPermission(Permissions.ViewRuleViolationReports)) {
+    routes.push({
+      icon: 'pi pi-envelope',
+      doNotShowWithoutItems: true,
+      badgeValue: unreadMessageCount,
+      items: [
+        {
+          label: 'navigation.messages',
+          route: 'viewMessages',
+          badgeValue: unreadMessageCount
+        },
+        {
+          label: 'navigation.manageRuleViolationReports',
+          route: 'manageRuleViolationReports'
+        }
+      ]
+    })
+  } else {
+    routes.push({
+      icon: 'pi pi-envelope',
+      route: 'viewMessages',
+      badgeValue: unreadMessageCount
+    })
+  }
+  return routes
+})
+
 //Constants
 /** All navigation routes */
-const allRouteItems: INavbarItem[] = [
+const constantRoutes: INavbarItem[] = [
   {
     label: 'navigation.advertisements',
     doNotShowWithoutItems: true,
@@ -223,11 +252,6 @@ const allRouteItems: INavbarItem[] = [
   {
     label: 'navigation.viewSystemPayments',
     route: 'viewSystemPayments'
-  },
-  {
-    icon: 'pi pi-envelope',
-    route: 'viewMessages',
-    badgeValue: unreadMessageCountPositive
   }
 ]
 
@@ -312,15 +336,11 @@ const filterRoutes = (
         AuthService.hasPermission(requiresPermission as number)
 
       if (hasPermission || (i.showForUnauthenticated && !AuthService.isAuthenticated.value)) {
-        const items = i.items?.length ? filterRoutes(i.items, routes, userPermissions) : []
-        if (items.length || !i.doNotShowWithoutItems) {
-          return {
-            label: i.label,
-            route: i.route,
-            icon: i.icon,
-            badgeValue: i.badgeValue,
-            items: items
-          } as INavbarItem
+        const items = i.items?.length ? filterRoutes(i.items, routes, userPermissions) : undefined
+        if (items?.length || !i.doNotShowWithoutItems) {
+          const copy = Object.assign({}, i)
+          copy.items = items
+          return copy as INavbarItem
         }
       }
 
@@ -341,6 +361,8 @@ watch(
   (isAuthenticated) => {
     if (isAuthenticated) {
       loadUnreadMessageCount()
+    } else {
+      unreadMessageCount.value = 0
     }
   },
   { immediate: true }

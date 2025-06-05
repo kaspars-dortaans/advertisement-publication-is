@@ -132,16 +132,6 @@ public class AdvertisementController(
         return categoryList;
     }
 
-    [AllowAnonymous]
-    [ProducesResponseType<OkResult>(StatusCodes.Status200OK)]
-    [ProducesResponseType<RequestExceptionResponse>(StatusCodes.Status400BadRequest)]
-    [HttpPost]
-    public async Task ReportAdvertisement(ReportAdvertisementRequest request)
-    {
-        var report = _mapper.Map<RuleViolationReport>(request, o => o.Items[nameof(User)] = User);
-        await _ruleViolationService.AddAsync(report);
-    }
-
     [HasPermission(Permissions.ViewOwnedAdvertisements)]
     [HttpPost]
     public async Task<DataTableQueryResponse<AdvertisementInfo>> GetOwnedAdvertisements(DataTableQuery query)

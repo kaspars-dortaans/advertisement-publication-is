@@ -35,11 +35,11 @@
 import BackButton from '@/components/common/BackButton.vue'
 import ResponsiveLayout from '@/components/common/ResponsiveLayout.vue'
 import FieldError from '@/components/form/FieldError.vue'
-import { leaveFormGuard } from '@/utils/confirm-dialog'
-import { AdvertisementClient, ReportAdvertisementRequest } from '@/services/api-client'
+import { ReportAdvertisementRequest, RuleViolationReportClient } from '@/services/api-client'
 import { AppNavigation } from '@/services/app-navigation'
 import { LocaleService } from '@/services/locale-service'
 import { getClient } from '@/utils/client-builder'
+import { leaveFormGuard } from '@/utils/confirm-dialog'
 import { FieldHelper } from '@/utils/field-helper'
 import { toTypedSchema } from '@vee-validate/yup'
 import { useConfirm } from 'primevue'
@@ -62,7 +62,7 @@ const props = defineProps<{ id: number }>()
 //Services
 const l = LocaleService.currentLocale
 const navigation = AppNavigation.get()
-const _advertisementService = getClient(AdvertisementClient)
+const ruleViolationReportService = getClient(RuleViolationReportClient)
 
 //Form and fields
 const form = useForm({
@@ -86,7 +86,7 @@ onMounted(() => {
 //Methods
 const report = handleSubmit(async () => {
   try {
-    await _advertisementService.reportAdvertisement(
+    await ruleViolationReportService.reportAdvertisement(
       new ReportAdvertisementRequest({
         description: values.description!,
         reportedAdvertisementId: props.id

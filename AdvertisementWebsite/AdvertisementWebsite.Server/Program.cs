@@ -192,6 +192,7 @@ services.AddScoped<IPaymentService, PaymentService>();
 services.AddScoped<IAttributeService, AttributeService>();
 services.AddScoped<IRoleService, RoleService>();
 services.AddScoped<IPermissionService, PermissionService>();
+services.AddScoped<IRuleViolationReportService, RuleViolationReportService>();
 
 //Helpers
 services.AddScoped<IStorage, LocalFileStorage>();

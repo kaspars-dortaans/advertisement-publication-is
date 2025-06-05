@@ -25,7 +25,8 @@
     "pay": "Pay",
     "subscribe": "Subscribe",
     "add": "Add",
-    "filter": "Filter"
+    "filter": "Filter",
+    "resolve": "Resolve"
   },
   "dataTable": {
     "pageReportTemplate": "{1} to {2} of {3}",
@@ -135,6 +136,17 @@
     "confirmDeleteMessage": "{0} permission(s) will be deleted.",
     "name": "Title"
   },
+  "manageRuleViolationReports": {
+    "resolved": "Resolved",
+    "unresolved": "Unresolved",
+    "isTrue": "Is true",
+    "resolutionDescription": "Resolution description",
+    "reportedAdvertisement": "Reported advertisement",
+    "advertisementOwner": "Advertisement owner",
+    "reporter": "Reporter",
+    "description": "Description",
+    "reportDate": "Report date"
+  },
   "form": {
     "common": {
       "dragAndDropToUpload": "Drag and drop here to upload",
@@ -224,6 +236,11 @@
     "roleForm": {
       "title": "Title",
       "permissions": "Permissions"
+    },
+    "resolveRuleViolationReport": {
+      "isTrue": "Is the report is true and appropriate",
+      "resolutionDescription": "Resolution description",
+      "status": "Statuss"
     }
   },
   "messages": {
@@ -300,7 +317,9 @@
     "createRole": "Create role",
     "viewTermsOfUse": "Terms of use",
     "manageServicePrices": "Manage service prices",
-    "managePermissions": "Manage permissions"
+    "managePermissions": "Manage permissions",
+    "manageRuleViolationReports": "Rule violation reports",
+    "viewRuleViolationReport": "View rule violation report"
   },
   "dataSize": {
     "bits": "{0} b",

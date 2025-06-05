@@ -25,7 +25,8 @@
     "pay": "Maksāt",
     "subscribe": "Abonēt",
     "add": "Pievienot",
-    "filter": "Filtrēt"
+    "filter": "Filtrēt",
+    "resolve": "Atrisināt"
   },
   "dataTable": {
     "pageReportTemplate": "{1} līdz {2} no {3}",
@@ -135,6 +136,17 @@
     "confirmDeleteMessage": "Tiks izdzēsta(s) {0} atļauja(s).",
     "name": "Nosaukums"
   },
+  "manageRuleViolationReports": {
+    "resolved": "Atrisināts",
+    "unresolved": "Neatrisināts",
+    "isTrue": "Patiess",
+    "resolutionDescription": "Atrisinājuma apraksts",
+    "reportedAdvertisement": "Saistītais sludinājums",
+    "advertisementOwner": "Sludinājuma publicētājs",
+    "reporter": "Ziņotājs",
+    "description": "Apraksts",
+    "reportDate": "Ziņojuma datums"
+  },
   "form": {
     "common": {
       "dragAndDropToUpload": "Velc un met šeit lai Augšupielādētu",
@@ -224,6 +236,11 @@
     "roleForm": {
       "title": "Nosaukums",
       "permissions": "Atļaujas"
+    },
+    "resolveRuleViolationReport": {
+      "isTrue": "Vai ziņojums ir patiess un atbilstošs",
+      "resolutionDescription": "Atrisinājuma apraksts",
+      "status": "Statuss"
     }
   },
   "messages": {
@@ -300,7 +317,9 @@
     "createRole": "Izveidot lomu",
     "viewTermsOfUse": "Lietošanas noteikumi",
     "manageServicePrices": "Pārvaldīt pakalpojumu cenas",
-    "managePermissions": "Pārvaldīt atļaujas"
+    "managePermissions": "Pārvaldīt atļaujas",
+    "manageRuleViolationReports": "Noteikumu pārkāpumu ziņojumi",
+    "viewRuleViolationReport": "Skatīt noteikumu pārkāpumu ziņojumu"
   },
   "dataSize": {
     "bits": "{0} biti",

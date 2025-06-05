@@ -29,6 +29,7 @@ export const emptyLocale = {
     subscribe: '',
     add: '',
     filter: '',
+    resolve: '',
   },
   dataTable: {
     pageReportTemplate: '',
@@ -138,7 +139,23 @@ export const emptyLocale = {
     confirmDeleteMessage: '',
     name: ''
   },
+  manageRuleViolationReports: {
+    resolved: '',
+    unresolved: '',
+    isTrue: '',
+    resolutionDescription: '',
+    reportedAdvertisement: '',
+    advertisementOwner: '',
+    reporter: '',
+    description: '',
+    reportDate: ''
+  },
   form: {
+    resolveRuleViolationReport: {
+      isTrue: '',
+      resolutionDescription: '',
+      status: ''
+    },
     roleForm: {
       title: '',
       permissions: ''
@@ -304,7 +321,9 @@ export const emptyLocale = {
     createRole: '',
     viewTermsOfUse: '',
     manageServicePrices: '',
-    managePermissions: ''
+    managePermissions: '',
+    manageRuleViolationReports: '',
+    viewRuleViolationReport: ''
   },
   dataSize: {
     bits: '',

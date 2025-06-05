@@ -25,11 +25,6 @@ public class AdvertisementMapperProfile : Profile
                         ThumbnailUrl = FileUrlHelper.MapperGetThumbnailUrl(context, id) ?? ""
                     })));
 
-        CreateMap<ReportAdvertisementRequest, RuleViolationReport>()
-            .ForMember(report => report.ReportDate, o => o.MapFrom(request => DateTime.UtcNow))
-            .ForMember(report => report.ReporterId, o => o.MapFrom((request, _, _, context) =>
-                (context.Items[nameof(ControllerBase.User)] as ClaimsPrincipal)?.GetUserId()));
-
         CreateMap<CreateOrEditAdvertisementRequest, CreateOrEditAdvertisementDto>()
             .ReverseMap()
                 .ForMember(r => r.ImageOrder, o => o.MapFrom((dto, _, _, context) => dto.ImageOrder?.Select(imageDto => new ImageDto
