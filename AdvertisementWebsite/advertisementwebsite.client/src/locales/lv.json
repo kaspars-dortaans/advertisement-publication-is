@@ -26,7 +26,8 @@
     "subscribe": "Abonēt",
     "add": "Pievienot",
     "filter": "Filtrēt",
-    "resolve": "Atrisināt"
+    "resolve": "Atrisināt",
+    "print": "Drukāt"
   },
   "dataTable": {
     "pageReportTemplate": "{1} līdz {2} no {3}",

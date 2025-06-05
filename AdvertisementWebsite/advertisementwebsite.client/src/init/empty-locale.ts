@@ -30,6 +30,7 @@ export const emptyLocale = {
     add: '',
     filter: '',
     resolve: '',
+    print: '',
   },
   dataTable: {
     pageReportTemplate: '',

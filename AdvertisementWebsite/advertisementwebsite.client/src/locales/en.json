@@ -26,7 +26,8 @@
     "subscribe": "Subscribe",
     "add": "Add",
     "filter": "Filter",
-    "resolve": "Resolve"
+    "resolve": "Resolve",
+    "print": "Print"
   },
   "dataTable": {
     "pageReportTemplate": "{1} to {2} of {3}",
