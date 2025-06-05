@@ -1,83 +1,86 @@
 <template>
-  <LazyLoadedTable
-    v-model:loading="loading"
-    v-model:selection="selectedRows"
-    :columns="columns"
-    :dataSource="dataSource"
-    ref="table"
-  >
-    <template #header>
-      <h3 class="page-title mb-2">{{ l.navigation.manageUsers }}</h3>
-      <div class="flex flex-wrap justify-end gap-2">
-        <Button
-          v-if="isAllowedToDelete"
-          :label="l.actions.delete"
-          :disabled="!selectedRows.length"
-          severity="danger"
-          @click="confirmRowDelete"
-        />
-        <Button
-          v-if="isAllowedToCreate"
-          :label="l.actions.create"
-          severity="primary"
-          as="RouterLink"
-          :to="{ name: 'createUser' }"
-        />
-      </div>
-    </template>
-
-    <Column selectionMode="multiple" headerStyle="width: 3rem" />
-
-    <Column field="firstName" :header="l.manageUsers.firstName" sortable />
-    <Column field="lastName" :header="l.manageUsers.lastName" sortable />
-    <Column field="userName" :header="l.manageUsers.userName" sortable />
-    <Column field="userRoles" :header="l.manageUsers.userRoles" sortable>
-      <template #body="slotProps">
-        {{ slotProps.data.userRoles.join(', ') }}
-      </template>
-    </Column>
-    <Column field="email" :header="l.manageUsers.email" sortable />
-    <Column field="phoneNumber" :header="l.manageUsers.phoneNumber" sortable />
-    <Column field="createdDate" :header="l.manageUsers.createdDate" sortable>
-      <template #body="slotProps">
-        {{ dateFormat.format(slotProps.data.createdDate) }}
-      </template>
-    </Column>
-    <Column field="lastActive" :header="l.manageUsers.lastActive" sortable>
-      <template #body="slotProps">
-        {{ slotProps.data.lastActive ? dateFormat.format(slotProps.data.lastActive) : '' }}
-      </template>
-    </Column>
-
-    <Column>
-      <template #body="slotProps">
+  <ResponsiveLayout>
+    <LazyLoadedTable
+      v-model:loading="loading"
+      v-model:selection="selectedRows"
+      :columns="columns"
+      :dataSource="dataSource"
+      ref="table"
+    >
+      <template #header>
+        <h3 class="page-title mb-2">{{ l.navigation.manageUsers }}</h3>
         <div class="flex flex-wrap justify-end gap-2">
           <Button
-            v-if="isAllowedToEdit"
-            :label="l.actions.edit"
-            as="RouterLink"
-            :to="{
-              name: 'editUser',
-              params: { userId: '' + slotProps.data.id }
-            }"
+            v-if="isAllowedToDelete"
+            :label="l.actions.delete"
+            :disabled="!selectedRows.length"
+            severity="danger"
+            @click="confirmRowDelete"
           />
           <Button
-            :label="l.actions.view"
-            severity="secondary"
+            v-if="isAllowedToCreate"
+            :label="l.actions.create"
+            severity="primary"
             as="RouterLink"
-            :to="{
-              name: 'viewUser',
-              params: { userId: '' + slotProps.data.id }
-            }"
+            :to="{ name: 'createUser' }"
           />
         </div>
       </template>
-    </Column>
-  </LazyLoadedTable>
+
+      <Column selectionMode="multiple" headerStyle="width: 3rem" />
+
+      <Column field="firstName" :header="l.manageUsers.firstName" sortable />
+      <Column field="lastName" :header="l.manageUsers.lastName" sortable />
+      <Column field="userName" :header="l.manageUsers.userName" sortable />
+      <Column field="userRoles" :header="l.manageUsers.userRoles" sortable>
+        <template #body="slotProps">
+          {{ slotProps.data.userRoles.join(', ') }}
+        </template>
+      </Column>
+      <Column field="email" :header="l.manageUsers.email" sortable />
+      <Column field="phoneNumber" :header="l.manageUsers.phoneNumber" sortable />
+      <Column field="createdDate" :header="l.manageUsers.createdDate" sortable>
+        <template #body="slotProps">
+          {{ dateFormat.format(slotProps.data.createdDate) }}
+        </template>
+      </Column>
+      <Column field="lastActive" :header="l.manageUsers.lastActive" sortable>
+        <template #body="slotProps">
+          {{ slotProps.data.lastActive ? dateFormat.format(slotProps.data.lastActive) : '' }}
+        </template>
+      </Column>
+
+      <Column>
+        <template #body="slotProps">
+          <div class="flex flex-wrap justify-end gap-2">
+            <Button
+              v-if="isAllowedToEdit"
+              :label="l.actions.edit"
+              as="RouterLink"
+              :to="{
+                name: 'editUser',
+                params: { userId: '' + slotProps.data.id }
+              }"
+            />
+            <Button
+              :label="l.actions.view"
+              severity="secondary"
+              as="RouterLink"
+              :to="{
+                name: 'viewUser',
+                params: { userId: '' + slotProps.data.id }
+              }"
+            />
+          </div>
+        </template>
+      </Column>
+    </LazyLoadedTable>
+  </ResponsiveLayout>
 </template>
 
 <script lang="ts" setup>
 import LazyLoadedTable from '@/components/common/LazyLoadedTable.vue'
+import ResponsiveLayout from '@/components/common/ResponsiveLayout.vue'
 import { Permissions } from '@/constants/api/Permissions'
 import {
   DataTableQuery,

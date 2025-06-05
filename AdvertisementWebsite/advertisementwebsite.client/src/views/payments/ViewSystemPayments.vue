@@ -1,48 +1,51 @@
 <template>
-  <LazyLoadedTable
-    :columns="columns"
-    :dataSource="dataSource"
-    selectionMode="single"
-    ref="table"
-    @rowSelect="handleRowSelect"
-  >
-    <template #header>
-      <h3 class="page-title mb-2">{{ l.navigation.viewSystemPayments }}</h3>
-      <FloatLabel variant="on">
-        <DatePicker
-          v-model="timePeriodFilterValue"
-          :manualInput="false"
-          :clearButtonProps="{
-            label: l.actions.clear,
-            icon: 'pi pi-times',
-            severity: 'secondary'
-          }"
-          selectionMode="range"
-          view="month"
-          id="payment-time-period-filter"
-          showButtonBar
-          @hide="refresh"
-          @clearClick="timePeriodFilterValue = []"
-        />
-        <label for="payment-time-period-filter">{{ l.viewPayments.timePeriod }}</label>
-      </FloatLabel>
-      <p>{{ ls.l('viewPayments.totalForTimePeriod', totalForTimePeriod) }}</p>
-    </template>
+  <ResponsiveLayout>
+    <LazyLoadedTable
+      :columns="columns"
+      :dataSource="dataSource"
+      selectionMode="single"
+      ref="table"
+      @rowSelect="handleRowSelect"
+    >
+      <template #header>
+        <h3 class="page-title mb-2">{{ l.navigation.viewSystemPayments }}</h3>
+        <FloatLabel variant="on">
+          <DatePicker
+            v-model="timePeriodFilterValue"
+            :manualInput="false"
+            :clearButtonProps="{
+              label: l.actions.clear,
+              icon: 'pi pi-times',
+              severity: 'secondary'
+            }"
+            selectionMode="range"
+            view="month"
+            id="payment-time-period-filter"
+            showButtonBar
+            @hide="refresh"
+            @clearClick="timePeriodFilterValue = []"
+          />
+          <label for="payment-time-period-filter">{{ l.viewPayments.timePeriod }}</label>
+        </FloatLabel>
+        <p>{{ ls.l('viewPayments.totalForTimePeriod', totalForTimePeriod) }}</p>
+      </template>
 
-    <Column field="id" :header="l.viewPayments.id" sortable />
-    <Column field="date" :header="l.viewPayments.date" sortable>
-      <template #body="slotProps">{{ dateFormat.format(slotProps.data.date) }}</template>
-    </Column>
-    <Column field="payerUsername" :header="l.viewPayments.payerUsername" sortable />
-    <Column field="amount" :header="l.viewPayments.amount" sortable>
-      <template #body="slotProps">{{ currencyFormat.format(slotProps.data.amount) }}</template>
-    </Column>
-    <Column field="paymentItemCount" :header="l.viewPayments.paymentItemCount" sortable />
-  </LazyLoadedTable>
+      <Column field="id" :header="l.viewPayments.id" sortable />
+      <Column field="date" :header="l.viewPayments.date" sortable>
+        <template #body="slotProps">{{ dateFormat.format(slotProps.data.date) }}</template>
+      </Column>
+      <Column field="payerUsername" :header="l.viewPayments.payerUsername" sortable />
+      <Column field="amount" :header="l.viewPayments.amount" sortable>
+        <template #body="slotProps">{{ currencyFormat.format(slotProps.data.amount) }}</template>
+      </Column>
+      <Column field="paymentItemCount" :header="l.viewPayments.paymentItemCount" sortable />
+    </LazyLoadedTable>
+  </ResponsiveLayout>
 </template>
 
 <script lang="ts" setup>
 import LazyLoadedTable from '@/components/common/LazyLoadedTable.vue'
+import ResponsiveLayout from '@/components/common/ResponsiveLayout.vue'
 import { PaymentClient, PaymentDataTableQuery, TableColumn } from '@/services/api-client'
 import { LocaleService } from '@/services/locale-service'
 import { getClient } from '@/utils/client-builder'

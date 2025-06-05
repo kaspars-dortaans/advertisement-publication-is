@@ -1,119 +1,124 @@
 <template>
-  <LazyLoadedTable
-    v-model:loading="loading"
-    v-model:selection="selectedAdvertisements"
-    :columns="columns"
-    :dataSource="advertisementSource"
-    ref="table"
-  >
-    <template #header>
-      <h3 class="page-title mb-2">
-        {{ manageAll ? l.navigation.manageAdvertisements : l.navigation.myAdvertisements }}
-      </h3>
-      <div class="flex flex-wrap justify-end gap-2">
-        <template v-if="isAllowedToEdit">
-          <Button
-            :label="l.actions.deactivate"
-            :disabled="!selectedAdvertisements.length || !atLeastOneSelectedIsActive"
-            severity="secondary"
-            @click="setAdvertisementActiveState(false)"
-          />
-          <Button
-            :label="l.actions.activate"
-            :disabled="!selectedAdvertisements.length || !atLeastOneSelectedIsInactive"
-            severity="primary"
-            @click="setAdvertisementActiveState(true)"
-          />
-        </template>
-        <Button
-          v-if="isAllowedToDelete"
-          :label="l.actions.delete"
-          :disabled="!selectedAdvertisements.length"
-          severity="danger"
-          @click="confirmDeleteAdvertisements"
-        />
-        <Button
-          v-if="isAllowedToEdit"
-          :label="l.actions.extend"
-          :disabled="!selectedAdvertisements.length || allSelectedAreDrafts"
-          severity="secondary"
-          @click="extendAdvertisements"
-        />
-        <Button
-          v-if="isAllowedToCreate"
-          :label="l.actions.create"
-          severity="primary"
-          as="RouterLink"
-          :to="{ name: props.manageAll ? 'createAdvertisement' : 'createOwnAdvertisement' }"
-        />
-      </div>
-    </template>
-
-    <Column selectionMode="multiple" headerStyle="width: 3rem" />
-
-    <Column field="title" :header="l.manageAdvertisements.title" sortable />
-    <Column
-      v-if="manageAll"
-      field="ownerUsername"
-      :header="l.manageAdvertisements.ownerUsername"
-      sortable
-    />
-    <Column field="categoryName" :header="l.manageAdvertisements.categoryName" sortable />
-    <Column field="status" :header="l.manageAdvertisements.status" sortable>
-      <template #body="slotProps">
-        <Badge
-          :severity="statusSeverity[slotProps.data.status]"
-          :value="
-            ls.l(
-              'paymentSubjectStatus.' +
-                PaymentSubjectStatus[slotProps.data.status as PaymentSubjectStatus]
-            )
-          "
-        />
-      </template>
-    </Column>
-    <Column field="validToDate" :header="l.manageAdvertisements.validTo" sortable>
-      <template #body="slotProps">{{
-        slotProps.data.validToDate != null ? dateFormat.format(slotProps.data.validToDate) : ''
-      }}</template>
-    </Column>
-    <Column field="createdAtDate" :header="l.manageAdvertisements.createdAt" sortable>
-      <template #body="slotProps">{{
-        slotProps.data.createdAtDate != null ? dateFormat.format(slotProps.data.createdAtDate) : ''
-      }}</template>
-    </Column>
-
-    <Column>
-      <template #body="slotProps">
+  <ResponsiveLayout>
+    <LazyLoadedTable
+      v-model:loading="loading"
+      v-model:selection="selectedAdvertisements"
+      :columns="columns"
+      :dataSource="advertisementSource"
+      ref="table"
+    >
+      <template #header>
+        <h3 class="page-title mb-2">
+          {{ manageAll ? l.navigation.manageAdvertisements : l.navigation.myAdvertisements }}
+        </h3>
         <div class="flex flex-wrap justify-end gap-2">
+          <template v-if="isAllowedToEdit">
+            <Button
+              :label="l.actions.deactivate"
+              :disabled="!selectedAdvertisements.length || !atLeastOneSelectedIsActive"
+              severity="secondary"
+              @click="setAdvertisementActiveState(false)"
+            />
+            <Button
+              :label="l.actions.activate"
+              :disabled="!selectedAdvertisements.length || !atLeastOneSelectedIsInactive"
+              severity="primary"
+              @click="setAdvertisementActiveState(true)"
+            />
+          </template>
           <Button
-            v-if="isAllowedToCreate && slotProps.data.status == PaymentSubjectStatus.Draft"
-            :label="l.actions.publish"
-            @click="publishAdvertisement(slotProps.data)"
+            v-if="isAllowedToDelete"
+            :label="l.actions.delete"
+            :disabled="!selectedAdvertisements.length"
+            severity="danger"
+            @click="confirmDeleteAdvertisements"
           />
           <Button
             v-if="isAllowedToEdit"
-            :label="l.actions.edit"
-            as="RouterLink"
-            :to="{
-              name: props.manageAll ? 'editAnyAdvertisement' : 'editAdvertisement',
-              params: { id: '' + slotProps.data.id }
-            }"
+            :label="l.actions.extend"
+            :disabled="!selectedAdvertisements.length || allSelectedAreDrafts"
+            severity="secondary"
+            @click="extendAdvertisements"
           />
           <Button
-            :label="l.actions.view"
-            severity="secondary"
+            v-if="isAllowedToCreate"
+            :label="l.actions.create"
+            severity="primary"
             as="RouterLink"
-            :to="{ name: 'viewAdvertisement', params: { id: '' + slotProps.data.id } }"
+            :to="{ name: props.manageAll ? 'createAdvertisement' : 'createOwnAdvertisement' }"
           />
         </div>
       </template>
-    </Column>
-  </LazyLoadedTable>
+
+      <Column selectionMode="multiple" headerStyle="width: 3rem" />
+
+      <Column field="title" :header="l.manageAdvertisements.title" sortable />
+      <Column
+        v-if="manageAll"
+        field="ownerUsername"
+        :header="l.manageAdvertisements.ownerUsername"
+        sortable
+      />
+      <Column field="categoryName" :header="l.manageAdvertisements.categoryName" sortable />
+      <Column field="status" :header="l.manageAdvertisements.status" sortable>
+        <template #body="slotProps">
+          <Badge
+            :severity="statusSeverity[slotProps.data.status]"
+            :value="
+              ls.l(
+                'paymentSubjectStatus.' +
+                  PaymentSubjectStatus[slotProps.data.status as PaymentSubjectStatus]
+              )
+            "
+          />
+        </template>
+      </Column>
+      <Column field="validToDate" :header="l.manageAdvertisements.validTo" sortable>
+        <template #body="slotProps">{{
+          slotProps.data.validToDate != null ? dateFormat.format(slotProps.data.validToDate) : ''
+        }}</template>
+      </Column>
+      <Column field="createdAtDate" :header="l.manageAdvertisements.createdAt" sortable>
+        <template #body="slotProps">{{
+          slotProps.data.createdAtDate != null
+            ? dateFormat.format(slotProps.data.createdAtDate)
+            : ''
+        }}</template>
+      </Column>
+
+      <Column>
+        <template #body="slotProps">
+          <div class="flex flex-wrap justify-end gap-2">
+            <Button
+              v-if="isAllowedToCreate && slotProps.data.status == PaymentSubjectStatus.Draft"
+              :label="l.actions.publish"
+              @click="publishAdvertisement(slotProps.data)"
+            />
+            <Button
+              v-if="isAllowedToEdit"
+              :label="l.actions.edit"
+              as="RouterLink"
+              :to="{
+                name: props.manageAll ? 'editAnyAdvertisement' : 'editAdvertisement',
+                params: { id: '' + slotProps.data.id }
+              }"
+            />
+            <Button
+              :label="l.actions.view"
+              severity="secondary"
+              as="RouterLink"
+              :to="{ name: 'viewAdvertisement', params: { id: '' + slotProps.data.id } }"
+            />
+          </div>
+        </template>
+      </Column>
+    </LazyLoadedTable>
+  </ResponsiveLayout>
 </template>
 
 <script setup lang="ts">
 import LazyLoadedTable from '@/components/common/LazyLoadedTable.vue'
+import ResponsiveLayout from '@/components/common/ResponsiveLayout.vue'
 import { Permissions } from '@/constants/api/Permissions'
 import { statusSeverity } from '@/constants/status-severity'
 import {

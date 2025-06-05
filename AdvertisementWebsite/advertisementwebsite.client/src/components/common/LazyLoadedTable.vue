@@ -1,39 +1,36 @@
 <template>
-  <ResponsiveLayout>
-    <DataTable
-      v-model:selection="selectedRecords"
-      v-model:editingRows="editingRecords"
-      :value="tableRecords"
-      :loading="loading"
-      :rows="DefaultPageSize"
-      :rowsPerPageOptions="PageSizeOptions"
-      :currentPageReportTemplate="pageReportTemplate"
-      :paginatorTemplate="PaginatorTemplate"
-      :totalRecords="totalRecordCount"
-      :selectionMode="selectionMode"
-      :editMode="editMode"
-      sortMode="multiple"
-      class="bg-white flex-1 lg:flex-grow-0 lg:flex-shrink-1 lg:basis-auto lg:max-w-full rounded-none lg:rounded-md"
-      removableSort
-      paginator
-      lazy
-      @page="pageTable"
-      @sort="sortTable"
-      @rowSelect="emitRowSelect"
-      @rowEditCancel="cancelRowEdit"
-      @rowEditSave="saveRowEdit"
-    >
-      <template v-if="$slots.header" #header>
-        <slot name="header" :addNewRow="addNewRow"></slot>
-      </template>
+  <DataTable
+    v-model:selection="selectedRecords"
+    v-model:editingRows="editingRecords"
+    :value="tableRecords"
+    :loading="loading"
+    :rows="DefaultPageSize"
+    :rowsPerPageOptions="PageSizeOptions"
+    :currentPageReportTemplate="pageReportTemplate"
+    :paginatorTemplate="PaginatorTemplate"
+    :totalRecords="totalRecordCount"
+    :selectionMode="selectionMode"
+    :editMode="editMode"
+    sortMode="multiple"
+    class="bg-white flex-1 lg:flex-grow-0 lg:flex-shrink-1 lg:basis-auto lg:max-w-full rounded-none lg:rounded-md"
+    removableSort
+    paginator
+    lazy
+    @page="pageTable"
+    @sort="sortTable"
+    @rowSelect="emitRowSelect"
+    @rowEditCancel="cancelRowEdit"
+    @rowEditSave="saveRowEdit"
+  >
+    <template v-if="$slots.header" #header>
+      <slot name="header" :addNewRow="addNewRow"></slot>
+    </template>
 
-      <slot></slot>
-    </DataTable>
-  </ResponsiveLayout>
+    <slot></slot>
+  </DataTable>
 </template>
 
 <script setup lang="ts" generic="T extends object">
-import ResponsiveLayout from '@/components/common/ResponsiveLayout.vue'
 import { Direction } from '@/constants/api/Direction'
 import { DefaultPageSize, PageSizeOptions, PaginatorTemplate } from '@/constants/data-table'
 import {
