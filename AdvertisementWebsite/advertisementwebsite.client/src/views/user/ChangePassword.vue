@@ -13,30 +13,39 @@
         <div class="flex flex-col gap-2">
           <Message v-if="hasFormErrors" severity="error">{{ formErrors }}</Message>
 
-          <Password
-            v-model="fields.currentPassword!.value"
-            v-bind="fields.currentPassword?.attributes"
-            :placeholder="l.form.changePassword.currentPassword"
-            :invalid="fields.currentPassword!.hasError"
-            :feedback="false"
-          />
+          <FloatLabel variant="on">
+            <Password
+              v-model="fields.currentPassword!.value"
+              v-bind="fields.currentPassword?.attributes"
+              :invalid="fields.currentPassword!.hasError"
+              :feedback="false"
+              id="current-password-input"
+            />
+            <label for="current-password-input">{{ l.form.changePassword.currentPassword }}</label>
+          </FloatLabel>
           <FieldError :field="fields.currentPassword" />
 
-          <Password
-            v-model="fields.password!.value"
-            v-bind="fields.password?.attributes"
-            :placeholder="l.form.changePassword.newPassword"
-            :invalid="fields.password!.hasError"
-          />
+          <FloatLabel variant="on">
+            <Password
+              v-model="fields.password!.value"
+              v-bind="fields.password?.attributes"
+              :invalid="fields.password!.hasError"
+              id="new-password-input"
+            />
+            <label for="new-password-input">{{ l.form.changePassword.newPassword }}</label>
+          </FloatLabel>
           <FieldError :field="fields.password" />
 
+          <FloatLabel variant="on">
           <Password
             v-model="fields.confirmPassword!.value"
             v-bind="fields.confirmPassword?.attributes"
-            :placeholder="l.form.changePassword.confirmNewPassword"
             :invalid="fields.confirmPassword!.hasError"
             :feedback="false"
+            id="new-password-confirm-input"
           />
+          <label for="new-password-confirm-input">{{ l.form.changePassword.confirmNewPassword }}</label>
+          </FloatLabel>
           <FieldError :field="fields.confirmPassword" />
         </div>
         <div class="flex flex-wrap gap-2">
