@@ -551,6 +551,12 @@ public class AdvertisementService(
                 .ToList();
             var deletedImageIds = deletedImages.Select(di => di.Id).ToList();
 
+            //Reset thumbnail if it is deleted
+            if(deletedImages.Any(i => i.Order == 0))
+            {
+                await Where(a => a.Id == advertisementId).UpdateFromQueryAsync(a => new Advertisement() { ThumbnailImageId = null});
+            }
+
             await Task.WhenAll([
                 DbContext.AdvertisementImages
                     .Where(ai => deletedImageIds.Contains(ai.Id))
