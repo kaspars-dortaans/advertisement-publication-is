@@ -60,18 +60,18 @@
 </template>
 
 <script lang="ts" setup>
-import ResponsiveLayout from '@/components/common/ResponsiveLayout.vue'
 import BlockWithSpinner from '@/components/common/BlockWithSpinner.vue'
-import { computed, onBeforeMount, ref, watch } from 'vue'
-import { type TreeNode } from 'primevue/treenode'
-import { getClient } from '@/utils/client-builder'
-import { CategoryClient, CategoryItem } from '@/services/api-client'
-import { buildNodeHierarchy } from '@/utils/build-node-hierarchy'
-import { LocaleService } from '@/services/locale-service'
-import { useConfirm } from 'primevue'
-import { confirmDelete } from '@/utils/confirm-dialog'
-import { AuthService } from '@/services/auth-service'
+import ResponsiveLayout from '@/components/common/ResponsiveLayout.vue'
 import { Permissions } from '@/constants/api/Permissions'
+import { CategoryClient, CategoryItem } from '@/services/api-client'
+import { AuthService } from '@/services/auth-service'
+import { LocaleService } from '@/services/locale-service'
+import { buildNodeHierarchy } from '@/utils/build-node-hierarchy'
+import { getClient } from '@/utils/client-builder'
+import { confirmDelete } from '@/utils/confirm-dialog'
+import { useConfirm } from 'primevue'
+import type { TreeNode } from 'primevue/treenode'
+import { computed, onBeforeMount, ref, watch } from 'vue'
 
 //Services
 const categoryService = getClient(CategoryClient)
