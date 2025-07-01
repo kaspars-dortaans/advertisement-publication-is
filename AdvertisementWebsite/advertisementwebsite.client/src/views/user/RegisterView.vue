@@ -1,30 +1,23 @@
 <template>
-  <ResponsiveLayout>
-    <Panel class="rounded-none lg:rounded-md">
-      <template #header>
-        <span class="text-2xl">{{ l.navigation.register }}</span>
-      </template>
-      <form class="flex flex-col gap-3 lg:items-center bg-white" @submit="onSubmit">
-        <CreateUserCommonInputs
-          :fields="fields"
-          :hasFormErrors="hasFormErrors"
-          :formErrors="formErrors"
-        />
+  <ResponsivePanel :title="l.navigation.register">
+    <form class="flex flex-col gap-3 lg:items-center bg-white" @submit="onSubmit">
+      <CreateUserCommonInputs
+        :fields="fields"
+        :hasFormErrors="hasFormErrors"
+        :formErrors="formErrors"
+      />
 
-        <Button type="submit" :label="l.navigation.register" :loading="isSubmitting" />
-        <p>
-          <span>{{ l.form.register.alreadyHaveAnAccount }}</span>
-          <RouterLink class="ml-1 link" :to="{ name: 'login' }">{{
-            l.navigation.login
-          }}</RouterLink>
-        </p>
-      </form>
-    </Panel>
-  </ResponsiveLayout>
+      <Button type="submit" :label="l.navigation.register" :loading="isSubmitting" />
+      <p>
+        <span>{{ l.form.register.alreadyHaveAnAccount }}</span>
+        <RouterLink class="ml-1 link" :to="{ name: 'login' }">{{ l.navigation.login }}</RouterLink>
+      </p>
+    </form>
+  </ResponsivePanel>
 </template>
 
 <script setup lang="ts">
-import ResponsiveLayout from '@/components/common/ResponsiveLayout.vue'
+import ResponsivePanel from '@/components/common/ResponsivePanel.vue'
 import CreateUserCommonInputs from '@/components/form/user/CreateUserCommonInputs.vue'
 import { RegisterDto, UserClient, type FileParameter } from '@/services/api-client'
 import { LocaleService } from '@/services/locale-service'

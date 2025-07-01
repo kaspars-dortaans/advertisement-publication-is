@@ -184,3 +184,7 @@ a.link {
 div.p-invalid {
   @apply border-red-500;
 }
+
+.responsive-flex-child {
+  @apply flex-1 lg:flex-grow-0 lg:basis-auto flex flex-col;
+}

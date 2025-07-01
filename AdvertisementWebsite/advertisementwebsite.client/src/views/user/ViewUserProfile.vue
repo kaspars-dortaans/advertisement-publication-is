@@ -1,64 +1,58 @@
 <template>
-  <ResponsiveLayout>
-    <BlockWithSpinner
-      :loading="loadingInfo"
-      class="flex-none min-w-60 w-full lg:max-w-60 xl:max-w-80"
-    >
-      <Panel class="bg-white rounded-none lg:rounded-md">
-        <template #header>
-          <div class="panel-title-container">
-            <BackButton :defaultTo="{ name: 'home' }"></BackButton>
-            <h3 class="page-title">{{ userInfo?.userName }}</h3>
-          </div>
-        </template>
+  <ResponsivePanel
+    :defaultBackButtonRoute="{ name: 'home' }"
+    :title="userInfo?.userName"
+    :loading="loadingInfo"
+    panelClass="lg:!min-w-52"
+    class="!flex-grow-0"
+  >
+    <img :src="userInfo?.profileImageUrl" class="max-w-52 max-h-52 mx-auto rounded-md" />
 
-        <img :src="userInfo?.profileImageUrl" class="max-w-52 max-h-52 mx-auto rounded-md" />
+    <template v-if="hasContacts">
+      <h3 class="text-2xl mb-2 mt-3">
+        {{ l.advertisements.contacts }}
+      </h3>
 
-        <h3 class="text-2xl my-2">{{ l.advertisements.contacts }}</h3>
+      <div class="flex flex-col gap-4">
+        <InputGroup v-if="userInfo?.email">
+          <InputGroupAddon>
+            <i class="pi pi-at"></i>
+          </InputGroupAddon>
+          <InputText v-model="userInfo.email" disabled />
+        </InputGroup>
 
-        <div class="flex flex-col gap-4">
-          <InputGroup v-if="userInfo?.email">
-            <InputGroupAddon>
-              <i class="pi pi-at"></i>
-            </InputGroupAddon>
-            <InputText v-model="userInfo.email" disabled />
-          </InputGroup>
+        <InputGroup v-if="userInfo?.phoneNumber">
+          <InputGroupAddon>
+            <i class="pi pi-phone"></i>
+          </InputGroupAddon>
+          <InputText v-model="userInfo.phoneNumber" disabled />
+        </InputGroup>
 
-          <InputGroup v-if="userInfo?.phoneNumber">
-            <InputGroupAddon>
-              <i class="pi pi-phone"></i>
-            </InputGroupAddon>
-            <InputText v-model="userInfo.phoneNumber" disabled />
-          </InputGroup>
+        <InputGroup v-if="userInfo?.linkToUserSite">
+          <InputGroupAddon>
+            <i class="pi pi-link"></i>
+          </InputGroupAddon>
+          <Button
+            :label="userInfo.linkToUserSite"
+            as="a"
+            :href="userInfo.linkToUserSite"
+            class="flex-grow justify-start"
+          ></Button>
+        </InputGroup>
+      </div>
+    </template>
+  </ResponsivePanel>
 
-          <InputGroup v-if="userInfo?.linkToUserSite">
-            <InputGroupAddon>
-              <i class="pi pi-link"></i>
-            </InputGroupAddon>
-            <Button
-              :label="userInfo.linkToUserSite"
-              as="a"
-              :href="userInfo.linkToUserSite"
-              class="flex-grow justify-start"
-            ></Button>
-          </InputGroup>
-        </div>
-      </Panel>
-    </BlockWithSpinner>
-
-    <AdvertisementTable
-      :advertisementSource="loadUserAdvertisements"
-      :categoryNameSource="getCategoryName"
-      :title="ls.l('advertisements.userAdvertisements', userInfo?.userName ?? '')"
-    ></AdvertisementTable>
-  </ResponsiveLayout>
+  <AdvertisementTable
+    :advertisementSource="loadUserAdvertisements"
+    :categoryNameSource="getCategoryName"
+    :title="ls.l('advertisements.userAdvertisements', userInfo?.userName ?? '')"
+  ></AdvertisementTable>
 </template>
 
 <script setup lang="ts">
 import AdvertisementTable from '@/components/advertisements/AdvertisementTable.vue'
-import BackButton from '@/components/common/BackButton.vue'
-import BlockWithSpinner from '@/components/common/BlockWithSpinner.vue'
-import ResponsiveLayout from '@/components/common/ResponsiveLayout.vue'
+import ResponsivePanel from '@/components/common/ResponsivePanel.vue'
 import {
   AdvertisementClient,
   AdvertisementQuery,
@@ -67,7 +61,7 @@ import {
 } from '@/services/api-client'
 import { LocaleService } from '@/services/locale-service'
 import { getClient } from '@/utils/client-builder'
-import { onMounted, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 
 //Props
@@ -85,6 +79,11 @@ const ls = LocaleService.get()
 //Reactive data
 const userInfo = ref<PublicUserInfoDto | undefined>()
 const loadingInfo = ref(false)
+const hasContacts = computed(
+  () =>
+    userInfo.value &&
+    (userInfo.value.email || userInfo.value.phoneNumber || userInfo.value.linkToUserSite)
+)
 
 onMounted(() => {
   if (typeof props.id !== 'number') {

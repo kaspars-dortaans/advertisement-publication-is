@@ -1,139 +1,122 @@
 <template>
-  <ResponsiveLayout>
-    <BlockWithSpinner :loading="loading || isSubmitting" class="flex-1 lg:flex-none flex flex-col">
-      <Panel class="flex-1 rounded-none lg:rounded-md lg:min-w-[720px]">
-        <template #header>
-          <div class="panel-title-container">
-            <BackButton :defaultTo="{ name: 'manageRuleViolationReports' }" />
-            <h4 class="page-title">
-              {{ l.navigation.viewRuleViolationReport }}
-            </h4>
-          </div>
-        </template>
+  <ResponsivePanel
+    :defaultBackButtonRoute="{ name: 'manageRuleViolationReports' }"
+    :title="l.navigation.viewRuleViolationReport"
+    :loading="loading || isSubmitting"
+  >
+    <dl class="grid grid-cols-[auto_auto] gap-2">
+      <dt>{{ l.form.resolveRuleViolationReport.status }}</dt>
+      <dl>
+        {{ l.manageRuleViolationReports[report.isResolved ? 'resolved' : 'unresolved'] }}
+      </dl>
 
-        <dl class="grid grid-cols-[auto_auto] gap-2">
-          <dt>{{ l.form.resolveRuleViolationReport.status }}</dt>
-          <dl>
-            {{ l.manageRuleViolationReports[report.isResolved ? 'resolved' : 'unresolved'] }}
-          </dl>
+      <dt>{{ l.manageRuleViolationReports.description }}</dt>
+      <dl class="break-all">{{ report.description }}</dl>
 
-          <dt>{{ l.manageRuleViolationReports.description }}</dt>
-          <dl>{{ report.description }}</dl>
-
-          <template v-if="report.reporterId">
-            <dt>{{ l.manageRuleViolationReports.reporter }}</dt>
-            <dl>
-              <RouterLink
-                :to="{
-                  name: isAllowedToViewAllUsers ? 'viewUser' : 'viewUserProfile',
-                  params: { userId: report.reporterId }
-                }"
-                >{{ report.reporterUsername }}</RouterLink
-              >
-            </dl>
-          </template>
-
-          <template v-if="report.advertisementId">
-            <dt>{{ l.manageRuleViolationReports.reportedAdvertisement }}</dt>
-            <dl>
-              <RouterLink
-                :to="{ name: 'viewAdvertisement', params: { id: report.advertisementId } }"
-                >{{ report.advertisementTitle }}</RouterLink
-              >
-            </dl>
-          </template>
-
-          <template v-if="report.advertisementOwnerId">
-            <dt>{{ l.manageRuleViolationReports.advertisementOwner }}</dt>
-            <dl>
-              <RouterLink
-                :to="{
-                  name: isAllowedToViewAllUsers ? 'viewUser' : 'viewUserProfile',
-                  params: { userId: report.advertisementOwnerId }
-                }"
-              >
-                {{ report.advertisementOwnerUsername }}
-              </RouterLink>
-            </dl>
-          </template>
-
-          <dt>{{ l.manageRuleViolationReports.reportDate }}</dt>
-          <dl>{{ dateFormat.format(report.reportDate) }}</dl>
-
-          <template v-if="typeof report.isTrue === 'boolean' && !showResolveForm">
-            <dt>{{ l.form.resolveRuleViolationReport.isTrue }}</dt>
-            <dl>{{ l[(report.isTrue ?? false).toString()] }}</dl>
-
-            <dt>{{ l.form.resolveRuleViolationReport.resolutionDescription }}</dt>
-            <dl>{{ report.resolutionDescription }}</dl>
-          </template>
-        </dl>
-
-        <div class="flex flex-row justify-center">
-          <Button
-            v-if="!showResolveForm && isAllowedToResolve"
-            class="w-full mt-5 lg:w-fit lg:mx-auto"
-            @click="showResolveForm = true"
+      <template v-if="report.reporterId">
+        <dt>{{ l.manageRuleViolationReports.reporter }}</dt>
+        <dl class="break-all">
+          <RouterLink
+            :to="{
+              name: isAllowedToViewAllUsers ? 'viewUser' : 'viewUserProfile',
+              params: { userId: report.reporterId }
+            }"
+            >{{ report.reporterUsername }}</RouterLink
           >
-            {{ report.isResolved ? l.actions.edit : l.actions.resolve }}
-          </Button>
-        </div>
+        </dl>
+      </template>
 
-        <form v-if="showResolveForm" class="flex flex-col gap-4" @submit="submit">
-          <FieldError :messages="formErrors" />
+      <template v-if="report.advertisementId">
+        <dt>{{ l.manageRuleViolationReports.reportedAdvertisement }}</dt>
+        <dl class="break-all">
+          <RouterLink :to="{ name: 'viewAdvertisement', params: { id: report.advertisementId } }">{{
+            report.advertisementTitle
+          }}</RouterLink>
+        </dl>
+      </template>
 
-          <Divider />
+      <template v-if="report.advertisementOwnerId">
+        <dt>{{ l.manageRuleViolationReports.advertisementOwner }}</dt>
+        <dl class="break-all">
+          <RouterLink
+            :to="{
+              name: isAllowedToViewAllUsers ? 'viewUser' : 'viewUserProfile',
+              params: { userId: report.advertisementOwnerId }
+            }"
+          >
+            {{ report.advertisementOwnerUsername }}
+          </RouterLink>
+        </dl>
+      </template>
 
-          <!-- isTrue -->
-          <div class="inline-flex gap-2">
-            <ToggleSwitch
-              v-model="fields.isTrue!.value"
-              v-bind="fields.isTrue!.attributes"
-              :invalid="fields.isTrue!.hasError"
-              id="is-true-input"
-            />
-            <label for="is-true-input">{{ l.form.resolveRuleViolationReport.isTrue }}</label>
-          </div>
+      <dt>{{ l.manageRuleViolationReports.reportDate }}</dt>
+      <dl>{{ dateFormat.format(report.reportDate) }}</dl>
 
-          <!-- resolutionDescription -->
-          <FloatLabel variant="on">
-            <Textarea
-              v-model="fields.resolutionDescription!.value"
-              v-bind="fields.resolutionDescription!.attributes"
-              :invalid="fields.resolutionDescription!.hasError"
-              id="resolution-description-input"
-              fluid
-              autoResize
-            />
-            <label for="resolution-description-input">{{
-              l.form.resolveRuleViolationReport.resolutionDescription
-            }}</label>
-          </FloatLabel>
+      <template v-if="typeof report.isTrue === 'boolean' && !showResolveForm">
+        <dt>{{ l.form.resolveRuleViolationReport.isTrue }}</dt>
+        <dl>{{ l[(report.isTrue ?? false).toString()] }}</dl>
 
-          <div class="flex flex-row flex-wrap gap-2 justify-center mt-3">
-            <Button
-              :label="l.actions.cancel"
-              type="button"
-              severity="secondary"
-              class="flex-grow basis-auto lg:flex-none"
-              @click="cancelForm"
-            />
-            <Button
-              :label="l.actions.save"
-              type="submit"
-              class="flex-grow basis-auto lg:flex-none"
-            />
-          </div>
-        </form>
-      </Panel>
-    </BlockWithSpinner>
-  </ResponsiveLayout>
+        <dt>{{ l.form.resolveRuleViolationReport.resolutionDescription }}</dt>
+        <dl>{{ report.resolutionDescription }}</dl>
+      </template>
+    </dl>
+
+    <div class="flex flex-row justify-center">
+      <Button
+        v-if="!showResolveForm && isAllowedToResolve"
+        class="w-full mt-5 lg:w-fit lg:mx-auto"
+        @click="showResolveForm = true"
+      >
+        {{ report.isResolved ? l.actions.edit : l.actions.resolve }}
+      </Button>
+    </div>
+
+    <form v-if="showResolveForm" class="flex flex-col gap-4" @submit="submit">
+      <FieldError :messages="formErrors" />
+
+      <Divider />
+
+      <!-- isTrue -->
+      <div class="inline-flex gap-2">
+        <ToggleSwitch
+          v-model="fields.isTrue!.value"
+          v-bind="fields.isTrue!.attributes"
+          :invalid="fields.isTrue!.hasError"
+          id="is-true-input"
+        />
+        <label for="is-true-input">{{ l.form.resolveRuleViolationReport.isTrue }}</label>
+      </div>
+
+      <!-- resolutionDescription -->
+      <FloatLabel variant="on">
+        <Textarea
+          v-model="fields.resolutionDescription!.value"
+          v-bind="fields.resolutionDescription!.attributes"
+          :invalid="fields.resolutionDescription!.hasError"
+          id="resolution-description-input"
+          fluid
+          autoResize
+        />
+        <label for="resolution-description-input">{{
+          l.form.resolveRuleViolationReport.resolutionDescription
+        }}</label>
+      </FloatLabel>
+
+      <div class="flex flex-row flex-wrap gap-2 justify-center mt-3">
+        <Button
+          :label="l.actions.cancel"
+          type="button"
+          severity="secondary"
+          class="flex-grow basis-auto lg:flex-none"
+          @click="cancelForm"
+        />
+        <Button :label="l.actions.save" type="submit" class="flex-grow basis-auto lg:flex-none" />
+      </div>
+    </form>
+  </ResponsivePanel>
 </template>
 
 <script lang="ts" setup>
-import BackButton from '@/components/common/BackButton.vue'
-import BlockWithSpinner from '@/components/common/BlockWithSpinner.vue'
-import ResponsiveLayout from '@/components/common/ResponsiveLayout.vue'
 import FieldError from '@/components/form/FieldError.vue'
 import {
   ResolveRuleViolationReportRequest,
@@ -152,6 +135,7 @@ import { onBeforeMount, ref, watch, computed } from 'vue'
 import { onBeforeRouteLeave } from 'vue-router'
 import { boolean, object, string } from 'yup'
 import { Permissions } from '@/constants/api/Permissions'
+import ResponsivePanel from '@/components/common/ResponsivePanel.vue'
 
 const props = defineProps<{
   id: number

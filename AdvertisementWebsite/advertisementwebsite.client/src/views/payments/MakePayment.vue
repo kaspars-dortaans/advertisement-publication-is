@@ -1,51 +1,43 @@
 <template>
-  <ResponsiveLayout>
-    <BlockWithSpinner class="flex-1 lg:flex-none flex flex-col" :loading="loading">
-      <div
-        class="flex-1 flex flex-col gap-[1.125rem] p-[1.125rem] rounded-none lg:rounded-md bg-surface-0"
-      >
-        <h3 class="page-title">{{ l.navigation.makePayment }}</h3>
-        <div class="flex-1 flex flex-col lg:flex-row items-center lg:items-stretch gap-3">
-          <Message v-if="formErrors" severity="error">{{ formErrors }}</Message>
-          <PaymentDetails :paymentInfo="priceInfo" />
+  <ResponsivePanel :title="l.navigation.makePayment" :loading="loading">
+    <div class="flex-1 flex flex-col lg:flex-row lg:items-stretch gap-3">
+      <Message v-if="formErrors" severity="error">{{ formErrors }}</Message>
+      <PaymentDetails :paymentInfo="priceInfo" />
 
-          <form class="flex flex-col space-y-2" @submit="pay">
-            <h4 class="font-semibold">{{ l.makePayment.paymentOptions }}</h4>
-            <Listbox
-              v-model="fields.paymentOption!.value"
-              v-bind="fields.paymentOption?.attributes"
-              :invalid="fields.paymentOption?.hasError"
-              :options="paymentOptions"
-              :pt="{ list: 'grid grid-cols-[auto_1fr]', option: 'rounded-md' }"
-              optionValue="key"
-            >
-              <template #option="slotProps">
-                <img
-                  :src="slotProps.option.value"
-                  width="200"
-                  height="100"
-                  class="rounded-md bg-white"
-                />
-              </template>
-            </Listbox>
-            <FieldError :field="fields.paymentOption" />
-            <Button
-              :label="l.actions.pay"
-              :disabled="loading || !paymentState.paymentItems.length"
-              :loading="isSubmitting"
-              class="mx-auto"
-              type="submit"
+      <form class="flex flex-col space-y-2" @submit="pay">
+        <h4 class="font-semibold">{{ l.makePayment.paymentOptions }}</h4>
+        <Listbox
+          v-model="fields.paymentOption!.value"
+          v-bind="fields.paymentOption?.attributes"
+          :invalid="fields.paymentOption?.hasError"
+          :options="paymentOptions"
+          :pt="{ list: 'grid grid-cols-[auto_1fr]', option: 'rounded-md' }"
+          optionValue="key"
+        >
+          <template #option="slotProps">
+            <img
+              :src="slotProps.option.value"
+              width="200"
+              height="100"
+              class="rounded-md bg-white"
             />
-          </form>
-        </div>
-      </div>
-    </BlockWithSpinner>
-  </ResponsiveLayout>
+          </template>
+        </Listbox>
+        <FieldError :field="fields.paymentOption" />
+        <Button
+          :label="l.actions.pay"
+          :disabled="loading || !paymentState.paymentItems.length"
+          :loading="isSubmitting"
+          class="mx-auto"
+          type="submit"
+        />
+      </form>
+    </div>
+  </ResponsivePanel>
 </template>
 
 <script lang="ts" setup>
-import BlockWithSpinner from '@/components/common/BlockWithSpinner.vue'
-import ResponsiveLayout from '@/components/common/ResponsiveLayout.vue'
+import ResponsivePanel from '@/components/common/ResponsivePanel.vue'
 import FieldError from '@/components/form/FieldError.vue'
 import PaymentDetails from '@/components/payment/PaymentDetails.vue'
 import { usePaymentState } from '@/composables/payment-store'

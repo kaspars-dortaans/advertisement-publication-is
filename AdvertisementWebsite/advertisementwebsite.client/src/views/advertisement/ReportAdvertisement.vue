@@ -1,39 +1,34 @@
 <template>
-  <ResponsiveLayout>
-    <Panel class="my-auto flex-1 lg:flex-none sm:min-w-96 rounded-none lg:rounded-md">
-      <template #header>
-        <div class="panel-title-container">
-          <BackButton :defaultTo="{ name: 'viewAdvertisement' }" />
-          <h3 class="page-title">{{ l.advertisements.reportRuleViolation }}</h3>
-        </div>
-      </template>
-      <form class="flex flex-col gap-4 min-h-80" @submit="report">
-        <label for="report-text-area">{{ l.advertisements.description }}</label>
-        <Textarea
-          v-model="fields.description!.value"
-          v-bind="fields.description?.attributes"
-          :invalid="fields.description?.hasError"
-          class="flex-1"
-          id="report-text-area"
-        ></Textarea>
-        <FieldError :field="fields.description" />
+  <ResponsivePanel
+    :defaultBackButtonRoute="{ name: 'viewAdvertisement' }"
+    :title="l.advertisements.reportRuleViolation"
+  >
+    <form class="flex flex-col gap-4 min-h-80" @submit="report">
+      <label for="report-text-area">{{ l.advertisements.description }}</label>
+      <Textarea
+        v-model="fields.description!.value"
+        v-bind="fields.description?.attributes"
+        :invalid="fields.description?.hasError"
+        class="flex-1"
+        id="report-text-area"
+      ></Textarea>
+      <FieldError :field="fields.description" />
 
-        <div class="flex flex-row gap-4 justify-center">
-          <BackButton
-            :label="l.actions.cancel"
-            :defaultTo="{ name: 'viewAdvertisement' }"
-            noIcon
-          ></BackButton>
-          <Button type="submit" :label="l.actions.report" :loading="isSubmitting"></Button>
-        </div>
-      </form>
-    </Panel>
-  </ResponsiveLayout>
+      <div class="flex flex-row gap-4 justify-center">
+        <BackButton
+          :label="l.actions.cancel"
+          :defaultTo="{ name: 'viewAdvertisement' }"
+          noIcon
+        ></BackButton>
+        <Button type="submit" :label="l.actions.report" :loading="isSubmitting"></Button>
+      </div>
+    </form>
+  </ResponsivePanel>
 </template>
 
 <script setup lang="ts">
 import BackButton from '@/components/common/BackButton.vue'
-import ResponsiveLayout from '@/components/common/ResponsiveLayout.vue'
+import ResponsivePanel from '@/components/common/ResponsivePanel.vue'
 import FieldError from '@/components/form/FieldError.vue'
 import { ReportAdvertisementRequest, RuleViolationReportClient } from '@/services/api-client'
 import { AppNavigation } from '@/services/app-navigation'

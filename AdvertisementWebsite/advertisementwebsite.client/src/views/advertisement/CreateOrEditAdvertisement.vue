@@ -1,159 +1,147 @@
 <template>
-  <ResponsiveLayout>
-    <BlockWithSpinner :loading="loading" class="flex-1 lg:flex-none flex">
-      <Panel class="flex-1 rounded-none lg:rounded-md">
-        <template #header>
-          <div class="panel-title-container">
-            <BackButton
-              :defaultTo="{ name: isEdit ? 'viewAdvertisement' : 'viewAdvertisements' }"
+  <ResponsivePanel
+    :loading="loading"
+    :defaultBackButtonRoute="{ name: isEdit ? 'viewAdvertisement' : 'viewAdvertisements' }"
+    :title="isEdit ? l.navigation.editAdvertisement : l.navigation.createAdvertisement"
+  >
+    <form class="flex flex-col gap-2" @submit="submit">
+      <div class="flex flex-col lg:flex-row lg:justify-center flex-wrap gap-3">
+        <fieldset class="flex flex-col gap-2 min-w-full lg:min-w-60">
+          <!-- Assigned to user -->
+          <FloatLabel v-if="forAnyUser" variant="on">
+            <AutoComplete
+              v-model="fields.ownerId!.value"
+              v-bind="fields.ownerId!.attributes"
+              :invalid="fields.ownerId!.hasError"
+              :suggestions="userLookups"
+              optionLabel="value"
+              id="owner-input"
+              fluid
+              dropdown
+              @complete="searchUsers"
             />
-            <h3 class="page-title">
-              {{ isEdit ? l.navigation.editAdvertisement : l.navigation.createAdvertisement }}
-            </h3>
-          </div>
-        </template>
+            <label for="owner-input">{{ l.form.putAdvertisement.owner }}</label>
+          </FloatLabel>
+          <FieldError :field="fields.ownerId" />
 
-        <form class="flex flex-col gap-2" @submit="submit">
-          <div class="flex flex-col lg:flex-row lg:justify-center flex-wrap gap-3">
-            <fieldset class="flex flex-col gap-2 min-w-full lg:min-w-60">
-              <!-- Assigned to user -->
-              <FloatLabel v-if="forAnyUser" variant="on">
-                <AutoComplete
-                  v-model="fields.ownerId!.value"
-                  v-bind="fields.ownerId!.attributes"
-                  :invalid="fields.ownerId!.hasError"
-                  :suggestions="userLookups"
-                  optionLabel="value"
-                  id="owner-input"
-                  fluid
-                  dropdown
-                  @complete="searchUsers"
-                />
-                <label for="owner-input">{{ l.form.putAdvertisement.owner }}</label>
-              </FloatLabel>
-              <FieldError :field="fields.ownerId" />
-
-              <!-- Time period -->
-              <template v-if="!isEdit">
-                <FloatLabel variant="on">
-                  <Select
-                    v-model="fields.postTime!.value"
-                    v-bind="fields.postTime?.attributes"
-                    :invalid="fields.postTime?.hasError"
-                    :options="postTimeOptions"
-                    optionLabel="name"
-                    optionValue="value"
-                    id="time-period-select"
-                    fluid
-                  />
-                  <label for="time-period-select">{{ l.form.putAdvertisement.timePeriod }}</label>
-                </FloatLabel>
-                <FieldError :field="fields.postTime" />
-              </template>
-
-              <div v-else-if="existingAdvertisement?.validToDate" class="flex gap-2">
-                <FloatLabel variant="on" class="flex-1">
-                  <InputText
-                    :defaultValue="dateFormat.format(existingAdvertisement?.validToDate)"
-                    disabled
-                    fluid
-                  ></InputText>
-                  <label for="valid-to">{{ l.form.putAdvertisement.validTo }}</label>
-                </FloatLabel>
-                <Button
-                  :label="l.actions.extend"
-                  severity="secondary"
-                  as="RouterLink"
-                  :to="{
-                    name: 'extend',
-                    params: { type: PaymentType.ExtendAdvertisement, ids: `[${id}]` }
-                  }"
-                />
-              </div>
-
-              <Divider />
-
-              <!-- Category Select -->
-              <CategorySelect
-                :categoryList="categoryList"
-                :field="fields.categoryId"
-                @selectedCategory="handleSelectedCategory"
+          <!-- Time period -->
+          <template v-if="!isEdit">
+            <FloatLabel variant="on">
+              <Select
+                v-model="fields.postTime!.value"
+                v-bind="fields.postTime?.attributes"
+                :invalid="fields.postTime?.hasError"
+                :options="postTimeOptions"
+                optionLabel="name"
+                optionValue="value"
+                id="time-period-select"
+                fluid
               />
+              <label for="time-period-select">{{ l.form.putAdvertisement.timePeriod }}</label>
+            </FloatLabel>
+            <FieldError :field="fields.postTime" />
+          </template>
 
-              <template v-if="attributeInfo.length || loadingAttributes">
-                <Divider />
-
-                <!-- Attributes -->
-                <BlockWithSpinner class="flex flex-col gap-2 min-h-12" :loading="loadingAttributes">
-                  <AttributeInputGroup
-                    :fields="fields"
-                    :attributes="attributeInfo"
-                    :valueLists="attributeValueLists"
-                    fieldKey="attributeValues"
-                  />
-                </BlockWithSpinner>
-              </template>
-
-              <Divider v-if="isSmallScreen" />
-            </fieldset>
-
-            <fieldset class="flex flex-col gap-2 min-w-full lg:min-w-96">
-              <!-- Title -->
-              <FloatLabel variant="on">
-                <InputText
-                  v-model="fields.title!.value"
-                  v-bind="fields.title?.attributes"
-                  :invalid="fields.title!.hasError"
-                  id="title-input"
-                  fluid
-                />
-                <label for="title-input">{{ l.form.putAdvertisement.title }}</label>
-              </FloatLabel>
-              <FieldError :field="fields.title" />
-
-              <!-- Description -->
-              <FloatLabel variant="on">
-                <Textarea
-                  v-model="fields.description!.value"
-                  v-bind="fields.description?.attributes"
-                  :invalid="fields.description?.hasError"
-                  :rows="10"
-                  id="description-input"
-                  autoResize
-                  fluid
-                />
-                <label for="description-input">{{ l.form.putAdvertisement.description }}</label>
-              </FloatLabel>
-              <FieldError :field="fields.description" />
-
-              <!-- Images -->
-              <MultipleImageUpload
-                v-model="fields.imagesToAdd!.value"
-                :maxImageCount="ImageConstants.MaxImageCountPerAdvertisement"
-                :accept="ImageConstants.AllowedFileTypes"
-                :maxFileSizeInBytes="ImageConstants.MaxFileSizeInBytes"
-                :fields="fields"
-                fieldKey="imagesToAdd"
-              />
-            </fieldset>
+          <div v-else-if="existingAdvertisement?.validToDate" class="flex gap-2">
+            <FloatLabel variant="on" class="flex-1">
+              <InputText
+                :defaultValue="dateFormat.format(existingAdvertisement?.validToDate)"
+                disabled
+                fluid
+              ></InputText>
+              <label for="valid-to">{{ l.form.putAdvertisement.validTo }}</label>
+            </FloatLabel>
+            <Button
+              :label="l.actions.extend"
+              severity="secondary"
+              as="RouterLink"
+              :to="{
+                name: 'extend',
+                params: { type: PaymentType.ExtendAdvertisement, ids: `[${id}]` }
+              }"
+            />
           </div>
-          <Button
-            :label="isEdit ? l.actions.save : l.actions.create"
-            :loading="isSubmitting"
-            class="mx-auto"
-            type="submit"
+
+          <Divider />
+
+          <!-- Category Select -->
+          <CategorySelect
+            :categoryList="categoryList"
+            :field="fields.categoryId"
+            @selectedCategory="handleSelectedCategory"
           />
-        </form>
-      </Panel>
-    </BlockWithSpinner>
-  </ResponsiveLayout>
+
+          <template v-if="attributeInfo.length || loadingAttributes">
+            <Divider />
+
+            <!-- Attributes -->
+            <BlockWithSpinner class="flex flex-col gap-2 min-h-12" :loading="loadingAttributes">
+              <AttributeInputGroup
+                :fields="fields"
+                :attributes="attributeInfo"
+                :valueLists="attributeValueLists"
+                fieldKey="attributeValues"
+              />
+            </BlockWithSpinner>
+          </template>
+
+          <Divider v-if="isSmallScreen" />
+        </fieldset>
+
+        <fieldset class="flex flex-col gap-2 min-w-full lg:min-w-96">
+          <!-- Title -->
+          <FloatLabel variant="on">
+            <InputText
+              v-model="fields.title!.value"
+              v-bind="fields.title?.attributes"
+              :invalid="fields.title!.hasError"
+              id="title-input"
+              fluid
+            />
+            <label for="title-input">{{ l.form.putAdvertisement.title }}</label>
+          </FloatLabel>
+          <FieldError :field="fields.title" />
+
+          <!-- Description -->
+          <FloatLabel variant="on">
+            <Textarea
+              v-model="fields.description!.value"
+              v-bind="fields.description?.attributes"
+              :invalid="fields.description?.hasError"
+              :rows="10"
+              id="description-input"
+              autoResize
+              fluid
+            />
+            <label for="description-input">{{ l.form.putAdvertisement.description }}</label>
+          </FloatLabel>
+          <FieldError :field="fields.description" />
+
+          <!-- Images -->
+          <MultipleImageUpload
+            v-model="fields.imagesToAdd!.value"
+            :maxImageCount="ImageConstants.MaxImageCountPerAdvertisement"
+            :accept="ImageConstants.AllowedFileTypes"
+            :maxFileSizeInBytes="ImageConstants.MaxFileSizeInBytes"
+            :fields="fields"
+            fieldKey="imagesToAdd"
+          />
+        </fieldset>
+      </div>
+      <Button
+        :label="isEdit ? l.actions.save : l.actions.create"
+        :loading="isSubmitting"
+        class="mx-auto"
+        type="submit"
+      />
+    </form>
+  </ResponsivePanel>
 </template>
 
 <script setup lang="ts">
 import AttributeInputGroup from '@/components/attribute-input/AttributeInputGroup.vue'
-import BackButton from '@/components/common/BackButton.vue'
 import BlockWithSpinner from '@/components/common/BlockWithSpinner.vue'
-import ResponsiveLayout from '@/components/common/ResponsiveLayout.vue'
+import ResponsivePanel from '@/components/common/ResponsivePanel.vue'
 import CategorySelect from '@/components/form/CategorySelect.vue'
 import FieldError from '@/components/form/FieldError.vue'
 import MultipleImageUpload from '@/components/form/MultipleImageUpload.vue'

@@ -1,1 +1,1 @@
-export const SmallScreenSizeWidthBreakpoint = 1024
+export const SmallScreenSizeWidthBreakpoint = 920

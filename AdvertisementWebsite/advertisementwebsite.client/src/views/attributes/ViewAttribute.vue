@@ -1,95 +1,87 @@
 <template>
-  <ResponsiveLayout>
-    <BlockWithSpinner :loading="loading" class="flex-1 lg:flex-none flex flex-col">
-      <Panel class="rounded-none lg:rounded-md flex-1 lg:min-w-96">
-        <template #header>
-          <div class="panel-title-container">
-            <BackButton :defaultTo="{ name: 'manageAttributes' }" />
-            <h4 class="page-title">
-              {{ l.navigation.viewAttribute }}
-            </h4>
-            <Button
-              :label="l.actions.edit"
-              icon="pi pi-pencil"
-              severity="secondary"
-              as="RouterLink"
-              :to="{ name: 'editAttribute', params: { attributeId } }"
-            />
-          </div>
-        </template>
+  <ResponsivePanel
+    :defaultBackButtonRoute="{ name: 'manageAttributes' }"
+    :title="l.navigation.viewAttribute"
+    :loading="loading"
+  >
+    <template #titlePanelButtons>
+      <Button
+        :label="l.actions.edit"
+        icon="pi pi-pencil"
+        severity="secondary"
+        as="RouterLink"
+        :to="{ name: 'editAttribute', params: { attributeId } }"
+      />
+    </template>
 
-        <div class="flex flex-col gap-4">
-          <!-- Localized names -->
-          <LocaleTextInput
-            v-model="localizedNames"
-            :localeList="ls.localeList.value"
-            :label="l.form.attributeForm.title"
+    <div class="flex flex-col gap-4">
+      <!-- Localized names -->
+      <LocaleTextInput
+        v-model="localizedNames"
+        :localeList="ls.localeList.value"
+        :label="l.form.attributeForm.title"
+        disabled
+      />
+
+      <!-- Value type -->
+      <FloatLabel variant="on">
+        <InputText v-model="attributeData.valueType" id="value-type-input" fluid disabled />
+        <label for="value-type-input">{{ l.form.attributeForm.valueType }}</label>
+      </FloatLabel>
+
+      <!-- Attribute value list -->
+      <template v-if="valueListType">
+        <FloatLabel variant="on">
+          <InputText
+            v-model="attributeData.attributeValueListName"
+            id="attribute-value-list-input"
+            fluid
             disabled
           />
+          <label for="attribute-value-list-input">{{
+            l.form.attributeForm.attributeValueList
+          }}</label>
+        </FloatLabel>
+      </template>
 
-          <!-- Value type -->
-          <FloatLabel variant="on">
-            <InputText v-model="attributeData.valueType" id="value-type-input" fluid disabled />
-            <label for="value-type-input">{{ l.form.attributeForm.valueType }}</label>
-          </FloatLabel>
+      <!-- Filter type -->
+      <FloatLabel variant="on">
+        <InputText v-model="attributeData.filterType" id="filter-type-input" fluid disabled />
+        <label for="filter-type-input">{{ l.form.attributeForm.filterType }}</label>
+      </FloatLabel>
 
-          <!-- Attribute value list -->
-          <template v-if="valueListType">
-            <FloatLabel variant="on">
-              <InputText
-                v-model="attributeData.attributeValueListName"
-                id="attribute-value-list-input"
-                fluid
-                disabled
-              />
-              <label for="attribute-value-list-input">{{
-                l.form.attributeForm.attributeValueList
-              }}</label>
-            </FloatLabel>
-          </template>
+      <!-- sortable -->
+      <div class="inline-flex gap-2 mt-4">
+        <ToggleSwitch v-model="attributeData.sortable" id="is-sortable-input" disabled />
+        <label for="is-sortable-input">{{ l.form.attributeForm.sortable }}</label>
+      </div>
 
-          <!-- Filter type -->
-          <FloatLabel variant="on">
-            <InputText v-model="attributeData.filterType" id="filter-type-input" fluid disabled />
-            <label for="filter-type-input">{{ l.form.attributeForm.filterType }}</label>
-          </FloatLabel>
+      <!-- searchable -->
+      <div class="inline-flex gap-2 mt-4">
+        <ToggleSwitch v-model="attributeData.searchable" id="is-searchable-input" disabled />
+        <label for="is-searchable-input">{{ l.form.attributeForm.searchable }}</label>
+      </div>
 
-          <!-- sortable -->
-          <div class="inline-flex gap-2 mt-4">
-            <ToggleSwitch v-model="attributeData.sortable" id="is-sortable-input" disabled />
-            <label for="is-sortable-input">{{ l.form.attributeForm.sortable }}</label>
-          </div>
+      <!-- showOnListItem -->
+      <div class="inline-flex gap-2 mt-4">
+        <ToggleSwitch
+          v-model="attributeData.showOnListItem"
+          id="show-on-list-item-input"
+          disabled
+        />
+        <label for="show-on-list-item-input">{{ l.form.attributeForm.showOnListItem }}</label>
+      </div>
 
-          <!-- searchable -->
-          <div class="inline-flex gap-2 mt-4">
-            <ToggleSwitch v-model="attributeData.searchable" id="is-searchable-input" disabled />
-            <label for="is-searchable-input">{{ l.form.attributeForm.searchable }}</label>
-          </div>
-
-          <!-- showOnListItem -->
-          <div class="inline-flex gap-2 mt-4">
-            <ToggleSwitch
-              v-model="attributeData.showOnListItem"
-              id="show-on-list-item-input"
-              disabled
-            />
-            <label for="show-on-list-item-input">{{ l.form.attributeForm.showOnListItem }}</label>
-          </div>
-
-          <FloatLabel variant="on">
-            <InputText v-model="attributeData.iconName" id="icon-name-input" fluid disabled />
-            <label for="icon-name-input">{{ l.form.attributeForm.iconName }}</label>
-          </FloatLabel>
-        </div>
-      </Panel>
-    </BlockWithSpinner>
-  </ResponsiveLayout>
+      <FloatLabel variant="on">
+        <InputText v-model="attributeData.iconName" id="icon-name-input" fluid disabled />
+        <label for="icon-name-input">{{ l.form.attributeForm.iconName }}</label>
+      </FloatLabel>
+    </div>
+  </ResponsivePanel>
 </template>
 
 <script lang="ts" setup>
-import BackButton from '@/components/common/BackButton.vue'
-import BlockWithSpinner from '@/components/common/BlockWithSpinner.vue'
-import ResponsiveLayout from '@/components/common/ResponsiveLayout.vue'
+import ResponsivePanel from '@/components/common/ResponsivePanel.vue'
 import LocaleTextInput from '@/components/form/LocaleTextInput.vue'
 import { AttributeClient, FilterType, PutAttributeRequest, ValueTypes } from '@/services/api-client'
 import { LocaleService } from '@/services/locale-service'

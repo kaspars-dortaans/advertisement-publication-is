@@ -1,53 +1,51 @@
 <template>
-  <ResponsiveLayout>
-    <Panel class="my-auto mx-2">
-      <template #header>
-        <span class="text-2xl">{{ l.navigation.login }}</span>
-      </template>
-      <form class="flex-none flex flex-col items-center gap-2 min-w-80 bg-white" @submit="tryLogin">
-        <Message v-if="formErrors" severity="error">{{ formErrors }}</Message>
+  <ResponsivePanel :title="l.navigation.login" class="self-stretch lg:self-center">
+    <form
+      class="my-auto flex-none flex flex-col items-center gap-2 min-w-80 bg-white"
+      @submit="tryLogin"
+    >
+      <Message v-if="formErrors" severity="error">{{ formErrors }}</Message>
 
-        <InputGroup>
-          <InputGroupAddon>
-            <i class="pi pi-at"></i>
-          </InputGroupAddon>
-          <InputText
-            v-model="fields.email!.value"
-            v-bind="fields.email?.attributes"
-            :placeholder="l.form.login.email"
-            :invalid="fields.email?.hasError"
-          />
-        </InputGroup>
-        <FieldError :field="fields.email" />
+      <InputGroup>
+        <InputGroupAddon>
+          <i class="pi pi-at"></i>
+        </InputGroupAddon>
+        <InputText
+          v-model="fields.email!.value"
+          v-bind="fields.email?.attributes"
+          :placeholder="l.form.login.email"
+          :invalid="fields.email?.hasError"
+        />
+      </InputGroup>
+      <FieldError :field="fields.email" />
 
-        <InputGroup>
-          <InputGroupAddon>
-            <i class="pi pi-key"></i>
-          </InputGroupAddon>
-          <Password
-            v-model="fields.password!.value"
-            v-bind="fields.password?.attributes"
-            :placeholder="l.form.login.password"
-            :feedback="false"
-            :invalid="fields.email?.hasError"
-          />
-        </InputGroup>
-        <FieldError :field="fields.password" />
+      <InputGroup>
+        <InputGroupAddon>
+          <i class="pi pi-key"></i>
+        </InputGroupAddon>
+        <Password
+          v-model="fields.password!.value"
+          v-bind="fields.password?.attributes"
+          :placeholder="l.form.login.password"
+          :feedback="false"
+          :invalid="fields.email?.hasError"
+        />
+      </InputGroup>
+      <FieldError :field="fields.password" />
 
-        <Button class="mt-1" :label="l.navigation.login" :loading="isSubmitting" type="submit" />
-        <p>
-          <span>{{ l.form.login.doNotHaveAnAccountQuestion }}</span>
-          <RouterLink class="ml-1 link" :to="{ name: 'register' }">{{
-            l.navigation.register
-          }}</RouterLink>
-        </p>
-      </form>
-    </Panel>
-  </ResponsiveLayout>
+      <Button class="mt-1" :label="l.navigation.login" :loading="isSubmitting" type="submit" />
+      <p>
+        <span>{{ l.form.login.doNotHaveAnAccountQuestion }}</span>
+        <RouterLink class="ml-1 link" :to="{ name: 'register' }">{{
+          l.navigation.register
+        }}</RouterLink>
+      </p>
+    </form>
+  </ResponsivePanel>
 </template>
 
 <script setup lang="ts">
-import ResponsiveLayout from '@/components/common/ResponsiveLayout.vue'
+import ResponsivePanel from '@/components/common/ResponsivePanel.vue'
 import FieldError from '@/components/form/FieldError.vue'
 import { LoginDto, type ILoginDto } from '@/services/api-client'
 import { AppNavigation } from '@/services/app-navigation'

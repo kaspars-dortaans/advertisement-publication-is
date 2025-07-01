@@ -1,103 +1,94 @@
 <template>
-  <ResponsiveLayout>
-    <BlockWithSpinner :loading="loading" class="flex-1 lg:flex-none flex">
-      <Panel class="flex-1 flex flex-col rounded-none lg:rounded-md lg:min-w-96">
-        <template #header>
-          <div class="panel-title-container">
-            <BackButton :defaultTo="{ name: 'manageAdvertisementNotificationSubscription' }" />
-            <h3 class="page-title">{{ l.navigation.viewAdvertisementNotificationSubscription }}</h3>
-            <Button
-              v-if="isAllowedToEdit"
-              :label="l.actions.edit"
-              icon="pi pi-pencil"
-              severity="secondary"
-              as="RouterLink"
-              :to="{
-                name: props.forAnyUser
-                  ? 'editAnyAdvertisementNotificationSubscription'
-                  : 'editAdvertisementNotificationSubscription'
-              }"
+  <ResponsivePanel
+    :defaultBackButtonRoute="{ name: 'manageAdvertisementNotificationSubscription' }"
+    :title="l.navigation.viewAdvertisementNotificationSubscription"
+  >
+    <template #titlePanelButtons>
+      <Button
+        v-if="isAllowedToEdit"
+        :label="l.actions.edit"
+        icon="pi pi-pencil"
+        severity="secondary"
+        as="RouterLink"
+        :to="{
+          name: props.forAnyUser
+            ? 'editAnyAdvertisementNotificationSubscription'
+            : 'editAdvertisementNotificationSubscription'
+        }"
+      />
+    </template>
+
+    <div class="flex flex-col gap-3">
+      <div class="flex flex-col lg:flex-row gap-2">
+        <fieldset class="flex-1 flex flex-col gap-2">
+          <!-- Owner -->
+          <FloatLabel v-if="forAnyUser" variant="on">
+            <InputText
+              v-model="existingSubscription.ownerUsername"
+              id="owner-name"
+              fluid
+              disabled
+            />
+            <label for="title-input">{{ l.form.putAdvertisementNotification.owner }}</label>
+          </FloatLabel>
+
+          <!-- Title -->
+          <FloatLabel variant="on">
+            <InputText v-model="existingSubscription.title" id="title-input" fluid disabled />
+            <label for="title-input">{{ l.form.putAdvertisementNotification.title }}</label>
+          </FloatLabel>
+
+          <!-- Time period -->
+          <FloatLabel variant="on">
+            <InputText v-model="validToDate" id="time-period-select" fluid disabled />
+            <label for="time-period-select">{{
+              l.form.putAdvertisementNotification.validTo
+            }}</label>
+          </FloatLabel>
+
+          <!-- Keywords -->
+          <FloatLabel variant="on">
+            <AutoComplete
+              v-model="existingSubscription.keywords"
+              :typeahead="false"
+              inputId="keyword-input"
+              multiple
+              fluid
+              disabled
+            />
+            <label for="keyword-input">{{ l.form.putAdvertisementNotification.keywords }}</label>
+          </FloatLabel>
+
+          <Divider />
+
+          <!-- Category -->
+          <CategorySelect
+            :categoryList="categoryList"
+            :value="existingSubscription.categoryId"
+            disabled
+          />
+        </fieldset>
+
+        <!-- Attributes -->
+        <fieldset v-if="attributeInfo.length" class="flex-1 flex flex-col gap-2">
+          <Divider v-if="isSmallScreen" />
+          <div class="flex flex-col gap-2 min-h-12">
+            <AttributeInputGroup
+              :values="attributeValues"
+              :attributes="attributeInfo"
+              :valueLists="attributeValueLists"
+              disabled
             />
           </div>
-        </template>
-
-        <div class="flex flex-col gap-3">
-          <div class="flex flex-col lg:flex-row gap-2">
-            <fieldset class="flex-1 flex flex-col gap-2">
-              <!-- Owner -->
-              <FloatLabel v-if="forAnyUser" variant="on">
-                <InputText
-                  v-model="existingSubscription.ownerUsername"
-                  id="owner-name"
-                  fluid
-                  disabled
-                />
-                <label for="title-input">{{ l.form.putAdvertisementNotification.owner }}</label>
-              </FloatLabel>
-
-              <!-- Title -->
-              <FloatLabel variant="on">
-                <InputText v-model="existingSubscription.title" id="title-input" fluid disabled />
-                <label for="title-input">{{ l.form.putAdvertisementNotification.title }}</label>
-              </FloatLabel>
-
-              <!-- Time period -->
-              <FloatLabel variant="on">
-                <InputText v-model="validToDate" id="time-period-select" fluid disabled />
-                <label for="time-period-select">{{
-                  l.form.putAdvertisementNotification.validTo
-                }}</label>
-              </FloatLabel>
-
-              <!-- Keywords -->
-              <FloatLabel variant="on">
-                <AutoComplete
-                  v-model="existingSubscription.keywords"
-                  :typeahead="false"
-                  inputId="keyword-input"
-                  multiple
-                  fluid
-                  disabled
-                />
-                <label for="keyword-input">{{
-                  l.form.putAdvertisementNotification.keywords
-                }}</label>
-              </FloatLabel>
-
-              <Divider />
-
-              <!-- Category -->
-              <CategorySelect
-                :categoryList="categoryList"
-                :value="existingSubscription.categoryId"
-                disabled
-              />
-            </fieldset>
-
-            <!-- Attributes -->
-            <fieldset v-if="attributeInfo.length" class="flex-1 flex flex-col gap-2">
-              <Divider v-if="isSmallScreen" />
-              <div class="flex flex-col gap-2 min-h-12">
-                <AttributeInputGroup
-                  :values="attributeValues"
-                  :attributes="attributeInfo"
-                  :valueLists="attributeValueLists"
-                  disabled
-                />
-              </div>
-            </fieldset>
-          </div>
-        </div>
-      </Panel>
-    </BlockWithSpinner>
-  </ResponsiveLayout>
+        </fieldset>
+      </div>
+    </div>
+  </ResponsivePanel>
 </template>
 
 <script lang="ts" setup>
 import AttributeInputGroup from '@/components/attribute-input/AttributeInputGroup.vue'
-import BackButton from '@/components/common/BackButton.vue'
-import BlockWithSpinner from '@/components/common/BlockWithSpinner.vue'
-import ResponsiveLayout from '@/components/common/ResponsiveLayout.vue'
+import ResponsivePanel from '@/components/common/ResponsivePanel.vue'
 import CategorySelect from '@/components/form/CategorySelect.vue'
 import { useManageAttributeInput } from '@/composables/manage-attribute-input'
 import { Permissions } from '@/constants/api/Permissions'

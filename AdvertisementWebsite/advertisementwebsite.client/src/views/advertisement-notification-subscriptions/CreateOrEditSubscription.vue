@@ -1,154 +1,141 @@
 <template>
-  <ResponsiveLayout>
-    <BlockWithSpinner :loading="loading" class="flex-1 lg:flex-none flex">
-      <Panel class="flex-1 flex flex-col rounded-none lg:rounded-md lg:min-w-96">
-        <template #header>
-          <div class="panel-title-container">
-            <BackButton :defaultTo="{ name: 'manageAdvertisementNotificationSubscription' }" />
-            <h3 class="page-title">
-              {{
-                isEdit
-                  ? l.navigation.editAdvertisementNotificationSubscription
-                  : l.navigation.createAdvertisementNotificationSubscription
-              }}
-            </h3>
-          </div>
-        </template>
+  <ResponsivePanel
+    :loading="loading"
+    :defaultBackButtonRoute="{ name: 'manageAdvertisementNotificationSubscription' }"
+    :title="
+      isEdit
+        ? l.navigation.editAdvertisementNotificationSubscription
+        : l.navigation.createAdvertisementNotificationSubscription
+    "
+  >
+    <form class="flex flex-col gap-3" @submit="submit">
+      <div class="flex flex-col lg:flex-row gap-2">
+        <fieldset class="flex-1 flex flex-col gap-2">
+          <!-- Owner -->
+          <FloatLabel v-if="forAnyUser" variant="on">
+            <AutoComplete
+              v-model="fields.ownerId!.value"
+              v-bind="fields.ownerId?.attributes"
+              :invalid="fields.ownerId?.hasError"
+              :suggestions="userLookups"
+              inputId="owner-input"
+              optionLabel="value"
+              fluid
+              dropdown
+              @complete="searchUsers"
+            />
+            <label for="owner-input">{{ l.form.putAdvertisementNotification.owner }}</label>
+          </FloatLabel>
+          <FieldError :field="fields.ownerId" />
 
-        <form class="flex flex-col gap-3" @submit="submit">
-          <div class="flex flex-col lg:flex-row gap-2">
-            <fieldset class="flex-1 flex flex-col gap-2">
-              <!-- Owner -->
-              <FloatLabel v-if="forAnyUser" variant="on">
-                <AutoComplete
-                  v-model="fields.ownerId!.value"
-                  v-bind="fields.ownerId?.attributes"
-                  :invalid="fields.ownerId?.hasError"
-                  :suggestions="userLookups"
-                  inputId="owner-input"
-                  optionLabel="value"
-                  fluid
-                  dropdown
-                  @complete="searchUsers"
-                />
-                <label for="owner-input">{{ l.form.putAdvertisementNotification.owner }}</label>
-              </FloatLabel>
-              <FieldError :field="fields.ownerId" />
+          <!-- Title -->
+          <FloatLabel variant="on">
+            <InputText
+              v-model="fields.title!.value"
+              v-bind="fields.title?.attributes"
+              :invalid="fields.title!.hasError"
+              id="title-input"
+              fluid
+            />
+            <label for="title-input">{{ l.form.putAdvertisementNotification.title }}</label>
+          </FloatLabel>
+          <FieldError :field="fields.title" />
 
-              <!-- Title -->
-              <FloatLabel variant="on">
-                <InputText
-                  v-model="fields.title!.value"
-                  v-bind="fields.title?.attributes"
-                  :invalid="fields.title!.hasError"
-                  id="title-input"
-                  fluid
-                />
-                <label for="title-input">{{ l.form.putAdvertisementNotification.title }}</label>
-              </FloatLabel>
-              <FieldError :field="fields.title" />
-
-              <!-- Time period -->
-              <template v-if="!isEdit">
-                <FloatLabel variant="on">
-                  <Select
-                    v-model="fields.paidTime!.value"
-                    v-bind="fields.paidTime?.attributes"
-                    :invalid="fields.paidTime?.hasError"
-                    :options="timeOptions"
-                    optionLabel="name"
-                    optionValue="value"
-                    id="time-period-select"
-                    fluid
-                  />
-                  <label for="time-period-select">{{
-                    l.form.putAdvertisementNotification.timePeriod
-                  }}</label>
-                </FloatLabel>
-                <FieldError :field="fields.paidTime" />
-              </template>
-              <div v-else-if="existingSubscription?.validToDate" class="flex gap-2">
-                <FloatLabel variant="on" class="flex-1">
-                  <InputText
-                    :defaultValue="dateFormat.format(existingSubscription?.validToDate)"
-                    disabled
-                    fluid
-                  ></InputText>
-                  <label for="valid-to">{{ l.form.putAdvertisementNotification.validTo }}</label>
-                </FloatLabel>
-                <Button
-                  :label="l.actions.extend"
-                  severity="secondary"
-                  as="RouterLink"
-                  :to="{
-                    name: 'extend',
-                    params: {
-                      type: PaymentType.ExtendAdvertisementNotificationSubscription,
-                      ids: `[${subscriptionId}]`
-                    }
-                  }"
-                />
-              </div>
-
-              <!-- Keywords -->
-              <FloatLabel variant="on">
-                <AutoComplete
-                  v-model="fields.keywords!.value"
-                  v-bind="fields.keywords?.attributes"
-                  :typeahead="false"
-                  :invalid="fields.keywords?.hasError"
-                  :forceSelection="true"
-                  inputId="keyword-input"
-                  multiple
-                  fluid
-                />
-                <label for="keyword-input">{{
-                  l.form.putAdvertisementNotification.keywords
-                }}</label>
-              </FloatLabel>
-              <FieldError :field="fields.keywords" />
-
-              <Divider />
-
-              <!-- Category -->
-              <CategorySelect
-                :categoryList="categoryList"
-                :field="fields.categoryId"
-                @selectedCategory="handleSelectedCategory"
+          <!-- Time period -->
+          <template v-if="!isEdit">
+            <FloatLabel variant="on">
+              <Select
+                v-model="fields.paidTime!.value"
+                v-bind="fields.paidTime?.attributes"
+                :invalid="fields.paidTime?.hasError"
+                :options="timeOptions"
+                optionLabel="name"
+                optionValue="value"
+                id="time-period-select"
+                fluid
               />
-            </fieldset>
-
-            <!-- Attributes -->
-            <fieldset v-if="attributeInfo.length" class="flex-1 flex flex-col gap-2">
-              <Divider v-if="isSmallScreen" />
-              <BlockWithSpinner class="flex flex-col gap-2 min-h-12" :loading="loadingAttributes">
-                <AttributeInputGroup
-                  :fields="fields"
-                  :attributes="attributeInfo"
-                  :valueLists="attributeValueLists"
-                  fieldKey="attributeValues"
-                />
-              </BlockWithSpinner>
-            </fieldset>
+              <label for="time-period-select">{{
+                l.form.putAdvertisementNotification.timePeriod
+              }}</label>
+            </FloatLabel>
+            <FieldError :field="fields.paidTime" />
+          </template>
+          <div v-else-if="existingSubscription?.validToDate" class="flex gap-2">
+            <FloatLabel variant="on" class="flex-1">
+              <InputText
+                :defaultValue="dateFormat.format(existingSubscription?.validToDate)"
+                disabled
+                fluid
+              ></InputText>
+              <label for="valid-to">{{ l.form.putAdvertisementNotification.validTo }}</label>
+            </FloatLabel>
+            <Button
+              :label="l.actions.extend"
+              severity="secondary"
+              as="RouterLink"
+              :to="{
+                name: 'extend',
+                params: {
+                  type: PaymentType.ExtendAdvertisementNotificationSubscription,
+                  ids: `[${subscriptionId}]`
+                }
+              }"
+            />
           </div>
 
-          <Button
-            :loading="isSubmitting"
-            :label="isEdit ? l.actions.save : l.actions.create"
-            class="mx-auto"
-            @click="submit"
+          <!-- Keywords -->
+          <FloatLabel variant="on">
+            <AutoComplete
+              v-model="fields.keywords!.value"
+              v-bind="fields.keywords?.attributes"
+              :typeahead="false"
+              :invalid="fields.keywords?.hasError"
+              :forceSelection="true"
+              inputId="keyword-input"
+              multiple
+              fluid
+            />
+            <label for="keyword-input">{{ l.form.putAdvertisementNotification.keywords }}</label>
+          </FloatLabel>
+          <FieldError :field="fields.keywords" />
+
+          <Divider />
+
+          <!-- Category -->
+          <CategorySelect
+            :categoryList="categoryList"
+            :field="fields.categoryId"
+            @selectedCategory="handleSelectedCategory"
           />
-        </form>
-      </Panel>
-    </BlockWithSpinner>
-  </ResponsiveLayout>
+        </fieldset>
+
+        <!-- Attributes -->
+        <fieldset v-if="attributeInfo.length" class="flex-1 flex flex-col gap-2">
+          <Divider v-if="isSmallScreen" />
+          <BlockWithSpinner class="flex flex-col gap-2 min-h-12" :loading="loadingAttributes">
+            <AttributeInputGroup
+              :fields="fields"
+              :attributes="attributeInfo"
+              :valueLists="attributeValueLists"
+              fieldKey="attributeValues"
+            />
+          </BlockWithSpinner>
+        </fieldset>
+      </div>
+
+      <Button
+        :loading="isSubmitting"
+        :label="isEdit ? l.actions.save : l.actions.create"
+        class="mx-auto"
+        @click="submit"
+      />
+    </form>
+  </ResponsivePanel>
 </template>
 
 <script lang="ts" setup>
 import AttributeInputGroup from '@/components/attribute-input/AttributeInputGroup.vue'
-import BackButton from '@/components/common/BackButton.vue'
 import BlockWithSpinner from '@/components/common/BlockWithSpinner.vue'
-import ResponsiveLayout from '@/components/common/ResponsiveLayout.vue'
 import CategorySelect from '@/components/form/CategorySelect.vue'
 import FieldError from '@/components/form/FieldError.vue'
 import {
@@ -186,6 +173,7 @@ import { computed, onBeforeMount, ref, watch } from 'vue'
 import { onBeforeRouteLeave, useRouter } from 'vue-router'
 import { array, number, object, string, type AnyObject } from 'yup'
 import { TakeLookupsWhenSearching } from '@/constants/search-constants'
+import ResponsivePanel from '@/components/common/ResponsivePanel.vue'
 
 const props = defineProps<{
   subscriptionId?: number | undefined

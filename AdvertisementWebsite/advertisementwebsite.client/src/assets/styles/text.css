@@ -3,7 +3,7 @@
 }
 
 .panel-title-container {
-  @apply flex flex-row items-center gap-5;
+  @apply flex flex-row flex-wrap items-center gap-5;
 }
 
 p.p-invalid {

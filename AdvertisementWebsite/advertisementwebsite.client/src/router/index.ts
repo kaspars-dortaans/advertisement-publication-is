@@ -250,7 +250,8 @@ const router = createRouter({
         }
       },
       meta: {
-        requiresPermission: Permissions.ViewMessages
+        requiresPermission: Permissions.ViewMessages,
+        containerClass: 'h-0'
       }
     },
 

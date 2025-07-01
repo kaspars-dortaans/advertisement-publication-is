@@ -1,44 +1,36 @@
 <template>
-  <ResponsiveLayout>
-    <BlockWithSpinner :loading="loading" class="flex-1 lg:flex-none flex flex-col">
-      <Panel class="rounded-none lg:rounded-md flex-1">
-        <template #header>
-          <div class="panel-title-container">
-            <BackButton :default-to="{ name: 'profileInfo' }" />
-            <h3 class="page-title">{{ l.navigation.editProfileInfo }}</h3>
-          </div>
-        </template>
-        <form class="flex flex-col gap-3 md:items-center bg-white" @submit="onSubmit">
-          <EditUserCommonInputs
-            :fields="fields"
-            :hasFormErrors="hasFormErrors"
-            :formErrors="formErrors"
-          />
+  <ResponsivePanel
+    :defaultBackButtonRoute="{ name: 'profileInfo' }"
+    :title="l.navigation.editProfileInfo"
+    :loading="loading"
+  >
+    <form class="flex flex-col gap-3 md:items-center bg-white" @submit="onSubmit">
+      <EditUserCommonInputs
+        :fields="fields"
+        :hasFormErrors="hasFormErrors"
+        :formErrors="formErrors"
+      />
 
-          <div class="flex flex-wrap gap-2">
-            <BackButton
-              :default-to="{ name: 'profileInfo' }"
-              :label="l.actions.cancel"
-              class="flex-auto lg:flex-none"
-              noIcon
-            />
-            <Button
-              type="submit"
-              :label="l.actions.save"
-              :loading="isSubmitting"
-              class="flex-auto lg:flex-none"
-            />
-          </div>
-        </form>
-      </Panel>
-    </BlockWithSpinner>
-  </ResponsiveLayout>
+      <div class="flex flex-wrap gap-2">
+        <BackButton
+          :default-to="{ name: 'profileInfo' }"
+          :label="l.actions.cancel"
+          class="flex-auto lg:flex-none"
+          noIcon
+        />
+        <Button
+          type="submit"
+          :label="l.actions.save"
+          :loading="isSubmitting"
+          class="flex-auto lg:flex-none"
+        />
+      </div>
+    </form>
+  </ResponsivePanel>
 </template>
 
 <script setup lang="ts">
 import BackButton from '@/components/common/BackButton.vue'
-import BlockWithSpinner from '@/components/common/BlockWithSpinner.vue'
-import ResponsiveLayout from '@/components/common/ResponsiveLayout.vue'
 import { EditUserInfo, UserClient, type FileParameter } from '@/services/api-client'
 import { AuthService } from '@/services/auth-service'
 import { LocaleService } from '@/services/locale-service'
@@ -53,6 +45,7 @@ import { onBeforeMount, ref, watch } from 'vue'
 import { onBeforeRouteLeave, useRouter } from 'vue-router'
 import { boolean, object, string } from 'yup'
 import EditUserCommonInputs from '@/components/form/user/EditUserCommonInputs.vue'
+import ResponsivePanel from '@/components/common/ResponsivePanel.vue'
 
 //Route
 const { push } = useRouter()

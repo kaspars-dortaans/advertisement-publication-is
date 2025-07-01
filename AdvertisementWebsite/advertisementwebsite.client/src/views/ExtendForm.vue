@@ -1,55 +1,44 @@
 <template>
-  <ResponsiveLayout>
-    <BlockWithSpinner :loading="loading" class="flex-1 lg:flex-none flex flex-col">
-      <Panel class="rounded-none flex-1 lg:flex-none lg:rounded-md">
+  <ResponsivePanel :defaultBackButtonRoute="{ name: 'home' }" :title="title" :loading="loading">
+    <form class="flex gap-3 flex-col" @submit="submit">
+      <Panel v-if="extendItems?.length" toggleable>
         <template #header>
-          <div class="panel-title-container">
-            <BackButton :defaultTo="{ name: 'home' }" />
-            <h3 class="page-title">{{ title }}</h3>
-          </div>
+          <p>
+            {{ text }}
+          </p>
         </template>
-        <form class="flex gap-3 flex-col" @submit="submit">
-          <Panel v-if="extendItems?.length" toggleable>
-            <template #header>
-              <p>
-                {{ text }}
-              </p>
-            </template>
-            <ul class="list-disc pl-4">
-              <li v-for="item in extendItems" :key="item.key">
-                {{ item.value }}
-              </li>
-            </ul>
-          </Panel>
-          <FloatLabel variant="on">
-            <Select
-              v-model="fields.extendTime!.value"
-              v-bind="fields.extendTime?.attributes"
-              :options="timeOptions"
-              :invalid="fields.extendTime?.hasError"
-              optionLabel="name"
-              optionValue="value"
-              id="time-input"
-              fluid
-            />
-            <label for="time-input">{{ l.form.extend.timePeriod }}</label>
-          </FloatLabel>
-          <FieldError :field="fields.extendTime" />
-
-          <div class="flex flex-row gap-2 justify-center">
-            <BackButton :label="l.actions.cancel" icon="" :default-to="{ name: 'home' }" />
-            <Button type="submit" :loading="isSubmitting" :label="actionText" />
-          </div>
-        </form>
+        <ul class="list-disc pl-4">
+          <li v-for="item in extendItems" :key="item.key">
+            {{ item.value }}
+          </li>
+        </ul>
       </Panel>
-    </BlockWithSpinner>
-  </ResponsiveLayout>
+      <FloatLabel variant="on">
+        <Select
+          v-model="fields.extendTime!.value"
+          v-bind="fields.extendTime?.attributes"
+          :options="timeOptions"
+          :invalid="fields.extendTime?.hasError"
+          optionLabel="name"
+          optionValue="value"
+          id="time-input"
+          fluid
+        />
+        <label for="time-input">{{ l.form.extend.timePeriod }}</label>
+      </FloatLabel>
+      <FieldError :field="fields.extendTime" />
+
+      <div class="flex flex-row gap-2 justify-center">
+        <BackButton :label="l.actions.cancel" icon="" :default-to="{ name: 'home' }" />
+        <Button type="submit" :loading="isSubmitting" :label="actionText" />
+      </div>
+    </form>
+  </ResponsivePanel>
 </template>
 
 <script lang="ts" setup>
 import BackButton from '@/components/common/BackButton.vue'
-import BlockWithSpinner from '@/components/common/BlockWithSpinner.vue'
-import ResponsiveLayout from '@/components/common/ResponsiveLayout.vue'
+import ResponsivePanel from '@/components/common/ResponsivePanel.vue'
 import FieldError from '@/components/form/FieldError.vue'
 import { usePaymentState } from '@/composables/payment-store'
 import { createAdvertisementPostTimeSpanOptions } from '@/constants/advertisement-post-time-span'

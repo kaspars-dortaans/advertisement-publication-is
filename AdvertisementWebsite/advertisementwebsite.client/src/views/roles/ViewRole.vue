@@ -1,50 +1,42 @@
 <template>
-  <ResponsiveLayout>
-    <BlockWithSpinner :loading="loading" class="flex-1 flex flex-col">
-      <Panel class="rounded-none lg:rounded-md flex-1">
-        <template #header>
-          <div class="panel-title-container">
-            <BackButton :defaultTo="{ name: 'manageRoles' }" />
-            <h4 class="page-title">
-              {{ l.navigation.viewRole }}
-            </h4>
-            <Button
-              v-if="isAllowedToEdit"
-              :label="l.actions.edit"
-              icon="pi pi-pencil"
-              severity="secondary"
-              as="RouterLink"
-              :to="{ name: 'editRole', params: { roleId } }"
-            />
-          </div>
-        </template>
+  <ResponsivePanel
+    :defaultBackButtonRoute="{ name: 'manageRoles' }"
+    :title="l.navigation.viewRole"
+    :loading="loading"
+  >
+    <template #titlePanelButtons>
+      <Button
+        v-if="isAllowedToEdit"
+        :label="l.actions.edit"
+        icon="pi pi-pencil"
+        severity="secondary"
+        as="RouterLink"
+        :to="{ name: 'editRole', params: { roleId } }"
+      />
+    </template>
 
-        <div class="flex flex-col gap-2">
-          <!-- title -->
-          <FloatLabel variant="on">
-            <InputText v-model="title" id="title-input" fluid disabled />
-            <label for="title-input">{{ l.form.roleForm.title }}</label>
-          </FloatLabel>
+    <div class="flex flex-col gap-2">
+      <!-- title -->
+      <FloatLabel variant="on">
+        <InputText v-model="title" id="title-input" fluid disabled />
+        <label for="title-input">{{ l.form.roleForm.title }}</label>
+      </FloatLabel>
 
-          <Divider />
+      <Divider />
 
-          <CheckboxArrayInput
-            v-model:selected="selectedPermissions"
-            :options="permissionOptions"
-            :label="l.form.roleForm.permissions"
-            labelKey="value"
-            disabled
-          />
-        </div>
-      </Panel>
-    </BlockWithSpinner>
-  </ResponsiveLayout>
+      <CheckboxArrayInput
+        v-model:selected="selectedPermissions"
+        :options="permissionOptions"
+        :label="l.form.roleForm.permissions"
+        labelKey="value"
+        disabled
+      />
+    </div>
+  </ResponsivePanel>
 </template>
 
 <script lang="ts" setup>
-import BackButton from '@/components/common/BackButton.vue'
-import BlockWithSpinner from '@/components/common/BlockWithSpinner.vue'
-import ResponsiveLayout from '@/components/common/ResponsiveLayout.vue'
+import ResponsivePanel from '@/components/common/ResponsivePanel.vue'
 import CheckboxArrayInput from '@/components/form/CheckboxArrayInput.vue'
 import { Permissions } from '@/constants/api/Permissions'
 import { Int32StringKeyValuePair, RoleClient } from '@/services/api-client'

@@ -1,55 +1,41 @@
 <template>
-  <ResponsiveLayout>
-    <BlockWithSpinner :loading="loading || isSubmitting" class="flex-1 lg:flex-none flex flex-col">
-      <Panel class="rounded-none lg:rounded-md flex-1 lg:min-w-[720px]">
-        <template #header>
-          <div class="panel-title-container">
-            <BackButton :defaultTo="{ name: 'manageAttributeValueLists' }" />
-            <h4 class="page-title">
-              {{
-                isEdit ? l.navigation.editAttributeValueList : l.navigation.createAttributeValueList
-              }}
-            </h4>
-          </div>
-        </template>
+  <ResponsivePanel
+    :defaultBackButtonRoute="{ name: 'manageAttributeValueLists' }"
+    :title="isEdit ? l.navigation.editAttributeValueList : l.navigation.createAttributeValueList"
+    :loading="loading || isSubmitting"
+  >
+    <form class="flex flex-col" @submit="submit">
+      <FieldError :messages="formErrors" />
 
-        <form class="flex flex-col" @submit="submit">
-          <FieldError :messages="formErrors" />
+      <LocaleTextInput
+        v-model="fields.title!.value"
+        v-bind="fields.title!.attributes"
+        :invalid="fields.title!.hasError"
+        :localeList="ls.localeList.value"
+        :label="l.form.attributeValueListForm.title"
+      />
+      <FieldError :field="fields.title" />
 
-          <LocaleTextInput
-            v-model="fields.title!.value"
-            v-bind="fields.title!.attributes"
-            :invalid="fields.title!.hasError"
-            :localeList="ls.localeList.value"
-            :label="l.form.attributeValueListForm.title"
-          />
-          <FieldError :field="fields.title" />
+      <Divider />
 
-          <Divider />
+      <AttributeValueListEntryInput
+        v-model="fields.entries!.value"
+        v-bind="fields.entries!.attributes"
+        :invalid="fields.entries!.hasError"
+      />
+      <FieldError :field="fields.entries" />
 
-          <AttributeValueListEntryInput
-            v-model="fields.entries!.value"
-            v-bind="fields.entries!.attributes"
-            :invalid="fields.entries!.hasError"
-          />
-          <FieldError :field="fields.entries" />
-
-          <Button
-            :label="isEdit ? l.actions.save : l.actions.create"
-            type="submit"
-            class="mt-3 lg:self-center"
-          />
-        </form>
-      </Panel>
-    </BlockWithSpinner>
-  </ResponsiveLayout>
+      <Button
+        :label="isEdit ? l.actions.save : l.actions.create"
+        type="submit"
+        class="mt-3 lg:self-center"
+      />
+    </form>
+  </ResponsivePanel>
 </template>
 
 <script lang="ts" setup>
 import AttributeValueListEntryInput from '@/components/attribute-input/AttributeValueListEntryInput.vue'
-import BackButton from '@/components/common/BackButton.vue'
-import BlockWithSpinner from '@/components/common/BlockWithSpinner.vue'
-import ResponsiveLayout from '@/components/common/ResponsiveLayout.vue'
 import FieldError from '@/components/form/FieldError.vue'
 import LocaleTextInput from '@/components/form/LocaleTextInput.vue'
 import {
@@ -68,6 +54,7 @@ import { computed, onBeforeMount, ref, watch } from 'vue'
 import { onBeforeRouteLeave, useRouter } from 'vue-router'
 import { array, object } from 'yup'
 import { type AttributeValueListForm } from '../../types/forms/attribute-value-list-form'
+import ResponsivePanel from '@/components/common/ResponsivePanel.vue'
 
 const props = defineProps<{
   valueListId?: number

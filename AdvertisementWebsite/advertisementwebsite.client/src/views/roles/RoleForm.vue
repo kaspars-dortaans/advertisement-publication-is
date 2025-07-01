@@ -1,59 +1,48 @@
 <template>
-  <ResponsiveLayout>
-    <BlockWithSpinner :loading="loading || isSubmitting" class="flex-1 flex flex-col">
-      <Panel class="rounded-none lg:rounded-md flex-1">
-        <template #header>
-          <div class="panel-title-container">
-            <BackButton :defaultTo="{ name: 'manageRoles' }" />
-            <h4 class="page-title">
-              {{ isEdit ? l.navigation.editRole : l.navigation.createRole }}
-            </h4>
-          </div>
-        </template>
+  <ResponsivePanel
+    :defaultBackButtonRoute="{ name: 'manageRoles' }"
+    :title="isEdit ? l.navigation.editRole : l.navigation.createRole"
+    :loading="loading || isSubmitting"
+  >
+    <form class="flex flex-col gap-2" @submit="submit">
+      <FieldError :messages="formErrors" />
 
-        <form class="flex flex-col gap-2" @submit="submit">
-          <FieldError :messages="formErrors" />
+      <!-- title -->
+      <FloatLabel variant="on">
+        <InputText
+          v-model="fields.title!.value"
+          v-bind="fields.title!.attributes"
+          :invalid="fields.title!.hasError"
+          id="title-input"
+          fluid
+        />
+        <label for="title-input">{{ l.form.roleForm.title }}</label>
+      </FloatLabel>
+      <FieldError :field="fields.title" />
 
-          <!-- title -->
-          <FloatLabel variant="on">
-            <InputText
-              v-model="fields.title!.value"
-              v-bind="fields.title!.attributes"
-              :invalid="fields.title!.hasError"
-              id="title-input"
-              fluid
-            />
-            <label for="title-input">{{ l.form.roleForm.title }}</label>
-          </FloatLabel>
-          <FieldError :field="fields.title" />
+      <Divider />
 
-          <Divider />
+      <CheckboxArrayInput
+        v-model:selected="fields.permissions!.value"
+        :options="permissionOptions"
+        v-bind="fields.permissions!.attributes"
+        :invalid="fields.permissions!.hasError"
+        :label="l.form.roleForm.permissions"
+        labelKey="value"
+      />
+      <FieldError :field="fields.permissions" />
 
-          <CheckboxArrayInput
-            v-model:selected="fields.permissions!.value"
-            :options="permissionOptions"
-            v-bind="fields.permissions!.attributes"
-            :invalid="fields.permissions!.hasError"
-            :label="l.form.roleForm.permissions"
-            labelKey="value"
-          />
-          <FieldError :field="fields.permissions" />
-
-          <Button
-            :label="isEdit ? l.actions.save : l.actions.create"
-            type="submit"
-            class="mt-3 lg:self-center"
-          />
-        </form>
-      </Panel>
-    </BlockWithSpinner>
-  </ResponsiveLayout>
+      <Button
+        :label="isEdit ? l.actions.save : l.actions.create"
+        type="submit"
+        class="mt-3 lg:self-center"
+      />
+    </form>
+  </ResponsivePanel>
 </template>
 
 <script lang="ts" setup>
-import BackButton from '@/components/common/BackButton.vue'
-import BlockWithSpinner from '@/components/common/BlockWithSpinner.vue'
-import ResponsiveLayout from '@/components/common/ResponsiveLayout.vue'
+import ResponsivePanel from '@/components/common/ResponsivePanel.vue'
 import CheckboxArrayInput from '@/components/form/CheckboxArrayInput.vue'
 import FieldError from '@/components/form/FieldError.vue'
 import { Int32StringKeyValuePair, RoleClient, RoleFormRequest } from '@/services/api-client'

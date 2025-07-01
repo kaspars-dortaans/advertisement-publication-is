@@ -1,53 +1,46 @@
 <template>
-  <ResponsiveLayout>
-    <LazyLoadedTable
-      v-model:loading="loading"
-      v-model:selection="selectedRows"
-      :columns="columns"
-      :dataSource="dataSource"
-      :editMode="'row'"
-      :rowEditSaveHandler="rowEditSaveHandler"
-      ref="table"
-    >
-      <template #header="slotProps">
-        <h3 class="page-title mb-2">{{ l.navigation.managePermissions }}</h3>
-        <div class="flex flex-wrap justify-end gap-2">
-          <Button
-            v-if="isAllowedToDelete"
-            :label="l.actions.delete"
-            :disabled="!selectedRows.length"
-            severity="danger"
-            @click="confirmRowDelete"
-          />
-          <Button
-            v-if="isAllowedToCreate"
-            :label="l.actions.create"
-            severity="primary"
-            @click="slotProps.addNewRow"
-          />
-        </div>
+  <LazyLoadedTable
+    v-model:loading="loading"
+    v-model:selection="selectedRows"
+    :columns="columns"
+    :dataSource="dataSource"
+    :editMode="'row'"
+    :rowEditSaveHandler="rowEditSaveHandler"
+    ref="table"
+  >
+    <template #header="slotProps">
+      <h3 class="page-title mb-2">{{ l.navigation.managePermissions }}</h3>
+      <div class="flex flex-wrap justify-end gap-2">
+        <Button
+          v-if="isAllowedToDelete"
+          :label="l.actions.delete"
+          :disabled="!selectedRows.length"
+          severity="danger"
+          @click="confirmRowDelete"
+        />
+        <Button
+          v-if="isAllowedToCreate"
+          :label="l.actions.create"
+          severity="primary"
+          @click="slotProps.addNewRow"
+        />
+      </div>
+    </template>
+
+    <Column selectionMode="multiple" headerStyle="width: 3rem" />
+
+    <Column field="name" :header="l.managePermissions.name" sortable>
+      <template #editor="{ data, field }">
+        <InputText v-model="data[field]" fluid />
       </template>
+    </Column>
 
-      <Column selectionMode="multiple" headerStyle="width: 3rem" />
-
-      <Column field="name" :header="l.managePermissions.name" sortable>
-        <template #editor="{ data, field }">
-          <InputText v-model="data[field]" fluid />
-        </template>
-      </Column>
-
-      <Column
-        v-if="isAllowedToEdit"
-        :rowEditor="true"
-        style="width: 1rem; padding-right: 0"
-      ></Column>
-    </LazyLoadedTable>
-  </ResponsiveLayout>
+    <Column v-if="isAllowedToEdit" :rowEditor="true" style="width: 1rem; padding-right: 0"></Column>
+  </LazyLoadedTable>
 </template>
 
 <script lang="ts" setup>
 import LazyLoadedTable from '@/components/common/LazyLoadedTable.vue'
-import ResponsiveLayout from '@/components/common/ResponsiveLayout.vue'
 import { Permissions } from '@/constants/api/Permissions'
 import {
   DataTableQuery,

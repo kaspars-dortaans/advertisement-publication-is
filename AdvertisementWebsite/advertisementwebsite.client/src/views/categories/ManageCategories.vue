@@ -1,67 +1,64 @@
 <template>
-  <ResponsiveLayout>
-    <BlockWithSpinner :loading="loadingCategories" class="flex-1 lg:flex-none flex flex-col">
-      <Tree
-        ref="tree"
-        v-model:selectionKeys="selectedCategoryNodes"
-        :value="categoryNodes"
-        :pt="{ nodelabel: 'inline-flex items-center gap-2 justify-between flex-1' }"
-        class="flex-1 lg:min-w-72 lg:min-h-96 rounded-none lg:rounded-md"
-      >
-        <template #header>
-          <h4 class="page-title mb-2">{{ l.manageCategories.manageCategories }}</h4>
-        </template>
-        <template #default="slotProps">
-          <span>{{ slotProps.node.label }}</span>
-          <span :class="{ 'bg-surface-100 rounded-md': slotProps.selected }" @click.stop>
-            <Button
-              v-if="isAllowedToCreate"
-              icon="pi pi-plus-circle"
-              variant="text"
-              as="RouterLink"
-              :to="{ name: 'createCategory', params: { parentCategoryId: slotProps.node.key } }"
-            />
-            <Button
-              icon="pi pi-eye"
-              variant="text"
-              as="RouterLink"
-              :to="{ name: 'viewCategory', params: { categoryId: slotProps.node.key } }"
-            />
-            <Button
-              v-if="isAllowedToEdit"
-              icon="pi pi-pencil"
-              variant="text"
-              severity="secondary"
-              as="RouterLink"
-              :to="{ name: 'editCategory', params: { categoryId: slotProps.node.key } }"
-            />
-            <Button
-              v-if="isAllowedToDelete"
-              icon="pi pi-trash"
-              variant="text"
-              severity="danger"
-              @click="confirmDeleteCategory(slotProps.node)"
-            />
-          </span>
-        </template>
-        <template #footer>
+  <BlockWithSpinner :loading="loadingCategories" class="responsive-flex-child">
+    <Tree
+      ref="tree"
+      v-model:selectionKeys="selectedCategoryNodes"
+      :value="categoryNodes"
+      :pt="{ nodelabel: 'inline-flex items-center gap-2 justify-between flex-1' }"
+      class="flex-1 lg:min-w-72 lg:min-h-96 rounded-none lg:rounded-md"
+    >
+      <template #header>
+        <h4 class="page-title mb-2">{{ l.manageCategories.manageCategories }}</h4>
+      </template>
+      <template #default="slotProps">
+        <span>{{ slotProps.node.label }}</span>
+        <span :class="{ 'bg-surface-100 rounded-md': slotProps.selected }" @click.stop>
           <Button
-            :label="l.actions.create"
+            v-if="isAllowedToCreate"
             icon="pi pi-plus-circle"
-            variant="outlined"
-            class="mt-2"
+            variant="text"
             as="RouterLink"
-            :to="{ name: 'createCategory' }"
+            :to="{ name: 'createCategory', params: { parentCategoryId: slotProps.node.key } }"
           />
-        </template>
-      </Tree>
-    </BlockWithSpinner>
-  </ResponsiveLayout>
+          <Button
+            icon="pi pi-eye"
+            variant="text"
+            as="RouterLink"
+            :to="{ name: 'viewCategory', params: { categoryId: slotProps.node.key } }"
+          />
+          <Button
+            v-if="isAllowedToEdit"
+            icon="pi pi-pencil"
+            variant="text"
+            severity="secondary"
+            as="RouterLink"
+            :to="{ name: 'editCategory', params: { categoryId: slotProps.node.key } }"
+          />
+          <Button
+            v-if="isAllowedToDelete"
+            icon="pi pi-trash"
+            variant="text"
+            severity="danger"
+            @click="confirmDeleteCategory(slotProps.node)"
+          />
+        </span>
+      </template>
+      <template #footer>
+        <Button
+          :label="l.actions.create"
+          icon="pi pi-plus-circle"
+          variant="outlined"
+          class="mt-2"
+          as="RouterLink"
+          :to="{ name: 'createCategory' }"
+        />
+      </template>
+    </Tree>
+  </BlockWithSpinner>
 </template>
 
 <script lang="ts" setup>
 import BlockWithSpinner from '@/components/common/BlockWithSpinner.vue'
-import ResponsiveLayout from '@/components/common/ResponsiveLayout.vue'
 import { Permissions } from '@/constants/api/Permissions'
 import { CategoryClient, CategoryItem } from '@/services/api-client'
 import { AuthService } from '@/services/auth-service'

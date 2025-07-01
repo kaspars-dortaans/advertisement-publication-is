@@ -1,51 +1,43 @@
 <template>
-  <ResponsiveLayout>
-    <BlockWithSpinner :loading="loading" class="flex-1 lg:flex-none flex flex-col">
-      <Panel class="rounded-none lg:rounded-md flex-1">
-        <template #header>
-          <div class="panel-title-container">
-            <BackButton :default-to="{ name: 'manageUsers' }" />
-            <h3 class="page-title">{{ l.navigation.editUser }}</h3>
-          </div>
-        </template>
-        <form class="flex flex-col gap-3 md:items-center bg-white" @submit="onSubmit">
-          <EditUserCommonInputs
-            :fields="fields as Fields<EditUserInfo>"
-            :hasFormErrors="hasFormErrors"
-            :formErrors="formErrors"
-          >
-            <FloatLabel variant="on">
-              <!-- Filter type -->
-              <MultiSelect
-                v-model="fields.userRoles!.value"
-                v-bind="fields.userRoles!.attributes"
-                :invalid="fields.userRoles!.hasError"
-                :options="roleList"
-                display="chip"
-                id="user-role-input"
-                fluid
-              />
-              <label for="user-role-input">{{ l.form.profileInfo.userRoles }}</label>
-            </FloatLabel>
-            <FieldError :field="fields.userRoles" />
-          </EditUserCommonInputs>
-
-          <Button
-            type="submit"
-            :label="l.actions.save"
-            :loading="isSubmitting"
-            class="self-stretch lg:self-center"
+  <ResponsivePanel
+    :defaultBackButtonRoute="{ name: 'manageUsers' }"
+    :title="l.navigation.editUser"
+    :loading="loading"
+  >
+    <form class="flex flex-col gap-3 md:items-center bg-white" @submit="onSubmit">
+      <EditUserCommonInputs
+        :fields="fields as Fields<EditUserInfo>"
+        :hasFormErrors="hasFormErrors"
+        :formErrors="formErrors"
+      >
+        <FloatLabel variant="on">
+          <!-- Filter type -->
+          <MultiSelect
+            v-model="fields.userRoles!.value"
+            v-bind="fields.userRoles!.attributes"
+            :invalid="fields.userRoles!.hasError"
+            :options="roleList"
+            display="chip"
+            id="user-role-input"
+            fluid
           />
-        </form>
-      </Panel>
-    </BlockWithSpinner>
-  </ResponsiveLayout>
+          <label for="user-role-input">{{ l.form.profileInfo.userRoles }}</label>
+        </FloatLabel>
+        <FieldError :field="fields.userRoles" />
+      </EditUserCommonInputs>
+
+      <Button
+        type="submit"
+        :label="l.actions.save"
+        :loading="isSubmitting"
+        class="self-stretch lg:self-center"
+      />
+    </form>
+  </ResponsivePanel>
 </template>
 
 <script setup lang="ts">
-import BackButton from '@/components/common/BackButton.vue'
-import BlockWithSpinner from '@/components/common/BlockWithSpinner.vue'
-import ResponsiveLayout from '@/components/common/ResponsiveLayout.vue'
+import ResponsivePanel from '@/components/common/ResponsivePanel.vue'
 import FieldError from '@/components/form/FieldError.vue'
 import EditUserCommonInputs from '@/components/form/user/EditUserCommonInputs.vue'
 import {

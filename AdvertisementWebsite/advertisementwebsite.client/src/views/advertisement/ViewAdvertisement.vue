@@ -1,128 +1,117 @@
 <template>
-  <ResponsiveLayout>
-    <BlockWithSpinner :loading="loading" class="flex-1 lg:flex-none flex flex-col">
-      <!-- Gallery, title, text, attributes, contacts -->
-      <Panel
-        :pt="panelPt"
-        class="rounded-none lg:rounded-md lg:min-h-96 lg:min-w-96 flex flex-col flex-1"
+  <ResponsivePanel
+    :defaultBackButtonRoute="{ name: 'viewAdvertisements' }"
+    :title="advertisement.title"
+    :loading="loading"
+  >
+    <template #titlePanelButtons>
+      <Button
+        :icon="bookmarkIcon"
+        :label="l.advertisements.bookmark"
+        :loading="savingBookmark"
+        :disabled="loading"
+        severity="secondary"
+        @click="bookmarkAdvertisement"
+      />
+      <Button
+        v-if="isAllowedToEdit"
+        icon="pi pi-pencil"
+        :label="l.actions.edit"
+        severity="secondary"
+        as="RouterLink"
+        :to="{ name: canEditAny ? 'editAnyAdvertisement' : 'editAdvertisement' }"
+      />
+    </template>
+
+    <div class="flex flex-col items-center gap-5 h-full">
+      <Galleria
+        v-if="advertisement.imageURLs?.length"
+        :value="advertisement.imageURLs"
+        :showThumbnails="true"
+        :showItemNavigators="true"
+        :circular="true"
+        containerClass="w-full sm:w-full md:max-w-sm lg:max-w-xl flex-shrink-0 max-h-full flex"
       >
-        <template #header>
-          <div class="panel-title-container">
-            <BackButton :defaultTo="{ name: 'viewAdvertisements' }" />
-            <h3 class="page-title">{{ advertisement.title }}</h3>
-            <Button
-              :icon="bookmarkIcon"
-              :label="l.advertisements.bookmark"
-              :loading="savingBookmark"
-              :disabled="loading"
-              severity="secondary"
-              @click="bookmarkAdvertisement"
-            />
-            <Button
-              v-if="isAllowedToEdit"
-              icon="pi pi-pencil"
-              :label="l.actions.edit"
-              severity="secondary"
-              as="RouterLink"
-              :to="{ name: canEditAny ? 'editAnyAdvertisement' : 'editAdvertisement' }"
-            />
-          </div>
+        <template #item="slotProps">
+          <img :src="slotProps.item.url" class="object-contain max-w-full max-h-full" />
         </template>
+        <template #thumbnail="slotProps">
+          <img :src="slotProps.item.thumbnailUrl" />
+        </template>
+      </Galleria>
 
-        <div class="flex flex-col items-center gap-5 h-full">
-          <Galleria
-            v-if="advertisement.imageURLs?.length"
-            :value="advertisement.imageURLs"
-            :showThumbnails="true"
-            :showItemNavigators="true"
-            :circular="true"
-            containerClass="w-full sm:w-full md:max-w-sm lg:max-w-xl flex-shrink-0 max-h-full flex"
+      <div class="overflow-y-auto h-full">
+        <p class="whitespace-pre-line">{{ advertisement.advertisementText }}</p>
+        <AttributeValuesList
+          class="mt-3"
+          :advertisementId="advertisement.id"
+          :attributeValues="advertisement.attributes"
+        />
+      </div>
+    </div>
+
+    <template #footer>
+      <h3 class="text-2xl mb-2">{{ l.advertisements.contacts }}</h3>
+      <div class="flex flex-row flex-wrap gap-10 items-baseline justify-center xl:justify-between">
+        <div class="flex flex-wrap justify-center gap-2 basis-full md:basis-auto">
+          <Button
+            :label="l.advertisements.viewProfile"
+            as="RouterLink"
+            :to="{ name: 'viewUserProfile', params: { id: advertisement.ownerId } }"
+          ></Button>
+          <Button
+            v-if="!userOwnedAdvertisement"
+            as="RouterLink"
+            :to="{
+              name: 'viewMessages',
+              query: {
+                newChatToUserId: advertisement.ownerId,
+                newChatToAdvertisementId: advertisement.id
+              }
+            }"
+            >{{ l.advertisements.sendMessage }}</Button
           >
-            <template #item="slotProps">
-              <img :src="slotProps.item.url" class="object-contain max-w-full max-h-full" />
-            </template>
-            <template #thumbnail="slotProps">
-              <img :src="slotProps.item.thumbnailUrl" />
-            </template>
-          </Galleria>
-
-          <div class="overflow-y-auto h-full">
-            <p class="whitespace-pre-line">{{ advertisement.advertisementText }}</p>
-            <AttributeValuesList
-              class="mt-3"
-              :advertisementId="advertisement.id"
-              :attributeValues="advertisement.attributes"
-            />
-          </div>
         </div>
 
-        <template #footer>
-          <h3 class="text-2xl mb-2">{{ l.advertisements.contacts }}</h3>
-          <div
-            class="flex flex-row flex-wrap gap-10 items-baseline justify-center xl:justify-between"
-          >
-            <div class="flex flex-wrap justify-center gap-2 basis-full md:basis-auto">
-              <Button
-                :label="l.advertisements.viewProfile"
-                as="RouterLink"
-                :to="{ name: 'viewUserProfile', params: { id: advertisement.ownerId } }"
-              ></Button>
-              <Button
-                v-if="!userOwnedAdvertisement"
-                as="RouterLink"
-                :to="{
-                  name: 'viewMessages',
-                  query: {
-                    newChatToUserId: advertisement.ownerId,
-                    newChatToAdvertisementId: advertisement.id
-                  }
-                }"
-                >{{ l.advertisements.sendMessage }}</Button
-              >
-            </div>
+        <div
+          v-if="advertisement.maskedAdvertiserEmail"
+          class="flex flex-wrap justify-center gap-2 basis-full md:basis-auto"
+        >
+          <InputText v-model="advertisement.maskedAdvertiserEmail" disabled></InputText>
+          <Button
+            v-if="!revealedEmail"
+            :loading="loadingEmail"
+            :label="l.advertisements.showEmail"
+            @click="revealEmail"
+          />
+        </div>
 
-            <div
-              v-if="advertisement.maskedAdvertiserEmail"
-              class="flex flex-wrap justify-center gap-2 basis-full md:basis-auto"
-            >
-              <InputText v-model="advertisement.maskedAdvertiserEmail" disabled></InputText>
-              <Button
-                v-if="!revealedEmail"
-                :loading="loadingEmail"
-                :label="l.advertisements.showEmail"
-                @click="revealEmail"
-              />
-            </div>
+        <div
+          v-if="advertisement.maskedAdvertiserPhoneNumber"
+          class="flex flex-wrap justify-center gap-2 basis-full md:basis-auto"
+        >
+          <InputText v-model="advertisement.maskedAdvertiserPhoneNumber" disabled></InputText>
+          <Button
+            v-if="!revealedPhone"
+            :loading="loadingPhoneNumber"
+            :label="l.advertisements.showPhoneNumber"
+            @click="revealPhoneNumber"
+          />
+        </div>
 
-            <div
-              v-if="advertisement.maskedAdvertiserPhoneNumber"
-              class="flex flex-wrap justify-center gap-2 basis-full md:basis-auto"
-            >
-              <InputText v-model="advertisement.maskedAdvertiserPhoneNumber" disabled></InputText>
-              <Button
-                v-if="!revealedPhone"
-                :loading="loadingPhoneNumber"
-                :label="l.advertisements.showPhoneNumber"
-                @click="revealPhoneNumber"
-              />
-            </div>
-
-            <Button
-              severity="danger"
-              :disabled="userOwnedAdvertisement"
-              :as="userOwnedAdvertisement ? 'button' : 'RouterLink'"
-              :to="{ name: 'reportAdvertisement' }"
-              >{{ l.advertisements.reportRuleViolation }}</Button
-            >
-          </div>
-        </template>
-      </Panel>
-    </BlockWithSpinner>
-  </ResponsiveLayout>
+        <Button
+          severity="danger"
+          :disabled="userOwnedAdvertisement"
+          :as="userOwnedAdvertisement ? 'button' : 'RouterLink'"
+          :to="{ name: 'reportAdvertisement' }"
+          >{{ l.advertisements.reportRuleViolation }}</Button
+        >
+      </div>
+    </template>
+  </ResponsivePanel>
 </template>
 
 <script setup lang="ts">
-import BackButton from '@/components/common/BackButton.vue'
 import {
   AdvertisementHistoryStorageKey,
   AdvertisementHistoryTimeSpanInMiliSeconds
@@ -139,10 +128,9 @@ import { updateStorageObject } from '@/utils/local-storage'
 import { computed, onMounted, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { AuthService } from '@/services/auth-service'
-import BlockWithSpinner from '@/components/common/BlockWithSpinner.vue'
-import ResponsiveLayout from '@/components/common/ResponsiveLayout.vue'
 import AttributeValuesList from '@/components/advertisements/AttributeValuesList.vue'
 import { Permissions } from '@/constants/api/Permissions'
+import ResponsivePanel from '@/components/common/ResponsivePanel.vue'
 
 //Props
 const props = defineProps<{ id: number }>()
@@ -153,12 +141,6 @@ const { push } = useRouter()
 //Services
 const advertisementService = getClient(AdvertisementClient)
 const l = LocaleService.currentLocale
-
-//constants
-const panelPt = {
-  contentContainer: ['flex', 'flex-col', 'flex-1'],
-  content: ['flex-1']
-}
 
 //Reactive data
 const advertisement = ref<AdvertisementDto>(new AdvertisementDto())

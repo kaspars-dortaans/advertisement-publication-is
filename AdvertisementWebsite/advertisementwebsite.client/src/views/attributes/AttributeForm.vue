@@ -1,155 +1,142 @@
 <template>
-  <ResponsiveLayout>
-    <BlockWithSpinner :loading="loading || isSubmitting" class="flex-1 lg:flex-none flex flex-col">
-      <Panel class="rounded-none lg:rounded-md flex-1 lg:min-w-96">
-        <template #header>
-          <div class="panel-title-container">
-            <BackButton :defaultTo="{ name: 'manageAttributes' }" />
-            <h4 class="page-title">
-              {{ isEdit ? l.navigation.editAttribute : l.navigation.createAttribute }}
-            </h4>
-          </div>
-        </template>
+  <ResponsivePanel
+    :defaultBackButtonRoute="{ name: 'manageAttributes' }"
+    :title="isEdit ? l.navigation.editAttribute : l.navigation.createAttribute"
+    :loading="loading || isSubmitting"
+  >
+    <form class="flex flex-col gap-4" @submit="submit">
+      <FieldError :messages="formErrors" />
 
-        <form class="flex flex-col gap-4" @submit="submit">
-          <FieldError :messages="formErrors" />
+      <!-- Localized names -->
+      <LocaleTextInput
+        v-model="fields.localizedNames!.value"
+        v-bind="fields.localizedNames!.attributes"
+        :invalid="fields.localizedNames!.hasError"
+        :localeList="ls.localeList.value"
+        :label="l.form.attributeForm.title"
+      />
+      <FieldError :field="fields.localizedNames" />
 
-          <!-- Localized names -->
-          <LocaleTextInput
-            v-model="fields.localizedNames!.value"
-            v-bind="fields.localizedNames!.attributes"
-            :invalid="fields.localizedNames!.hasError"
-            :localeList="ls.localeList.value"
-            :label="l.form.attributeForm.title"
+      <!-- Value type -->
+      <FloatLabel variant="on">
+        <Select
+          v-model="fields.valueType!.value"
+          v-bind="fields.valueType!.attributes"
+          :options="valueTypeOptions"
+          :invalid="fields.valueType!.hasError"
+          optionLabel="value"
+          optionValue="key"
+          id="value-type-input"
+          fluid
+        />
+        <label for="value-type-input">{{ l.form.attributeForm.valueType }}</label>
+      </FloatLabel>
+      <FieldError :field="fields.valueType" />
+
+      <!-- Attribute value list -->
+      <template v-if="valueListType">
+        <FloatLabel variant="on">
+          <Select
+            v-model="fields.attributeValueListId!.value"
+            v-bind="fields.attributeValueListId!.attributes"
+            :options="attributeValueListOptions"
+            :invalid="fields.attributeValueListId!.hasError"
+            optionLabel="value"
+            optionValue="key"
+            id="attribute-value-list-input"
+            fluid
           />
-          <FieldError :field="fields.localizedNames" />
+          <label for="attribute-value-list-input">{{
+            l.form.attributeForm.attributeValueList
+          }}</label>
+        </FloatLabel>
+        <FieldError :field="fields.attributeValueListId" />
+      </template>
 
-          <!-- Value type -->
-          <FloatLabel variant="on">
-            <Select
-              v-model="fields.valueType!.value"
-              v-bind="fields.valueType!.attributes"
-              :options="valueTypeOptions"
-              :invalid="fields.valueType!.hasError"
-              optionLabel="value"
-              optionValue="key"
-              id="value-type-input"
-              fluid
-            />
-            <label for="value-type-input">{{ l.form.attributeForm.valueType }}</label>
-          </FloatLabel>
-          <FieldError :field="fields.valueType" />
+      <!-- Filter type -->
+      <FloatLabel variant="on">
+        <Select
+          v-model="fields.filterType!.value"
+          v-bind="fields.filterType!.attributes"
+          :options="filterTypeOptions"
+          :invalid="fields.filterType!.hasError"
+          optionLabel="value"
+          optionValue="key"
+          id="filter-type-input"
+          fluid
+        />
+        <label for="filter-type-input">{{ l.form.attributeForm.filterType }}</label>
+      </FloatLabel>
+      <FieldError :field="fields.filterType" />
 
-          <!-- Attribute value list -->
-          <template v-if="valueListType">
-            <FloatLabel variant="on">
-              <Select
-                v-model="fields.attributeValueListId!.value"
-                v-bind="fields.attributeValueListId!.attributes"
-                :options="attributeValueListOptions"
-                :invalid="fields.attributeValueListId!.hasError"
-                optionLabel="value"
-                optionValue="key"
-                id="attribute-value-list-input"
-                fluid
-              />
-              <label for="attribute-value-list-input">{{
-                l.form.attributeForm.attributeValueList
-              }}</label>
-            </FloatLabel>
-            <FieldError :field="fields.attributeValueListId" />
-          </template>
+      <!-- valueValidationRegex -->
+      <FloatLabel variant="on">
+        <InputText
+          v-model="fields.valueValidationRegex!.value"
+          v-bind="fields.valueValidationRegex!.attributes"
+          :invalid="fields.valueValidationRegex!.hasError"
+          id="validation-regex-input"
+          fluid
+        />
+        <label for="validation-regex-input">{{ l.form.attributeForm.valueValidationRegex }}</label>
+      </FloatLabel>
+      <FieldError :field="fields.valueValidationRegex" />
 
-          <!-- Filter type -->
-          <FloatLabel variant="on">
-            <Select
-              v-model="fields.filterType!.value"
-              v-bind="fields.filterType!.attributes"
-              :options="filterTypeOptions"
-              :invalid="fields.filterType!.hasError"
-              optionLabel="value"
-              optionValue="key"
-              id="filter-type-input"
-              fluid
-            />
-            <label for="filter-type-input">{{ l.form.attributeForm.filterType }}</label>
-          </FloatLabel>
-          <FieldError :field="fields.filterType" />
+      <!-- sortable -->
+      <div class="inline-flex gap-2 mt-4">
+        <ToggleSwitch
+          v-model="fields.sortable!.value"
+          v-bind="fields.sortable!.attributes"
+          :invalid="fields.sortable!.hasError"
+          id="is-sortable-input"
+        />
+        <label for="is-sortable-input">{{ l.form.attributeForm.sortable }}</label>
+      </div>
+      <FieldError :field="fields.sortable" />
 
-          <!-- valueValidationRegex -->
-          <FloatLabel variant="on">
-            <InputText
-              v-model="fields.valueValidationRegex!.value"
-              v-bind="fields.valueValidationRegex!.attributes"
-              :invalid="fields.valueValidationRegex!.hasError"
-              id="validation-regex-input"
-              fluid
-            />
-            <label for="validation-regex-input">{{
-              l.form.attributeForm.valueValidationRegex
-            }}</label>
-          </FloatLabel>
-          <FieldError :field="fields.valueValidationRegex" />
+      <!-- searchable -->
+      <div class="inline-flex gap-2 mt-4">
+        <ToggleSwitch
+          v-model="fields.searchable!.value"
+          v-bind="fields.searchable!.attributes"
+          :invalid="fields.searchable!.hasError"
+          id="is-searchable-input"
+        />
+        <label for="is-searchable-input">{{ l.form.attributeForm.searchable }}</label>
+      </div>
+      <FieldError :field="fields.searchable" />
 
-          <!-- sortable -->
-          <div class="inline-flex gap-2 mt-4">
-            <ToggleSwitch
-              v-model="fields.sortable!.value"
-              v-bind="fields.sortable!.attributes"
-              :invalid="fields.sortable!.hasError"
-              id="is-sortable-input"
-            />
-            <label for="is-sortable-input">{{ l.form.attributeForm.sortable }}</label>
-          </div>
-          <FieldError :field="fields.sortable" />
+      <!-- showOnListItem -->
+      <div class="inline-flex gap-2 mt-4">
+        <ToggleSwitch
+          v-model="fields.showOnListItem!.value"
+          v-bind="fields.showOnListItem!.attributes"
+          :invalid="fields.showOnListItem!.hasError"
+          id="show-on-list-item-input"
+        />
+        <label for="show-on-list-item-input">{{ l.form.attributeForm.showOnListItem }}</label>
+      </div>
+      <FieldError :field="fields.showOnListItem" />
 
-          <!-- searchable -->
-          <div class="inline-flex gap-2 mt-4">
-            <ToggleSwitch
-              v-model="fields.searchable!.value"
-              v-bind="fields.searchable!.attributes"
-              :invalid="fields.searchable!.hasError"
-              id="is-searchable-input"
-            />
-            <label for="is-searchable-input">{{ l.form.attributeForm.searchable }}</label>
-          </div>
-          <FieldError :field="fields.searchable" />
+      <FloatLabel variant="on">
+        <InputText
+          v-model="fields.iconName!.value"
+          v-bind="fields.iconName!.attributes"
+          :invalid="fields.iconName!.hasError"
+          id="icon-name-input"
+          fluid
+        />
+        <label for="icon-name-input">{{ l.form.attributeForm.iconName }}</label>
+      </FloatLabel>
+      <FieldError :field="fields.iconName" />
 
-          <!-- showOnListItem -->
-          <div class="inline-flex gap-2 mt-4">
-            <ToggleSwitch
-              v-model="fields.showOnListItem!.value"
-              v-bind="fields.showOnListItem!.attributes"
-              :invalid="fields.showOnListItem!.hasError"
-              id="show-on-list-item-input"
-            />
-            <label for="show-on-list-item-input">{{ l.form.attributeForm.showOnListItem }}</label>
-          </div>
-          <FieldError :field="fields.showOnListItem" />
-
-          <FloatLabel variant="on">
-            <InputText
-              v-model="fields.iconName!.value"
-              v-bind="fields.iconName!.attributes"
-              :invalid="fields.iconName!.hasError"
-              id="icon-name-input"
-              fluid
-            />
-            <label for="icon-name-input">{{ l.form.attributeForm.iconName }}</label>
-          </FloatLabel>
-          <FieldError :field="fields.iconName" />
-
-          <Button :label="isEdit ? l.actions.save : l.actions.create" type="submit" class="mt-3" />
-        </form>
-      </Panel>
-    </BlockWithSpinner>
-  </ResponsiveLayout>
+      <Button :label="isEdit ? l.actions.save : l.actions.create" type="submit" class="mt-3" />
+    </form>
+  </ResponsivePanel>
 </template>
 
 <script lang="ts" setup>
-import BackButton from '@/components/common/BackButton.vue'
-import BlockWithSpinner from '@/components/common/BlockWithSpinner.vue'
-import ResponsiveLayout from '@/components/common/ResponsiveLayout.vue'
+import ResponsivePanel from '@/components/common/ResponsivePanel.vue'
 import FieldError from '@/components/form/FieldError.vue'
 import LocaleTextInput from '@/components/form/LocaleTextInput.vue'
 import { useEnumOptionList } from '@/composables/enum-option-list'

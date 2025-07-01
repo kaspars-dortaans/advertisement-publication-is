@@ -1,26 +1,15 @@
 <template>
-  <ResponsiveLayout>
-    <BlockWithSpinner :loading="loading" class="flex-1 lg:flex-none flex flex-col">
-      <Panel class="flex-1 rounded-none lg:rounded-md lg:min-w-96">
-        <template #header>
-          <div class="panel-title-container">
-            <BackButton
-              :defaultTo="{ name: canViewAnyPayment ? 'viewSystemPayments' : 'viewPayments' }"
-            />
-            <h3 class="page-title">{{ l.navigation.paymentDetails }}</h3>
-          </div>
-        </template>
-
-        <PaymentDetails :paymentInfo="paymentInfo" />
-      </Panel>
-    </BlockWithSpinner>
-  </ResponsiveLayout>
+  <ResponsivePanel
+    :defaultBackButtonRoute="{ name: canViewAnyPayment ? 'viewSystemPayments' : 'viewPayments' }"
+    :title="l.navigation.paymentDetails"
+    :loading="loading"
+  >
+    <PaymentDetails :paymentInfo="paymentInfo" />
+  </ResponsivePanel>
 </template>
 
 <script lang="ts" setup>
-import BackButton from '@/components/common/BackButton.vue'
-import BlockWithSpinner from '@/components/common/BlockWithSpinner.vue'
-import ResponsiveLayout from '@/components/common/ResponsiveLayout.vue'
+import ResponsivePanel from '@/components/common/ResponsivePanel.vue'
 import PaymentDetails from '@/components/payment/PaymentDetails.vue'
 import { PaymentClient, PriceInfo } from '@/services/api-client'
 import { LocaleService } from '@/services/locale-service'

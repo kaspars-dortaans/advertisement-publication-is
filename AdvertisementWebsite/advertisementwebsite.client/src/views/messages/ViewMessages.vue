@@ -1,112 +1,104 @@
 <template>
-  <ResponsiveLayout containerClass="h-0">
-    <div class="h-full flex-1 max-w-6xl">
-      <div
-        class="max-h-full min-h-full lg:min-h-96 w-full bg-surface-0 p-[1.125rem] gap-[1.125rem] rounded-none lg:rounded-md flex flex-col flex-nowrap overflow-hidden"
+  <ResponsivePanel
+    :title="!isSmallScreen || focusOnMenu ? l.navigation.messages : undefined"
+    class="max-h-full"
+  >
+    <div class="flex flex-1 min-h-40 max-h-full">
+      <BlockWithSpinner
+        v-show="!isSmallScreen || focusOnMenu"
+        :loading="loadingChats"
+        class="flex-1 lg:flex-none overflow-y-auto lg:w-[384px]"
       >
-        <div class="panel-title-container">
+        <Tabs :value="tabOpened">
+          <TabList>
+            <Tab :value="0">
+              {{ l.messages.userAdvertisementChats }}
+              <Badge
+                v-if="userAdvertisementUnreadMessageCount > 0"
+                :value="userAdvertisementUnreadMessageCount"
+                class="min-w-6 min-h-6 rounded-xl"
+              />
+            </Tab>
+            <Tab :value="1">
+              {{ l.messages.otherUserAdvertisementChats }}
+              <Badge
+                v-if="otherAdvertisementUnreadMessageCount > 0"
+                :value="otherAdvertisementUnreadMessageCount"
+                class="min-w-6 min-h-6 rounded-xl"
+            /></Tab>
+          </TabList>
+          <TabPanels :pt="{ root: 'pl-0 pb-0 pr-0' }">
+            <TabPanel :value="0">
+              <ChatMenu :menuItems="userAdvertisementChats" />
+            </TabPanel>
+            <TabPanel :value="1">
+              <ChatMenu :menuItems="otherUserAdvertisementChats" />
+            </TabPanel>
+          </TabPanels>
+        </Tabs>
+      </BlockWithSpinner>
+
+      <Divider v-if="!isSmallScreen" layout="vertical" />
+
+      <BlockWithSpinner
+        v-show="!isSmallScreen || !focusOnMenu"
+        :loading="loadingMessages"
+        class="max-h-full flex-1 flex flex-col flex-nowrap gap-2 overflow-hidden lg:min-w-[576px]"
+      >
+        <ChatMessages
+          v-model:loading="loadingMessages"
+          :currentChatId="currentChat?.id"
+          :currentAdvertisementId="currentChat?.advertisementId"
+          :isNewChat="isNewChat"
+          ref="chatMessages"
+        >
+          <template #buttons v-if="isSmallScreen && !focusOnMenu">
+            <Button icon="pi pi-arrow-left" severity="secondary" @click="focusOnMenu = true" />
+          </template>
+        </ChatMessages>
+
+        <form
+          v-if="allowedToSendMessages"
+          class="flex-none flex flex-row flex-wrap items-end gap-2 mt-auto"
+          @submit="sendMessage"
+        >
+          <Button class="min-w-10" icon="pi pi-paperclip" rounded @click="selectAttachments" />
+          <div class="flex-1">
+            <Textarea
+              v-model="fields.text!.value"
+              v-bind="fields.text?.attributes"
+              :valid="fields.text?.hasError"
+              :rows="1"
+              fluid
+              autoResize
+            ></Textarea>
+            <FieldError :field="fields.text" />
+          </div>
           <Button
-            v-if="isSmallScreen && !focusOnMenu"
-            icon="pi pi-arrow-left"
-            severity="secondary"
-            @click="focusOnMenu = true"
+            :disabled="!currentChat && !isNewChat"
+            class="min-w-10"
+            icon="pi pi-arrow-right"
+            type="submit"
+            :loading="sendingMessage"
+            rounded
           />
-          <h3 class="page-title">{{ l.navigation.messages }}</h3>
-        </div>
-
-        <div class="flex flex-1 h-40">
-          <BlockWithSpinner
-            v-show="!isSmallScreen || focusOnMenu"
-            :loading="loadingChats"
-            class="flex-1 lg:flex-none overflow-y-auto lg:max-w-sm"
-          >
-            <Tabs :value="tabOpened">
-              <TabList>
-                <Tab :value="0">
-                  {{ l.messages.userAdvertisementChats }}
-                  <Badge
-                    v-if="userAdvertisementUnreadMessageCount > 0"
-                    :value="userAdvertisementUnreadMessageCount"
-                    class="min-w-6 min-h-6 rounded-xl"
-                  />
-                </Tab>
-                <Tab :value="1">
-                  {{ l.messages.otherUserAdvertisementChats }}
-                  <Badge
-                    v-if="otherAdvertisementUnreadMessageCount > 0"
-                    :value="otherAdvertisementUnreadMessageCount"
-                    class="min-w-6 min-h-6 rounded-xl"
-                /></Tab>
-              </TabList>
-              <TabPanels :pt="{ root: 'pl-0 pb-0 pr-0' }">
-                <TabPanel :value="0">
-                  <ChatMenu :menuItems="userAdvertisementChats" />
-                </TabPanel>
-                <TabPanel :value="1">
-                  <ChatMenu :menuItems="otherUserAdvertisementChats" />
-                </TabPanel>
-              </TabPanels>
-            </Tabs>
-          </BlockWithSpinner>
-
-          <Divider v-if="!isSmallScreen" layout="vertical" />
-
-          <BlockWithSpinner
-            v-show="!isSmallScreen || !focusOnMenu"
-            :loading="loadingMessages"
-            class="max-h-full flex-1 flex flex-col flex-nowrap gap-2 overflow-hidden"
-          >
-            <ChatMessages
-              v-model:loading="loadingMessages"
-              :currentChatId="currentChat?.id"
-              :currentAdvertisementId="currentChat?.advertisementId"
-              :isNewChat="isNewChat"
-              ref="chatMessages"
-            />
-            <form
-              v-if="allowedToSendMessages"
-              class="flex-none flex flex-row flex-wrap items-end gap-2 mt-auto"
-              @submit="sendMessage"
-            >
-              <Button class="min-w-10" icon="pi pi-paperclip" rounded @click="selectAttachments" />
-              <div class="flex-1">
-                <Textarea
-                  v-model="fields.text!.value"
-                  v-bind="fields.text?.attributes"
-                  :valid="fields.text?.hasError"
-                  :rows="1"
-                  fluid
-                  autoResize
-                ></Textarea>
-                <FieldError :field="fields.text" />
-              </div>
-              <Button
-                :disabled="!currentChat && !isNewChat"
-                class="min-w-10"
-                icon="pi pi-arrow-right"
-                type="submit"
-                :loading="sendingMessage"
-                rounded
-              />
-              <AttachmentUpload
-                v-model="fields.attachments!.value"
-                v-bind="fields.attachments?.attributes"
-                :invalid="fields.attachments?.hasError"
-                ref="fileInput"
-                class="w-full"
-              />
-              <FieldError :field="fields.attachments" />
-            </form>
-          </BlockWithSpinner>
-        </div>
-      </div>
+          <AttachmentUpload
+            v-model="fields.attachments!.value"
+            v-bind="fields.attachments?.attributes"
+            :invalid="fields.attachments?.hasError"
+            ref="fileInput"
+            class="w-full"
+          />
+          <FieldError :field="fields.attachments" />
+        </form>
+      </BlockWithSpinner>
     </div>
-  </ResponsiveLayout>
+  </ResponsivePanel>
 </template>
 
 <script setup lang="ts">
 import BlockWithSpinner from '@/components/common/BlockWithSpinner.vue'
-import ResponsiveLayout from '@/components/common/ResponsiveLayout.vue'
+import ResponsivePanel from '@/components/common/ResponsivePanel.vue'
 import FieldError from '@/components/form/FieldError.vue'
 import AttachmentUpload from '@/components/messages/AttachmentUpload.vue'
 import ChatMenu from '@/components/messages/ChatMenu.vue'

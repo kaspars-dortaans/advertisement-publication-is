@@ -1,98 +1,95 @@
 <template>
-  <ResponsiveLayout>
-    <LazyLoadedTable
-      v-model:loading="loading"
-      v-model:selection="selectedRows"
-      :columns="columns"
-      :dataSource="dataSource"
-      ref="table"
-    >
-      <template #header>
-        <h3 class="page-title mb-2">{{ l.navigation.manageAttributes }}</h3>
+  <LazyLoadedTable
+    v-model:loading="loading"
+    v-model:selection="selectedRows"
+    :columns="columns"
+    :dataSource="dataSource"
+    ref="table"
+  >
+    <template #header>
+      <h3 class="page-title mb-2">{{ l.navigation.manageAttributes }}</h3>
+      <div class="flex flex-wrap justify-end gap-2">
+        <Button
+          v-if="isAllowedToDelete"
+          :label="l.actions.delete"
+          :disabled="!selectedRows.length"
+          severity="danger"
+          @click="confirmRowDelete"
+        />
+        <Button
+          v-if="isAllowedToCreate"
+          :label="l.actions.create"
+          severity="primary"
+          as="RouterLink"
+          :to="{ name: 'createAttribute' }"
+        />
+      </div>
+    </template>
+
+    <Column selectionMode="multiple" headerStyle="width: 3rem" />
+
+    <Column field="title" :header="l.manageAttributes.title" sortable />
+    <Column field="valueType" :header="l.manageAttributes.valueType" sortable>
+      <template #body="slotProps">
+        {{ l.valueType[slotProps.data.valueType] }}
+      </template>
+    </Column>
+    <Column field="filterType" :header="l.manageAttributes.filterType" sortable>
+      <template #body="slotProps">
+        {{ l.filterType[slotProps.data.filterType] }}
+      </template>
+    </Column>
+    <Column
+      field="attributeValueListName"
+      :header="l.manageAttributes.attributeValueListName"
+      sortable
+    />
+    <Column field="sortable" :header="l.manageAttributes.sortable" sortable>
+      <template #body="slotProps">
+        {{ l[slotProps.data.sortable] }}
+      </template>
+    </Column>
+    <Column field="searchable" :header="l.manageAttributes.searchable" sortable>
+      <template #body="slotProps">
+        {{ l[slotProps.data.searchable] }}
+      </template>
+    </Column>
+    <Column field="showOnListItem" :header="l.manageAttributes.showOnListItem" sortable>
+      <template #body="slotProps">
+        {{ l[slotProps.data.showOnListItem] }}
+      </template>
+    </Column>
+    <Column field="iconName" :header="l.manageAttributes.iconName" sortable />
+
+    <Column>
+      <template #body="slotProps">
         <div class="flex flex-wrap justify-end gap-2">
           <Button
-            v-if="isAllowedToDelete"
-            :label="l.actions.delete"
-            :disabled="!selectedRows.length"
-            severity="danger"
-            @click="confirmRowDelete"
+            v-if="isAllowedToEdit"
+            :label="l.actions.edit"
+            as="RouterLink"
+            :to="{
+              name: 'editAttribute',
+              params: { attributeId: '' + slotProps.data.id }
+            }"
           />
           <Button
-            v-if="isAllowedToCreate"
-            :label="l.actions.create"
-            severity="primary"
+            :label="l.actions.view"
+            severity="secondary"
             as="RouterLink"
-            :to="{ name: 'createAttribute' }"
+            :to="{
+              name: 'viewAttribute',
+              params: { attributeId: '' + slotProps.data.id }
+            }"
           />
         </div>
       </template>
-
-      <Column selectionMode="multiple" headerStyle="width: 3rem" />
-
-      <Column field="title" :header="l.manageAttributes.title" sortable />
-      <Column field="valueType" :header="l.manageAttributes.valueType" sortable>
-        <template #body="slotProps">
-          {{ l.valueType[slotProps.data.valueType] }}
-        </template>
-      </Column>
-      <Column field="filterType" :header="l.manageAttributes.filterType" sortable>
-        <template #body="slotProps">
-          {{ l.filterType[slotProps.data.filterType] }}
-        </template>
-      </Column>
-      <Column
-        field="attributeValueListName"
-        :header="l.manageAttributes.attributeValueListName"
-        sortable
-      />
-      <Column field="sortable" :header="l.manageAttributes.sortable" sortable>
-        <template #body="slotProps">
-          {{ l[slotProps.data.sortable] }}
-        </template>
-      </Column>
-      <Column field="searchable" :header="l.manageAttributes.searchable" sortable>
-        <template #body="slotProps">
-          {{ l[slotProps.data.searchable] }}
-        </template>
-      </Column>
-      <Column field="showOnListItem" :header="l.manageAttributes.showOnListItem" sortable>
-        <template #body="slotProps">
-          {{ l[slotProps.data.showOnListItem] }}
-        </template>
-      </Column>
-      <Column field="iconName" :header="l.manageAttributes.iconName" sortable />
-
-      <Column>
-        <template #body="slotProps">
-          <div class="flex flex-wrap justify-end gap-2">
-            <Button
-              v-if="isAllowedToEdit"
-              :label="l.actions.edit"
-              as="RouterLink"
-              :to="{
-                name: 'editAttribute',
-                params: { attributeId: '' + slotProps.data.id }
-              }"
-            />
-            <Button
-              :label="l.actions.view"
-              severity="secondary"
-              as="RouterLink"
-              :to="{
-                name: 'viewAttribute',
-                params: { attributeId: '' + slotProps.data.id }
-              }"
-            />
-          </div>
-        </template>
-      </Column>
-    </LazyLoadedTable>
-  </ResponsiveLayout>
+    </Column>
+  </LazyLoadedTable>
 </template>
 
 <script lang="ts" setup>
 import LazyLoadedTable from '@/components/common/LazyLoadedTable.vue'
-import ResponsiveLayout from '@/components/common/ResponsiveLayout.vue'
 import { Permissions } from '@/constants/api/Permissions'
 import {
   AttributeClient,

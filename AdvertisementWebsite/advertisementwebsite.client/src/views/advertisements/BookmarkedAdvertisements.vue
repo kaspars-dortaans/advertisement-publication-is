@@ -1,37 +1,34 @@
 <template>
-  <ResponsiveLayout>
-    <AdvertisementTable
-      :title="l.navigation.savedAdvertisements"
-      :advertisementSource="loadAdvertisements"
-      :categoryFilterList="advertisementCategories"
-      :groupByCategory="true"
-      multiRowSelect
-      ref="table"
-    >
-      <template #actionButtons="slotProps">
-        <Button
-          severity="secondary"
-          :disabled="!slotProps.selectedRows?.length"
-          @click="printSelected"
-        >
-          {{ l.actions.print }}
-        </Button>
-        <Button
-          severity="danger"
-          :disabled="!slotProps.selectedRows?.length"
-          @click="
-            confirmBookmarkDelete(slotProps.selectedRows, slotProps.setLoading, slotProps.refresh)
-          "
-          >{{ l.actions.remove }}</Button
-        >
-      </template>
-    </AdvertisementTable>
-  </ResponsiveLayout>
+  <AdvertisementTable
+    :title="l.navigation.savedAdvertisements"
+    :advertisementSource="loadAdvertisements"
+    :categoryFilterList="advertisementCategories"
+    :groupByCategory="true"
+    multiRowSelect
+    ref="table"
+  >
+    <template #actionButtons="slotProps">
+      <Button
+        severity="secondary"
+        :disabled="!slotProps.selectedRows?.length"
+        @click="printSelected"
+      >
+        {{ l.actions.print }}
+      </Button>
+      <Button
+        severity="danger"
+        :disabled="!slotProps.selectedRows?.length"
+        @click="
+          confirmBookmarkDelete(slotProps.selectedRows, slotProps.setLoading, slotProps.refresh)
+        "
+        >{{ l.actions.remove }}</Button
+      >
+    </template>
+  </AdvertisementTable>
 </template>
 
 <script setup lang="ts">
 import AdvertisementTable from '@/components/advertisements/AdvertisementTable.vue'
-import ResponsiveLayout from '@/components/common/ResponsiveLayout.vue'
 import { confirmDelete } from '@/utils/confirm-dialog'
 import {
   AdvertisementClient,

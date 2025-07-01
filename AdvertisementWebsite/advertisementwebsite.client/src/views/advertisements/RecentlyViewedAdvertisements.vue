@@ -1,16 +1,13 @@
 <template>
-  <ResponsiveLayout>
-    <AdvertisementTable
-      :title="l.navigation.recentlyViewedAdvertisements"
-      :advertisementSource="loadAdvertisements"
-      :categoryFilterList="advertisementCategories"
-    ></AdvertisementTable>
-  </ResponsiveLayout>
+  <AdvertisementTable
+    :title="l.navigation.recentlyViewedAdvertisements"
+    :advertisementSource="loadAdvertisements"
+    :categoryFilterList="advertisementCategories"
+  ></AdvertisementTable>
 </template>
 
 <script setup lang="ts">
 import AdvertisementTable from '@/components/advertisements/AdvertisementTable.vue'
-import ResponsiveLayout from '@/components/common/ResponsiveLayout.vue'
 import {
   AdvertisementHistoryStorageKey,
   AdvertisementHistoryTimeSpanInMiliSeconds

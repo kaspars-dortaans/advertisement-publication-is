@@ -1,47 +1,36 @@
 <template>
-  <ResponsiveLayout>
-    <BlockWithSpinner :loading="loading || isSubmitting" class="flex-1 lg:flex-none flex flex-col">
-      <Panel class="rounded-none lg:rounded-md flex-1">
-        <template #header>
-          <div class="panel-title-container">
-            <BackButton :defaultTo="{ name: 'home' }" />
-            <h4 class="page-title">
-              {{ l.navigation.manageServicePrices }}
-            </h4>
-          </div>
-        </template>
+  <ResponsivePanel
+    :defaultBackButtonRoute="{ name: 'home' }"
+    :title="l.navigation.manageServicePrices"
+    :loading="loading || isSubmitting"
+  >
+    <form class="flex flex-col gap-4" @submit="submit">
+      <FieldError :messages="formErrors" />
 
-        <form class="flex flex-col gap-4" @submit="submit">
-          <FieldError :messages="formErrors" />
+      <template v-for="field in fields" :key="field!.path">
+        <FloatLabel variant="on">
+          <InputNumber
+            v-model="field!.value"
+            v-bind="field!.attributes"
+            :invalid="field!.hasError"
+            :id="field!.path + '-input'"
+            mode="currency"
+            currency="EUR"
+            :locale="LocaleService.currentLocaleName.value"
+            fluid
+          />
+          <label :for="field!.path + '-input'">{{ l.costType[field!.path] }}</label>
+        </FloatLabel>
+        <FieldError :field="field" />
+      </template>
 
-          <template v-for="field in fields" :key="field!.path">
-            <FloatLabel variant="on">
-              <InputNumber
-                v-model="field!.value"
-                v-bind="field!.attributes"
-                :invalid="field!.hasError"
-                :id="field!.path + '-input'"
-                mode="currency"
-                currency="EUR"
-                :locale="LocaleService.currentLocaleName.value"
-                fluid
-              />
-              <label :for="field!.path + '-input'">{{ l.costType[field!.path] }}</label>
-            </FloatLabel>
-            <FieldError :field="field" />
-          </template>
-
-          <Button :label="l.actions.save" type="submit" class="mt-3 lg:self-center" />
-        </form>
-      </Panel>
-    </BlockWithSpinner>
-  </ResponsiveLayout>
+      <Button :label="l.actions.save" type="submit" class="mt-3 lg:self-center" />
+    </form>
+  </ResponsivePanel>
 </template>
 
 <script lang="ts" setup>
-import BackButton from '@/components/common/BackButton.vue'
-import BlockWithSpinner from '@/components/common/BlockWithSpinner.vue'
-import ResponsiveLayout from '@/components/common/ResponsiveLayout.vue'
+import ResponsivePanel from '@/components/common/ResponsivePanel.vue'
 import FieldError from '@/components/form/FieldError.vue'
 import { PaymentClient, Prices, SetServicePricesRequest, type IPrices } from '@/services/api-client'
 import { LocaleService } from '@/services/locale-service'

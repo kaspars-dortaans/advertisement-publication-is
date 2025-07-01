@@ -1,12 +1,15 @@
 <template>
   <div class="relative flex-1 h-0 flex flex-col flex-nowrap">
-    <Button
-      v-if="currentAdvertisementId"
-      :label="l.messages.viewAdvertisement"
-      class="mb-2 self-start"
-      as="RouterLink"
-      :to="{ name: 'viewAdvertisement', params: { id: currentAdvertisementId } }"
-    />
+    <div class="flex gap-2 py-2">
+      <slot name="buttons"></slot>
+
+      <Button
+        v-if="currentAdvertisementId"
+        :label="l.messages.viewAdvertisement"
+        as="RouterLink"
+        :to="{ name: 'viewAdvertisement', params: { id: currentAdvertisementId } }"
+      />
+    </div>
 
     <!-- Connection error messages -->
     <div

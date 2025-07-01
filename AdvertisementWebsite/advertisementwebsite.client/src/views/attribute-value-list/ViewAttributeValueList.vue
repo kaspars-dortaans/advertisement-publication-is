@@ -1,46 +1,37 @@
 <template>
-  <ResponsiveLayout>
-    <BlockWithSpinner :loading="loading" class="flex-1 lg:flex-none flex flex-col">
-      <Panel class="rounded-none lg:rounded-md flex-1 lg:min-w-96">
-        <template #header>
-          <div class="panel-title-container">
-            <BackButton :defaultTo="{ name: 'manageAttributeValueLists' }" />
-            <h4 class="page-title">
-              {{ l.navigation.viewAttributeValueList }}
-            </h4>
-            <Button
-              v-if="isAllowedToEdit"
-              icon="pi pi-pencil"
-              severity="secondary"
-              :label="l.actions.edit"
-              as="RouterLink"
-              :to="{ name: 'editAttributeValueList', params: { valueListId } }"
-            />
-          </div>
-        </template>
+  <ResponsivePanel
+    :defaultBackButtonRoute="{ name: 'manageAttributeValueLists' }"
+    :title="l.navigation.viewAttributeValueList"
+    :loading="loading"
+  >
+    <template #titlePanelButtons>
+      <Button
+        v-if="isAllowedToEdit"
+        icon="pi pi-pencil"
+        severity="secondary"
+        :label="l.actions.edit"
+        as="RouterLink"
+        :to="{ name: 'editAttributeValueList', params: { valueListId } }"
+      />
+    </template>
 
-        <div class="flex flex-col">
-          <LocaleTextInput
-            v-model="valueList.title"
-            :localeList="ls.localeList.value"
-            :label="l.form.attributeValueListForm.title"
-            disabled
-          />
+    <div class="flex flex-col">
+      <LocaleTextInput
+        v-model="valueList.title"
+        :localeList="ls.localeList.value"
+        :label="l.form.attributeValueListForm.title"
+        disabled
+      />
 
-          <Divider />
+      <Divider />
 
-          <AttributeValueListEntryInput v-model="valueList.entries" disabled />
-        </div>
-      </Panel>
-    </BlockWithSpinner>
-  </ResponsiveLayout>
+      <AttributeValueListEntryInput v-model="valueList.entries" disabled />
+    </div>
+  </ResponsivePanel>
 </template>
 
 <script lang="ts" setup>
 import AttributeValueListEntryInput from '@/components/attribute-input/AttributeValueListEntryInput.vue'
-import BackButton from '@/components/common/BackButton.vue'
-import BlockWithSpinner from '@/components/common/BlockWithSpinner.vue'
-import ResponsiveLayout from '@/components/common/ResponsiveLayout.vue'
 import LocaleTextInput from '@/components/form/LocaleTextInput.vue'
 import { AttributeClient } from '@/services/api-client'
 import { LocaleService } from '@/services/locale-service'
@@ -50,6 +41,7 @@ import { type AttributeValueListForm } from '../../types/forms/attribute-value-l
 import { AuthService } from '@/services/auth-service'
 import { Permissions } from '@/constants/api/Permissions'
 import { computed } from 'vue'
+import ResponsivePanel from '@/components/common/ResponsivePanel.vue'
 
 const props = defineProps<{
   valueListId?: number

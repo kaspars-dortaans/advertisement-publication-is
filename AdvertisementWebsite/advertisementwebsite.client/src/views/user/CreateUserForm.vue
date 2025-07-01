@@ -1,54 +1,42 @@
 <template>
-  <ResponsiveLayout>
-    <BlockWithSpinner :loading="loading || isSubmitting" class="flex-1 lg:flex-none flex flex-col">
-      <Panel class="rounded-none lg:rounded-md flex-1">
-        <template #header>
-          <div class="panel-title-container">
-            <BackButton :defaultTo="{ name: 'manageUsers' }" />
-            <h4 class="page-title">
-              {{ l.navigation.createUser }}
-            </h4>
-          </div>
-        </template>
-
-        <form class="flex flex-col gap-2" @submit="submit">
-          <CreateUserCommonInputs
-            :fields="fields as Fields<RegisterDto>"
-            :formErrors="formErrors"
-            :hasFormErrors="hasFormErrors"
-          >
-            <FloatLabel variant="on">
-              <!-- Filter type -->
-              <MultiSelect
-                v-model="fields.userRoles!.value"
-                v-bind="fields.userRoles!.attributes"
-                :invalid="fields.userRoles!.hasError"
-                :options="roleList"
-                display="chip"
-                id="user-role-input"
-                fluid
-              />
-              <label for="user-role-input">{{ l.form.register.userRoles }}</label>
-            </FloatLabel>
-            <FieldError :field="fields.userRoles" />
-          </CreateUserCommonInputs>
-
-          <Button
-            :label="l.actions.create"
-            :loading="isSubmitting"
-            type="submit"
-            class="mt-3 self-stretch lg:self-center"
+  <ResponsivePanel
+    :defaultBackButtonRoute="{ name: 'manageUsers' }"
+    :title="l.navigation.createUser"
+    :loading="loading || isSubmitting"
+  >
+    <form class="flex flex-col gap-2" @submit="submit">
+      <CreateUserCommonInputs
+        :fields="fields as Fields<RegisterDto>"
+        :formErrors="formErrors"
+        :hasFormErrors="hasFormErrors"
+      >
+        <FloatLabel variant="on">
+          <!-- Filter type -->
+          <MultiSelect
+            v-model="fields.userRoles!.value"
+            v-bind="fields.userRoles!.attributes"
+            :invalid="fields.userRoles!.hasError"
+            :options="roleList"
+            display="chip"
+            id="user-role-input"
+            fluid
           />
-        </form>
-      </Panel>
-    </BlockWithSpinner>
-  </ResponsiveLayout>
+          <label for="user-role-input">{{ l.form.register.userRoles }}</label>
+        </FloatLabel>
+        <FieldError :field="fields.userRoles" />
+      </CreateUserCommonInputs>
+
+      <Button
+        :label="l.actions.create"
+        :loading="isSubmitting"
+        type="submit"
+        class="mt-3 self-stretch lg:self-center"
+      />
+    </form>
+  </ResponsivePanel>
 </template>
 
 <script lang="ts" setup>
-import BackButton from '@/components/common/BackButton.vue'
-import BlockWithSpinner from '@/components/common/BlockWithSpinner.vue'
-import ResponsiveLayout from '@/components/common/ResponsiveLayout.vue'
 import CreateUserCommonInputs from '@/components/form/user/CreateUserCommonInputs.vue'
 import FieldError from '@/components/form/FieldError.vue'
 import {
@@ -67,6 +55,7 @@ import { useForm } from 'vee-validate'
 import { onBeforeMount, ref, watch } from 'vue'
 import { onBeforeRouteLeave, useRouter } from 'vue-router'
 import { array, boolean, object, string } from 'yup'
+import ResponsivePanel from '@/components/common/ResponsivePanel.vue'
 
 //Route
 const { push } = useRouter()

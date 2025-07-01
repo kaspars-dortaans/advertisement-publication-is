@@ -1,25 +1,22 @@
 <template>
-  <ResponsiveLayout>
-    <AdvertisementTable
-      :advertisementSource="(q: DataTableQuery) => loadAdvertisements(q)"
-      :groupByCategory="true"
-      :categoryFilterList="categoryList"
-      ref="advertisementTable"
-    >
-      <template #title>
-        <div class="panel-title-container">
-          <BackButton :defaultTo="{ name: 'home' }" />
-          <h3 class="page-title mb-2">{{ title }}</h3>
-        </div>
-      </template>
-    </AdvertisementTable>
-  </ResponsiveLayout>
+  <AdvertisementTable
+    :advertisementSource="(q: DataTableQuery) => loadAdvertisements(q)"
+    :groupByCategory="true"
+    :categoryFilterList="categoryList"
+    ref="advertisementTable"
+  >
+    <template #title>
+      <div class="panel-title-container">
+        <BackButton :defaultTo="{ name: 'home' }" />
+        <h3 class="page-title mb-2">{{ title }}</h3>
+      </div>
+    </template>
+  </AdvertisementTable>
 </template>
 
 <script setup lang="ts">
 import AdvertisementTable from '@/components/advertisements/AdvertisementTable.vue'
 import BackButton from '@/components/common/BackButton.vue'
-import ResponsiveLayout from '@/components/common/ResponsiveLayout.vue'
 import {
   AdvertisementClient,
   CategoryClient,
